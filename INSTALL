@@ -1,0 +1,11 @@
+To Install.
+------
+ $ ./configure 
+ $ make
+ $ sudo make install
+ $ sudo ldconfig
+------
+
+If you cannot get file of "Makefile" after "./configure",
+you check message of console and install the library.
+

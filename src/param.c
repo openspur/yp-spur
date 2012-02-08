@@ -91,7 +91,8 @@ void arg_help( int argc, char *argv[] )
 	fprintf( stderr, "  --verbose                Display detail infomation.\n" );
 	fprintf( stderr, "  --quiet                  Display nothing.\n" );
 	fprintf( stderr, "  -h, --help               This help\n" );
-	fprintf( stderr, "  --long-help              Long help\n\n" );
+	fprintf( stderr, "  --long-help              Long help\n" );
+	fprintf( stderr, "  --param-help             Comments of parameters\n\n" );
 }
 
 /* 隠しコマンドの説明 */
@@ -113,6 +114,22 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
 
+}
+
+
+/* 引数の説明 */
+void param_help( void )
+{
+	int i;
+	char param_names[YP_PARAM_NUM][32] = YP_PARAM_NAME;
+	char param_comments[YP_PARAM_NUM][128] = YP_PARAM_COMMENT;
+
+	fprintf( stderr, "INFO: Comments of parameters (parameter version %.1f)\n\n", YP_PARAM_REQUIRED_VERSION );
+	for( i = 0; i < YP_PARAM_NUM; i ++ )
+	{
+		if( param_names[i][0] == '_' ) continue;
+		fprintf( stderr, "  %20s: %s\n", param_names[i], param_comments[i] );
+	}
 }
 
 /* 引数の解析 */
@@ -137,6 +154,10 @@ int arg_analyze( int argc, char *argv[] )
 		else if( !strcmp( argv[i], "--long-help" ) )
 		{
 			g_param.option |= OPTION_SHOW_LONGHELP;
+		}
+		else if( !strcmp( argv[i], "--param-help" ) )
+		{
+			g_param.option |= OPTION_SHOW_PARAMHELP;
 		}
 		else if( !strcmp( argv[i], "--show-odometry" ) || !strcmp( argv[i], "-o" ) )
 		{

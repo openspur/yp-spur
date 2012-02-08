@@ -92,6 +92,11 @@ int main( int argc, char *argv[] )
 		arg_longhelp( argc, argv );
 		return EXIT_SUCCESS;
 	}
+	if( option( OPTION_SHOW_PARAMHELP ) )
+	{
+		param_help( );
+		return EXIT_SUCCESS;
+	}
 	if( option( OPTION_VERSION ) )
 	{
 		fprintf( stderr, "YamabicoProject-Spur\n" );

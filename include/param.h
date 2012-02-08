@@ -9,8 +9,9 @@ typedef enum
 	OPTION_PARAM_CONTROL = 0x0002,
 	OPTION_SHOW_TIMESTAMP = 0x0004,
 	OPTION_SHOW_HELP = 0x0008,
-	OPTION_SHOW_LONGHELP = 0x00010,
-	OPTION_VERSION = 0x0020,
+	OPTION_SHOW_LONGHELP = 0x0010,
+	OPTION_SHOW_PARAMHELP = 0x0020,
+	OPTION_VERSION = 0x0040,
 
 	OPTION_WITHOUT_DEVICE = 0x0800,
 	OPTION_WITHOUT_SSM = 0x1000,
@@ -62,6 +63,7 @@ typedef struct _parameters
  * pthread_mutex_t mutex; */
 int arg_analyze( int argc, char *argv[] );
 void arg_help( int argc, char *argv[] );
+void param_help( void );
 void arg_longhelp( int argc, char *argv[] );
 int set_param( char *filename );
 void calc_param_inertia2ff( void );

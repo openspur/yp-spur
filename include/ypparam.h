@@ -150,14 +150,24 @@ extern "C"
 
 #define YP_PARAM_COMMENT \
 {\
-	"","[Integer Nm/Nm]","[Integer V/V]", "[Integer m/m]", "[Integer A/A]","[Integer rad/s / rad/s]",\
-	"(28000000/DUTY)","[Counts/rev]","[V]","[s]", "[in/out]","[ohm]","[Nm/A]","[rpm/V]","",\
-	"[m]","[m]","[m]","[s]",\
-	"[m/s]", "[rad/s]","[m/ss]","[rad/ss]","[m/ss] Centrifugal acceleration limit",\
-	"","","","","Clipping value of line following control","[1/s]PI control parameter Kp","[1/ss]PI control parameter Ki",\
-	"[Nm]","[Nm]","[Nm/(rad/s)]","[rev]","[Nm]",\
-	"[kg]","[kgm^2]","[kgm^2]","[kgm^2]",\
-	"[m]","[m]","[m]","[m]",\
+	"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication",\
+	"[Integer V/V] Fixed-point position of PC-MCU communication", \
+	"[Integer m/m]  Fixed-point position of PC-MCU communication", \
+	"[Integer A/A]  Fixed-point position of PC-MCU communication", \
+	"[Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
+	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
+    "[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","",\
+	"[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
+	"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
+	"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\
+	"[m/s / rad/s] Deacceleration factor of trajectory control",\
+	"[rad/ss / m] Feedback gain for distance error","[rad/ss / rad] Feedback gain for angular error",\
+	"[rad/ss / rad/s] Feedback gain for angular velocity",\
+	"[m] Clipping value of line following control","[1/s] PI control parameter Kp","[1/ss] PI control parameter Ki",\
+	"[Nm] Motor maximum torque","[Nm] Constant friction","[Nm/(rad/s)] Viscous friction",\
+	"[rev] Maximum integrated error of PI control","[Nm] Offset value of motor torque",\
+	"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
+	"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
 	"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
 }
 

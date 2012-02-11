@@ -100,9 +100,8 @@ void arg_longhelp( int argc, char *argv[] )
 {
 	arg_help( argc, argv );
 	fprintf( stderr, "  -o, --show-odometry      Display estimated robot position.\n" );
-	fprintf( stderr,
-			 "  -t, --show-timestamp     Display timestamp of serial communication \n"
-			 "                           with the B-Loco device.\n" );
+	fprintf( stderr, "  -t, --show-timestamp     Display timestamp of serial communication \n"
+	                 "                           with the B-Loco device.\n" );
 	fprintf( stderr, "  --reconnect              Try reconnect device when device was closed.\n" );
 	fprintf( stderr, "  --without-ssm            Run without ssm output.\n" );
 	fprintf( stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY.\n" );
@@ -110,7 +109,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --admask <ADMASK>        Get AD data of ADMASK from B-Loco device.\n" );
 	fprintf( stderr, "  --enable-get-digital-io  Enable digital IO port.\n" );
 	fprintf( stderr, "  -c, --without-control    Run without control.\n" );
-	fprintf( stderr, "  -without-device          Run without B-Loco device.\n" );
+	fprintf( stderr, "  --without-device         Run without B-Loco device.\n" );
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
 

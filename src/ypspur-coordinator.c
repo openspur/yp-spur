@@ -164,106 +164,106 @@ int main( int argc, char *argv[] )
 				// quit=0;でbreakしたら異常終了と判断される
 				break;
 			}
-		}
+			if( !( option( OPTION_DO_NOT_USE_YP ) ) )
+			{
+				int current, age;
+				sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
 
-		if( !( option( OPTION_DO_NOT_USE_YP ) ) )
-		{
-			int current, age;
-			sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
+				if( output_lv(  ) >= OUTPUT_LV_PROCESS )
+				{
+					fprintf( stderr, " Checking device infomation...\r" );
+					fflush( stderr );
+				}
+				for ( i = 0; i < 3; i++ )
+				{
+					int device_current, device_age;
+					// プロトコルがYPであることを確認
+					if( get_version( &version ) == -1 )
+					{
+						continue;
+					}
+					if( strstr( version.protocol, "YPP:" ) != version.protocol )
+					{
+						continue;
+					}
+					sscanf( version.protocol, "YPP:%d:%d", &device_current, &device_age );
+					if( device_current - device_age > current || device_current < current )
+					{
+						continue;
+					}
+					break;
+				}
+				if( output_lv(  ) >= OUTPUT_LV_PARAM )
+				{
+					fprintf( stderr, " Vender  : %s\033[K\n", version.vender );
+					fprintf( stderr, " Product : %s\n", version.product );
+					fprintf( stderr, " Firmware: %s\n", version.firmware );
+					fprintf( stderr, " Protcol : %s\n", version.protocol );
+					fprintf( stderr, " Serialno: %s\n", version.serialno );
+				}
+				if( output_lv(  ) >= OUTPUT_LV_PROCESS )
+					fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+				if( i == 3 )
+				{
+					if( output_lv(  ) >= OUTPUT_LV_ERROR )
+						fprintf( stderr, "Error: Device doesn't have available YP protocol version.\n" );
+					if( option( OPTION_RECONNECT ) && g_emergency == 0 )
+					{
+						yp_usleep( 500000 );
+						continue;
+					}
+					//return EXIT_FAILURE;
+					break; // quit=0;でbreakしたら異常終了と判断される
+				}
+			}
+			fflush( stderr );
 
-			if( output_lv(  ) >= OUTPUT_LV_PROCESS )
+			if( param->speed )
 			{
-				fprintf( stderr, " Checking device infomation...\r" );
-				fflush( stderr );
-			}
-			for ( i = 0; i < 3; i++ )
-			{
-				int device_current, device_age;
-				// プロトコルがYPであることを確認
-				if( get_version( &version ) == -1 )
+				if( output_lv(  ) >= OUTPUT_LV_MODULE )
+					fprintf( stderr, "Setting baudrate to %d baud.\n", param->speed );
+				if( !set_baudrate( param->speed ) )
 				{
-					continue;
-				}
-				if( strstr( version.protocol, "YPP:" ) != version.protocol )
-				{
-					continue;
-				}
-				sscanf( version.protocol, "YPP:%d:%d", &device_current, &device_age );
-				if( device_current - device_age > current || device_current < current )
-				{
-					continue;
-				}
-				break;
-			}
-			if( output_lv(  ) >= OUTPUT_LV_PARAM )
-			{
-				fprintf( stderr, " Vender  : %s\033[K\n", version.vender );
-				fprintf( stderr, " Product : %s\n", version.product );
-				fprintf( stderr, " Firmware: %s\n", version.firmware );
-				fprintf( stderr, " Protcol : %s\n", version.protocol );
-				fprintf( stderr, " Serialno: %s\n", version.serialno );
-			}
-			if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-				fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
-			if( i == 3 )
-			{
-				if( output_lv(  ) >= OUTPUT_LV_ERROR )
-					fprintf( stderr, "Error: Device doesn't have available YP protocol version.\n" );
-				if( option( OPTION_RECONNECT ) && g_emergency == 0 )
-				{
-					yp_usleep( 500000 );
-					continue;
-				}
-				//return EXIT_FAILURE;
-				break; // quit=0;でbreakしたら異常終了と判断される
-			}
-		}
-		fflush( stderr );
-
-		if( param->speed && !( option( OPTION_WITHOUT_DEVICE ) ) )
-		{
-			if( output_lv(  ) >= OUTPUT_LV_MODULE )
-				fprintf( stderr, "Setting baudrate to %d baud.\n", param->speed );
-			if( !set_baudrate( param->speed ) )
-			{
-				if( output_lv(  ) >= OUTPUT_LV_WARNING )
-					fprintf( stderr, "Error: Failed to change baudrate.\n" );
+					if( output_lv(  ) >= OUTPUT_LV_WARNING )
+						fprintf( stderr, "Error: Failed to change baudrate.\n" );
 					
-				serial_close(  );
-				pthread_cancel( control_thread );
-				pthread_cancel( command_thread );
-				pthread_join( control_thread, NULL );
-				pthread_join( command_thread, NULL );
+					serial_close(  );
+					pthread_cancel( control_thread );
+					pthread_cancel( command_thread );
+					pthread_join( control_thread, NULL );
+					pthread_join( command_thread, NULL );
 
-				quit = 0;
-				break;	// quit=0;でbreakしたら異常終了と判断される
+					quit = 0;
+					break;	// quit=0;でbreakしたら異常終了と判断される
+				}
+			}
+
+			if( param->admask )
+			{
+				if( output_lv(  ) >= OUTPUT_LV_MODULE )
+					fprintf( stderr, "Setting admask to %x.\n", param->admask );
+				set_admask( param->admask );
+			}
+
+			if( option( OPTION_ENABLE_GET_DIGITAL_IO ) )
+			{
+				if( output_lv(  ) >= OUTPUT_LV_MODULE )
+					fprintf( stderr, "Enabling digital io input.\n" );
+				set_diomask( 1 );
+			}
+
+			if( !( option( OPTION_PARAM_CONTROL ) ) )
+			{
+				apply_robot_params(  );
+			}
+
+			/* サーボをかける */
+			if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) )
+			{
+				motor_servo(  );
 			}
 		}
 
-		if( param->admask && !( option( OPTION_WITHOUT_DEVICE ) ) )
-		{
-			if( output_lv(  ) >= OUTPUT_LV_MODULE )
-				fprintf( stderr, "Setting admask to %x.\n", param->admask );
-			set_admask( param->admask );
-		}
-
-		if( option( OPTION_ENABLE_GET_DIGITAL_IO ) && !( option( OPTION_WITHOUT_DEVICE ) ) )
-		{
-			if( output_lv(  ) >= OUTPUT_LV_MODULE )
-				fprintf( stderr, "Enabling digital io input.\n" );
-			set_diomask( 1 );
-		}
-
-		if( !( option( OPTION_PARAM_CONTROL ) ) )
-		{
-			apply_robot_params(  );
-		}
-
-		/* サーボをかける */
-		if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) )
-		{
-			motor_servo(  );
-		}
 
 		if( output_lv(  ) >= OUTPUT_LV_MODULE )
 		{
@@ -307,10 +307,10 @@ int main( int argc, char *argv[] )
 		}
 
 		/* 終了処理 */
-		serial_close(  );
-
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
+			serial_close(  );
+
 			pthread_cancel( control_thread );
 			pthread_join( control_thread, NULL );
 		}

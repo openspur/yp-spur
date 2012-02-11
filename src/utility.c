@@ -37,10 +37,10 @@ void yp_usleep( int usec )
 #if defined(HAVE_NANOSLEEP)
 	// nanosleepが利用可能
 	struct timespec request;
-	request.tv_nsec = usec * 1000;
-	request.tv_sec = 0;
+	request.tv_sec = usec / 1000000;
+	request.tv_nsec = ( usec - request.tv_sec * 1000000 ) * 1000;
 
-	nanosleep( &request, 0 );
+	nanosleep( &request, NULL );
 #elif defined(__WIN32)
 	// MinGWのusleepには1ms以下切り捨ての問題があるためWindows環境ではWinAPIのSleepを使う
 	// 1ms以下は切り上げ

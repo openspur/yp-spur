@@ -339,6 +339,13 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			//robot_speed_smooth( 0, 0, spur );
 			parameter_set( PARAM_p_toq_offset, 0, 0 );
 			parameter_set( PARAM_p_toq_offset, 1, 0 );
+			{
+				OdometryPtr podm;
+
+				podm = get_odometry_ptr();
+				g_v_ref = podm->v;
+				g_w_ref = podm->w;
+			}
 			break;
 		case RUN_STOP:							// ストップする（スピードを0にする）
 			robot_speed_smooth( 0, 0, spur );

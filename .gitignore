@@ -21,3 +21,4 @@ src/ypspur-free
 src/ypspur-interpreter
 *.coff
 *.mot
+autom4te.cache/

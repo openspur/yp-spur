@@ -269,6 +269,7 @@ SECTIONS
 	{
 		CREATE_OBJECT_SYMBOLS
 		*( .text )
+		*( .rodata )
 		_data_img_begin = .;
 	} > rom
 

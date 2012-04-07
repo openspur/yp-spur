@@ -122,6 +122,9 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SH_CROSS_AR = @SH_CROSS_AR@
 SH_CROSS_CC = @SH_CROSS_CC@
+SH_CROSS_ELF_AR = @SH_CROSS_ELF_AR@
+SH_CROSS_ELF_CC = @SH_CROSS_ELF_CC@
+SH_CROSS_ELF_OBJCOPY = @SH_CROSS_ELF_OBJCOPY@
 SH_CROSS_OBJCOPY = @SH_CROSS_OBJCOPY@
 SSM_COORDINATOR = @SSM_COORDINATOR@
 STRIP = @STRIP@
@@ -185,16 +188,28 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
 
 
 # set the include path found by configure
-@HAVE_SH_CROSS_TRUE@INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
-@HAVE_SH_CROSS_TRUE@TARGET = sh-vel
-@HAVE_SH_CROSS_TRUE@MOT = $(TARGET).mot
-@HAVE_SH_CROSS_TRUE@COFF = $(TARGET).coff
-@HAVE_SH_CROSS_TRUE@SRCS = sh-vel.c motor-device.c sh-serial.c adc.c
-@HAVE_SH_CROSS_TRUE@SHLINK = sh7045linker.x
-@HAVE_SH_CROSS_TRUE@SHSTART = startup.s
-@HAVE_SH_CROSS_TRUE@SHCFLAGS = $(INCLUDES) -m2
-@HAVE_SH_CROSS_TRUE@SHLDFLAGS = -T $(SHLINK) -nostartfiles $(SHSTART) -lc -lm
-@HAVE_SH_CROSS_TRUE@SHOBJ = -O srec
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
+
+# set the include path found by configure
+@HAVE_SH_ELF_CROSS_TRUE@INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@TARGET = sh-vel
+@HAVE_SH_ELF_CROSS_TRUE@TARGET = sh-vel
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@MOT = $(TARGET).mot
+@HAVE_SH_ELF_CROSS_TRUE@MOT = $(TARGET).mot
+@HAVE_SH_ELF_CROSS_TRUE@ELF = $(TARGET).elf
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SRCS = sh-vel.c motor-device.c sh-serial.c adc.c
+@HAVE_SH_ELF_CROSS_TRUE@SRCS = sh-vel.c motor-device.c sh-serial.c adc.c
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHLINK = sh7045linker.x
+@HAVE_SH_ELF_CROSS_TRUE@SHLINK = sh7045linker.x
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHSTART = startup.s
+@HAVE_SH_ELF_CROSS_TRUE@SHSTART = startup.s
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHCFLAGS = $(INCLUDES) -m2
+@HAVE_SH_ELF_CROSS_TRUE@SHCFLAGS = $(INCLUDES) -m2
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHLDFLAGS = -T $(SHLINK) -nostartfiles $(SHSTART) -lc -lm
+@HAVE_SH_ELF_CROSS_TRUE@SHLDFLAGS = -T $(SHLINK) -nostartfiles $(SHSTART) -lc -lm
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHOBJ = -O srec
+@HAVE_SH_ELF_CROSS_TRUE@SHOBJ = -O srec
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@COFF = $(TARGET).coff
 all: all-am
 
 .SUFFIXES:
@@ -300,7 +315,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@HAVE_SH_CROSS_FALSE@clean: clean-am
+@HAVE_SH_CROSS_FALSE@@HAVE_SH_ELF_CROSS_FALSE@clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
 
@@ -379,17 +394,29 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
+#srec
 
-@HAVE_SH_CROSS_TRUE@all : $(MOT)
+@HAVE_SH_ELF_CROSS_TRUE@all : $(MOT)
 
-@HAVE_SH_CROSS_TRUE@$(MOT) : $(COFF)
-@HAVE_SH_CROSS_TRUE@	$(SH_CROSS_OBJCOPY) $(SHOBJ) $(COFF) $@
+@HAVE_SH_ELF_CROSS_TRUE@$(MOT) : $(ELF)
+@HAVE_SH_ELF_CROSS_TRUE@	$(SH_CROSS_ELF_OBJCOPY) $(SHOBJ) $(ELF) $@
 
-@HAVE_SH_CROSS_TRUE@$(COFF) : $(SRCS)
-@HAVE_SH_CROSS_TRUE@	$(SH_CROSS_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
+@HAVE_SH_ELF_CROSS_TRUE@$(ELF) : $(SRCS)
+@HAVE_SH_ELF_CROSS_TRUE@	$(SH_CROSS_ELF_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
 
-@HAVE_SH_CROSS_TRUE@clean :
-@HAVE_SH_CROSS_TRUE@	rm -f $(MOT) $(COFF)
+@HAVE_SH_ELF_CROSS_TRUE@clean :
+@HAVE_SH_ELF_CROSS_TRUE@	rm -f $(MOT) $(ELF)
+
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@all : $(MOT)
+
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@$(MOT) : $(COFF)
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	$(SH_CROSS_OBJCOPY) $(SHOBJ) $(COFF) $@
+
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@$(COFF) : $(SRCS)
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	$(SH_CROSS_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
+
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@clean :
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	rm -f $(MOT) $(COFF)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -21,4 +21,8 @@ src/ypspur-free
 src/ypspur-interpreter
 *.coff
 *.mot
+*.elf
 autom4te.cache/
+*.bz2
+*.gz
+*.zip

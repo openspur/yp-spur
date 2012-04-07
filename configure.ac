@@ -45,6 +45,11 @@ AC_CHECK_PROGS(SH_CROSS_AR, sh-coff-ar sh-hitachi-coff-ar,, $PATH)
 AC_CHECK_PROGS(SH_CROSS_OBJCOPY, sh-coff-objcopy sh-hitachi-coff-objcopy,, $PATH)
 AM_CONDITIONAL(HAVE_SH_CROSS, test -n "$SH_CROSS_CC")
 
+AC_CHECK_PROGS(SH_CROSS_ELF_CC, sh-elf-gcc sh-hitachi-elf-gcc,, $PATH)
+AC_CHECK_PROGS(SH_CROSS_ELF_AR, sh-elf-ar sh-hitachi-elf-ar,, $PATH)
+AC_CHECK_PROGS(SH_CROSS_ELF_OBJCOPY, sh-elf-objcopy sh-hitachi-elf-objcopy,, $PATH)
+AM_CONDITIONAL(HAVE_SH_ELF_CROSS, test -n "$SH_CROSS_ELF_CC")
+
 
 # Checks for libraries.
 AC_LIBTOOL_WIN32_DLL

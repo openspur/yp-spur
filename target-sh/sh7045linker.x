@@ -279,7 +279,9 @@ SECTIONS
 		_data_begin    = .;
 		*( .data )
 		_data_end    = .;
+		_bss_begin    = .;
 		*( .bss )
+		_bss_end    = .;
 	} > ram
 }
 

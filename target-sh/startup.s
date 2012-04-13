@@ -27,10 +27,6 @@
 ! SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-! NOTE:
-!  This startup routine does not clear the global variables
-
-
 	.section .text
 	.global  _reset_vector
 	.extern  _data_begin
@@ -44,17 +40,35 @@ _reset_vector:
 	MOV.L    DATA_BGN,     r0
 	MOV.L    DATA_END,     r1
 	MOV.L    DATA_IMG_BGN, r2
-	CMP/EQ   r0,           r1
-	BF       END_MEMCPY1
+	BRA      CMP_MEMCPY1
 	NOP
 LOOP_MEMCPY1:
 	MOV.B    @r2,          r3
 	MOV.B    r3,           @r0
 	ADD      #1,           r0
-	CMP/EQ	 r0,           r1
-	BF/S     END_MEMCPY1             ! Delayed branch
 	ADD      #1,           r2
+CMP_MEMCPY1:
+	CMP/GE	 r0,           r1
+	BF       LOOP_MEMCPY1
+	NOP
 END_MEMCPY1:
+
+
+! Initialize bss section
+	MOV.L    BSS_BGN,     r0
+	MOV.L    BSS_END,     r1
+	MOV      #0,          r3
+	BRA      CMP_MEMCPY2
+	NOP
+LOOP_MEMCPY2:
+	MOV.B    r3,           @r0
+	ADD      #1,           r0
+CMP_MEMCPY2:
+	CMP/GE	 r0,           r1
+	BF       LOOP_MEMCPY2
+	NOP
+END_MEMCPY2:
+
 
 	MOV.L    MAIN_FUNC,    r0
 	JSR      @r0
@@ -77,6 +91,11 @@ DATA_END:
 DATA_IMG_BGN:
 	.long    _data_img_begin
 
+! Address of .bss section
+BSS_BGN:
+	.long    _bss_begin
+BSS_END:
+	.long    _bss_end
 
 	.align   4
 	.global	 _setIntMask

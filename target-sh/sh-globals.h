@@ -93,11 +93,4 @@ GLOBAL int SCI_send_wp[2];						/* リングバッファの書き込みポイン
 GLOBAL char extended_cmd_text[EXTENDED_CMD_TEXT_SIZE];	/* 受信データのデコード結果の保存 */
 GLOBAL int extended_cmd_text_pos;				/* の書き込み位置・サイズ */
 
-#if 0
-#define VERSION_VEND ("Univ. of Tsukuba, Intelligent Robot Lab.")
-#define VERSION_PROD ("Yamabico")
-#define VERSION_FIRM ("2010.04.07")
-#define VERSION_PROT ("YP1.0")
-#endif
-
 #endif

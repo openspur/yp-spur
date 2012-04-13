@@ -54,7 +54,7 @@ all : $(MOT)
 $(MOT) : $(COFF)
 	$(SH_CROSS_OBJCOPY) $(SHOBJ) $(COFF) $@
 
-$(COFF) : $(SRCS)
+$(COFF) : $(SRCS) $(SHLINK) $(SHSTART)
 	$(SH_CROSS_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
 
 clean :

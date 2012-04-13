@@ -196,3 +196,4 @@ void cnt_read( void )
 		cnt_old[i] = counter[i];
 	}
 }
+

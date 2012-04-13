@@ -319,12 +319,47 @@ int extended_command_analyze( int channel, char *data )
 		watch_dog = -1000;
 		return -1;
 	}
+	else if( strstr( data, "SIZEOF" ) == data )
+	{
+		char num[3];
+
+		sci_send_txt( channel, data );
+		sci_send_txt( channel, "\n00P\n" );
+		sci_send_txt( channel, "int:" );
+		num[0] = '0' + sizeof(int);
+		num[1] = '\n';
+		num[2] = 0;
+		sci_send_txt( channel, num );
+		sci_send_txt( channel, "long:" );
+		num[0] = '0' + sizeof(long);
+		num[1] = '\n';
+		num[2] = 0;
+		sci_send_txt( channel, num );
+		sci_send_txt( channel, "short:" );
+		num[0] = '0' + sizeof(short);
+		num[1] = '\n';
+		num[2] = 0;
+		sci_send_txt( channel, num );
+		sci_send_txt( channel, "char:" );
+		num[0] = '0' + sizeof(char);
+		num[1] = '\n';
+		num[2] = 0;
+		sci_send_txt( channel, num );
+		sci_send_txt( channel, "\n" );
+
+		// タイムアウトを長めに設定
+		watch_dog = -1000;
+	}
 	else
 	{
 		if( data[0] == 0 || data[0] == '\n' || data[0] == '\r' )
 			return 0;
 		sci_send_txt( channel, data );
-		sci_send_txt( channel, "\n0Ee\n\n" );
+		sci_send_txt( channel, "\n0Ee" );
+		sci_send_txt( channel, "\n\n" );
+
+		// タイムアウトを長めに設定
+		watch_dog = -1000;
 	}
 	return 1;
 }

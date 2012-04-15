@@ -5,7 +5,7 @@
 #define UNLOCK 0
 
 void init( void );
-void initCMT( void );
+void initServo( void );
 int command_analyze( char *data, int len );
 int extended_command_analyze( int channel, char *data );
 

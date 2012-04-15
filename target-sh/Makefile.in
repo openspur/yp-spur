@@ -184,35 +184,26 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
              sh-vel.h sh7040s.h sh-globals.h motor-device.h sh-serial.h \
-             sh7045linker.x startup.s adc.c adc.h
+             sh7045linker.x startup.s adc.c adc.h divider.c divider.h
 
 
 # set the include path found by configure
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
-
-# set the include path found by configure
-@HAVE_SH_ELF_CROSS_TRUE@INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@TARGET = sh-vel
-@HAVE_SH_ELF_CROSS_TRUE@TARGET = sh-vel
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@MOT = $(TARGET).mot
-@HAVE_SH_ELF_CROSS_TRUE@MOT = $(TARGET).mot
-@HAVE_SH_ELF_CROSS_TRUE@ELF = $(TARGET).elf
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SRCS = sh-vel.c motor-device.c sh-serial.c adc.c
-@HAVE_SH_ELF_CROSS_TRUE@SRCS = sh-vel.c motor-device.c sh-serial.c adc.c
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHLINK = sh7045linker.x
-@HAVE_SH_ELF_CROSS_TRUE@SHLINK = sh7045linker.x
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHSTART = startup.s
-@HAVE_SH_ELF_CROSS_TRUE@SHSTART = startup.s
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHCFLAGS = $(INCLUDES) -m2
-@HAVE_SH_ELF_CROSS_TRUE@SHCFLAGS = $(INCLUDES) -m2
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHLDFLAGS = -T $(SHLINK) -nostartfiles $(SHSTART) -lc -lm
-@HAVE_SH_ELF_CROSS_TRUE@SHLDFLAGS = -T $(SHLINK) -nostartfiles $(SHSTART) -lc -lm
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHOBJ = -O srec
-@HAVE_SH_ELF_CROSS_TRUE@SHOBJ = -O srec
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@COFF = $(TARGET).coff
+INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
+TARGET = sh-vel
+MOT = $(TARGET).mot
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@OUTPUT = $(TARGET).coff
+@HAVE_SH_ELF_CROSS_TRUE@OUTPUT = $(TARGET).elf
+OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o
+SHLINK = sh7045linker.x
+SHSTART = startup.o
+SHOPT = -O2
+SHCFLAGS = $(INCLUDES) -m2 $(SHOPT)
+SHLDFLAGS = -m2 -T $(SHLINK) -nostartfiles -lc -lm
+SHOBJ = -O srec
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .c .o .s
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -315,8 +306,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@HAVE_SH_CROSS_FALSE@@HAVE_SH_ELF_CROSS_FALSE@clean: clean-am
-
 clean-am: clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
@@ -394,29 +383,26 @@ uninstall-am:
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
-#srec
 
-@HAVE_SH_ELF_CROSS_TRUE@all : $(MOT)
+all : $(MOT)
 
-@HAVE_SH_ELF_CROSS_TRUE@$(MOT) : $(ELF)
-@HAVE_SH_ELF_CROSS_TRUE@	$(SH_CROSS_ELF_OBJCOPY) $(SHOBJ) $(ELF) $@
+$(MOT) : $(OUTPUT)
+	$(SH_CROSS_ELF_OBJCOPY) $(SHOBJ) $(OUTPUT) $@
 
-@HAVE_SH_ELF_CROSS_TRUE@$(ELF) : $(SRCS)
-@HAVE_SH_ELF_CROSS_TRUE@	$(SH_CROSS_ELF_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
+.c.o: *.h
+	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
 
-@HAVE_SH_ELF_CROSS_TRUE@clean :
-@HAVE_SH_ELF_CROSS_TRUE@	rm -f $(MOT) $(ELF)
+.s.o:
+	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
 
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@all : $(MOT)
+$(SHSTARTOBJ): $(SHSTART)
+	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
 
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@$(MOT) : $(COFF)
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	$(SH_CROSS_OBJCOPY) $(SHOBJ) $(COFF) $@
+$(OUTPUT) : $(OBJS) $(SHLINK) $(SHSTART)
+	$(SH_CROSS_ELF_CC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
 
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@$(COFF) : $(SRCS) $(SHLINK) $(SHSTART)
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	$(SH_CROSS_CC) $(SHCFLAGS) $(SHLDFLAGS) $(SRCS) -o $@
-
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@clean :
-@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@	rm -f $(MOT) $(COFF)
+clean :
+	rm -f $(MOT) $(OUTPUT) $(OBJS) $(SHSTART)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

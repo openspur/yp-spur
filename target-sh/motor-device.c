@@ -21,8 +21,11 @@
 #define MOTOR_IS_REVERSE		1
 
 /*-----------------PWMの関数-------------------*/
-// //////////////////////// init PWM //////////////////////////////////
+volatile int duty_buffer[2];
+volatile unsigned char duty_set = 0; 
+volatile unsigned short pe;
 
+// //////////////////////// init PWM //////////////////////////////////
 void initPWM(  )
 {
 	int i;
@@ -38,12 +41,6 @@ void initPWM(  )
 	pwm_min[0] = -MTR_PWM_DEFAULT_MAX;
 	pwm_min[1] = -MTR_PWM_DEFAULT_MAX;
 
-	for ( i = 0; i < 2; i++ )
-	{
-		set_pwm( i, 0 );
-		set_mode( i, MTR_MODE_FREE );
-	}
-
 	PFC.PECR1.WORD |= 0x0011;					/* use TGRA, TGRC port */
 
 	MTU.TSTR.BYTE |= 0xc0;						/* pwm active */
@@ -51,48 +48,83 @@ void initPWM(  )
 	PFC.PECR1.WORD &= ~0x0044;					/* TIOC3B, TIOC3D */
 	PFC.PECR2.WORD &= ~0x4400;					/* TIOC1B, TIOC2B */
 	PFC.PEIOR.WORD |= 0x0aa0;
+
+	pe = PE.DR.WORD;
+	for ( i = 0; i < 2; i++ )
+	{
+		put_pwm( i, 0 );
+	}
+	MTU3.TGRB = 0;
+	MTU3.TGRD = 0;
+	duty_set = 0;
 }
 
 // ///////////////// デューティー比設定 pwm_set //////////////////////
+
 void set_pwm( const unsigned char id, const int duty )
 {
 	if( id == MOTOR_ID_CON0 )
 	{
-		if( duty <= 0 || duty >= pwm_max[id] )
-		{
-			PFC.PECR1.WORD &= ~0x0001;			/* PE8 */
-			PE.DR.WORD &= ~0x0100;
-			PE.DR.WORD |= ( duty <= 0 ) ? 0 : 0x0100;
-		}
-		else
-		{
-			PFC.PECR1.WORD |= 0x0001;			/* TIOC3A */
-			MTU3.TGRB = duty;
-		}
+		duty_buffer[0] = duty;
+		duty_set |= 0x1;
 	}
 	else if( id == MOTOR_ID_CON1 )
 	{
-		if( duty <= 0 || duty >= pwm_max[id] )
-		{
-			PFC.PECR1.WORD &= ~0x0010;			/* PE10 */
-			PE.DR.WORD &= ~0x0400;
-			PE.DR.WORD |= ( duty <= 0 ) ? 0 : 0x0400;
-		}
-		else
-		{
-			PFC.PECR1.WORD |= 0x0010;			/* TIOC3C */
-			MTU3.TGRD = duty;
-		}
+		duty_buffer[1] = duty;
+		duty_set |= 0x2;
 	}
 }
 
-// ///////////////////////////////////////////////////
+void set_mode( const unsigned char id, const int mode )
+{
+	if( id == MOTOR_ID_CON0 )
+	{
+		/* DIR(PE5), EN(PE7) */
+		if( mode == MTR_MODE_CCW_BRAKE )
+		{
+			pe &= ~0x0020;				/* DIR(PE5)=1 */
+			pe &= ~0x0080;				/* EN(PE7)=0 */
+		}
+		else if( mode == MTR_MODE_CW_BRAKE )
+		{
+			pe |=  0x0020;				/* DIR(PE5)=1 */
+			pe &= ~0x0080;				/* EN(PE7)=0 */
+		}
+		else
+		{										/* MTR_MODE_FREE */
+			pe |=  0x0080;				/* EN(PE7)=1 */
+		}
+
+	}
+	else if( id == MOTOR_ID_CON1 )
+	{
+		/* DIR(PE9), EN(PE11) */
+		if( mode == MTR_MODE_CCW_BRAKE )
+		{
+			pe &= ~0x0200;				/* DIR(PE9)=1 */
+			pe &= ~0x0800;				/* EN(PE11)=1 */
+		}
+		else if( mode == MTR_MODE_CW_BRAKE )
+		{
+			pe |=  0x0200;				/* DIR(PE9)=0 */
+			pe &= ~0x0800;				/* EN(PE11)=1 */
+		}
+		else
+		{										/* MTR_MODE_FREE */
+			pe |=  0x0800;				/* EN(PE11)=1 */
+		}
+	}
+}
 
 void put_pwm( int ch, int pwm )
 {
 #if MOTOR_IS_REVERSE
 	pwm = -pwm;
 #endif
+	if( duty_set == 0 )
+	{
+		pe = PE.DR.WORD;
+	}
 	if( pwm < 0 )
 	{
 		set_mode( ch, MTR_MODE_CW_BRAKE );
@@ -103,47 +135,19 @@ void put_pwm( int ch, int pwm )
 		set_mode( ch, MTR_MODE_CCW_BRAKE );
 		set_pwm( ch, pwm );
 	}
-}
-
-// 
-void set_mode( const unsigned char id, const int mode )
-{
-	if( id == MOTOR_ID_CON0 )
+	if( duty_set == 0x3 )
 	{
-		/* DIR(PE5), EN(PE7) */
-		if( mode == MTR_MODE_CCW_BRAKE )
-		{
-			PE.DR.WORD &= ~0x0020;				/* DIR(PE5)=1 */
-			PE.DR.WORD &= ~0x0080;				/* EN(PE7)=0 */
-		}
-		else if( mode == MTR_MODE_CW_BRAKE )
-		{
-			PE.DR.WORD |= 0x0020;				/* DIR(PE5)=1 */
-			PE.DR.WORD &= ~0x0080;				/* EN(PE7)=0 */
-		}
-		else
-		{										/* MTR_MODE_FREE */
-			PE.DR.WORD |= 0x0080;				/* EN(PE7)=1 */
-		}
+		register unsigned short tgrb;
+		register unsigned short tgrd;
+		tgrb = duty_buffer[0];
+		tgrd = duty_buffer[1];
+		for( ; MTU3.TCNT < pwm_max[0] - 16;  );
+		PE.DR.WORD = pe;
+		MTU3.TGRB = tgrb;
+		MTU3.TGRD = tgrd;
+		MTU3.TCNT = 0;
 
-	}
-	else if( id == MOTOR_ID_CON1 )
-	{
-		/* DIR(PE9), EN(PE11) */
-		if( mode == MTR_MODE_CCW_BRAKE )
-		{
-			PE.DR.WORD &= ~0x0200;				/* DIR(PE9)=1 */
-			PE.DR.WORD &= ~0x0800;				/* EN(PE11)=1 */
-		}
-		else if( mode == MTR_MODE_CW_BRAKE )
-		{
-			PE.DR.WORD |= 0x0200;				/* DIR(PE9)=0 */
-			PE.DR.WORD &= ~0x0800;				/* EN(PE11)=1 */
-		}
-		else
-		{										/* MTR_MODE_FREE */
-			PE.DR.WORD |= 0x0800;				/* EN(PE11)=1 */
-		}
+		duty_set = 0;
 	}
 }
 
@@ -158,15 +162,15 @@ void initCounter( void )
 	MTU.TSTR.BYTE |= 0x06;						/* start count up */
 
 	PFC.PECR2.WORD |= 0x1100;					/* TIOC1A, TIOC2A */
-	MTU1.TIOR.BYTE = 0x0a;						/* input capture */
-	MTU2.TIOR.BYTE = 0x0a;						/* input capture */
+	MTU1.TIOR.BYTE  = 0x0a;						/* input capture */
+	MTU2.TIOR.BYTE  = 0x0a;						/* input capture */
 
 	PFC.PEIOR.WORD &= ~0x0050;					/* use TIOC1A, TIOC2A port */
 
 	PFC.PACRL2.WORD &= ~0xf000;					/* TCLKA, TCLKB */
-	PFC.PACRL2.WORD |= 0x5000;
+	PFC.PACRL2.WORD |=  0x5000;
 	PFC.PACRL1.WORD &= ~0x000f;					/* TCLKC, TCLKD */
-	PFC.PACRL1.WORD |= 0x0005;
+	PFC.PACRL1.WORD |=  0x0005;
 
 	MTU1.TCNT = 0;								/* counter=0 */
 	MTU2.TCNT = 0;

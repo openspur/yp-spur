@@ -8,6 +8,7 @@
 #include <motor-device.h>
 #include <sh-serial.h>
 #include <sh-vel.h>
+#include <divider.h>
 
 // ./configureによって生成
 #include <config.h>
@@ -27,15 +28,16 @@ void init( void )
 
 	// コンペアマッチタイマの初期化
 	setIntMask( 9 );							// レベル10〜15は割り込み許可
-	initCMT(  );
+	initServo(  );
 
 	initCounter(  );							// エンコーダカウンタの初期化
 	initPWM(  );								// PWMの初期化
 	initAD(  );
 }
 
+
 // サーボループの割り込み設定
-void initCMT( void )
+void initServo( void )
 {
 	CMT.CMSTR.BIT.STR1 = 0;						/* コンペアマッチタイマ1ストップ */
 	CMT1.CMCOR = 28636 / 8 - 1;
@@ -50,36 +52,57 @@ void initCMT( void )
 int_cmi1(  )
 {
 	int i;
+	static int tick = 0;
+	
+	tick ++;
 
 	/* エンコーダ値入力 */
 	cnt_read(  );
 
 	if( servo_level <= SERVO_LEVEL_STOP )
-	{											// servo_level 0 (shut down)
+	{
+		// servo_level 0 (shut down)
 		put_pwm( 0, 0 );
 		put_pwm( 1, 0 );
-		CMT1.CMCSR.BIT.CMF = 0;
-
+		w_ref_before[0] = w_ref[0] = w_ref[2] = 0;
+		w_ref_before[1] = w_ref[1] = w_ref[3] = 0;
+		w_ref_diff[0] = 0;
+		w_ref_diff[1] = 0;
+		int_w[0] = int_w[1] = 0;
 	}
 	else
-	{											// servo_level 1 (counter enable)
-
+	{
+		// servo_level 1 (counter enable)
 		if( param_change == 3 )
 		{
+			static int tick_before = 0;
+			short int wcnt_cycle;
+
 			w_ref[0] = w_ref[2];
 			w_ref[1] = w_ref[3];
+
+			wcnt_cycle = tick - tick_before;
+			if( wcnt_cycle < 0 ) wcnt_cycle = 0;
+			if( wcnt_cycle > divider_max - 1 ) wcnt_cycle = divider_max - 1;
+
+			w_ref_diff[0] = ( w_ref[0] - w_ref_before[0] );
+			w_ref_diff[1] = ( w_ref[1] - w_ref_before[1] );
+			w_ref_before[0] = w_ref[0];
+			w_ref_before[1] = w_ref[1];
+
+			divider[ wcnt_cycle ]( &w_ref_diff[0] );
+			divider[ wcnt_cycle ]( &w_ref_diff[1] );
+
+			tick_before = tick;
 			param_change = 0;
 		}
 
-		w_ref_diff[0] = w_ref[0] - w_ref_before[0];
-		w_ref_diff[1] = w_ref[1] - w_ref_before[1];
-		w_ref_before[0] = w_ref[0];
-		w_ref_before[1] = w_ref[1];
-
 		if( servo_level >= SERVO_LEVEL_TORQUE )
-		{										// servo_level 2(toque enable)
+		{
+			// servo_level 2(toque enable)
 			if( servo_level >= SERVO_LEVEL_VELOCITY )
-			{									// servo_level 3 (speed enable)
+			{
+				// servo_level 3 (speed enable)
 				for ( i = 0; i < MOTOR_NUM; i++ )
 				{
 					/* 積分 */
@@ -101,7 +124,8 @@ int_cmi1(  )
 				toq[1] = ( s_b * p_B + s_a * p_D + w_ref[1] * p_F ) >> 8;
 			}
 			else
-			{									// servo_level 2(toque enable)
+			{
+				// servo_level 2(toque enable)
 				toq[0] = 0;
 				toq[1] = 0;
 			}
@@ -151,7 +175,7 @@ int_cmi1(  )
 
 			pwm_sum[0] += out_pwm[0];
 			pwm_sum[1] += out_pwm[1];
-		}										// servo_level 2
+		}
 		
 		cnt_updated++;
 		if( cnt_updated == 5 )
@@ -163,8 +187,7 @@ int_cmi1(  )
 			pwm_sum[0] = 0;
 			pwm_sum[1] = 0;
 		}
-	
-	}											// servo_level 1
+	}
 	watch_dog++;
 
 	CMT1.CMCSR.BIT.CMF = 0;						// コンペアマッチフラッグのクリア	
@@ -469,7 +492,6 @@ int command_analyze( char *data, int len )
 	case PARAM_p_toq_offset:
 		p_toq_offset[motor] = i.integer;
 		watch_dog = 0;
-		watch_dog = 0;
 		break;
 	case PARAM_int_max:
 		int_max[motor] = i.integer;
@@ -480,15 +502,13 @@ int command_analyze( char *data, int len )
 		watch_dog = 0;
 		break;
 	case PARAM_servo:
-
 		if( servo_level < SERVO_LEVEL_VELOCITY && i.integer >= SERVO_LEVEL_VELOCITY )
-		{										// servo levelが速度制御に推移した
+		{
+			// servo levelが速度制御に推移した
 			int_w[0] = 0;
 			int_w[1] = 0;
 		}
 		servo_level = i.integer;
-
-		// SCI1_printf("start\n");
 		watch_dog = 0;
 		break;
 	case PARAM_watch_dog_limit:
@@ -517,7 +537,7 @@ main(  )
 	int i;
 	int len;
 	int channel;
-	short counter_buf2[2];
+	int counter_buf2[2];
 	unsigned short analog[9];
 
 	param_change = 0;
@@ -578,9 +598,8 @@ main(  )
 			}
 
 			data_send( channel,
-					   ( short )( ( short )counter_buf[0]
-								  - ( short )counter_buf2[0] ),
-					   ( short )( ( short )counter_buf[1] - ( short )counter_buf2[1] ), pwm_buf[0], pwm_buf[1], analog,
+					   ( short )( counter_buf[0] - counter_buf2[0] ),
+					   ( short )( counter_buf[1] - counter_buf2[1] ), pwm_buf[0], pwm_buf[1], analog,
 					   mask );
 
 			counter_buf2[0] = counter_buf[0];
@@ -604,3 +623,4 @@ main(  )
 		}
 	}
 }
+

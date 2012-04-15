@@ -50,7 +50,6 @@ void sci_send( int channel, char *send_buf, int len )
 
 	/* チャンネルの切り替え */
 	sci = ( channel == 0 ? &SCI0 : &SCI1 );
-#if 1
 	for ( i = 0; i < len; i++ )
 	{
 		SCI_send_buffer[channel][SCI_send_wp[channel]] = send_buf[i];
@@ -60,21 +59,6 @@ void sci_send( int channel, char *send_buf, int len )
 			sci->SCR.BIT.TIE = 1;
 		}
 	}
-#else
-	unsigned char tmp;
-
-	for ( i = 0; i < len; i++ )
-	{
-		/* 送信まち */
-		do
-		{
-			tmp = sci->SSR.BYTE;
-		}
-		while( ( tmp & 0x80 ) == 0 );
-		sci->TDR = send_buf[i];
-		sci->SSR.BIT.TDRE = 0;
-	}
-#endif
 }
 
 /* 送信データのエンコード */
@@ -328,4 +312,3 @@ int_txi1(  )
 	SCI_send_rp[1] = ( SCI_send_rp[1] + 1 ) % SCI_SEND_BUFFER_SIZE;
 }
 
-/*************************************************************/

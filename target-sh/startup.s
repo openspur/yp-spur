@@ -31,6 +31,8 @@
 	.global  _reset_vector
 	.extern  _data_begin
 	.extern  _data_end
+	.extern  _bss_begin
+	.extern  _bss_end
 	.extern  _data_img_begin
 
 _reset_vector:
@@ -48,7 +50,7 @@ LOOP_MEMCPY1:
 	ADD      #1,           r0
 	ADD      #1,           r2
 CMP_MEMCPY1:
-	CMP/GE	 r0,           r1
+	CMP/EQ	 r0,           r1
 	BF       LOOP_MEMCPY1
 	NOP
 END_MEMCPY1:
@@ -64,7 +66,7 @@ LOOP_MEMCPY2:
 	MOV.B    r3,           @r0
 	ADD      #1,           r0
 CMP_MEMCPY2:
-	CMP/GE	 r0,           r1
+	CMP/EQ	 r0,           r1
 	BF       LOOP_MEMCPY2
 	NOP
 END_MEMCPY2:
@@ -103,9 +105,9 @@ _setIntMask:
 	SHLL2    r4
 	SHLL2    r4
 	STC      sr,           r1
+	MOV.L    INT_MASK,     r2
+	AND      r2,           r1
 	OR       r4,           r1
-	MOV.L    INT_MASK,     r4
-	AND      r4,           r1
 	LDC      r1,           sr
 	RTS
 	NOP

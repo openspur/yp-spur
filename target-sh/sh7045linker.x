@@ -265,7 +265,7 @@ SECTIONS
 		SHORT( DEFINED( _dtc_cmi ) ? ABSOLUTE( ( _dtc_cmi ) & 0xFFFF ) : ABSOLUTE( _reset_vector ) )
 	} > dtc_vect
 
-	.text : 
+	.readonly : 
 	{
 		CREATE_OBJECT_SYMBOLS
 		*( .text )
@@ -273,7 +273,7 @@ SECTIONS
 		_data_img_begin = .;
 	} > rom
 
-	.data : 
+	.readwrite : 
 	AT ( _data_img_begin ) 
 	{
 		_data_begin    = .;

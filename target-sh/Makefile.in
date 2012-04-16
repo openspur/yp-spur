@@ -193,6 +193,10 @@ TARGET = sh-vel
 MOT = $(TARGET).mot
 @HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@OUTPUT = $(TARGET).coff
 @HAVE_SH_ELF_CROSS_TRUE@OUTPUT = $(TARGET).elf
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHCC = $(SH_CROSS_CC)
+@HAVE_SH_ELF_CROSS_TRUE@SHCC = $(SH_CROSS_ELF_CC)
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHOBJCOPY = $(SH_CROSS_OBJCOPY)
+@HAVE_SH_ELF_CROSS_TRUE@SHOBJCOPY = $(SH_CROSS_ELF_OBJCOPY)
 OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o
 SHLINK = sh7045linker.x
 SHSTART = startup.o
@@ -213,9 +217,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu target-sh/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign target-sh/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu target-sh/Makefile
+	  $(AUTOMAKE) --foreign target-sh/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -387,19 +391,19 @@ uninstall-am:
 all : $(MOT)
 
 $(MOT) : $(OUTPUT)
-	$(SH_CROSS_ELF_OBJCOPY) $(SHOBJ) $(OUTPUT) $@
+	$(SHOBJCOPY) $(SHOBJ) $(OUTPUT) $@
 
 .c.o: *.h
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 .s.o:
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 $(SHSTARTOBJ): $(SHSTART)
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 $(OUTPUT) : $(OBJS) $(SHLINK) $(SHSTART)
-	$(SH_CROSS_ELF_CC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
+	$(SHCC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
 
 clean :
 	rm -f $(MOT) $(OUTPUT) $(OBJS) $(SHSTART)

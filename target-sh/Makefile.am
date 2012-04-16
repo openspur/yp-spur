@@ -10,9 +10,13 @@ MOT = $(TARGET).mot
 
 if HAVE_SH_ELF_CROSS
 OUTPUT = $(TARGET).elf
+SHCC = $(SH_CROSS_ELF_CC)
+SHOBJCOPY = $(SH_CROSS_ELF_OBJCOPY)
 else
 if HAVE_SH_CROSS
 OUTPUT = $(TARGET).coff
+SHCC = $(SH_CROSS_CC)
+SHOBJCOPY = $(SH_CROSS_OBJCOPY)
 endif
 endif
 
@@ -30,19 +34,19 @@ SHOBJ = -O srec
 all : $(MOT)
 
 $(MOT) : $(OUTPUT)
-	$(SH_CROSS_ELF_OBJCOPY) $(SHOBJ) $(OUTPUT) $@
+	$(SHOBJCOPY) $(SHOBJ) $(OUTPUT) $@
 
 .c.o: *.h
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 .s.o:
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 $(SHSTARTOBJ): $(SHSTART)
-	$(SH_CROSS_ELF_CC) -c $< $(SHCFLAGS)
+	$(SHCC) -c $< $(SHCFLAGS)
 
 $(OUTPUT) : $(OBJS) $(SHLINK) $(SHSTART)
-	$(SH_CROSS_ELF_CC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
+	$(SHCC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
 
 clean :
 	rm -f $(MOT) $(OUTPUT) $(OBJS) $(SHSTART)

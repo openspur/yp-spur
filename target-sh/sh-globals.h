@@ -80,14 +80,14 @@ GLOBAL int s_a, s_b;
 
 /* 通信用 */
 GLOBAL char SCI_receive_buffer[2][SCI_RECEIVE_BUFFER_SIZE];	/* リングバッファ */
-GLOBAL int SCI_receive_rp[2];					/* リングバッファの読み込みポインタ */
-GLOBAL int SCI_receive_wp[2];					/* リングバッファの書き込みポインタ */
-GLOBAL char SCI_receive_data[2][100];			/* 受信データのデコード結果の保存 */
-GLOBAL int SCI_receive_data_pos[2];				/* 受信データのデコード結果の保存位置 */
+GLOBAL volatile int SCI_receive_rp[2];							/* リングバッファの読み込みポインタ */
+GLOBAL volatile int SCI_receive_wp[2];							/* リングバッファの書き込みポインタ */
+GLOBAL char SCI_receive_data[2][100];								/* 受信データのデコード結果の保存 */
+GLOBAL volatile int SCI_receive_data_pos[2];						/* 受信データのデコード結果の保存位置 */
 GLOBAL int SCI_receive_state[2];
-GLOBAL char SCI_send_buffer[2][SCI_RECEIVE_BUFFER_SIZE];	/* リングバッファ */
-GLOBAL int SCI_send_rp[2];						/* リングバッファの読み込みポインタ */
-GLOBAL int SCI_send_wp[2];						/* リングバッファの書き込みポインタ */
+GLOBAL char SCI_send_buffer[2][SCI_RECEIVE_BUFFER_SIZE];		/* リングバッファ */
+GLOBAL volatile int SCI_send_rp[2];								/* リングバッファの読み込みポインタ */
+GLOBAL volatile int SCI_send_wp[2];								/* リングバッファの書き込みポインタ */
 
 #define EXTENDED_CMD_TEXT_SIZE 100
 GLOBAL char extended_cmd_text[EXTENDED_CMD_TEXT_SIZE];	/* 受信データのデコード結果の保存 */

@@ -333,7 +333,8 @@ int extended_command_analyze( int channel, char *data )
 		sci_send_txt( channel, "\n00P\n\n" );
 		// 送信終了まで待機
 		while( SCI_send_rp[channel] != SCI_send_wp[channel] );
-		for ( lo = 0; lo < 10000; lo++ );		/* wait more than 1bit time */
+		sci_end(  );
+		for( lo = 0; lo < 100000; lo++ );		/* wait more than 1bit time */
 		sci_init( tmp );
 		sci_start(  );							// start SCI
 		cnt_updated = 0;

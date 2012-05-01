@@ -139,6 +139,7 @@ void data_send( int channel, short cnt1, short cnt2, short pwm1, short pwm2, sho
 /* 受信の開始 */
 void sci_start( void )
 {
+	volatile unsigned char dummy;
 	// メモリのクリア
 	SCI_receive_rp[0] = SCI_receive_wp[0] = 0;
 	SCI_receive_state[0] = SCI_receive_data_pos[0] = 0;
@@ -147,9 +148,9 @@ void sci_start( void )
 	SCI_send_rp[0] = SCI_send_wp[0] = 0;
 	SCI_send_rp[1] = SCI_send_wp[1] = 0;
 
-	SCI0.SSR.BYTE;
+	dummy = SCI0.SSR.BYTE;
 	SCI0.SSR.BYTE = 0;
-	SCI1.SSR.BYTE;
+	dummy = SCI1.SSR.BYTE;
 	SCI1.SSR.BYTE = 0;
 
 	// 割り込み許可
@@ -159,6 +160,30 @@ void sci_start( void )
 	SCI1.SCR.BIT.RIE = 1;
 	SCI0.SCR.BIT.TIE = 1;
 	SCI1.SCR.BIT.TIE = 1;
+}
+void sci_end( void )
+{
+	volatile unsigned char dummy;
+	// メモリのクリア
+	SCI_receive_rp[0] = SCI_receive_wp[0] = 0;
+	SCI_receive_state[0] = SCI_receive_data_pos[0] = 0;
+	SCI_receive_rp[1] = SCI_receive_wp[1] = 0;
+	SCI_receive_state[1] = SCI_receive_data_pos[1] = 0;
+	SCI_send_rp[0] = SCI_send_wp[0] = 0;
+	SCI_send_rp[1] = SCI_send_wp[1] = 0;
+
+	dummy = SCI0.SSR.BYTE;
+	SCI0.SSR.BYTE = 0;
+	dummy = SCI1.SSR.BYTE;
+	SCI1.SSR.BYTE = 0;
+
+	// 割り込み許可
+	INTC.IPRF.BIT._SCI0 = 10;
+	INTC.IPRF.BIT._SCI1 = 10;
+	SCI0.SCR.BIT.RIE = 0;
+	SCI1.SCR.BIT.RIE = 0;
+	SCI0.SCR.BIT.TIE = 0;
+	SCI1.SCR.BIT.TIE = 0;
 }
 
 /*************************************************************/

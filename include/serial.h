@@ -4,7 +4,7 @@
 #define ENABLE 1
 #define DISABLE 0
 
-// #define BAUDRATE B38400
+#define DEFAULT_BAUDRATE	38400
 
 /* for measurement time estimation */
 extern double SER_BOUDRATE; /// (Byte/sec) シリアルの通信速度

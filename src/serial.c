@@ -210,7 +210,7 @@ int serial_change_baudrate( int baud )
 		if( output_lv(  ) >= OUTPUT_LV_ERROR )
 		{
 			errnum = errno;
-			fprintf( stderr, " fail to set input baud rate %d\n", baud );
+			fprintf( stderr, "ERROR: Failed to set input baud rate %d\n", baud );
 			fprintf( stderr, "  ... errno = %d\n", errnum );
 			fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
 		}
@@ -223,7 +223,7 @@ int serial_change_baudrate( int baud )
 		if( output_lv(  ) >= OUTPUT_LV_ERROR )
 		{
 			errnum = errno;
-			fprintf( stderr, " fail to set output baud rate %d\n", baud );
+			fprintf( stderr, "ERROR: failed to set output baud rate %d\n", baud );
 			fprintf( stderr, "  ... errno = %d\n", errnum );
 			fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
 		}
@@ -312,7 +312,7 @@ int serial_connect( char *device_name )
 
 	tcgetattr( g_device_port, &g_oldtio );
 
-	serial_change_baudrate( 38400 );
+	serial_change_baudrate( DEFAULT_BAUDRATE );
 #else
 	// Windows用
 	//DCB dcb;
@@ -326,7 +326,7 @@ int serial_connect( char *device_name )
 	}
 	// シリアルポートの状態操作
 	GetCommState( g_hdevices, &g_olddcb );		// シリアルポートの状態を取得
-	serial_change_baudrate( 38400 );
+	serial_change_baudrate( DEFAULT_BAUDRATE );
 
 	// シリアルポートのタイムアウト状態操作
 	GetCommTimeouts( g_hdevices, &cto );		// タイムアウトの設定状態を取得

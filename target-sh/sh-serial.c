@@ -18,15 +18,15 @@ void sci_init( int baud )
 	// N = ( 28640000 / (32*B) ) - 1 = 895000 / B - 1
 	volatile int i, B;
 
-	B = 895000 / baud - 1;
+	B = (int)( (float)( 895000.0 / baud ) - 1.0 + 0.5 );
 	speed = baud;
 
 	SCI0.SCR.BYTE = 0;							/* clear all flags */
 	SCI0.SMR.BYTE = 0;							/* Ascnc, 7bit , NoParity, stop1, 1/1 */
-	SCI0.BRR = B;								/* 38400baud (CPU=28.6MHz) */
+	SCI0.BRR = B;									/* 38400baud (CPU=28.6MHz) */
 	SCI1.SCR.BYTE = 0;							/* clear all flags */
 	SCI1.SMR.BYTE = 0;							/* Ascnc, 7bit , NoParity, stop1, 1/1 */
-	SCI1.BRR = B;								/* 38400baud (CPU=28.6MHz) */
+	SCI1.BRR = B;									/* 38400baud (CPU=28.6MHz) */
 
 	for ( i = 0; i < 10000; i++ );				/* wait more than 1bit time */
 

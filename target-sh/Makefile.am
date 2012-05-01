@@ -42,9 +42,6 @@ $(MOT) : $(OUTPUT)
 .s.o:
 	$(SHCC) -c $< $(SHCFLAGS)
 
-$(SHSTARTOBJ): $(SHSTART)
-	$(SHCC) -c $< $(SHCFLAGS)
-
 $(OUTPUT) : $(OBJS) $(SHLINK) $(SHSTART)
 	$(SHCC) -o $@ $(OBJS) $(SHSTART) $(SHLDFLAGS)
 

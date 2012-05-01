@@ -223,7 +223,7 @@ int serial_change_baudrate( int baud )
 		if( output_lv(  ) >= OUTPUT_LV_ERROR )
 		{
 			errnum = errno;
-			fprintf( stderr, "ERROR: failed to set output baud rate %d\n", baud );
+			fprintf( stderr, "ERROR: Failed to set output baud rate %d\n", baud );
 			fprintf( stderr, "  ... errno = %d\n", errnum );
 			fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
 		}
@@ -255,7 +255,7 @@ int serial_change_baudrate( int baud )
 			if( output_lv(  ) >= OUTPUT_LV_ERROR )
 			{
 				errnum = errno;
-				fprintf( stderr, " fail to tcgetattr\n" );
+				fprintf( stderr, "Error: Failed to tcgetattr\n" );
 				fprintf( stderr, "  ... errno = %d\n", errnum );
 				fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
 			}
@@ -268,6 +268,8 @@ int serial_change_baudrate( int baud )
 		if( baud2i( isp ) != baud || baud2i( osp ) != baud )
 		{
 			// fail to set bit rate
+			fprintf( stderr, "Error: Requested baudrate is %d/%d, \n   but sellected baudrate is %d/%d.\n",
+					baud, baud, baud2i( isp ), baud2i( osp ) );
 			return 0;
 		}
 	} // <--- check bit rate

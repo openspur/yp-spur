@@ -147,6 +147,8 @@ int main( int argc, char *argv[] )
 
 	fflush( stderr );
 
+	control_thread = NULL;
+	command_thread = NULL;
 	do
 	{
 		quit = 0;
@@ -228,10 +230,6 @@ int main( int argc, char *argv[] )
 						fprintf( stderr, "Error: Failed to change baudrate.\n" );
 					
 					serial_close(  );
-					pthread_cancel( control_thread );
-					pthread_cancel( command_thread );
-					pthread_join( control_thread, NULL );
-					pthread_join( command_thread, NULL );
 
 					quit = 0;
 					break;	// quit=0;でbreakしたら異常終了と判断される
@@ -310,12 +308,20 @@ int main( int argc, char *argv[] )
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
 			serial_close(  );
+		}
 
+		if( control_thread )
+		{
 			pthread_cancel( control_thread );
 			pthread_join( control_thread, NULL );
+			control_thread = NULL;
 		}
-		pthread_cancel( command_thread );
-		pthread_join( command_thread, NULL );
+		if( command_thread )
+		{
+			pthread_cancel( command_thread );
+			pthread_join( command_thread, NULL );
+			command_thread = NULL;
+		}
 
 		if( option( OPTION_RECONNECT ) && quit == 0 )
 		{

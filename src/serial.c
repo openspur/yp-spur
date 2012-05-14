@@ -244,7 +244,7 @@ int serial_change_baudrate( int baud )
 		return 0;
 	}
 
-	{ // ---> check bit rate
+	{											// ---> check bit rate
 		struct termios term;
 		speed_t isp, osp;
 		errno = 0;
@@ -269,10 +269,10 @@ int serial_change_baudrate( int baud )
 		{
 			// fail to set bit rate
 			fprintf( stderr, "Error: Requested baudrate is %d/%d, \n   but sellected baudrate is %d/%d.\n",
-					baud, baud, baud2i( isp ), baud2i( osp ) );
+					 baud, baud, baud2i( isp ), baud2i( osp ) );
 			return 0;
 		}
-	} // <--- check bit rate
+	}											// <--- check bit rate
 
 	ret = write( g_device_port, "\n\nVV\n\n", 6 );
 	yp_usleep( 10000 );
@@ -317,7 +317,7 @@ int serial_connect( char *device_name )
 	serial_change_baudrate( DEFAULT_BAUDRATE );
 #else
 	// Windows用
-	//DCB dcb;
+	// DCB dcb;
 	COMMTIMEOUTS cto;
 
 	// ファイルハンドラの作成
@@ -427,21 +427,41 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 		FD_SET( g_device_port, &rfds );
 
 		retval = select( g_device_port + 1, &rfds, NULL, NULL, &tv );
-		if( retval <= 0 )
+		if( retval < 0 )
+		{
+			int errnum;
+			errnum = errno;
+			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
+			{
+				fprintf( stderr, "ERROR: Select in serial_recieve failed. (%s)\n", strerror( errnum ) );
+			}
+			return -1;
+		}
+		else if( retval == 0 )
 		{
 			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
 			{
-				fprintf( stderr, "ERROR: Select in serial_recieve failed. (%s)\n", strerror( errno ) );
+				fprintf( stderr, "ERROR: Select timed out\n" );
 			}
 			return -1;
 		}
 
 		len = read( g_device_port, buf, 4000 );
-		if( len <= 0 )
+		if( len < 0 )
+		{
+			int errnum;
+			errnum = errno;
+			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
+			{
+				fprintf( stderr, "ERROR: Read in serial_recieve failed. (%s)\n", strerror( errnum ) );
+			}
+			return -1;
+		}
+		else if( len == 0 )
 		{
 			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
 			{
-				fprintf( stderr, "ERROR: Read in serial_recieve failed. (%s)\n", strerror( errno ) );
+				fprintf( stderr, "ERROR: Read timed out\n" );
 			}
 			return -1;
 		}
@@ -515,4 +535,3 @@ int serial_write( char *buf, int len )
 #endif
 	return 1;
 }
-

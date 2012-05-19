@@ -26,3 +26,8 @@ autom4te.cache/
 *.bz2
 *.gz
 *.zip
+*.def
+*.dll
+*.lib
+*.exe
+

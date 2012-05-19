@@ -76,6 +76,8 @@ int main( int argc, char *argv[] )
 {
 	pthread_t command_thread;
 	pthread_t control_thread;
+	int command_thread_en;
+	int control_thread_en;
 	Ver_t version;
 	int i, ret;
 	ParametersPtr param;
@@ -147,8 +149,8 @@ int main( int argc, char *argv[] )
 
 	fflush( stderr );
 
-	control_thread = NULL;
-	command_thread = NULL;
+	command_thread_en = 0;
+	command_thread_en = 0;
 	do
 	{
 		quit = 0;
@@ -271,10 +273,13 @@ int main( int argc, char *argv[] )
 		/* スレッド初期化 */
 		init_command_thread( &command_thread );
 		pthread_detach( command_thread );
+		command_thread_en = 1;
+
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
 			init_control_thread( &control_thread );
 			pthread_detach( control_thread );
+			control_thread_en = 1;
 		}
 
 		// オドメトリ受信ループ
@@ -310,17 +315,17 @@ int main( int argc, char *argv[] )
 			serial_close(  );
 		}
 
-		if( control_thread )
+		if( control_thread_en )
 		{
 			pthread_cancel( control_thread );
 			pthread_join( control_thread, NULL );
-			control_thread = NULL;
+			control_thread_en = 0;
 		}
-		if( command_thread )
+		if( command_thread_en )
 		{
 			pthread_cancel( command_thread );
 			pthread_join( command_thread, NULL );
-			command_thread = NULL;
+			command_thread_en = 0;
 		}
 
 		if( option( OPTION_RECONNECT ) && quit == 0 )

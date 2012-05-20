@@ -190,7 +190,8 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
 TARGET = sh-vel
-MOT = $(TARGET).mot
+@HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@MOT = $(TARGET).mot
+@HAVE_SH_ELF_CROSS_TRUE@MOT = $(TARGET).mot
 @HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@OUTPUT = $(TARGET).coff
 @HAVE_SH_ELF_CROSS_TRUE@OUTPUT = $(TARGET).elf
 @HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@SHCC = $(SH_CROSS_CC)

@@ -6,14 +6,15 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
 INCLUDES= $(all_includes) -I../include -I../auxlib -I../target-sh
 
 TARGET = sh-vel
-MOT = $(TARGET).mot
 
 if HAVE_SH_ELF_CROSS
+MOT = $(TARGET).mot
 OUTPUT = $(TARGET).elf
 SHCC = $(SH_CROSS_ELF_CC)
 SHOBJCOPY = $(SH_CROSS_ELF_OBJCOPY)
 else
 if HAVE_SH_CROSS
+MOT = $(TARGET).mot
 OUTPUT = $(TARGET).coff
 SHCC = $(SH_CROSS_CC)
 SHOBJCOPY = $(SH_CROSS_OBJCOPY)

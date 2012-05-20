@@ -18,10 +18,6 @@
 /* ボディパラメータ */
 #include <shvel-param.h>
 
-/* SSM 用 */
-// #include <ssm.h>
-// #include <ssmtype/spur-odometry.h>
-
 /* yp-spur用 */
 #include <serial.h>
 #include <param.h>

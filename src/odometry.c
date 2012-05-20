@@ -25,6 +25,7 @@
 #include <control.h>
 #include <adinput.h>
 #include <utility.h>
+#include <yprintf.h>
 #include <communication.h>
 #include <serial.h>
 #include <ssm_spur_handler.h>
@@ -339,8 +340,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 			if( decoded_len != decoded_len_success )
 			{
 				com_buf[com_wp] = '\0';
-				if( output_lv(  ) >= OUTPUT_LV_WARNING )
-					fprintf(stderr, "Warn: Illegal packet '%s' received.\n", com_buf );
+				yprintf( OUTPUT_LV_WARNING, "Warn: Illegal packet '%s' received.\n", com_buf );
 				com_wp = 0;
 				continue;
 			}
@@ -383,8 +383,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 			if( com_wp >= 128 )
 			{
 				com_wp = 128 - 1;
-				if( output_lv(  ) >= OUTPUT_LV_WARNING )
-					fprintf(stderr, "Warn: Illegal data received.\n" );
+				yprintf( OUTPUT_LV_WARNING, "Warn: Illegal data received.\n" );
 			}
 		}
 	}

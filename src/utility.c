@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <strings.h>
 #include <pthread.h>
+#include <stdarg.h>
 
 /* low level I/O */
 #include <fcntl.h>
@@ -16,6 +17,7 @@
 #include <config.h>
 #endif
 
+#include <param.h>
 #include <utility.h>
 
 #ifdef __WIN32
@@ -50,4 +52,3 @@ void yp_usleep( int usec )
 	usleep( usec );
 #endif
 }
-

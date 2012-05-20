@@ -27,6 +27,7 @@
 #include <control.h>
 #include <command.h>
 #include <utility.h>
+#include <yprintf.h>
 // #include <config.h>
 
 /* ライブラリ用 */
@@ -280,16 +281,14 @@ int arg_analyze( int argc, char *argv[] )
 		}
 		else
 		{
-			if( output_lv(  ) >= OUTPUT_LV_ERROR )
-				fprintf( stderr, "ERROR : invalid option -- '%s'.\n", argv[i] );
+			yprintf( OUTPUT_LV_ERROR, "ERROR : invalid option -- '%s'.\n", argv[i] );
 			return 0;
 		}
 	}
 
 	if( i < argc )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "ERROR :  option requires an argument -- '%s'.\n", argv[i] );
+		yprintf( OUTPUT_LV_ERROR, "ERROR :  option requires an argument -- '%s'.\n", argv[i] );
 		return 0;
 	}
 
@@ -354,8 +353,7 @@ int set_param( char *filename )
 		char *pret;
 		FILE *fd;
 
-		if( output_lv(  ) >= OUTPUT_LV_PARAM )
-			fprintf( stderr, "Warn: File [%s] is not exist.\n", filename );
+		yprintf( OUTPUT_LV_PARAM, "Warn: File [%s] is not exist.\n", filename );
 
 		if( !strchr( filename, '/' ) )
 		{
@@ -364,8 +362,7 @@ int set_param( char *filename )
 			fd = popen( "pkg-config --variable=YP_PARAMS_DIR yp-robot-params", "r" );
 			if( ( fd == NULL ) )
 			{
-				if( output_lv(  ) >= OUTPUT_LV_ERROR )
-					fprintf( stderr,
+				yprintf( OUTPUT_LV_ERROR,
 							 "Error: Cannot open pipe 'pkg-config --variable=YP_PARAMS_DIR yp-robot-params'.\n" );
 				return 0;
 			}
@@ -381,15 +378,13 @@ int set_param( char *filename )
 
 				if( !paramfile )
 				{
-					if( output_lv(  ) >= OUTPUT_LV_WARNING )
-						printf( "Warn: File [%s] is not exist.\n", file_name );
+					yprintf( OUTPUT_LV_WARNING, "Warn: File [%s] is not exist.\n", file_name );
 					return 0;
 				}
 			}
 			else
 			{
-				if( output_lv(  ) >= OUTPUT_LV_ERROR )
-					fprintf( stderr,
+				yprintf( OUTPUT_LV_ERROR,
 							 "Error: Cannot read pipe 'pkg-config --variable=YP_PARAMS_DIR yp-robot-params'.\n" );
 				return 0;
 			}
@@ -468,14 +463,12 @@ int set_param( char *filename )
 					if( !strcmp( name, param_names[i] ) )
 					{
 						g_P[i] = strtod( value_str, 0 );
-						if( output_lv(  ) >= OUTPUT_LV_PARAM )
-							//fprintf( stderr, " %s %f\n", name, g_P[i] );
-							fprintf( stderr, "%d %s %f\n", i,name, g_P[i] );
+						yprintf( OUTPUT_LV_PARAM, "%d %s %f\n", i,name, g_P[i] );
 						break;
 					}
 				}
-				if( i == YP_PARAM_NUM && output_lv(  ) >= OUTPUT_LV_WARNING )
-					fprintf( stderr, "Warn: invalid parameter -- '%s'.\n", name );
+				if( i == YP_PARAM_NUM )
+					yprintf( OUTPUT_LV_WARNING, "Warn: invalid parameter -- '%s'.\n", name );
 			}
 			else
 			{
@@ -485,21 +478,15 @@ int set_param( char *filename )
 	}
 	if( g_P[YP_PARAM_VERSION] < YP_PARAM_REQUIRED_VERSION )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-		{
-			fprintf( stderr, "Error: Your parameter file format is too old!\n" );
-			fprintf( stderr, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION );
-		}
+		yprintf( OUTPUT_LV_ERROR, "Error: Your parameter file format is too old!\n" );
+		yprintf( OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION );
 		return 0;
 	}
 	if( g_P[YP_PARAM_VERSION] > YP_PARAM_REQUIRED_VERSION )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-		{
-			fprintf( stderr, "Error: Your parameter file format is too NEW!\n" );
-			fprintf( stderr, "Error: Please install newer version of YP-Spur.\n" );
-			fprintf( stderr, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION );
-		}
+		yprintf( OUTPUT_LV_ERROR, "Error: Your parameter file format is unsupported!\n" );
+		yprintf( OUTPUT_LV_ERROR, "Error: Please install newer version of YP-Spur.\n" );
+		yprintf( OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION );
 		return 0;
 	}
 
@@ -584,14 +571,10 @@ void calc_param_inertia2ff( void )
 	g_P[YP_PARAM_GAIN_F] = F;
 	
 	// 出力（デバッグ）
-	if( output_lv(  ) >= OUTPUT_LV_PARAM )
+	for(i = 0; i < 6; i++ )
 	{
-		for(i = 0; i < 6; i++ )
-		{
-			fprintf( stderr, " %c %f\n", 'A' + i, g_P[YP_PARAM_GAIN_A + i] );
-		}
+		yprintf( OUTPUT_LV_PARAM, " %c %f\n", 'A' + i, g_P[YP_PARAM_GAIN_A + i] );
 	}
-
 }
 
 // モータパラメータの送信

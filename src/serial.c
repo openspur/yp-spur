@@ -23,12 +23,13 @@
 #include <utility.h>
 #include <param.h>
 #include <ypspur-coordinator.h>
+#include <yprintf.h>
 
 #include <errno.h>
 double SER_BOUDRATE;
 
 /* serial */
-#ifndef __WIN32
+#ifndef _WIN32
 
 // Unix用コード
 #	include <sys/select.h>
@@ -46,7 +47,7 @@ COMMTIMEOUTS g_oldcto;
 
 #endif
 
-#ifndef __WIN32
+#ifndef _WIN32
 speed_t i2baud( int baud )
 {
 	switch ( baud )
@@ -157,7 +158,7 @@ DWORD i2baud( int baud )
 // ポートが接続可能か調べる
 int serial_tryconnect( char *device_name )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	// Unix用
 	g_device_port = open( device_name, O_RDWR );
 	if( g_device_port < 0 )
@@ -189,7 +190,7 @@ int recieve_throw( char *buf, int len, double t, void *data )
  */
 int serial_change_baudrate( int baud )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	struct termios newtio;
 	int ret, errnum;
 
@@ -207,26 +208,18 @@ int serial_change_baudrate( int baud )
 	ret = cfsetispeed( &newtio, i2baud( baud ) );
 	if( ret < 0 )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-		{
-			errnum = errno;
-			fprintf( stderr, "ERROR: Failed to set input baud rate %d\n", baud );
-			fprintf( stderr, "  ... errno = %d\n", errnum );
-			fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
-		}
+		errnum = errno;
+		yprintf( OUTPUT_LV_ERROR, "Error: Failed to set input baud rate to %d\n", baud );
+		yprintf( OUTPUT_LV_VERBOSE, "Error: cfsetispeed: %s(%d)\n", strerror( errnum ), errnum );
 		return 0;
 	}
 	errno = 0;
 	ret = cfsetospeed( &newtio, i2baud( baud ) );
 	if( ret < 0 )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-		{
-			errnum = errno;
-			fprintf( stderr, "ERROR: Failed to set output baud rate %d\n", baud );
-			fprintf( stderr, "  ... errno = %d\n", errnum );
-			fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
-		}
+		errnum = errno;
+		yprintf( OUTPUT_LV_ERROR, "Error: Failed to set output baud rate to %d\n", baud );
+		yprintf( OUTPUT_LV_VERBOSE, "Error: cfsetospeed: %s(%d)\n", strerror( errnum ), errnum );
 		return 0;
 	}
 	SER_BOUDRATE = ( double )baud / 10.0;		// (bit/sec) -> (Byte/sec) 
@@ -239,8 +232,9 @@ int serial_change_baudrate( int baud )
 
 	if( tcsetattr( g_device_port, TCSAFLUSH, &newtio ) )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "Error: Can't tcsetattr serial port.\n" );
+		errnum = errno;
+		yprintf( OUTPUT_LV_ERROR, "Error: Failed to set attribute of serial port\n" );
+		yprintf( OUTPUT_LV_VERBOSE, "Error: tcsetattr: %s(%d)\n", strerror( errnum ), errnum );
 		return 0;
 	}
 
@@ -252,14 +246,9 @@ int serial_change_baudrate( int baud )
 		ret = tcgetattr( g_device_port, &term );
 		if( ret < 0 )
 		{
-			if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			{
-				errnum = errno;
-				fprintf( stderr, "Error: Failed to tcgetattr\n" );
-				fprintf( stderr, "  ... errno = %d\n", errnum );
-				fprintf( stderr, "  ... msg: %s\n", strerror( errnum ) );
-			}
-			// fail to check
+			errnum = errno;
+			yprintf( OUTPUT_LV_ERROR, "Error: Failed to get  attribute of serial port\n" );
+			yprintf( OUTPUT_LV_VERBOSE, "Error: tcgetattr: %s(%d)\n", strerror( errnum ), errnum );
 			return 0;
 		}
 		isp = cfgetispeed( &term );
@@ -268,7 +257,7 @@ int serial_change_baudrate( int baud )
 		if( baud2i( isp ) != baud || baud2i( osp ) != baud )
 		{
 			// fail to set bit rate
-			fprintf( stderr, "Error: Requested baudrate is %d/%d, \n   but sellected baudrate is %d/%d.\n",
+			yprintf( OUTPUT_LV_ERROR, "Error: Requested baudrate is %d/%d, \n   but sellected baudrate is %d/%d.\n",
 					 baud, baud, baud2i( isp ), baud2i( osp ) );
 			return 0;
 		}
@@ -302,13 +291,12 @@ int serial_change_baudrate( int baud )
 // ポートをオープンして 通信の準備をする
 int serial_connect( char *device_name )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	g_device_port = open( device_name, O_RDWR );
 
 	if( g_device_port < 0 )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "Error: Can't open serial port.\n" );
+		yprintf( OUTPUT_LV_ERROR, "Error: Can't open serial port.\n" );
 		return 0;
 	}
 
@@ -346,7 +334,7 @@ int serial_connect( char *device_name )
 // ポートを閉じる
 int serial_close( void )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	// Unix用
 	// 設定を元に戻す
 	tcsetattr( g_device_port, TCSANOW, &g_oldtio );
@@ -363,7 +351,7 @@ int serial_close( void )
 
 void serial_flush_in( void )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	// Unix用
 	tcflush( g_device_port, TCIFLUSH );
 #else
@@ -398,7 +386,7 @@ void serial_flush_in( void )
 
 void serial_flush_out( void )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	// Unix用
 	tcflush( g_device_port, TCOFLUSH );
 #else
@@ -415,7 +403,7 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 
 	while( 1 )
 	{
-#ifndef __WIN32
+#ifndef _WIN32
 		// Unix用
 		fd_set rfds;
 		struct timeval tv;
@@ -431,18 +419,12 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 		{
 			int errnum;
 			errnum = errno;
-			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
-			{
-				fprintf( stderr, "ERROR: Select in serial_recieve failed. (%s)\n", strerror( errnum ) );
-			}
+			yprintf( OUTPUT_LV_VERBOSE, "Error: Select in serial_recieve failed. (%s)\n", strerror( errnum ) );
 			return -1;
 		}
 		else if( retval == 0 )
 		{
-			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
-			{
-				fprintf( stderr, "ERROR: Select timed out\n" );
-			}
+			yprintf( OUTPUT_LV_VERBOSE, "Error: Select timed out\n" );
 			return -1;
 		}
 
@@ -451,18 +433,12 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 		{
 			int errnum;
 			errnum = errno;
-			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
-			{
-				fprintf( stderr, "ERROR: Read in serial_recieve failed. (%s)\n", strerror( errnum ) );
-			}
+			yprintf( OUTPUT_LV_VERBOSE, "Error: Read in serial_recieve failed. (%s)\n", strerror( errnum ) );
 			return -1;
 		}
 		else if( len == 0 )
 		{
-			if( output_lv(  ) >= OUTPUT_LV_VERBOSE )
-			{
-				fprintf( stderr, "ERROR: Read timed out\n" );
-			}
+			yprintf( OUTPUT_LV_VERBOSE, "Error: Read timed out\n" );
 			return -1;
 		}
 #else
@@ -502,7 +478,7 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 
 int serial_write( char *buf, int len )
 {
-#ifndef __WIN32
+#ifndef _WIN32
 	// Unix用
 	int ret;
 #else
@@ -512,7 +488,7 @@ int serial_write( char *buf, int len )
 
 	do
 	{
-#ifndef __WIN32
+#ifndef _WIN32
 		// Unix用
 		ret = write( g_device_port, buf, len );
 #else

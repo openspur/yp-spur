@@ -1,5 +1,5 @@
 /* 
- * YP Spurとの通信ライブラリ Communication Library for SH Spur */
+ * YP-Spurとの通信ライブラリ Communication Library for YP-Spur */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -11,6 +11,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#define YP_SPUR_RUNTIME
 
 #include <ipcommunication.h>
 #include <ypspur.h>

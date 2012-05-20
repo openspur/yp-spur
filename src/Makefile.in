@@ -101,6 +101,7 @@ am_ypspur_coordinator_OBJECTS =  \
 	ypspur_coordinator-param.$(OBJEXT) \
 	ypspur_coordinator-ipcommunication.$(OBJEXT) \
 	ypspur_coordinator-command_ad.$(OBJEXT) \
+	ypspur_coordinator-yprintf.$(OBJEXT) \
 	ypspur_coordinator-command.$(OBJEXT) \
 	ypspur_coordinator-command_param.$(OBJEXT) \
 	ypspur_coordinator-command_set.$(OBJEXT) \
@@ -315,7 +316,7 @@ libypspur_la_LDFLAGS = -version-info 15:2:1
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_LIB = libypspur_dll.lib
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_DEF = libypspur_dll.def
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
-  control_motion.c param.c ipcommunication.c command_ad.c\
+  control_motion.c param.c ipcommunication.c command_ad.c yprintf.c \
   command.c command_param.c command_set.c command_run.c command_get.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
@@ -487,6 +488,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur_coordinator-ssm_spur_handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur_coordinator-utility.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur_coordinator-ypprotocol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur_coordinator-yprintf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur_coordinator-ypspur-coordinator.Po@am__quote@
 
 .c.o:
@@ -635,6 +637,20 @@ ypspur_coordinator-command_ad.obj: command_ad.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='command_ad.c' object='ypspur_coordinator-command_ad.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -c -o ypspur_coordinator-command_ad.obj `if test -f 'command_ad.c'; then $(CYGPATH_W) 'command_ad.c'; else $(CYGPATH_W) '$(srcdir)/command_ad.c'; fi`
+
+ypspur_coordinator-yprintf.o: yprintf.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -MT ypspur_coordinator-yprintf.o -MD -MP -MF $(DEPDIR)/ypspur_coordinator-yprintf.Tpo -c -o ypspur_coordinator-yprintf.o `test -f 'yprintf.c' || echo '$(srcdir)/'`yprintf.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ypspur_coordinator-yprintf.Tpo $(DEPDIR)/ypspur_coordinator-yprintf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='yprintf.c' object='ypspur_coordinator-yprintf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -c -o ypspur_coordinator-yprintf.o `test -f 'yprintf.c' || echo '$(srcdir)/'`yprintf.c
+
+ypspur_coordinator-yprintf.obj: yprintf.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -MT ypspur_coordinator-yprintf.obj -MD -MP -MF $(DEPDIR)/ypspur_coordinator-yprintf.Tpo -c -o ypspur_coordinator-yprintf.obj `if test -f 'yprintf.c'; then $(CYGPATH_W) 'yprintf.c'; else $(CYGPATH_W) '$(srcdir)/yprintf.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ypspur_coordinator-yprintf.Tpo $(DEPDIR)/ypspur_coordinator-yprintf.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='yprintf.c' object='ypspur_coordinator-yprintf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -c -o ypspur_coordinator-yprintf.obj `if test -f 'yprintf.c'; then $(CYGPATH_W) 'yprintf.c'; else $(CYGPATH_W) '$(srcdir)/yprintf.c'; fi`
 
 ypspur_coordinator-command.o: command.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -MT ypspur_coordinator-command.o -MD -MP -MF $(DEPDIR)/ypspur_coordinator-command.Tpo -c -o ypspur_coordinator-command.o `test -f 'command.c' || echo '$(srcdir)/'`command.c

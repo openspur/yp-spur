@@ -12,6 +12,8 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
+#include <setjmp.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -30,9 +32,8 @@
 #include <ypprotocol.h>
 #include <adinput.h>
 #include <ssm_spur_handler.h>
-#include <signal.h>
-#include <setjmp.h>
 #include <utility.h>
+#include <yprintf.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>
@@ -108,15 +109,11 @@ int main( int argc, char *argv[] )
 	if( !ret )									/* オプション解析に失敗したとき */
 		return EXIT_FAILURE;
 
-	if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-	{
-		fprintf( stderr, "\n" );
-		fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
-		fprintf( stderr, "YamabicoProject-Spur\n" );
-		fprintf( stderr, " Ver. %s\n", PACKAGE_VERSION );
-		fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
-		fflush( stderr );
-	}
+	yprintf( OUTPUT_LV_PROCESS, "\n" );
+	yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+	yprintf( OUTPUT_LV_PROCESS, "YamabicoProject-Spur\n" );
+	yprintf( OUTPUT_LV_PROCESS, " Ver. %s\n", PACKAGE_VERSION );
+	yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 
 	/* Ctrl-C割り込みハンドラーの登録 */
 	escape_road(  );
@@ -136,16 +133,13 @@ int main( int argc, char *argv[] )
 	/* パラメータを読み込み、セットする */
 	param = get_param_ptr(  );
 
-	if( output_lv(  ) >= OUTPUT_LV_PARAM )
-		fprintf( stderr, "Parameter file: %s\n", param->parameter_filename );
+	yprintf( OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename );
 	if( !set_param( param->parameter_filename ) )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "Error: Cannot find parameter file.\n" );
+		yprintf( OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n" );
 		return 0;
 	}
-	if( output_lv(  ) >= OUTPUT_LV_PARAM )
-		fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n" );
+	yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n" );
 
 	fflush( stderr );
 
@@ -155,10 +149,8 @@ int main( int argc, char *argv[] )
 	{
 		quit = 0;
 
-		if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-			fprintf( stderr, "Device Infomation\n" );
-		if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-			fprintf( stderr, " Port    : %s \n", param->device_name );
+		yprintf( OUTPUT_LV_PROCESS, "Device Infomation\n" );
+		yprintf( OUTPUT_LV_PROCESS, " Port    : %s \n", param->device_name );
 
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
@@ -173,11 +165,7 @@ int main( int argc, char *argv[] )
 				int current, age;
 				sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
 
-				if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-				{
-					fprintf( stderr, " Checking device infomation...\r" );
-					fflush( stderr );
-				}
+				yprintf( OUTPUT_LV_PROCESS, " Checking device infomation...\r" );
 				for ( i = 0; i < 3; i++ )
 				{
 					int device_current, device_age;
@@ -197,58 +185,49 @@ int main( int argc, char *argv[] )
 					}
 					break;
 				}
-				if( output_lv(  ) >= OUTPUT_LV_PARAM )
-				{
-					fprintf( stderr, " Vender  : %s\033[K\n", version.vender );
-					fprintf( stderr, " Product : %s\n", version.product );
-					fprintf( stderr, " Firmware: %s\n", version.firmware );
-					fprintf( stderr, " Protcol : %s\n", version.protocol );
-					fprintf( stderr, " Serialno: %s\n", version.serialno );
-				}
-				if( output_lv(  ) >= OUTPUT_LV_PROCESS )
-					fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+				yprintf( OUTPUT_LV_PARAM, " Vender  : %s\033[K\n", version.vender );
+				yprintf( OUTPUT_LV_PARAM, " Product : %s\n", version.product );
+				yprintf( OUTPUT_LV_PARAM, " Firmware: %s\n", version.firmware );
+				yprintf( OUTPUT_LV_PARAM, " Protcol : %s\n", version.protocol );
+				yprintf( OUTPUT_LV_PARAM, " Serialno: %s\n", version.serialno );
+
+				yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				if( i == 3 )
 				{
-					if( output_lv(  ) >= OUTPUT_LV_ERROR )
-						fprintf( stderr, "Error: Device doesn't have available YP protocol version.\n" );
+					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n" );
 					if( option( OPTION_RECONNECT ) && g_emergency == 0 )
 					{
 						yp_usleep( 500000 );
 						continue;
 					}
-					//return EXIT_FAILURE;
-					break; // quit=0;でbreakしたら異常終了と判断される
+					break; // quit=0でbreakしたら異常終了と判断
 				}
 			}
 			fflush( stderr );
 
 			if( param->speed )
 			{
-				if( output_lv(  ) >= OUTPUT_LV_MODULE )
-					fprintf( stderr, "Setting baudrate to %d baud.\n", param->speed );
+				yprintf( OUTPUT_LV_MODULE, "Setting baudrate to %d baud.\n", param->speed );
 				if( !set_baudrate( param->speed ) )
 				{
-					if( output_lv(  ) >= OUTPUT_LV_WARNING )
-						fprintf( stderr, "Error: Failed to change baudrate.\n" );
+					yprintf( OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n" );
 					
 					serial_close(  );
 
 					quit = 0;
-					break;	// quit=0;でbreakしたら異常終了と判断される
+					break;	// quit=0でbreakしたら異常終了と判断
 				}
 			}
 
 			if( param->admask )
 			{
-				if( output_lv(  ) >= OUTPUT_LV_MODULE )
-					fprintf( stderr, "Setting admask to %x.\n", param->admask );
+				yprintf( OUTPUT_LV_MODULE, "Setting admask to %x.\n", param->admask );
 				set_admask( param->admask );
 			}
 
 			if( option( OPTION_ENABLE_GET_DIGITAL_IO ) )
 			{
-				if( output_lv(  ) >= OUTPUT_LV_MODULE )
-					fprintf( stderr, "Enabling digital io input.\n" );
+				yprintf( OUTPUT_LV_MODULE, "Enabling digital io input.\n" );
 				set_diomask( 1 );
 			}
 
@@ -264,12 +243,8 @@ int main( int argc, char *argv[] )
 			}
 		}
 
+		yprintf( OUTPUT_LV_MODULE, "YP-Spur coordinator started.\n" );
 
-		if( output_lv(  ) >= OUTPUT_LV_MODULE )
-		{
-			fprintf( stderr, "YP-Spur coordinator started.\n" );
-			fflush( stderr );
-		}
 		/* スレッド初期化 */
 		init_command_thread( &command_thread );
 		pthread_detach( command_thread );
@@ -305,8 +280,7 @@ int main( int argc, char *argv[] )
 			{
 				while( 1 ) yp_usleep( 1000000 );
 			}
-			if( output_lv(  ) >= OUTPUT_LV_MODULE )
-				fprintf( stderr, "Connection to %s was closed.\n", param->device_name );
+			yprintf( OUTPUT_LV_MODULE, "Connection to %s was closed.\n", param->device_name );
 		}
 
 		/* 終了処理 */
@@ -339,8 +313,7 @@ int main( int argc, char *argv[] )
 					yp_usleep( 200000 );
 				}
 			}
-			if( output_lv(  ) >= OUTPUT_LV_MODULE )
-				fprintf( stderr, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+			yprintf( OUTPUT_LV_MODULE, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 			yp_usleep( 500000 );
 			continue;
 		}

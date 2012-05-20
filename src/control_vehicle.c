@@ -32,6 +32,7 @@
 #include <control.h>
 #include <command.h>
 #include <utility.h>
+#include <yprintf.h>
 #include <odometry.h>
 #include <ssm_spur_handler.h>
 
@@ -229,8 +230,7 @@ double gravity_compensation( OdometryPtr odm, SpurUserParamsPtr spur )
 	/* トルクを計算 */
 	*pp( YP_PARAM_TORQUE_OFFSET ) = f * p( YP_PARAM_RADIUS_R ) / p( YP_PARAM_GEAR );
 	/* [Nm] [N]* [m] /[in/out] */
-	if( output_lv(  ) >= OUTPUT_LV_DEBUG )
-		printf( "%f %f\n", f, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
+	yprintf( OUTPUT_LV_DEBUG, "%f %f\n", f, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
 	parameter_set( PARAM_p_toq_offset, 0, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
 	parameter_set( PARAM_p_toq_offset, 1, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
 	return tilt;
@@ -238,8 +238,7 @@ double gravity_compensation( OdometryPtr odm, SpurUserParamsPtr spur )
 
 void control_loop_cleanup( void *data )
 {
-	if( output_lv(  ) >= OUTPUT_LV_MODULE )
-		fprintf( stderr, "Trajectory control loop stopped.\n" );
+	yprintf( OUTPUT_LV_MODULE, "Trajectory control loop stopped.\n" );
 }
 
 /* 20msごとの割り込みで軌跡追従制御処理を呼び出す */
@@ -251,8 +250,7 @@ void control_loop( void )
 	odometry = get_odometry_ptr(  );
 	spur = get_spur_user_param_ptr(  );
 
-	if( output_lv(  ) >= OUTPUT_LV_MODULE )
-		fprintf( stderr, "Trajectory control loop started.\n" );
+	yprintf( OUTPUT_LV_MODULE, "Trajectory control loop started.\n" );
 	pthread_cleanup_push( control_loop_cleanup, NULL );
 
 #if defined(HAVE_LIBRT)							// clock_nanosleepが利用可能
@@ -260,8 +258,7 @@ void control_loop( void )
 
 	if( clock_gettime( CLOCK_MONOTONIC, &request ) == -1 )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "error on clock_gettime\n" );
+		yprintf( OUTPUT_LV_ERROR, "error on clock_gettime\n" );
 		exit( 0 );
 	}
 	while( 1 )
@@ -395,8 +392,7 @@ void init_control_thread( pthread_t * thread )
 
 	if( pthread_create( thread, NULL, ( void * )control_loop, NULL ) != 0 )
 	{
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "Can't create control_loop thread\n" );
+		yprintf( OUTPUT_LV_ERROR, "Can't create control_loop thread\n" );
 	}
 }
 

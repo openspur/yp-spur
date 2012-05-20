@@ -30,4 +30,4 @@ autom4te.cache/
 *.dll
 *.lib
 *.exe
-
+*.patch

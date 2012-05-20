@@ -33,13 +33,11 @@ int g_ssm_adj_enable = 0;
 void init_ypspurSSM( void )
 {
 #ifdef HAVE_SSM
-	if( output_lv(  ) >= OUTPUT_LV_MODULE )
-		fprintf( stderr, "    with SSM\n" );
+	yprintf( OUTPUT_LV_MODULE, "    with SSM\n" );
 	if( !initSSM(  ) )
 	{
 		/* SSMが起動していない */
-		if( output_lv(  ) >= OUTPUT_LV_ERROR )
-			fprintf( stderr, "\n SSM is not available.\n" );
+		yprintf( OUTPUT_LV_ERROR, "\n SSM is not available.\n" );
 		g_ssm_enable = 0;
 	}
 	else
@@ -52,8 +50,7 @@ void init_ypspurSSM( void )
 		if( !( g_odm_bs_sid && g_odm_sid && g_motor_sid && g_ad_sid ) )
 		{
 			g_ssm_enable = 0;
-			if( output_lv(  ) >= OUTPUT_LV_WARNING )
-				fprintf( stderr, "\nWarning : cannot create ssm.\n" );
+			yprintf( OUTPUT_LV_WARNING, "\nWarning : cannot create ssm.\n" );
 		}
 	}
 	g_ssm_adj_enable = 0;
@@ -141,8 +138,7 @@ void coordinate_synchronize( Odometry * odm, SpurUserParamsPtr spur )
 				if( g_odm_adj_sid > 0 )
 				{								// openできた
 					g_ssm_adj_enable = 1;
-					if( output_lv(  ) >= OUTPUT_LV_MODULE )
-						fprintf( stderr, "SSMInfo: Find adjust information.\n" );
+					yprintf( OUTPUT_LV_MODULE, "SSMInfo: Find adjust information.\n" );
 				}
 				else
 				{

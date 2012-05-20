@@ -28,9 +28,9 @@
 /* ライブラリ用 */
 #include <ypspur.h>
 
-int ad[16];										// /< ad値保存用バッファ 
-int ad_num = 0;									// /< adでいくつデータを出力するように指令したか
-int dio_num = 0;								// /< dioでいくつデータを出力するように指令したか
+int ad[16];										// ad値保存用バッファ
+int ad_num = 0;									// adでいくつデータを出力するように指令したか
+int dio_num = 0;								// dioでいくつデータを出力するように指令したか
 
 int process_addata( unsigned char *buf, int len )
 {

@@ -348,13 +348,16 @@ int set_param( char *filename )
 
 	if( !paramfile )
 	{
+#if HAVE_PKG_CONFIG
 		char dir_name[256];
 		char file_name[256];
 		char *pret;
 		FILE *fd;
+#endif
 
 		yprintf( OUTPUT_LV_PARAM, "Warn: File [%s] is not exist.\n", filename );
 
+#if HAVE_PKG_CONFIG
 		if( !strchr( filename, '/' ) )
 		{
 			/* ファイルが見つからないとき、かつパス指定でないときshareディレクトリを見に行く 
@@ -392,6 +395,7 @@ int set_param( char *filename )
 			strcpy( file_name, filename );
 		}
 		else
+#endif
 		{
 			return 0;
 		}

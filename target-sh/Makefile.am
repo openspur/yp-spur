@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = foreign 1.10
+
 EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
              sh-vel.h sh7040s.h sh-globals.h motor-device.h sh-serial.h \
              sh7045linker.x startup.s adc.c adc.h divider.c divider.h

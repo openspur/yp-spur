@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = foreign 1.10
+
 include_HEADERS = ypspur.h ypparam.h
 #pkginclude_HEADERS = yp-spur.h
 

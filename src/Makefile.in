@@ -220,6 +220,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
 SED = @SED@
@@ -287,6 +288,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AUTOMAKE_OPTIONS = foreign 1.10
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I../include -I../auxlib

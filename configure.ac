@@ -33,11 +33,16 @@ AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 
+AH_TEMPLATE([HAVE_PKG_CONFIG],[Define if you have pkg-config.])
+AC_CHECK_PROGS(PKG_CONFIG, pkg-config,, $PATH)
+if test -n "$PKG_CONFIG"; then
+	AC_DEFINE(HAVE_PKG_CONFIG)
+fi
+
 # Checks for SSM
 AC_CHECK_HEADERS(ssm.h, AC_DEFINE(HAVE_SSM,, [Define if you have SSM.]))
 AC_CHECK_PROGS(SSM_COORDINATOR, ssm-coordinator,, $PATH)
 AM_CONDITIONAL(HAVE_SSM, test -n "$SSM_COORDINATOR")
-#AM_CONDITIONAL(HAVE_SSM, test -n "$HAVE_SSM_H")  # This didn't work.
 
 # Checks for SH_CROSS
 AC_CHECK_PROGS(SH_CROSS_CC, sh-coff-gcc sh-hitachi-coff-gcc,, $PATH)

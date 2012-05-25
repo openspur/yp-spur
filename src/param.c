@@ -36,6 +36,7 @@
 double g_P[YP_PARAM_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
+int g_param_init = 1;
 
 int state( YPSpur_state id )
 {
@@ -113,6 +114,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --without-device         Run without B-Loco device.\n" );
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
+	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
 
 }
 
@@ -279,6 +281,10 @@ int arg_analyze( int argc, char *argv[] )
 		{
 			g_param.option |= OPTION_PASSIVE;
 		}
+		else if( !strcmp( argv[i], "--update-param" ) )
+		{
+			g_param.option |= OPTION_UPDATE_PARAM;
+		}
 		else
 		{
 			yprintf( OUTPUT_LV_ERROR, "ERROR : invalid option -- '%s'.\n", argv[i] );
@@ -333,7 +339,7 @@ int is_number( int c )
 }
 
 /* パラメータファイルからの読み込み */
-int set_param( char *filename )
+int set_param( char *filename, char *concrete_path )
 {
 	FILE *paramfile;
 	char param_names[YP_PARAM_NUM][20] = YP_PARAM_NAME;
@@ -392,6 +398,7 @@ int set_param( char *filename )
 				return 0;
 			}
 			// fprintf( stdout, "open %s\n", file_name );
+			if( concrete_path ) strcpy( concrete_path, file_name );
 			strcpy( file_name, filename );
 		}
 		else
@@ -400,11 +407,19 @@ int set_param( char *filename )
 			return 0;
 		}
 	}
-
-	// パラメータの初期化
-	for ( i = 0; i < YP_PARAM_NUM; i++ )
+	else
 	{
-		g_P[i] = 0;
+		if( concrete_path ) strcpy( concrete_path, filename );
+	}
+
+	if( g_param_init )
+	{
+		// パラメータの初期化
+		for ( i = 0; i < YP_PARAM_NUM; i++ )
+		{
+			g_P[i] = 0;
+		}
+		g_param_init = 0;
 	}
 
 	// パラメータファイルの読み込み
@@ -480,6 +495,7 @@ int set_param( char *filename )
 			}
 		}
 	}
+	fclose( paramfile );
 	if( g_P[YP_PARAM_VERSION] < YP_PARAM_REQUIRED_VERSION )
 	{
 		yprintf( OUTPUT_LV_ERROR, "Error: Your parameter file format is too old!\n" );
@@ -505,6 +521,55 @@ int set_param( char *filename )
 	enable_state( YP_STATE_TRACKING );
 
 	return 1;
+}
+
+void init_param_update_thread( pthread_t * thread, char *filename )
+{
+	if( pthread_create( thread, NULL, ( void * )param_update, filename ) != 0 )
+	{
+		yprintf( OUTPUT_LV_ERROR, "Can't create command thread\n" );
+	}
+}
+
+void param_update_loop_cleanup( void *data )
+{
+	yprintf( OUTPUT_LV_MODULE, "Parameter updater stopped.\n" );
+}
+
+void param_update( void *filename )
+{
+	struct stat prev_status;
+
+	yprintf( OUTPUT_LV_MODULE, "Parameter updater started. Watching %s\n", filename );
+	pthread_cleanup_push( param_update_loop_cleanup, filename );
+
+	stat( filename, &prev_status );
+
+	while( 1 )
+	{
+		int i;
+		struct stat status;
+
+		// 1秒に一回パラメータファイル更新をチェック
+		for( i = 0; i < 10; i ++ )
+		{
+			yp_usleep( 100000 );
+			pthread_testcancel(  );
+		}
+		stat( filename, &status );
+
+		if( difftime( status.st_mtime, prev_status.st_mtime ) != 0.0 )
+		{
+			set_param( filename, NULL );
+			if( !( option( OPTION_PARAM_CONTROL ) ) )
+			{
+				apply_robot_params(  );
+			}
+		}
+
+		prev_status = status;
+	}
+	pthread_cleanup_pop( 1 );
 }
 
 /* パラメータ適用 */

@@ -77,11 +77,14 @@ int main( int argc, char *argv[] )
 {
 	pthread_t command_thread;
 	pthread_t control_thread;
+	pthread_t update_thread;
 	int command_thread_en;
 	int control_thread_en;
+	int update_thread_en;
 	Ver_t version;
 	int i, ret;
 	ParametersPtr param;
+	char paramfile[ 512 ];
 	int quit;
 
 	ret = arg_analyze( argc, argv );
@@ -134,7 +137,7 @@ int main( int argc, char *argv[] )
 	param = get_param_ptr(  );
 
 	yprintf( OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename );
-	if( !set_param( param->parameter_filename ) )
+	if( !set_param( param->parameter_filename, paramfile ) )
 	{
 		yprintf( OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n" );
 		return 0;
@@ -256,6 +259,12 @@ int main( int argc, char *argv[] )
 			pthread_detach( control_thread );
 			control_thread_en = 1;
 		}
+		if( option( OPTION_UPDATE_PARAM ) )
+		{
+			init_param_update_thread( &update_thread, paramfile );
+			pthread_detach( update_thread );
+			update_thread_en = 1;
+		}
 
 		// オドメトリ受信ループ
 #if HAVE_SIGLONGJMP
@@ -289,6 +298,12 @@ int main( int argc, char *argv[] )
 			serial_close(  );
 		}
 
+		if( update_thread_en )
+		{
+			pthread_cancel( update_thread );
+			pthread_join( update_thread, NULL );
+			update_thread_en = 0;
+		}
 		if( control_thread_en )
 		{
 			pthread_cancel( control_thread );

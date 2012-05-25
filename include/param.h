@@ -1,29 +1,30 @@
 #ifndef __PARAM__
 #define __PARAM__
 
+#include <pthread.h>
 #include <ypparam.h>
 
 typedef enum
 {
-	OPTION_SHOW_ODOMETRY = 0x0001,
-	OPTION_PARAM_CONTROL = 0x0002,
-	OPTION_SHOW_TIMESTAMP = 0x0004,
-	OPTION_SHOW_HELP = 0x0008,
-	OPTION_SHOW_LONGHELP = 0x0010,
-	OPTION_SHOW_PARAMHELP = 0x0020,
-	OPTION_VERSION = 0x0040,
+	OPTION_SHOW_ODOMETRY   = 0x0001,
+	OPTION_PARAM_CONTROL   = 0x0002,
+	OPTION_SHOW_TIMESTAMP  = 0x0004,
+	OPTION_SHOW_HELP       = 0x0008,
+	OPTION_SHOW_LONGHELP   = 0x0010,
+	OPTION_SHOW_PARAMHELP  = 0x0020,
+	OPTION_VERSION         = 0x0040,
 
-	OPTION_WITHOUT_DEVICE = 0x0800,
-	OPTION_WITHOUT_SSM = 0x1000,
-	OPTION_ENABLE_SET_BS = 0x2000,
-	OPTION_DO_NOT_USE_YP = 0x4000,
-	OPTION_RECONNECT = 0x8000,
+	OPTION_WITHOUT_DEVICE        = 0x00800,
+	OPTION_WITHOUT_SSM           = 0x01000,
+	OPTION_ENABLE_SET_BS         = 0x02000,
+	OPTION_DO_NOT_USE_YP         = 0x04000,
+	OPTION_RECONNECT             = 0x08000,
 	OPTION_ENABLE_GET_DIGITAL_IO = 0x10000,
-	OPTION_PASSIVE = 0x20000,
+	OPTION_PASSIVE               = 0x20000,
+	OPTION_UPDATE_PARAM          = 0x40000,
 } ParamOptions;
 
 #define DEFAULT_PARAMETER_FILE "./robot.param"
-// #define DEFAULT_PARAMETER_FILE "/usr/local/share/yp_spur/robot.param"
 #define DEFAULT_DEVICE_NAME "/dev/ttyUSB0"
 
 #define GRAVITY 9.81
@@ -55,17 +56,12 @@ typedef struct _parameters
 	ParamOutputLv output_lv;
 	unsigned char admask;
 } Parameters;
-/* 
- * int run_mode;
- * 
- * CSptr cs[ CS_NUM ]; SpurReference ref;
- * 
- * pthread_mutex_t mutex; */
+
 int arg_analyze( int argc, char *argv[] );
 void arg_help( int argc, char *argv[] );
 void param_help( void );
 void arg_longhelp( int argc, char *argv[] );
-int set_param( char *filename );
+int set_param( char *filename, char *concrete_path );
 void calc_param_inertia2ff( void );
 void set_param_motor( void );
 void set_param_velocity( void );
@@ -84,5 +80,9 @@ double *pp( YPSpur_param id );
 ParametersPtr get_param_ptr(  );
 int option( ParamOptions option );
 ParamOutputLv output_lv( void );
+
+void param_update( void *filename );
+void init_param_update_thread( pthread_t * thread, char *filename );
+void param_update_loop_cleanup( void *data );
 
 #endif

@@ -54,8 +54,6 @@ void motor_speed( double r, double l )
 
 	parameter_set( PARAM_w_ref, 0, ir );
 	parameter_set( PARAM_w_ref, 1, il );
-
-	// printf("%f %f\n",r,l);
 }
 
 /* m/s rad/s */
@@ -138,6 +136,21 @@ int reference_speed( double *v, double *w )
 int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 {
 	int limit;
+	double dw, dv;
+
+	dw = spur->dw * p( YP_PARAM_CONTROL_CYCLE );
+	dv = spur->dv * p( YP_PARAM_CONTROL_CYCLE );
+
+	if( fabs( g_v_ref ) > fabs( spur->v ) )
+	{
+		// 直前の速度が最大速度より大きかったら、ハードウェア最大加速度で減速
+		dv = p( YP_PARAM_MAX_ACC_V ) * p( YP_PARAM_CONTROL_CYCLE );
+	}
+	if( fabs( g_w_ref ) > fabs( spur->w ) )
+	{
+		// 直前の角速度が最大角速度より大きかったら、ハードウェア最大角加速度で減速
+		dw = p( YP_PARAM_MAX_ACC_W ) * p( YP_PARAM_CONTROL_CYCLE );
+	}
 
 	limit = 31;
 
@@ -154,13 +167,13 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 		limit -= 1;
 	}
 
-	if( v > g_v_ref + spur->dv * p( YP_PARAM_CONTROL_CYCLE ) )
+	if( v > g_v_ref + dv )
 	{
-		v = g_v_ref + spur->dv * p( YP_PARAM_CONTROL_CYCLE );
+		v = g_v_ref + dv;
 	}
-	else if( v < g_v_ref - spur->dv * p( YP_PARAM_CONTROL_CYCLE ) )
+	else if( v < g_v_ref - dv )
 	{
-		v = g_v_ref - spur->dv * p( YP_PARAM_CONTROL_CYCLE );
+		v = g_v_ref - dv;
 	}
 	else
 	{
@@ -180,13 +193,13 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 		limit -= 4;
 	}
 
-	if( w > g_w_ref + spur->dw * p( YP_PARAM_CONTROL_CYCLE ) )
+	if( w > g_w_ref + dw )
 	{
-		w = g_w_ref + spur->dw * p( YP_PARAM_CONTROL_CYCLE );
+		w = g_w_ref + dw;
 	}
-	else if( w < g_w_ref - spur->dw * p( YP_PARAM_CONTROL_CYCLE ) )
+	else if( w < g_w_ref - dw )
 	{
-		w = g_w_ref - spur->dw * p( YP_PARAM_CONTROL_CYCLE );
+		w = g_w_ref - dw;
 	}
 	else
 	{
@@ -301,7 +314,7 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 	// printf( "%f %f\n", now_time - before_time );fflush(stdout);
 	spur->control_dt = now_time - before_time;
 
-	before_time = now_time;						// +=0.02;
+	before_time = now_time;
 	if( before_time == 0 )
 		return;
 
@@ -323,61 +336,70 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 	}
 	else
 	{
+		int is_vehicle_control;
 		/* 重力補償 */
 		if( state( YP_STATE_GRAVITY ) )
 		{
 			gravity_compensation( &odometry, spur );
 		}
 
+		is_vehicle_control = 0;
 		/* 走行状態に応じた処理 */
 		switch ( spur->run_mode )
 		{
 		case RUN_FREE:
-			//robot_speed_smooth( 0, 0, spur );
 			parameter_set( PARAM_p_toq_offset, 0, 0 );
 			parameter_set( PARAM_p_toq_offset, 1, 0 );
-			{
-				OdometryPtr podm;
-
-				podm = get_odometry_ptr();
-				g_v_ref = podm->v;
-				g_w_ref = podm->w;
-			}
 			break;
 		case RUN_STOP:							// ストップする（スピードを0にする）
 			robot_speed_smooth( 0, 0, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_VEL:					// 速度直接指定
 			motor_speed( spur->vref, spur->wref );
 			break;
-		case RUN_WHEEL_TORQUE:					// 速度直接指定
+		case RUN_WHEEL_TORQUE:					// トルク直接指定
 			parameter_set( PARAM_p_toq_offset, 0, spur->torque_l * p(YP_PARAM_TORQUE_UNIT) / p(YP_PARAM_GEAR) );
 			parameter_set( PARAM_p_toq_offset, 1, spur->torque_r * p(YP_PARAM_TORQUE_UNIT) / p(YP_PARAM_GEAR) );
 			break;
 		case RUN_VEL:							// 速度角速度指定
 			if( state( YP_STATE_BODY ) == ENABLE )
 				robot_speed_smooth( spur->vref, spur->wref, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_LINEFOLLOW:					// 直線追従
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
 				line_follow( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_STOP_LINE:					// 短辺への移動
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
 				stop_line( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_CIRCLEFOLLOW:					// 円弧追従
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
 				circle_follow( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_SPIN:							// 回転
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
 				spin( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_ORIENT:						// 方位
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
 				orient( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
+		}
+		if( !is_vehicle_control )
+		{
+			OdometryPtr podm;
+
+			podm = get_odometry_ptr();
+			g_v_ref = podm->v;
+			g_w_ref = podm->w;
 		}
 	}
 	/* 保護終わり */

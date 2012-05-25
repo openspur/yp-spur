@@ -497,13 +497,6 @@ int set_param( char *filename )
 
 	// パラメータの指定によって自動的に求まるパラメータの計算
 	calc_param_inertia2ff();
-	
-	/* パラメータの入力 */
-	// parameter_set(PARAM_free,0,0); 
-
-	// robot_speed( 0, 0 );
-
-	// apply_robot_params( );
 
 	/* パラメータを有効にする */
 	enable_state( YP_STATE_MOTOR );
@@ -511,7 +504,6 @@ int set_param( char *filename )
 	enable_state( YP_STATE_BODY );
 	enable_state( YP_STATE_TRACKING );
 
-	// printf( " mass %f\n", g_P[YP_PARAM_MASS] );
 	return 1;
 }
 

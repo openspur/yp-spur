@@ -424,13 +424,15 @@ int main( int argc, char *argv[] )
 				double x, y, th;
 				YPSpur_get_pos( CS_GL, &x, &y, &th );
 			}
-			if( YP_get_error_state() ){
+			if( YP_get_error_state() )
+			{
 				Spur_init();
 				YPSpur_set_vel( vel );
 				YPSpur_set_angvel( angvel );
 				YPSpur_set_accel( accel );
 				YPSpur_set_angaccel( angaccel );
-				if( err == 0 ){
+				if( err == 0 )
+				{
 					fprintf( stderr, "WARN: YPSpur-coordinator terminated.\n" );
 					fflush( stderr );
 #if HAVE_SIGLONGJMP
@@ -440,8 +442,11 @@ int main( int argc, char *argv[] )
 				err = 1;
 				yp_usleep( 50000 );
 				continue;
-			}else{
-				if( err == 1 ){
+			}
+			else
+			{
+				if( err == 1 )
+				{
 					fprintf( stderr, "INFO: YPSpur-coordinator started.\n" );
 					fflush( stderr );
 #if HAVE_SIGLONGJMP
@@ -456,6 +461,11 @@ int main( int argc, char *argv[] )
 #if HAVE_LIBREADLINE
 			line_prev = line;
 			line = readline( text );
+			if( !line )
+			{
+				// EOF
+				break;
+			}
 			if( strlen( line ) > 0 )
 			{
 				if( line && line_prev )

@@ -11,7 +11,7 @@
 #*********************************************
 
 AC_PREREQ(2.61)
-AC_INIT([yp-spur], [1.13.2], [platform@roboken.esys.tsukuba.ac.jp])
+AC_INIT([yp-spur], [1.13.3], [platform@roboken.esys.tsukuba.ac.jp])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_SRCDIR([src/libypspur.c])
@@ -21,7 +21,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # Define Vendor
 AC_DEFINE(YP_VENDOR_NAME, "Univ. of Tsukuba - Intelligent Robot Lab.", vendor)
 AC_DEFINE(YP_PRODUCT_NAME, "Yamabico Project - Spur", product)
-AC_DEFINE(YP_FIRMWARE_NAME, "2011.12.6", firmware)
+AC_DEFINE(YP_FIRMWARE_NAME, "2012.5.1", firmware)
 AC_DEFINE(YP_PROTOCOL_NAME, "YPP:05:00", protocol)
 
 # etc.

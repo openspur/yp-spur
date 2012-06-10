@@ -50,18 +50,20 @@ int main( int argc, char *argv[] )
 	else
 	{
 		float d;
+		
+		printf( "Given formula: %s\n", argv[1] );
 
-		printf( " Reverse polish: " );
+		printf( "Reverse polish: " );
 		formula_print( rpf );
 		printf( "\n" );
 		
 		rpf = formula_optimize( rpf );
-		printf( " Optimized reverse polish: " );
+		printf( "Optimized reverse polish: " );
 		formula_print( rpf );
 		printf( "\n" );
 
 		d = formula_eval( rpf );
-		printf( "%s = %f\n", argv[1], d );
+		printf( "Result: %f\n", d );
 		
 		formula_free( rpf );
 	}

@@ -196,6 +196,13 @@ struct operation_t operation[] =
 	{ "",     -1, TYPE_MAX , NULL,       0 }
 };
 
+struct rpf_t *rpf_last( struct rpf_t *rpf )
+{
+	for( ; rpf->next; rpf = rpf->next );
+	
+	return rpf;
+}
+
 struct rpf_t *rpf_push( struct rpf_t *rpf, struct stack_t *obj )
 {
 	rpf->next = malloc( sizeof( struct rpf_t ) );
@@ -372,18 +379,22 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 			{
 				struct rpf_t *rpf3;
 				expr += strlen( operation[i].op );
+				for( ; isspace( *expr ); expr ++ );
 				
 				if( operation[i].type == TYPE_MATH )
 				{
-					char *end;
-					int rank2;
-					struct rpf_t *rpf2;
-					
-					rank2 = 0;
-					for( ; isspace( *expr ); expr ++ );
-					
+					op[sp_op].rank = operation[i].rank;
+					op[sp_op].type = operation[i].type;
+					op[sp_op].value = &operation[i];
+					sp_op ++;
 					if( operation[i].narg > 0 )
 					{
+						char *end;
+						int rank2;
+						struct rpf_t *rpf2;
+						
+						rank2 = 0;
+						
 						for( end = expr; *end; end ++ )
 						{
 							if( *end == '(' ) rank2 ++;
@@ -397,13 +408,11 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 						num[sp_num].rank = 0;
 						num[sp_num].type = TYPE_RPF;
 						num[sp_num].value = rpf2;
+						rpf_push( rpf_last( rpf2 ), &op[sp_op-1] );
+						sp_op --;
 						sp_num ++;
 						expr = end + 1;
 					}
-					op[sp_op].rank = operation[i].rank;
-					op[sp_op].type = operation[i].type;
-					op[sp_op].value = &operation[i];
-					sp_op ++;
 				}
 				expr --;
 				

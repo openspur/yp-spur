@@ -2,6 +2,7 @@
 *~
 *.o
 *.a
+*.exe
 *.bak
 a.out
 Makefile
@@ -18,3 +19,5 @@ autom4te.cache/
 *.gz
 *.zip
 *#
+src/formula-test
+

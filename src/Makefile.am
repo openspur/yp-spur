@@ -8,7 +8,7 @@ AM_CXXFLAGS = $(AM_CFLAGS)
 
 lib_LTLIBRARIES = libypspur.la
 
-bin_PROGRAMS = ypspur-coordinator ypspur-free
+bin_PROGRAMS = ypspur-coordinator ypspur-free ypspur-interpreter
 
 
 ## libypspur
@@ -16,7 +16,6 @@ libypspur_la_SOURCES = libypspur.c ipcommunication.c utility.c
 
 libypspur_la_CFLAGS = $(AM_CFLAGS) -Werror
 libypspur_la_CXXFLAGS = $(libypspur_la_CFLAGS)
-
 
 #---------------------------------------------------
 # ***_la_LDFLAGS = -version-info  CURRENT:REVISION:AGE
@@ -72,6 +71,7 @@ ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
 #ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -DYP_PARAMS_DIR=`pkg-config --variable=YP_PARAMS_DIR yp-robot-params`
 ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O
 ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
+ypspur_coordinator_DEPENDENCIES = ../auxlib/libcarte2d.la
 
 
 if HAVE_SSM
@@ -85,11 +85,13 @@ endif
 ## ypspur-free
 ypspur_free_SOURCES = ypspur-free.c utility.c
 ypspur_free_LDADD = libypspur.la
+ypspur_free_DEPENDENCIES = libypspur.la
 
 ## ypspur-interpreter
 bin_PROGRAMS += ypspur-interpreter
 ypspur_interpreter_SOURCES = ypspur-interpreter.c utility.c
 ypspur_interpreter_LDADD = libypspur.la $(LD_LIBREADLINE)
+ypspur_interpreter_DEPENDENCIES = libypspur.la
 
 
 

@@ -36,7 +36,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = ypspur-coordinator$(EXEEXT) ypspur-free$(EXEEXT) \
-	ypspur-interpreter$(EXEEXT)
+	ypspur-interpreter$(EXEEXT) ypspur-interpreter$(EXEEXT)
 @BUILD_DLL_FOR_WIN32_TRUE@am__append_1 = libypspur_dll.la
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -121,22 +121,16 @@ am_ypspur_coordinator_OBJECTS =  \
 	ypspur_coordinator-communication.$(OBJEXT) \
 	ypspur_coordinator-adinput.$(OBJEXT)
 ypspur_coordinator_OBJECTS = $(am_ypspur_coordinator_OBJECTS)
-@HAVE_SSM_FALSE@ypspur_coordinator_DEPENDENCIES = libypspur.la \
-@HAVE_SSM_FALSE@	../auxlib/libcarte2d.la
-@HAVE_SSM_TRUE@ypspur_coordinator_DEPENDENCIES = libypspur.la \
-@HAVE_SSM_TRUE@	../auxlib/libcarte2d.la
 ypspur_coordinator_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ypspur_coordinator_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_ypspur_free_OBJECTS = ypspur-free.$(OBJEXT) utility.$(OBJEXT)
 ypspur_free_OBJECTS = $(am_ypspur_free_OBJECTS)
-ypspur_free_DEPENDENCIES = libypspur.la
 am_ypspur_interpreter_OBJECTS = ypspur-interpreter.$(OBJEXT) \
 	utility.$(OBJEXT)
 ypspur_interpreter_OBJECTS = $(am_ypspur_interpreter_OBJECTS)
 am__DEPENDENCIES_1 =
-ypspur_interpreter_DEPENDENCIES = libypspur.la $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -332,6 +326,7 @@ ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
 #ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -DYP_PARAMS_DIR=`pkg-config --variable=YP_PARAMS_DIR yp-robot-params`
 ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O
 ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
+ypspur_coordinator_DEPENDENCIES = ../auxlib/libcarte2d.la
 @HAVE_SSM_FALSE@ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la \
 @HAVE_SSM_FALSE@                           -lm -lpthread
 
@@ -340,8 +335,10 @@ ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
 
 ypspur_free_SOURCES = ypspur-free.c utility.c
 ypspur_free_LDADD = libypspur.la
+ypspur_free_DEPENDENCIES = libypspur.la
 ypspur_interpreter_SOURCES = ypspur-interpreter.c utility.c
 ypspur_interpreter_LDADD = libypspur.la $(LD_LIBREADLINE)
+ypspur_interpreter_DEPENDENCIES = libypspur.la
 all: all-am
 
 .SUFFIXES:

@@ -27,6 +27,8 @@
 #ifndef __FORMULA_CALC_H__
 #define __FORMULA_CALC_H__
 
+#include <stdio.h>
+
 struct rpf_t
 {
 	enum type_t
@@ -53,6 +55,6 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable );
 void formula_free( struct rpf_t *rpf );
 double formula_eval( struct rpf_t *rpf );
 struct rpf_t *formula_optimize( struct rpf_t *rpf );
-void formula_print( struct rpf_t *rpf );
+void formula_print( FILE *stream, struct rpf_t *rpf );
 
 #endif

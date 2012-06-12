@@ -634,20 +634,20 @@ struct rpf_t *formula_optimize( struct rpf_t *rpf )
 	return rpf_new_st.next;
 }
 
-void formula_print( struct rpf_t *rpf )
+void formula_print( FILE *stream, struct rpf_t *rpf )
 {
 	for( ; rpf; rpf = rpf->next )
 	{
 		switch( rpf->type )
 		{
 		case TYPE_VALUE:
-			printf( "%f ", *(double*)rpf->value );
+			fprintf( stream, "%f ", *(double*)rpf->value );
 			break;
 		case TYPE_VARIABLE:
-			printf( "VARIABLE " );
+			fprintf( stream, "VARIABLE " );
 			break;
 		default:
-			printf( "%s ", ((struct operation_t*)rpf->value)->op );
+			fprintf( stream, "%s ", ((struct operation_t*)rpf->value)->op );
 			break;
 		}
 	}

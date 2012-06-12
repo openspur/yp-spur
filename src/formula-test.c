@@ -54,12 +54,12 @@ int main( int argc, char *argv[] )
 		printf( "Given formula: %s\n", argv[1] );
 
 		printf( "Reverse polish: " );
-		formula_print( rpf );
+		formula_print( stdout, rpf );
 		printf( "\n" );
 		
 		rpf = formula_optimize( rpf );
 		printf( "Optimized reverse polish: " );
-		formula_print( rpf );
+		formula_print( stdout, rpf );
 		printf( "\n" );
 
 		d = formula_eval( rpf );

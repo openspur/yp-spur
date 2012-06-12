@@ -32,8 +32,10 @@
 int main( int argc, char *argv[] )
 {
 	struct rpf_t *rpf;
+	double test;
 	struct variables_t variable[8] =
 	{
+		{ "TEST", &test },
 		{ NULL, NULL }
 	};
 	
@@ -63,7 +65,7 @@ int main( int argc, char *argv[] )
 		printf( "\n" );
 
 		d = formula_eval( rpf );
-		printf( "Result: %f\n", d );
+		printf( "Result: %f %f\n", d,test );
 		
 		formula_free( rpf );
 	}

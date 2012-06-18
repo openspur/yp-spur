@@ -122,19 +122,19 @@ int main( int argc, char *argv[] )
 	escape_road(  );
 	g_emergency = 0;
 
+	/* パラメータを読み込み、セットする */
+	param = get_param_ptr(  );
+
 #ifdef HAVE_SSM
 	/* SSM初期化 */
 	if( !option( OPTION_WITHOUT_SSM ) )
-		init_ypspurSSM(  );
+		init_ypspurSSM( param->ssm_id );
 #endif
 
 	/* 座標系の初期化、コマンド処理系の初期化 */
 	init_coordinate_systems(  );
 	init_odometry(  );
 	init_spur_command(  );
-
-	/* パラメータを読み込み、セットする */
-	param = get_param_ptr(  );
 
 	yprintf( OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename );
 	if( !set_param( param->parameter_filename, paramfile ) )

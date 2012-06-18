@@ -2,7 +2,7 @@
 #define __SSM_SPUR_HANDLER__
 #include "command.h"
 
-void init_ypspurSSM( void );
+void init_ypspurSSM( int );
 void end_ypspurSSM( void );
 void write_ypspurSSM( int odometry_updated, int receive_count,
 					  Odometry * odm_log, int readdata_num, Short_2Char * cnt1_log, Short_2Char * cnt2_log,

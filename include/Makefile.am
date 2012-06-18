@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign 1.10
 
-include_HEADERS = ypspur.h ypparam.h
+include_HEADERS = ypspur.h ypspur-md.h ypparam.h
 #pkginclude_HEADERS = yp-spur.h
 
 noinst_HEADERS = ypspur-coordinator.h control.h param.h shvel-param.h \

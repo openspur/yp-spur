@@ -36,8 +36,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = ypspur-coordinator$(EXEEXT) ypspur-free$(EXEEXT) \
-	ypspur-interpreter$(EXEEXT) ypspur-interpreter$(EXEEXT)
-@BUILD_DLL_FOR_WIN32_TRUE@am__append_1 = libypspur_dll.la
+	ypspur-interpreter$(EXEEXT)
+@BUILD_DLL_FOR_WIN32_TRUE@am__append_1 = libypspur_dll.la libypspur_md_dll.la
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -80,25 +80,50 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
+libypspur_md_la_LIBADD =
+am_libypspur_md_la_OBJECTS = libypspur_md_la-libypspur-md.lo \
+	libypspur_md_la-ipcommunication.lo libypspur_md_la-utility.lo
+libypspur_md_la_OBJECTS = $(am_libypspur_md_la_OBJECTS)
+libypspur_md_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libypspur_md_la_CFLAGS) \
+	$(CFLAGS) $(libypspur_md_la_LDFLAGS) $(LDFLAGS) -o $@
 libypspur_la_LIBADD =
-am_libypspur_la_OBJECTS = libypspur_la-libypspur.lo \
+am__objects_1 = libypspur_la-libypspur-md.lo \
 	libypspur_la-ipcommunication.lo libypspur_la-utility.lo
+am_libypspur_la_OBJECTS = libypspur_la-libypspur.lo $(am__objects_1)
 libypspur_la_OBJECTS = $(am_libypspur_la_OBJECTS)
 libypspur_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libypspur_la_CFLAGS) \
 	$(CFLAGS) $(libypspur_la_LDFLAGS) $(LDFLAGS) -o $@
 libypspur_dll_la_LIBADD =
-am__libypspur_dll_la_SOURCES_DIST = libypspur.c ipcommunication.c \
-	utility.c
-@BUILD_DLL_FOR_WIN32_TRUE@am_libypspur_dll_la_OBJECTS =  \
-@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_dll_la-libypspur.lo \
+am__libypspur_dll_la_SOURCES_DIST = libypspur.c libypspur-md.c \
+	ipcommunication.c utility.c
+@BUILD_DLL_FOR_WIN32_TRUE@am__objects_2 =  \
+@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_dll_la-libypspur-md.lo \
 @BUILD_DLL_FOR_WIN32_TRUE@	libypspur_dll_la-ipcommunication.lo \
 @BUILD_DLL_FOR_WIN32_TRUE@	libypspur_dll_la-utility.lo
+@BUILD_DLL_FOR_WIN32_TRUE@am_libypspur_dll_la_OBJECTS =  \
+@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_dll_la-libypspur.lo \
+@BUILD_DLL_FOR_WIN32_TRUE@	$(am__objects_2)
 libypspur_dll_la_OBJECTS = $(am_libypspur_dll_la_OBJECTS)
 libypspur_dll_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libypspur_dll_la_CFLAGS) \
 	$(CFLAGS) $(libypspur_dll_la_LDFLAGS) $(LDFLAGS) -o $@
 @BUILD_DLL_FOR_WIN32_TRUE@am_libypspur_dll_la_rpath = -rpath $(libdir)
+libypspur_md_dll_la_LIBADD =
+am__libypspur_md_dll_la_SOURCES_DIST = libypspur-md.c \
+	ipcommunication.c utility.c
+@BUILD_DLL_FOR_WIN32_TRUE@am_libypspur_md_dll_la_OBJECTS =  \
+@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_md_dll_la-libypspur-md.lo \
+@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_md_dll_la-ipcommunication.lo \
+@BUILD_DLL_FOR_WIN32_TRUE@	libypspur_md_dll_la-utility.lo
+libypspur_md_dll_la_OBJECTS = $(am_libypspur_md_dll_la_OBJECTS)
+libypspur_md_dll_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libypspur_md_dll_la_CFLAGS) $(CFLAGS) \
+	$(libypspur_md_dll_la_LDFLAGS) $(LDFLAGS) -o $@
+@BUILD_DLL_FOR_WIN32_TRUE@am_libypspur_md_dll_la_rpath = -rpath \
+@BUILD_DLL_FOR_WIN32_TRUE@	$(libdir)
 PROGRAMS = $(bin_PROGRAMS)
 am_ypspur_coordinator_OBJECTS =  \
 	ypspur_coordinator-ypspur-coordinator.$(OBJEXT) \
@@ -144,11 +169,13 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libypspur_la_SOURCES) $(libypspur_dll_la_SOURCES) \
+SOURCES = $(libypspur_md_la_SOURCES) $(libypspur_la_SOURCES) \
+	$(libypspur_dll_la_SOURCES) $(libypspur_md_dll_la_SOURCES) \
 	$(ypspur_coordinator_SOURCES) $(ypspur_free_SOURCES) \
 	$(ypspur_interpreter_SOURCES)
-DIST_SOURCES = $(libypspur_la_SOURCES) \
+DIST_SOURCES = $(libypspur_md_la_SOURCES) $(libypspur_la_SOURCES) \
 	$(am__libypspur_dll_la_SOURCES_DIST) \
+	$(am__libypspur_md_dll_la_SOURCES_DIST) \
 	$(ypspur_coordinator_SOURCES) $(ypspur_free_SOURCES) \
 	$(ypspur_interpreter_SOURCES)
 ETAGS = etags
@@ -294,27 +321,33 @@ AUTOMAKE_OPTIONS = foreign 1.10
 INCLUDES = $(all_includes) -I../include -I../auxlib
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
-lib_LTLIBRARIES = libypspur.la $(am__append_1)
-libypspur_la_SOURCES = libypspur.c ipcommunication.c utility.c
-libypspur_la_CFLAGS = $(AM_CFLAGS) -Werror
-libypspur_la_CXXFLAGS = $(libypspur_la_CFLAGS)
+lib_LTLIBRARIES = libypspur.la libypspur-md.la $(am__append_1)
+libypspur_md_la_SOURCES = libypspur-md.c ipcommunication.c utility.c
+libypspur_md_la_CFLAGS = $(AM_CFLAGS) -Werror
+libypspur_md_la_CXXFLAGS = $(libypspur_la_CFLAGS)
 
 #---------------------------------------------------
 # ***_la_LDFLAGS = -version-info  CURRENT:REVISION:AGE
 # 1. Bugfix                          C   : R++ : A
 # 2. Add Interface                   C++ : R=0 : A++
 # 3. Delete or Change Interface      C++ : R=0 : A=0
-libypspur_la_LDFLAGS = -version-info 15:2:1
-@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CFLAGS = $(libypspur_la_CFLAGS)
-@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_SOURCES = libypspur.c ipcommunication.c utility.c
-@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CXXFLAGS = $(libypspur_la_CXXFLAGS)
-@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_LDFLAGS =  \
-@BUILD_DLL_FOR_WIN32_TRUE@	$(libypspur_la_LDFLAGS) -module \
-@BUILD_DLL_FOR_WIN32_TRUE@	-shared $(LDFLAG_DLL_FOR_WIN32)
-
-#HAVE_PEXPORTS
+libypspur_md_la_LDFLAGS = -version-info 15:3:1
+libypspur_la_SOURCES = libypspur.c $(libypspur_md_la_SOURCES)
+libypspur_la_CFLAGS = $(libypspur_md_la_CFLAGS)
+libypspur_la_CXXFLAGS = $(libypspur_md_la_CXXFLAGS)
+libypspur_la_LDFLAGS = $(libypspur_md_la_LDFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_SOURCES = libypspur-md.c ipcommunication.c utility.c
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_CFLAGS = $(libypspur_la_CFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_CXXFLAGS = $(libypspur_la_CXXFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_LDFLAGS = $(libypspur_la_LDFLAGS) -module -shared $(LDFLAG_DLL_FOR_WIN32)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_SOURCES = libypspur.c $(libypspur_md_dll_la_SOURCES)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CFLAGS = $(libypspur_md_dll_la_CFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CXXFLAGS = $(libypspur_md_dll_la_CXXFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_LDFLAGS = $(libypspur_md_dll_la_LDFLAGS)
+@BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_MD_DLL = libypspur-md_dll.dll
+@BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_MD_LIB = libypspur-md_dll.lib
+@BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_MD_DEF = libypspur-md_dll.def
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_DLL = libypspur_dll.dll
-# Current version -1
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_LIB = libypspur_dll.lib
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_DEF = libypspur_dll.def
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
@@ -404,10 +437,14 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libypspur.la: $(libypspur_la_OBJECTS) $(libypspur_la_DEPENDENCIES) $(EXTRA_libypspur_la_DEPENDENCIES) 
+libypspur-md.la: $(libypspur_md_la_OBJECTS) $(libypspur_md_la_DEPENDENCIES) 
+	$(libypspur_md_la_LINK) -rpath $(libdir) $(libypspur_md_la_OBJECTS) $(libypspur_md_la_LIBADD) $(LIBS)
+libypspur.la: $(libypspur_la_OBJECTS) $(libypspur_la_DEPENDENCIES) 
 	$(libypspur_la_LINK) -rpath $(libdir) $(libypspur_la_OBJECTS) $(libypspur_la_LIBADD) $(LIBS)
 libypspur_dll.la: $(libypspur_dll_la_OBJECTS) $(libypspur_dll_la_DEPENDENCIES) $(EXTRA_libypspur_dll_la_DEPENDENCIES) 
 	$(libypspur_dll_la_LINK) $(am_libypspur_dll_la_rpath) $(libypspur_dll_la_OBJECTS) $(libypspur_dll_la_LIBADD) $(LIBS)
+libypspur_md_dll.la: $(libypspur_md_dll_la_OBJECTS) $(libypspur_md_dll_la_DEPENDENCIES) 
+	$(libypspur_md_dll_la_LINK) $(am_libypspur_md_dll_la_rpath) $(libypspur_md_dll_la_OBJECTS) $(libypspur_md_dll_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -468,11 +505,19 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_dll_la-ipcommunication.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_dll_la-libypspur-md.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_dll_la-libypspur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_dll_la-utility.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_la-ipcommunication.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_la-libypspur-md.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_la-libypspur.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_la-utility.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_dll_la-ipcommunication.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_dll_la-libypspur-md.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_dll_la-utility.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_la-ipcommunication.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_la-libypspur-md.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libypspur_md_la-utility.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utility.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur-free.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ypspur-interpreter.Po@am__quote@
@@ -517,12 +562,40 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+libypspur_md_la-libypspur-md.lo: libypspur-md.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -MT libypspur_md_la-libypspur-md.lo -MD -MP -MF $(DEPDIR)/libypspur_md_la-libypspur-md.Tpo -c -o libypspur_md_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_la-libypspur-md.Tpo $(DEPDIR)/libypspur_md_la-libypspur-md.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libypspur-md.c' object='libypspur_md_la-libypspur-md.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+
+libypspur_md_la-ipcommunication.lo: ipcommunication.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -MT libypspur_md_la-ipcommunication.lo -MD -MP -MF $(DEPDIR)/libypspur_md_la-ipcommunication.Tpo -c -o libypspur_md_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_la-ipcommunication.Tpo $(DEPDIR)/libypspur_md_la-ipcommunication.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ipcommunication.c' object='libypspur_md_la-ipcommunication.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
+
+libypspur_md_la-utility.lo: utility.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -MT libypspur_md_la-utility.lo -MD -MP -MF $(DEPDIR)/libypspur_md_la-utility.Tpo -c -o libypspur_md_la-utility.lo `test -f 'utility.c' || echo '$(srcdir)/'`utility.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_la-utility.Tpo $(DEPDIR)/libypspur_md_la-utility.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utility.c' object='libypspur_md_la-utility.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_la-utility.lo `test -f 'utility.c' || echo '$(srcdir)/'`utility.c
+
 libypspur_la-libypspur.lo: libypspur.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_la_CFLAGS) $(CFLAGS) -MT libypspur_la-libypspur.lo -MD -MP -MF $(DEPDIR)/libypspur_la-libypspur.Tpo -c -o libypspur_la-libypspur.lo `test -f 'libypspur.c' || echo '$(srcdir)/'`libypspur.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_la-libypspur.Tpo $(DEPDIR)/libypspur_la-libypspur.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libypspur.c' object='libypspur_la-libypspur.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_la_CFLAGS) $(CFLAGS) -c -o libypspur_la-libypspur.lo `test -f 'libypspur.c' || echo '$(srcdir)/'`libypspur.c
+
+libypspur_la-libypspur-md.lo: libypspur-md.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_la_CFLAGS) $(CFLAGS) -MT libypspur_la-libypspur-md.lo -MD -MP -MF $(DEPDIR)/libypspur_la-libypspur-md.Tpo -c -o libypspur_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_la-libypspur-md.Tpo $(DEPDIR)/libypspur_la-libypspur-md.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libypspur-md.c' object='libypspur_la-libypspur-md.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_la_CFLAGS) $(CFLAGS) -c -o libypspur_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
 
 libypspur_la-ipcommunication.lo: ipcommunication.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_la_CFLAGS) $(CFLAGS) -MT libypspur_la-ipcommunication.lo -MD -MP -MF $(DEPDIR)/libypspur_la-ipcommunication.Tpo -c -o libypspur_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
@@ -545,6 +618,13 @@ libypspur_dll_la-libypspur.lo: libypspur.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_dll_la-libypspur.lo `test -f 'libypspur.c' || echo '$(srcdir)/'`libypspur.c
 
+libypspur_dll_la-libypspur-md.lo: libypspur-md.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_dll_la_CFLAGS) $(CFLAGS) -MT libypspur_dll_la-libypspur-md.lo -MD -MP -MF $(DEPDIR)/libypspur_dll_la-libypspur-md.Tpo -c -o libypspur_dll_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_dll_la-libypspur-md.Tpo $(DEPDIR)/libypspur_dll_la-libypspur-md.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libypspur-md.c' object='libypspur_dll_la-libypspur-md.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_dll_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+
 libypspur_dll_la-ipcommunication.lo: ipcommunication.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_dll_la_CFLAGS) $(CFLAGS) -MT libypspur_dll_la-ipcommunication.lo -MD -MP -MF $(DEPDIR)/libypspur_dll_la-ipcommunication.Tpo -c -o libypspur_dll_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_dll_la-ipcommunication.Tpo $(DEPDIR)/libypspur_dll_la-ipcommunication.Plo
@@ -558,6 +638,27 @@ libypspur_dll_la-utility.lo: utility.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utility.c' object='libypspur_dll_la-utility.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_dll_la-utility.lo `test -f 'utility.c' || echo '$(srcdir)/'`utility.c
+
+libypspur_md_dll_la-libypspur-md.lo: libypspur-md.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -MT libypspur_md_dll_la-libypspur-md.lo -MD -MP -MF $(DEPDIR)/libypspur_md_dll_la-libypspur-md.Tpo -c -o libypspur_md_dll_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_dll_la-libypspur-md.Tpo $(DEPDIR)/libypspur_md_dll_la-libypspur-md.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libypspur-md.c' object='libypspur_md_dll_la-libypspur-md.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_dll_la-libypspur-md.lo `test -f 'libypspur-md.c' || echo '$(srcdir)/'`libypspur-md.c
+
+libypspur_md_dll_la-ipcommunication.lo: ipcommunication.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -MT libypspur_md_dll_la-ipcommunication.lo -MD -MP -MF $(DEPDIR)/libypspur_md_dll_la-ipcommunication.Tpo -c -o libypspur_md_dll_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_dll_la-ipcommunication.Tpo $(DEPDIR)/libypspur_md_dll_la-ipcommunication.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ipcommunication.c' object='libypspur_md_dll_la-ipcommunication.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_dll_la-ipcommunication.lo `test -f 'ipcommunication.c' || echo '$(srcdir)/'`ipcommunication.c
+
+libypspur_md_dll_la-utility.lo: utility.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -MT libypspur_md_dll_la-utility.lo -MD -MP -MF $(DEPDIR)/libypspur_md_dll_la-utility.Tpo -c -o libypspur_md_dll_la-utility.lo `test -f 'utility.c' || echo '$(srcdir)/'`utility.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libypspur_md_dll_la-utility.Tpo $(DEPDIR)/libypspur_md_dll_la-utility.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utility.c' object='libypspur_md_dll_la-utility.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libypspur_md_dll_la_CFLAGS) $(CFLAGS) -c -o libypspur_md_dll_la-utility.lo `test -f 'utility.c' || echo '$(srcdir)/'`utility.c
 
 ypspur_coordinator-ypspur-coordinator.o: ypspur-coordinator.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ypspur_coordinator_CFLAGS) $(CFLAGS) -MT ypspur_coordinator-ypspur-coordinator.o -MD -MP -MF $(DEPDIR)/ypspur_coordinator-ypspur-coordinator.Tpo -c -o ypspur_coordinator-ypspur-coordinator.o `test -f 'ypspur-coordinator.c' || echo '$(srcdir)/'`ypspur-coordinator.c
@@ -1041,16 +1142,22 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	uninstall-am uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 
+@BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_MD_DLL) : $(lib_LTLIBRARIES)
+@BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur-md_dll-*.dll $(LIBYPSPUR_MD_DLL)
 @BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_DLL) : $(lib_LTLIBRARIES)
 @BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur_dll-*.dll $(LIBYPSPUR_DLL)
 
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@$(LIBYPSPUR_MD_DEF) : $(LIBYPSPUR_MD_DLL)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@	$(DLL_PEXPORTS) $(LIBYPSPUR_MD_DLL) > $(LIBYPSPUR_MD_DEF)
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@$(LIBYPSPUR_DEF) : $(LIBYPSPUR_DLL)
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@	$(DLL_PEXPORTS) $(LIBYPSPUR_DLL) > $(LIBYPSPUR_DEF)
 
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@$(LIBYPSPUR_MD_LIB) : $(LIBYPSPUR_MD_DLL) $(LIBYPSPUR_MD_DEF)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@	$(DLL_DLLTOOL) --dllname $(LIBYPSPUR_MD_DLL) --input-def $(LIBYPSPUR_MD_DEF) --output-lib $(LIBYPSPUR_MD_LIB)
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@$(LIBYPSPUR_LIB) : $(LIBYPSPUR_DLL) $(LIBYPSPUR_DEF)
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@	$(DLL_DLLTOOL) --dllname $(LIBYPSPUR_DLL) --input-def $(LIBYPSPUR_DEF) --output-lib $(LIBYPSPUR_LIB)
 
-@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@all: $(LIBYPSPUR_LIB)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@all: $(LIBYPSPUR_LIB) $(LIBYPSPUR_MD_LIB)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -55,6 +55,7 @@ typedef struct _parameters
 	ParamOptions option;
 	ParamOutputLv output_lv;
 	unsigned char admask;
+	int ssm_id;
 } Parameters;
 
 int arg_analyze( int argc, char *argv[] );

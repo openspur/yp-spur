@@ -27,12 +27,15 @@
 SSM_sid g_odm_bs_sid = 0, g_odm_sid = 0, g_motor_sid = 0, g_odm_adj_sid = 0, g_ad_sid = 0;
 int g_ssm_enable;
 int g_ssm_adj_enable = 0;
+int g_ssm_id = 0;
 #endif
 
 /* SSM の初期化 */
-void init_ypspurSSM( void )
+void init_ypspurSSM( int ssm_id )
 {
 #ifdef HAVE_SSM
+	g_ssm_id = ssm_id;
+
 	yprintf( OUTPUT_LV_MODULE, "    with SSM\n" );
 	if( !initSSM(  ) )
 	{
@@ -43,10 +46,10 @@ void init_ypspurSSM( void )
 	else
 	{
 		g_ssm_enable = 1;
-		g_odm_bs_sid = createSSM_time( SNAME_ODOMETRY, 0, sizeof ( Spur_Odometry ), 5, 0.005 );
-		g_odm_sid = createSSM_time( SNAME_GLOBAL, 0, sizeof ( Spur_Odometry ), 5, 0.005 );
-		g_motor_sid = createSSM_time( SNAME_PWS_MOTOR, 0, sizeof ( PWSMotor ), 1, 0.005 );
-		g_ad_sid = createSSM_time( SNAME_YPSPUR_AD, 0, sizeof ( YP_ad ), 1, 0.005 );
+		g_odm_bs_sid = createSSM_time( SNAME_ODOMETRY, ssm_id, sizeof ( Spur_Odometry ), 5, 0.005 );
+		g_odm_sid = createSSM_time( SNAME_GLOBAL, ssm_id, sizeof ( Spur_Odometry ), 5, 0.005 );
+		g_motor_sid = createSSM_time( SNAME_PWS_MOTOR, ssm_id, sizeof ( PWSMotor ), 1, 0.005 );
+		g_ad_sid = createSSM_time( SNAME_YPSPUR_AD, ssm_id, sizeof ( YP_ad ), 1, 0.005 );
 		if( !( g_odm_bs_sid && g_odm_sid && g_motor_sid && g_ad_sid ) )
 		{
 			g_ssm_enable = 0;

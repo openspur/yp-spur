@@ -145,7 +145,7 @@ extern "C"
 
 	int YP_set_parameter( int param_id, double value );
 	int YP_get_parameter( int param_id, double *value );
-	int YP_set_control_mode( int control_id, int state );
+	int YP_set_control_state( int control_id, int state );
 
 	int YP_get_ad_value( int num );
 	int YP_set_io_dir( unsigned char dir );

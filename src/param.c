@@ -106,7 +106,7 @@ void arg_longhelp( int argc, char *argv[] )
 	                 "                           with the B-Loco device.\n" );
 	fprintf( stderr, "  --reconnect              Try reconnect device when device was closed.\n" );
 	fprintf( stderr, "  --without-ssm            Run without ssm output.\n" );
-	fprintf( stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY.\n" );
+	fprintf( stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY (default = 28741).\n" );
 	fprintf( stderr, "  -s, --speed <BAUDRATE>   Set baudrate.\n" );
 	fprintf( stderr, "  --admask <ADMASK>        Get AD data of ADMASK from B-Loco device.\n" );
 	fprintf( stderr, "  --enable-get-digital-io  Enable digital IO port.\n" );
@@ -115,6 +115,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
 	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
+	fprintf( stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n" );
 
 }
 
@@ -143,6 +144,7 @@ int arg_analyze( int argc, char *argv[] )
 	g_param.msq_key = YPSPUR_MSQ_KEY;
 	g_param.output_lv = OUTPUT_LV_DEFAULT;
 	g_param.speed = 0;
+	g_param.ssm_id = 0;
 
 	strcpy( g_param.parameter_filename, DEFAULT_PARAMETER_FILE );
 	strcpy( g_param.device_name, DEFAULT_DEVICE_NAME );
@@ -284,6 +286,18 @@ int arg_analyze( int argc, char *argv[] )
 		else if( !strcmp( argv[i], "--update-param" ) )
 		{
 			g_param.option |= OPTION_UPDATE_PARAM;
+		}
+		else if( !strcmp( argv[i], "--ssm-id" ) )
+		{
+			if( i + 1 < argc )
+			{
+				i++;
+				g_param.ssm_id = atoi( argv[i] );
+			}
+			else
+			{
+				break;
+			}
 		}
 		else
 		{

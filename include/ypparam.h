@@ -40,6 +40,9 @@ extern "C"
 		YPSPUR_GET_WHEEL_VEL,
 		YPSPUR_GET_WHEEL_ANG,
 		YPSPUR_GET_FORCE,
+		YPSPUR_SET_WHEEL_VEL,
+		YPSPUR_SET_WHEEL_ACCEL,
+		YPSPUR_WHEEL_ANGLE,
 		// 
 		YPSPUR_PARAM_SET = 0x100,
 		YPSPUR_PARAM_GET,
@@ -82,8 +85,9 @@ extern "C"
 		YP_PARAM_MOTOR_VTC,				///< 未使用（用途不明）
 
 		// キネマティクス
-		YP_PARAM_RADIUS_R,
-		YP_PARAM_RADIUS_L,
+		YP_PARAM_RADIUS,
+		YP_PARAM_RADIUS_R, // 後方互換のため
+		YP_PARAM_RADIUS_L, // 後方互換のため
 		YP_PARAM_TREAD,
 
 		// 車体コントロールパラメータ
@@ -130,6 +134,9 @@ extern "C"
 		YP_PARAM_GAIN_E,
 		YP_PARAM_GAIN_F,
 
+		YP_PARAM_MIN_WHEEL_ANGLE,
+		YP_PARAM_MAX_WHEEL_ANGLE,
+
 		YP_PARAM_NUM							///< パラメータの最大値
 	} YPSpur_param;
 
@@ -139,13 +146,14 @@ extern "C"
 {\
 	"VERSION", "TORQUE_UNIT","VOLT_UNIT", "METER_UNIT", "ANPERE_UNIT", "AVEL_UNIT",\
 	"PWM_MAX", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "_MOTOR_VTC",\
-	"RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
+	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 	"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
-	"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "INTEGRAL_MAX", "_TORQUE_OFFSET",\
+	"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "INTEGRAL_MAX", "TORQUE_OFFSET",\
 	"MASS","MOMENT_INERTIA", "MOTOR_M_INERTIA", "TIRE_M_INERTIA",\
 	"SIZE_FRONT", "SIZE_REAR", "SIZE_LEFT", "SIZE_RIGHT",\
 	"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
+	"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
 }
 
 #define YP_PARAM_COMMENT \
@@ -156,8 +164,8 @@ extern "C"
 	"[Integer A/A]  Fixed-point position of PC-MCU communication", \
 	"[Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
 	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
-    "[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","",\
-	"[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
+	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","",\
+	"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
 	"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
 	"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\
 	"[m/s / rad/s] Deacceleration factor of trajectory control",\
@@ -169,6 +177,21 @@ extern "C"
 	"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
 	"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
 	"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
+	"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)"\
+}
+
+enum motor_id
+{
+	MOTOR_RIGHT = 0,
+	MOTOR_LEFT,
+	YP_PARAM_MOTOR_NUM
+};
+
+#define YP_PARAM_ALIAS_NUM 2
+#define YP_PARAM_ALIAS \
+{\
+	{ YP_PARAM_RADIUS_L, YP_PARAM_RADIUS, MOTOR_LEFT },\
+	{ YP_PARAM_RADIUS_R, YP_PARAM_RADIUS, MOTOR_RIGHT },\
 }
 
 #define YP_PARAM_REQUIRED_VERSION	3.0

@@ -13,7 +13,8 @@ typedef enum
 	RUN_ORIENT,
 	RUN_VEL,
 	RUN_WHEEL_VEL,
-	RUN_WHEEL_TORQUE
+	RUN_WHEEL_TORQUE,
+	RUN_WHEEL_ANGLE
 } SpurRunMode;
 
 typedef struct _spur_user_params *SpurUserParamsPtr;
@@ -25,10 +26,18 @@ typedef struct _spur_user_params
 	double w;
 	double vref;
 	double wref;
+	double wrref;
+	double wlref;
 	double x;
 	double y;
 	double torque_r;
 	double torque_l;
+	double wheel_accel_r;
+	double wheel_accel_l;
+	double wheel_vel_r;
+	double wheel_vel_l;
+	double wheel_angle_r;
+	double wheel_angle_l;
 	double theta;
 	double radius;
 	double tilt;
@@ -62,6 +71,7 @@ void stop_com( double *data, SpurUserParamsPtr spur );
 void free_com( double *data, SpurUserParamsPtr spur );
 void vel_com( double *data, SpurUserParamsPtr spur );
 void wheel_vel_com( double *data, SpurUserParamsPtr spur );
+void wheel_angle_com( double *data, SpurUserParamsPtr spur );
 
 /* command_set.c */
 void set_pos_com( int cs, double *data, SpurUserParamsPtr spur );
@@ -73,6 +83,8 @@ void set_accel_com( double *data, SpurUserParamsPtr spur );
 void set_ang_vel_com( double *data, SpurUserParamsPtr spur );
 void set_tilt_com( int cs, double *data, SpurUserParamsPtr spur );
 void set_torque_com( double *data, SpurUserParamsPtr spur );
+void set_wheel_vel_com( double *data, SpurUserParamsPtr spur );
+void set_wheel_accel_com( double *data, SpurUserParamsPtr spur );
 
 /* command_get.c */
 void get_pos_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );

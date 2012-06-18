@@ -76,14 +76,17 @@ int does_option_set( ParamOptions option );
 int state( YPSpur_state id );
 void enable_state( YPSpur_state id );
 void disable_state( YPSpur_state id );
-double p( YPSpur_param id );
-double *pp( YPSpur_param id );
+double p( YPSpur_param id, enum motor_id motor );
+double isset_p( YPSpur_param id, enum motor_id motor );
+double *pp( YPSpur_param id, enum motor_id motor );
 ParametersPtr get_param_ptr(  );
 int option( ParamOptions option );
 ParamOutputLv output_lv( void );
+void param_calc( );
 
 void param_update( void *filename );
 void init_param_update_thread( pthread_t * thread, char *filename );
 void param_update_loop_cleanup( void *data );
 
 #endif
+

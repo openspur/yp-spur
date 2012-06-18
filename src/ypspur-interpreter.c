@@ -55,6 +55,9 @@ typedef struct SPUR_COMMAND
 		SPUR_GET_WHEEL_TORQUE,
 		SPUR_WHEEL_TORQUE,
 		SPUR_ORIENT,
+		SPUR_SET_WHEEL_VEL,
+		SPUR_SET_WHEEL_ACCEL,
+		SPUR_WHEEL_ANG,
 		SPUR_SLEEP,
 		EXIT,
 		HELP,
@@ -97,6 +100,9 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_GET_WHEEL_TORQUE, {"get_wheel_torque"}, 0},
 	{SPUR_WHEEL_TORQUE, {"wheel_torque"}, 2},
 	{SPUR_ORIENT, {"orient"}, 1},
+	{SPUR_SET_WHEEL_VEL, {"set_wheel_vel"}, 0},
+	{SPUR_SET_WHEEL_ACCEL, {"set_wheel_accel"}, 0},
+	{SPUR_WHEEL_ANG, {"wheel_ang"}, 0},
 	{SPUR_SLEEP, {"sleep"}, 1},
 	{HELP, {"help"}, 0},
 	{EXIT, {"exit"}, 0}
@@ -277,10 +283,10 @@ int proc_spur( char *line, int *coordinate )
 		YPSpur_vel( spur.arg[0], spur.arg[1] );
 		break;
 	case SPUR_WHEEL_VEL:
-		YP_set_wheel_vel( spur.arg[0], spur.arg[1] );
+		YP_wheel_vel( spur.arg[0], spur.arg[1] );
 		break;
 	case SPUR_WHEEL_TORQUE:
-		YP_set_wheel_torque( spur.arg[0], spur.arg[1] );
+		YP_wheel_torque( spur.arg[0], spur.arg[1] );
 		break;
 	case SPUR_GET_WHEEL_VEL:
 		YP_get_wheel_vel( &spur.arg[0], &spur.arg[1] );
@@ -289,6 +295,15 @@ int proc_spur( char *line, int *coordinate )
 	case SPUR_GET_WHEEL_ANG:
 		YP_get_wheel_ang( &spur.arg[0], &spur.arg[1] );
 		printf( "%f %f\n", spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_SET_WHEEL_VEL:
+		YP_set_wheel_vel( spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_SET_WHEEL_ACCEL:
+		YP_set_wheel_accel( spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_WHEEL_ANG:
+		YP_wheel_ang( spur.arg[0], spur.arg[1] );
 		break;
 	case SPUR_SLEEP:
 		yp_usleep( ( int )( spur.arg[0] * 1000.0 * 1000.0 ) );
@@ -329,6 +344,7 @@ void print_help( char *argv[] )
 	fputs( "\t-A | --set-accel    VALUE  : [m/ss]   set accel of SPUR to VALUE\n", stderr );
 	fputs( "\t-O | --set-angaccel VALUE  : [rad/ss] set angaccel of SPUR to VALUE\n", stderr );
 	fputs( "\t-c | --command     \"VALUE\" : execute command VALUE\n", stderr );
+	fputs( "\t-q | --msq-id       VALUE  : set message-queue id\n", stderr );
 	fputs( "\t-h | --help                : print this help\n", stderr );
 }
 
@@ -341,19 +357,21 @@ int main( int argc, char *argv[] )
 	double angvel = 0;
 	double accel = 0;
 	double angaccel = 0;
-	struct option options[7] =
+	int msqid = 0;
+	struct option options[8] =
 	{
 		{"set-vel", 1, 0, 'V'},
 		{"set-angvel", 1, 0, 'W'},
 		{"set-accel", 1, 0, 'A'},
 		{"set-angaccel", 1, 0, 'O'},
 		{"command", 1, 0, 'c'},
+		{"msq-id", 1, 0, 'q'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
 	int opt;
 	
-	while( ( opt = getopt_long( argc, argv, "V:W:A:O:c:h", options, NULL ) ) != -1 )
+	while( ( opt = getopt_long( argc, argv, "V:W:A:O:c:q:h", options, NULL ) ) != -1 )
 	{
 		switch ( opt )
 		{
@@ -370,9 +388,13 @@ int main( int argc, char *argv[] )
 			angaccel = atof( optarg );
 			break;
 		case 'c':
-			YPSpur_init(  );
+			if( msqid == 0 ) YPSpur_init(  );
+			else YPSpur_initex( msqid );
 			proc_spur( optarg, &coordinate );
 			return 1;
+			break;
+		case 'q':
+			msqid = atoi( optarg );
 			break;
 		case 'h':
 			print_help( argv );
@@ -387,7 +409,8 @@ int main( int argc, char *argv[] )
 	signal( SIGINT, ctrlc );
 #endif
 
-	YPSpur_init(  );
+	if( msqid == 0 ) YPSpur_init(  );
+	else YPSpur_initex( msqid );
 	YPSpur_set_vel( vel );
 	YPSpur_set_angvel( angvel );
 	YPSpur_set_accel( accel );
@@ -426,7 +449,8 @@ int main( int argc, char *argv[] )
 			}
 			if( YP_get_error_state() )
 			{
-				Spur_init();
+				if( msqid == 0 ) YPSpur_init(  );
+				else YPSpur_initex( msqid );
 				YPSpur_set_vel( vel );
 				YPSpur_set_angvel( angvel );
 				YPSpur_set_accel( accel );

@@ -190,11 +190,23 @@ void command( void )
 			break;
 		case YPSPUR_WHEEL_VEL:
 			wheel_vel_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: wheelvel %f %f\n", g_spur.vref, g_spur.wref );
+			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.vref, g_spur.wref );
 			break;
 		case YPSPUR_WHEEL_TORQUE:
 			set_torque_com( msg.data, &g_spur );
 			yprintf( OUTPUT_LV_COMMAND, "Command: set_torque %f %f\n", msg.data[0], msg.data[1] );
+			break;
+		case YPSPUR_SET_WHEEL_VEL:
+			set_wheel_vel_com( msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_vel %f %f\n", g_spur.wheel_vel_r, g_spur.wheel_vel_l );
+			break;
+		case YPSPUR_SET_WHEEL_ACCEL:
+			set_wheel_accel_com( msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_accel %f %f\n", g_spur.wheel_accel_r, g_spur.wheel_accel_l );
+			break;
+		case YPSPUR_WHEEL_ANGLE:
+			wheel_angle_com( msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_angle %f %f\n", g_spur.wheel_angle_r, g_spur.wheel_angle_l );
 			break;
 
 		/*----------command_get.c------------------*/

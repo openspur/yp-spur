@@ -117,55 +117,59 @@ void set_cs( YPSpur_cs cs, double x, double y, double theta )
 void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, double dt )
 {
 	double v, w, wr, wl, mwr, mwl;
-	double mtorque_l, mtorque_r, torque_l, torque_r, volt_l, volt_r, vc;
+	double mtorque_l, mtorque_r, torque_l, torque_r, volt_l, volt_r, vc_l, vc_r;
 	double torque_trans, torque_angular;
 
 	/* 角速度計算 */
-	mwr = 2.0 * M_PI * ( ( double )cnt2 ) / ( p( YP_PARAM_COUNT_REV ) * dt );
-	mwl = 2.0 * M_PI * ( ( double )cnt1 ) / ( p( YP_PARAM_COUNT_REV ) * dt );
-	wr = mwr / p( YP_PARAM_GEAR );
-	wl = mwl / p( YP_PARAM_GEAR );
+	mwr = 2.0 * M_PI * ( ( double )cnt1 ) / ( p( YP_PARAM_COUNT_REV, MOTOR_RIGHT ) * dt );
+	mwl = 2.0 * M_PI * ( ( double )cnt2 ) / ( p( YP_PARAM_COUNT_REV, MOTOR_LEFT ) * dt );
+	wr = mwr / p( YP_PARAM_GEAR, MOTOR_RIGHT );
+	wl = mwl / p( YP_PARAM_GEAR, MOTOR_LEFT );
 	/* キネマティクス計算 */
-	v = p( YP_PARAM_RADIUS_R ) * wr / 2.0 + p( YP_PARAM_RADIUS_L ) * wl / 2.0;
-	w = p( YP_PARAM_RADIUS_R ) * wr / p( YP_PARAM_TREAD ) - p( YP_PARAM_RADIUS_L ) * wl / p( YP_PARAM_TREAD );
+	v = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / 2.0 + p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / 2.0;
+	w = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / p( YP_PARAM_TREAD, 0 )
+	   -p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / p( YP_PARAM_TREAD, 0 );
 
-	volt_l = ( double )pwm1 * p( YP_PARAM_VOLT ) / ( p( YP_PARAM_PWM_MAX ) * ( dt / p( YP_PARAM_CYCLE ) ) );
-	volt_r = ( double )pwm2 * p( YP_PARAM_VOLT ) / ( p( YP_PARAM_PWM_MAX ) * ( dt / p( YP_PARAM_CYCLE ) ) );
+	volt_r = ( double )pwm1 * p( YP_PARAM_VOLT, MOTOR_RIGHT )
+			 / ( p( YP_PARAM_PWM_MAX, MOTOR_RIGHT ) * ( dt / p( YP_PARAM_CYCLE, MOTOR_RIGHT ) ) );
+	volt_l = ( double )pwm2 * p( YP_PARAM_VOLT, MOTOR_LEFT )
+			 / ( p( YP_PARAM_PWM_MAX, MOTOR_LEFT ) * ( dt / p( YP_PARAM_CYCLE, MOTOR_LEFT ) ) );
 
 	/* トルク推定 */
-	vc = ( p( YP_PARAM_MOTOR_VC ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
+	vc_r = ( p( YP_PARAM_MOTOR_VC, MOTOR_RIGHT ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
+	vc_l = ( p( YP_PARAM_MOTOR_VC, MOTOR_LEFT ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
 	// TC [Nm/A]
-	mtorque_l = p( YP_PARAM_MOTOR_TC ) * ( ( volt_l - mwl / vc ) / p( YP_PARAM_MOTOR_R ) );
-	mtorque_r = p( YP_PARAM_MOTOR_TC ) * ( ( volt_r - mwr / vc ) / p( YP_PARAM_MOTOR_R ) );
+	mtorque_r = p( YP_PARAM_MOTOR_TC, MOTOR_RIGHT ) * ( ( volt_r - mwr / vc_r ) / p( YP_PARAM_MOTOR_R, MOTOR_RIGHT ) );
+	mtorque_l = p( YP_PARAM_MOTOR_TC, MOTOR_LEFT ) * ( ( volt_l - mwl / vc_l ) / p( YP_PARAM_MOTOR_R, MOTOR_LEFT ) );
 	/* 摩擦補償の補償 */
-	if( mtorque_l > 0 )
+	if( wr > 0 )
 	{
-		mtorque_l -= p( YP_PARAM_TORQUE_NEWTON )
-				 + p( YP_PARAM_TORQUE_VISCOS ) * fabs( wl * p( YP_PARAM_GEAR ) );
+		mtorque_r -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( wr * p( YP_PARAM_GEAR, MOTOR_RIGHT ) );
 	}
-	else if( mtorque_l < 0 )
+	else if( wr < 0 )
 	{
-		mtorque_l += p( YP_PARAM_TORQUE_NEWTON )
-				 + p( YP_PARAM_TORQUE_VISCOS ) * fabs( wl * p( YP_PARAM_GEAR ) );
+		mtorque_r += p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( wr * p( YP_PARAM_GEAR, MOTOR_RIGHT ) );
 	}
-	if( mtorque_r > 0 )
+	if( wl > 0 )
 	{
-		mtorque_r -= p( YP_PARAM_TORQUE_NEWTON )
-				 + p( YP_PARAM_TORQUE_VISCOS ) * fabs( wr * p( YP_PARAM_GEAR ) );
+		mtorque_l -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( wl * p( YP_PARAM_GEAR, MOTOR_LEFT ) );
 	}
-	else if( mtorque_r < 0 )
+	else if( wl < 0 )
 	{
-		mtorque_r += p( YP_PARAM_TORQUE_NEWTON )
-				 + p( YP_PARAM_TORQUE_VISCOS ) * fabs( wr * p( YP_PARAM_GEAR ) );
+		mtorque_l += p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( wl * p( YP_PARAM_GEAR, MOTOR_LEFT ) );
 	}
 
-	torque_l = mtorque_l * p( YP_PARAM_GEAR );
-	torque_r = mtorque_r * p( YP_PARAM_GEAR );
+	torque_r = mtorque_r * p( YP_PARAM_GEAR, MOTOR_RIGHT );
+	torque_l = mtorque_l * p( YP_PARAM_GEAR, MOTOR_LEFT );
 
-	torque_trans = torque_r / p( YP_PARAM_RADIUS_R ) + 
-					 torque_l / p( YP_PARAM_RADIUS_L );
-	torque_angular = ( torque_r / p( YP_PARAM_RADIUS_R ) - torque_l / p( YP_PARAM_RADIUS_L ) )
-						 * p( YP_PARAM_TREAD ) / 2;
+	torque_trans = torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT ) + 
+	               torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT );
+	torque_angular = ( torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT ) - torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT ) )
+	                   * p( YP_PARAM_TREAD, 0 ) / 2;
 
 	/* オドメトリ計算 */
 	xp->x = xp->x + v * cos( xp->theta ) * dt;
@@ -176,8 +180,8 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	xp->w = w;
 	xp->wr = wr;
 	xp->wl = wl;
-	xp->theta_r = xp->theta_r + wr * dt;
-	xp->theta_l = xp->theta_l + wl * dt;
+	xp->theta_r = xp->theta_r + xp->wr * dt;
+	xp->theta_l = xp->theta_l + xp->wl * dt;
 	xp->torque_r = torque_r;
 	xp->torque_l = torque_l;
 	xp->torque_trans = torque_trans;
@@ -190,6 +194,9 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 
 	/* FS座標系セット */
 	CS_set( g_FS, xp->x, xp->y, xp->theta );
+	
+	// 数式指定のパラメータを評価
+	param_calc( );
 }
 
 /* Odometry型データの座標系を変換 */

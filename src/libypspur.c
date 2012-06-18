@@ -235,14 +235,29 @@ int YP_set_io_data( unsigned char data )
 }
 
 /* 直接タイヤ回転速度入力 */
+int YP_wheel_vel( double r, double l )
+{
+	return YP_md_wheel_vel( &spur, r, l );
+}
+
+int YP_wheel_torque( double r, double l )
+{
+	return YP_md_wheel_torque( &spur, r, l );
+}
+
 int YP_set_wheel_vel( double r, double l )
 {
 	return YP_md_set_wheel_vel( &spur, r, l );
 }
 
-int YP_set_wheel_torque( double r, double l )
+int YP_set_wheel_accel( double r, double l )
 {
-	return YP_md_set_wheel_torque( &spur, r, l );
+	return YP_md_set_wheel_accel( &spur, r, l );
+}
+
+int YP_wheel_ang( double r, double l )
+{
+	return YP_md_wheel_ang( &spur, r, l );
 }
 
 

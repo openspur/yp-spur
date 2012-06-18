@@ -31,3 +31,4 @@ autom4te.cache/
 *.lib
 *.exe
 *.patch
+.spurip_history

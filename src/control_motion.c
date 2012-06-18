@@ -94,7 +94,7 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 
 	reference_speed( &nv, &nw );
 
-	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1 ) * fabs( nw );
+	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( nw );
 	wref = v_max / r;
 	if( wref > fabs( w_max ) )
 		wref = fabs( w_max );
@@ -103,13 +103,13 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 
 	// printf("d%f q%f r%f v%f w%f wref%f\n",d,q,r,nv,nw,wref);fflush(stdout);
 	cd = d;
-	if( cd > p( YP_PARAM_L_DIST ) )
-		cd = p( YP_PARAM_L_DIST );
-	if( cd < -p( YP_PARAM_L_DIST ) )
-		cd = -p( YP_PARAM_L_DIST );
+	if( cd > p( YP_PARAM_L_DIST, 0 ) )
+		cd = p( YP_PARAM_L_DIST, 0 );
+	if( cd < -p( YP_PARAM_L_DIST, 0 ) )
+		cd = -p( YP_PARAM_L_DIST, 0 );
 	w = nw -
-		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1 ) * cd +
-							 p( YP_PARAM_L_K2 ) * q + p( YP_PARAM_L_K3 ) * ( nw - wref ) );
+		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1, 0 ) * cd +
+							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( nw - wref ) );
 	// 円弧追従の制御を正しく[AWD]
 
 	v = v_max;
@@ -227,4 +227,61 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 		// vel = dist;
 	}
 	return over;
+}
+
+
+/* 回転 */
+double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
+{
+	double q, w_limit;
+	double wr, wl;
+	double nwl, nwr;
+
+	reference_motor_speed( &nwl, &nwr );
+
+	q = ( odm->theta_l + nwl * spur->control_dt ) - spur->wheel_angle_l;
+	/* 次の制御周期で停止するのに限界の速度を計算 */
+	w_limit = sqrt( 2 * spur->wheel_accel_l * fabs( q ) );
+	if( spur->wheel_vel_l < w_limit )
+	{
+		wl = -SIGN( q ) * fabs( spur->wheel_vel_l );
+	}
+	else
+	{
+		wl = -SIGN( q ) * w_limit;
+	}
+	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl + spur->wheel_accel_l * spur->control_dt;
+	}
+	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl - spur->wheel_accel_l * spur->control_dt;
+	}
+
+	q = ( odm->theta_r + nwr * spur->control_dt ) - spur->wheel_angle_r;
+	/* 次の制御周期で停止するのに限界の速度を計算 */
+	w_limit = sqrt( 2 * spur->wheel_accel_r * fabs( q ) );
+	if( spur->wheel_vel_r < w_limit )
+	{
+		wr = -SIGN( q ) * fabs( spur->wheel_vel_r );
+	}
+	else
+	{
+		wr = -SIGN( q ) * w_limit;
+	}
+	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr + spur->wheel_accel_r * spur->control_dt;
+	}
+	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr - spur->wheel_accel_r * spur->control_dt;
+	}
+
+	motor_speed( wr, wl );
+//	printf("v %f %f a %f %f tg %f %f  wref %f %f w %f %f\n",spur->wheel_vel_r, spur->wheel_vel_l,
+//		spur->wheel_accel_r, spur->wheel_accel_l, 
+//		spur->wheel_angle_r, spur->wheel_angle_l, nwr, nwl, wr,wl);
+	return 0;
 }

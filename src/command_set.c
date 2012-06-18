@@ -109,10 +109,10 @@ void set_adjust_com( int cs, double *data, SpurUserParamsPtr spur )
 void set_vel_com( double *data, SpurUserParamsPtr spur )
 {
 	spur->v = data[0];
-	if( spur->v > p( YP_PARAM_MAX_VEL ) )
-		spur->v = p( YP_PARAM_MAX_VEL );
-	if( spur->v < -p( YP_PARAM_MAX_VEL ) )
-		spur->v = -p( YP_PARAM_MAX_VEL );
+	if( spur->v > p( YP_PARAM_MAX_VEL, 0 ) )
+		spur->v = p( YP_PARAM_MAX_VEL, 0 );
+	if( spur->v < -p( YP_PARAM_MAX_VEL, 0 ) )
+		spur->v = -p( YP_PARAM_MAX_VEL, 0 );
 }
 
 void set_torque_com( double *data, SpurUserParamsPtr spur )
@@ -125,8 +125,8 @@ void set_torque_com( double *data, SpurUserParamsPtr spur )
 void set_ang_vel_com( double *data, SpurUserParamsPtr spur )
 {
 	spur->w = data[0];
-	if( spur->w > p( YP_PARAM_MAX_W ) )
-		spur->w = p( YP_PARAM_MAX_W );
+	if( spur->w > p( YP_PARAM_MAX_W, 0 ) )
+		spur->w = p( YP_PARAM_MAX_W, 0 );
 	if( spur->w < 0 )
 		spur->w = 0;
 }
@@ -134,8 +134,8 @@ void set_ang_vel_com( double *data, SpurUserParamsPtr spur )
 void set_accel_com( double *data, SpurUserParamsPtr spur )
 {
 	spur->dv = data[0];
-	if( spur->dv > p( YP_PARAM_MAX_ACC_V ) )
-		spur->dv = p( YP_PARAM_MAX_ACC_V );
+	if( spur->dv > p( YP_PARAM_MAX_ACC_V, 0 ) )
+		spur->dv = p( YP_PARAM_MAX_ACC_V, 0 );
 	if( spur->dv < 0 )
 		spur->dv = 0;
 }
@@ -143,8 +143,8 @@ void set_accel_com( double *data, SpurUserParamsPtr spur )
 void set_ang_accel_com( double *data, SpurUserParamsPtr spur )
 {
 	spur->dw = data[0];
-	if( spur->dw > p( YP_PARAM_MAX_ACC_W ) )
-		spur->dw = p( YP_PARAM_MAX_ACC_W );
+	if( spur->dw > p( YP_PARAM_MAX_ACC_W, 0 ) )
+		spur->dw = p( YP_PARAM_MAX_ACC_W, 0 );
 	if( spur->dw < 0 )
 		spur->dw = 0;
 }
@@ -162,3 +162,16 @@ void set_tilt_com( int cs, double *data, SpurUserParamsPtr spur )
 	spur->dir = theta;
 	spur->tilt = data[1];
 }
+
+void set_wheel_accel_com( double *data, SpurUserParamsPtr spur )
+{
+	spur->wheel_accel_l = data[1];
+	spur->wheel_accel_r = data[0];
+}
+
+void set_wheel_vel_com( double *data, SpurUserParamsPtr spur )
+{
+	spur->wheel_vel_l = data[1];
+	spur->wheel_vel_r = data[0];
+}
+

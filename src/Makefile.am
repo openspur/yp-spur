@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign 1.10
 
 # set the include path found by configure
-INCLUDES= $(all_includes) -I../include -I../auxlib
+INCLUDES= $(all_includes) -I../include -I../auxlib -I../auxlib/formula-calc/src
 
 AM_CFLAGS   = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
@@ -79,18 +79,17 @@ ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
   command.c command_param.c command_set.c command_run.c command_get.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
-#ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -DYP_PARAMS_DIR=`pkg-config --variable=YP_PARAMS_DIR yp-robot-params`
-ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O
+ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -I../auxlib/formula-calc/src
 ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
 ypspur_coordinator_DEPENDENCIES = ../auxlib/libcarte2d.la
 
 
 if HAVE_SSM
 ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la -lssm \
-                           -lm -lpthread
+                           -lm -lpthread ../auxlib/formula-calc/src/libformula-calc.la
 else
 ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la \
-                           -lm -lpthread
+                           -lm -lpthread ../auxlib/formula-calc/src/libformula-calc.la
 endif
 
 ## ypspur-free

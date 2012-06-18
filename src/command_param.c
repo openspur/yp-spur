@@ -38,14 +38,33 @@
 void param_set_com( int cs, double *data, SpurUserParamsPtr spur )
 {
 	if( cs >= 0 && cs < YP_PARAM_NUM )
-		*pp( cs ) = data[0];
+		*pp( cs, 0 ) = data[0];
 }
 
 int param_get_com( int cs, double *resdata, SpurUserParamsPtr spur )
 {
 	if( cs >= 0 && cs < YP_PARAM_NUM )
 	{
-		resdata[0] = *pp( cs );
+		resdata[0] = *pp( cs, 0 );
+		return cs;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void param_set_motor_com( int cs, double *data, SpurUserParamsPtr spur )
+{
+	if( cs >= 0 && cs < YP_PARAM_NUM )
+		*pp( cs, data[0] ) = data[1];
+}
+
+int param_get_motor_com( int cs, double *resdata, SpurUserParamsPtr spur )
+{
+	if( cs >= 0 && cs < YP_PARAM_NUM )
+	{
+		resdata[0] = *pp( cs, resdata[0] );
 		return cs;
 	}
 	else

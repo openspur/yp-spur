@@ -127,7 +127,37 @@ void vel_com( double *data, SpurUserParamsPtr spur )
 
 void wheel_vel_com( double *data, SpurUserParamsPtr spur )
 {
-	spur->vref = data[0];
-	spur->wref = data[1];
+	spur->wrref = data[0];
+	spur->wlref = data[1];
 	spur->run_mode = RUN_WHEEL_VEL;
 }
+
+void wheel_angle_com( double *data, SpurUserParamsPtr spur )
+{
+	double r, l;
+	
+	r= data[0];
+	l= data[1];
+
+	if( isset_p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_RIGHT ) )
+	{
+		if( r < p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_RIGHT ) ) r = p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_RIGHT );
+	}
+	if( isset_p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_LEFT ) )
+	{
+		if( l < p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_LEFT ) ) l = p( YP_PARAM_MIN_WHEEL_ANGLE, MOTOR_LEFT );
+	}
+	if( isset_p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_RIGHT ) )
+	{
+		if( r > p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_RIGHT ) ) r = p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_RIGHT );
+	}
+	if( isset_p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_LEFT ) )
+	{
+		if( l > p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_LEFT ) ) l = p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_LEFT );
+	}
+	
+	spur->wheel_angle_l = l;
+	spur->wheel_angle_r = r;
+	spur->run_mode = RUN_WHEEL_ANGLE;
+}
+

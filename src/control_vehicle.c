@@ -41,7 +41,8 @@
 
 double g_v_ref;
 double g_w_ref;
-double g_cnt2rad;
+double g_wl_ref;
+double g_wr_ref;
 
 
 /* [rad/s] */
@@ -49,11 +50,27 @@ void motor_speed( double r, double l )
 {
 	int ir, il;
 
-	ir = ( double )( r * g_cnt2rad );
-	il = ( double )( l * g_cnt2rad );
+	g_wl_ref = l;
+	g_wr_ref = r;
+	ir = ( double )( r * p( YP_PARAM_GEAR, MOTOR_RIGHT ) * p( YP_PARAM_COUNT_REV, MOTOR_RIGHT )
+	                  * p( YP_PARAM_CYCLE, MOTOR_RIGHT ) / ( 2 * M_PI ) );
+	il = ( double )( l * p( YP_PARAM_GEAR, MOTOR_LEFT ) * p( YP_PARAM_COUNT_REV, MOTOR_LEFT )
+	                  * p( YP_PARAM_CYCLE, MOTOR_LEFT ) / ( 2 * M_PI ) );
 
 	parameter_set( PARAM_w_ref, 0, ir );
 	parameter_set( PARAM_w_ref, 1, il );
+}
+
+/* [rad/s] */
+void motor_torque( double r, double l )
+{
+	int ir, il;
+
+	ir = r * p(YP_PARAM_TORQUE_UNIT,MOTOR_RIGHT) / p(YP_PARAM_GEAR,MOTOR_RIGHT);
+	il = l * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) / p(YP_PARAM_GEAR,MOTOR_LEFT);
+
+	parameter_set( PARAM_p_toq_offset, 0, ir );
+	parameter_set( PARAM_p_toq_offset, 1, il );
 }
 
 /* m/s rad/s */
@@ -95,21 +112,21 @@ void robot_speed( double v, double w )
 		}
 
 		werr = ( w2 - podm->w );
-		werr_int += werr * p( YP_PARAM_CONTROL_CYCLE );
+		werr_int += werr * p( YP_PARAM_CONTROL_CYCLE, 0 );
 
 		if( werr_int > 50  ) werr_int = 50;
 		if( werr_int < -50 ) werr_int = -50;
 
-		tr = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS)
-			 + ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA) );
-		tl = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS)
-			 - ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA) );
-		tr *= ( ( p(YP_PARAM_RADIUS_R) + p(YP_PARAM_RADIUS_L) ) / 2.0 ) / p(YP_PARAM_GEAR);
-		tl *= ( ( p(YP_PARAM_RADIUS_R) + p(YP_PARAM_RADIUS_L) ) / 2.0 ) / p(YP_PARAM_GEAR);
+		tr = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS,0)
+			 + ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA,0) );
+		tl = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS,0)
+			 - ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA,0) );
+		tr *= ( ( p(YP_PARAM_RADIUS,MOTOR_RIGHT) + p(YP_PARAM_RADIUS,MOTOR_LEFT) ) / 2.0 ) / p(YP_PARAM_GEAR,MOTOR_RIGHT);
+		tl *= ( ( p(YP_PARAM_RADIUS,MOTOR_RIGHT) + p(YP_PARAM_RADIUS,MOTOR_LEFT) ) / 2.0 ) / p(YP_PARAM_GEAR,MOTOR_LEFT);
 		//printf("v%f w%f %f %f   %f %f c%f vo%f\n",v2,w2,tr,tl,werr,werr_int, p( YP_PARAM_CONTROL_CYCLE ),vover);
 
-		parameter_set( PARAM_p_toq_offset, 0, tr * p(YP_PARAM_TORQUE_UNIT) );
-		parameter_set( PARAM_p_toq_offset, 1, tl * p(YP_PARAM_TORQUE_UNIT) );
+		parameter_set( PARAM_p_toq_offset, 0, tr * p(YP_PARAM_TORQUE_UNIT,MOTOR_RIGHT) );
+		parameter_set( PARAM_p_toq_offset, 1, tl * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) );
 	}
 	else
 	{
@@ -118,8 +135,8 @@ void robot_speed( double v, double w )
 		g_v_ref = v;
 		g_w_ref = w;
 
-		wr = -( 0.5 * w * p( YP_PARAM_TREAD ) - v ) / p( YP_PARAM_RADIUS_R );
-		wl = ( 0.5 * w * p( YP_PARAM_TREAD ) + v ) / p( YP_PARAM_RADIUS_L );
+		wr = -( 0.5 * w * p( YP_PARAM_TREAD, 0 ) - v ) / p( YP_PARAM_RADIUS, MOTOR_RIGHT );
+		wl = ( 0.5 * w * p( YP_PARAM_TREAD, 0 ) + v ) / p( YP_PARAM_RADIUS, MOTOR_LEFT );
 
 		motor_speed( wr, wl );
 	}
@@ -132,24 +149,31 @@ int reference_speed( double *v, double *w )
 	return 0;
 }
 
+int reference_motor_speed( double *wl, double *wr )
+{
+	*wl = g_wl_ref;
+	*wr = g_wr_ref;
+	return 0;
+}
+
 /* - */
 int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 {
 	int limit;
 	double dw, dv;
 
-	dw = spur->dw * p( YP_PARAM_CONTROL_CYCLE );
-	dv = spur->dv * p( YP_PARAM_CONTROL_CYCLE );
+	dw = spur->dw * p( YP_PARAM_CONTROL_CYCLE, 0 );
+	dv = spur->dv * p( YP_PARAM_CONTROL_CYCLE, 0 );
 
 	if( fabs( g_v_ref ) > fabs( spur->v ) )
 	{
 		// 直前の速度が最大速度より大きかったら、ハードウェア最大加速度で減速
-		dv = p( YP_PARAM_MAX_ACC_V ) * p( YP_PARAM_CONTROL_CYCLE );
+		dv = p( YP_PARAM_MAX_ACC_V, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 	if( fabs( g_w_ref ) > fabs( spur->w ) )
 	{
 		// 直前の角速度が最大角速度より大きかったら、ハードウェア最大角加速度で減速
-		dw = p( YP_PARAM_MAX_ACC_W ) * p( YP_PARAM_CONTROL_CYCLE );
+		dw = p( YP_PARAM_MAX_ACC_W, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 
 	limit = 31;
@@ -208,13 +232,13 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 
 	if( g_w_ref != 0 )
 	{
-		if( v > p( YP_PARAM_MAX_CENTRIFUGAL_ACC ) / fabs( g_w_ref ) )
+		if( v > p( YP_PARAM_MAX_CENTRIFUGAL_ACC, 0 ) / fabs( g_w_ref ) )
 		{
-			v = p( YP_PARAM_MAX_CENTRIFUGAL_ACC ) / fabs( g_w_ref );
+			v = p( YP_PARAM_MAX_CENTRIFUGAL_ACC, 0 ) / fabs( g_w_ref );
 		}
-		else if( v < -p( YP_PARAM_MAX_CENTRIFUGAL_ACC ) / fabs( g_w_ref ) )
+		else if( v < -p( YP_PARAM_MAX_CENTRIFUGAL_ACC, 0 ) / fabs( g_w_ref ) )
 		{
-			v = -p( YP_PARAM_MAX_CENTRIFUGAL_ACC ) / fabs( g_w_ref );
+			v = -p( YP_PARAM_MAX_CENTRIFUGAL_ACC, 0 ) / fabs( g_w_ref );
 		}
 		else
 		{
@@ -238,14 +262,12 @@ double gravity_compensation( OdometryPtr odm, SpurUserParamsPtr spur )
 	/* 傾きを計算 */
 	tilt = atan( cos( odm->theta - spur->dir ) * tan( spur->tilt ) );
 	/* 力を計算 */
-	f = p( YP_PARAM_MASS ) * GRAVITY * sin( tilt );
+	f = p( YP_PARAM_MASS, 0 ) * GRAVITY * sin( tilt );
 	/* [N]=[kg]*[m/ss]*tilt */
-	/* トルクを計算 */
-	*pp( YP_PARAM_TORQUE_OFFSET ) = f * p( YP_PARAM_RADIUS_R ) / p( YP_PARAM_GEAR );
 	/* [Nm] [N]* [m] /[in/out] */
-	yprintf( OUTPUT_LV_DEBUG, "%f %f\n", f, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
-	parameter_set( PARAM_p_toq_offset, 0, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
-	parameter_set( PARAM_p_toq_offset, 1, p( YP_PARAM_TORQUE_OFFSET ) * p( YP_PARAM_TORQUE_UNIT ) / 2.0 );
+	spur->torque_r = f * p( YP_PARAM_RADIUS, MOTOR_RIGHT ) / 2.0;
+	spur->torque_l = f * p( YP_PARAM_RADIUS, MOTOR_LEFT ) / 2.0;
+	yprintf( OUTPUT_LV_DEBUG, "Force:%f Torque:%f/%f\n", f, spur->torque_r, spur->torque_l );
 	return tilt;
 }
 
@@ -276,7 +298,7 @@ void control_loop( void )
 	}
 	while( 1 )
 	{
-		request.tv_nsec += ( p( YP_PARAM_CONTROL_CYCLE ) * 1000000000 );
+		request.tv_nsec += ( p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1000000000 );
 		request.tv_sec += request.tv_nsec / 1000000000;
 		request.tv_nsec = request.tv_nsec % 1000000000;
 
@@ -289,7 +311,7 @@ void control_loop( void )
 	}
 #else
 	int request;
-	request = ( p( YP_PARAM_CONTROL_CYCLE ) * 1000000 );
+	request = ( p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1000000 );
 
 	while( 1 )
 	{
@@ -328,10 +350,10 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		SpurUserParams spur_freeze;
 
 		spur_freeze = *spur;
-		spur_freeze.v = p( YP_PARAM_MAX_VEL );
-		spur_freeze.w = p( YP_PARAM_MAX_W );
-		spur_freeze.dv = p( YP_PARAM_MAX_ACC_V );
-		spur_freeze.dw = p( YP_PARAM_MAX_ACC_W );
+		spur_freeze.v = p( YP_PARAM_MAX_VEL, 0 );
+		spur_freeze.w = p( YP_PARAM_MAX_W, 0 );
+		spur_freeze.dv = p( YP_PARAM_MAX_ACC_V, 0 );
+		spur_freeze.dw = p( YP_PARAM_MAX_ACC_W, 0 );
 		robot_speed_smooth( 0, 0, &spur_freeze );
 	}
 	else
@@ -341,6 +363,14 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		if( state( YP_STATE_GRAVITY ) )
 		{
 			gravity_compensation( &odometry, spur );
+			motor_torque( spur->torque_r, spur->torque_l );
+		}
+		else
+		{
+			if( isset_p( YP_PARAM_TORQUE_OFFSET, 0 ) && isset_p( YP_PARAM_TORQUE_OFFSET, 1 ) )
+			{
+				motor_torque( p( YP_PARAM_TORQUE_OFFSET, 0 ), p( YP_PARAM_TORQUE_OFFSET, 1 ) );
+			}
 		}
 
 		is_vehicle_control = 0;
@@ -356,11 +386,10 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_VEL:					// 速度直接指定
-			motor_speed( spur->vref, spur->wref );
+			motor_speed( spur->wrref, spur->wlref );
 			break;
 		case RUN_WHEEL_TORQUE:					// トルク直接指定
-			parameter_set( PARAM_p_toq_offset, 0, spur->torque_l * p(YP_PARAM_TORQUE_UNIT) / p(YP_PARAM_GEAR) );
-			parameter_set( PARAM_p_toq_offset, 1, spur->torque_r * p(YP_PARAM_TORQUE_UNIT) / p(YP_PARAM_GEAR) );
+			motor_torque( spur->torque_r, spur->torque_l );
 			break;
 		case RUN_VEL:							// 速度角速度指定
 			if( state( YP_STATE_BODY ) == ENABLE )
@@ -392,6 +421,11 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 				orient( &odometry, spur );
 			is_vehicle_control = 1;
 			break;
+		case RUN_WHEEL_ANGLE:						// 回転
+			if( state( YP_STATE_BODY ) == ENABLE )
+				wheel_angle( &odometry, spur );
+			is_vehicle_control = 1;
+			break;
 		}
 		if( !is_vehicle_control )
 		{
@@ -400,6 +434,8 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			podm = get_odometry_ptr();
 			g_v_ref = podm->v;
 			g_w_ref = podm->w;
+			g_wl_ref = podm->wl;
+			g_wr_ref = podm->wr;
 		}
 	}
 	/* 保護終わり */
@@ -410,8 +446,6 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 /* すれっどの初期化 */
 void init_control_thread( pthread_t * thread )
 {
-	g_cnt2rad = p( YP_PARAM_GEAR ) * p( YP_PARAM_COUNT_REV ) * p( YP_PARAM_CYCLE ) / ( 2 * M_PI );
-
 	if( pthread_create( thread, NULL, ( void * )control_loop, NULL ) != 0 )
 	{
 		yprintf( OUTPUT_LV_ERROR, "Can't create control_loop thread\n" );

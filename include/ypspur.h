@@ -150,11 +150,14 @@ extern "C"
 	int YP_get_ad_value( int num );
 	int YP_set_io_dir( unsigned char dir );
 	int YP_set_io_data( unsigned char data );
-	int YP_set_wheel_vel( double r, double l );
-	int YP_set_wheel_torque( double r, double l );
+	int YP_wheel_vel( double r, double l );
+	int YP_wheel_torque( double r, double l );
 	double YP_get_wheel_vel( double *wr, double *wl );
 	double YP_get_wheel_ang( double *theta_r, double *theta_l );
 	double YP_get_wheel_torque( double *torque_r, double *torque_l );
+	int YP_wheel_ang( double r, double l );
+	int YP_set_wheel_accel( double r, double l );
+	int YP_set_wheel_vel( double r, double l );
 #ifdef __cplusplus
 }
 #endif

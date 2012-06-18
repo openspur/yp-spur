@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = foreign 1.10
+SUBDIRS = formula-calc
 
 # set the include path found by configure
 INCLUDES= $(all_includes) -I../include -I../auxlib

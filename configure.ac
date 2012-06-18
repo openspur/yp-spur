@@ -18,6 +18,8 @@ AC_CONFIG_SRCDIR([src/libypspur.c])
 AC_CONFIG_HEADER([include/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
+AC_CONFIG_SUBDIRS(auxlib/formula-calc)
+
 # Define Vendor
 AC_DEFINE(YP_VENDOR_NAME, "Univ. of Tsukuba - Intelligent Robot Lab.", vendor)
 AC_DEFINE(YP_PRODUCT_NAME, "Yamabico Project - Spur", product)

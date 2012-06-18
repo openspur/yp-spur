@@ -882,7 +882,7 @@ int YP_md_set_io_data( YPSpur *dev, unsigned char data )
 }
 
 /* 直接タイヤ回転速度入力 */
-int YP_md_set_wheel_vel( YPSpur *dev, double r, double l )
+int YP_md_wheel_vel( YPSpur *dev, double r, double l )
 {
 	YPSpur_msg msg;
 
@@ -902,13 +902,73 @@ int YP_md_set_wheel_vel( YPSpur *dev, double r, double l )
 	return 1;
 }
 
-int YP_md_set_wheel_torque( YPSpur *dev, double r, double l )
+int YP_md_wheel_torque( YPSpur *dev, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
 	msg.pid = dev->pid;
 	msg.type = YPSPUR_WHEEL_TORQUE;
+	msg.data[0] = r;
+	msg.data[1] = l;
+
+	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	{
+		/* error */
+		dev->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_set_wheel_vel( YPSpur *dev, double r, double l )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = dev->pid;
+	msg.type = YPSPUR_SET_WHEEL_VEL;
+	msg.data[0] = r;
+	msg.data[1] = l;
+
+	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	{
+		/* error */
+		dev->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_set_wheel_accel( YPSpur *dev, double r, double l )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = dev->pid;
+	msg.type = YPSPUR_SET_WHEEL_ACCEL;
+	msg.data[0] = r;
+	msg.data[1] = l;
+
+	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	{
+		/* error */
+		dev->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_wheel_ang( YPSpur *dev, double r, double l )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = dev->pid;
+	msg.type = YPSPUR_WHEEL_ANGLE;
 	msg.data[0] = r;
 	msg.data[1] = l;
 

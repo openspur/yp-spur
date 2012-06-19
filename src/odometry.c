@@ -127,8 +127,8 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	wl = mwl / p( YP_PARAM_GEAR, MOTOR_LEFT );
 	/* キネマティクス計算 */
 	v = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / 2.0 + p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / 2.0;
-	w = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / p( YP_PARAM_TREAD, 0 )
-	   -p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / p( YP_PARAM_TREAD, 0 );
+	w = -p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / p( YP_PARAM_TREAD, 0 )
+	    +p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / p( YP_PARAM_TREAD, 0 );
 
 	volt_r = ( double )pwm1 * p( YP_PARAM_VOLT, MOTOR_RIGHT )
 			 / ( p( YP_PARAM_PWM_MAX, MOTOR_RIGHT ) * ( dt / p( YP_PARAM_CYCLE, MOTOR_RIGHT ) ) );

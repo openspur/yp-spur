@@ -29,9 +29,9 @@ void init( void )
 	// コンペアマッチタイマの初期化
 	setIntMask( 9 );							// レベル10〜15は割り込み許可
 	initServo(  );
+	noPWM_break(  );
 
 	initCounter(  );							// エンコーダカウンタの初期化
-	initPWM(  );								// PWMの初期化
 	initAD(  );
 }
 
@@ -62,13 +62,13 @@ int_cmi1(  )
 	if( servo_level <= SERVO_LEVEL_STOP )
 	{
 		// servo_level 0 (shut down)
-		put_pwm( 0, 0 );
-		put_pwm( 1, 0 );
 		w_ref_before[0] = w_ref[0] = w_ref[2] = 0;
 		w_ref_before[1] = w_ref[1] = w_ref[3] = 0;
 		w_ref_diff[0] = 0;
 		w_ref_diff[1] = 0;
 		int_w[0] = int_w[1] = 0;
+		toq_pi[0] = toq_pi[1] = 0;
+		toq[0] = toq[1] = 0;
 	}
 	else
 	{
@@ -76,22 +76,28 @@ int_cmi1(  )
 		if( param_change == 3 )
 		{
 			static int tick_before = 0;
+			static int init_w_ref_diff = 0;
 			short int wcnt_cycle;
 
 			w_ref[0] = w_ref[2];
 			w_ref[1] = w_ref[3];
 
 			wcnt_cycle = tick - tick_before;
-			if( wcnt_cycle < 0 ) wcnt_cycle = 0;
-			if( wcnt_cycle > divider_max - 1 ) wcnt_cycle = divider_max - 1;
+			if( wcnt_cycle < 0 || wcnt_cycle > divider_max - 1 || !init_w_ref_diff )
+			{
+				init_w_ref_diff = 1;
+				w_ref_diff[0] = w_ref_diff[1] = 0;
+			}
+			else
+			{
+				w_ref_diff[0] = ( w_ref[0] - w_ref_before[0] );
+				w_ref_diff[1] = ( w_ref[1] - w_ref_before[1] );
 
-			w_ref_diff[0] = ( w_ref[0] - w_ref_before[0] );
-			w_ref_diff[1] = ( w_ref[1] - w_ref_before[1] );
+				divider[ wcnt_cycle ]( &w_ref_diff[0] );
+				divider[ wcnt_cycle ]( &w_ref_diff[1] );
+			}
 			w_ref_before[0] = w_ref[0];
 			w_ref_before[1] = w_ref[1];
-
-			divider[ wcnt_cycle ]( &w_ref_diff[0] );
-			divider[ wcnt_cycle ]( &w_ref_diff[1] );
 
 			tick_before = tick;
 			param_change = 0;
@@ -332,7 +338,7 @@ int extended_command_analyze( int channel, char *data )
 		sci_send_txt( channel, data );
 		sci_send_txt( channel, "\n00P\n\n" );
 		// 送信終了まで待機
-		while( SCI_send_rp[channel] != SCI_send_wp[channel] );
+		while( (volatile)SCI_send_rp[channel] != (volatile)SCI_send_wp[channel] );
 		sci_end(  );
 		for( lo = 0; lo < 100000; lo++ );		/* wait more than 1bit time */
 		sci_init( tmp );
@@ -393,7 +399,6 @@ int extended_command_analyze( int channel, char *data )
 int command_analyze( char *data, int len )
 {
 	int motor;
-
 	Int_4Char i;
 
 	i.byte[0] = data[2];
@@ -472,10 +477,6 @@ int command_analyze( char *data, int len )
 		break;
 	case PARAM_pwm_max:
 		pwm_max[motor] = i.integer;
-		if( motor == 0 )
-			MTU3.TGRA = i.integer;
-		if( motor == 1 )
-			MTU3.TGRC = i.integer;
 		watch_dog = 0;
 		break;
 	case PARAM_pwm_min:
@@ -503,6 +504,14 @@ int command_analyze( char *data, int len )
 		watch_dog = 0;
 		break;
 	case PARAM_servo:
+		if( servo_level < SERVO_LEVEL_TORQUE && i.integer >= SERVO_LEVEL_TORQUE )
+		{
+			initPWM(  );								// PWMの初期化
+		}
+		if( servo_level > SERVO_LEVEL_TORQUE && i.integer <= SERVO_LEVEL_TORQUE )
+		{
+			noPWM_break(  );
+		}
 		if( servo_level < SERVO_LEVEL_VELOCITY && i.integer >= SERVO_LEVEL_VELOCITY )
 		{
 			// servo levelが速度制御に推移した
@@ -539,6 +548,7 @@ main(  )
 	int len;
 	int channel;
 	int counter_buf2[2];
+	int init_counter_buf = 0;
 	unsigned short analog[9];
 
 	param_change = 0;
@@ -550,6 +560,10 @@ main(  )
 	dio_enable = 0;
 	speed = 0;
 	cnt_updated = 0;
+	pwm_max[0] = MTR_PWM_DEFAULT_MAX;
+	pwm_max[1] = MTR_PWM_DEFAULT_MAX;
+	pwm_min[0] = -MTR_PWM_DEFAULT_MAX;
+	pwm_min[1] = -MTR_PWM_DEFAULT_MAX;
 
 	/* 初期化 */
 	init(  );
@@ -598,10 +612,17 @@ main(  )
 				mask |= 1 << 8;
 			}
 
-			data_send( channel,
-					   ( short )( counter_buf[0] - counter_buf2[0] ),
-					   ( short )( counter_buf[1] - counter_buf2[1] ), pwm_buf[0], pwm_buf[1], analog,
-					   mask );
+			if( !init_counter_buf )
+			{
+				init_counter_buf = 1;
+			}
+			else
+			{
+				data_send( channel,
+						   ( short )( counter_buf[0] - counter_buf2[0] ),
+						   ( short )( counter_buf[1] - counter_buf2[1] ), pwm_buf[0], pwm_buf[1], analog,
+						   mask );
+			}
 
 			counter_buf2[0] = counter_buf[0];
 			counter_buf2[1] = counter_buf[1];
@@ -616,6 +637,7 @@ main(  )
 			analog_mask = 0;
 			cnt_updated = 0;
 			servo_level = SERVO_LEVEL_STOP;
+			noPWM_break(  );
 			if( speed != 38400 )
 			{
 				sci_init( 38400 );

@@ -18,6 +18,7 @@
 #include <ypprotocol.h>
 #include <serial.h>
 #include <utility.h>
+#include <yprintf.h>
 
 
 int ss_receive( char *buf, int len, double receive_time, void *data )

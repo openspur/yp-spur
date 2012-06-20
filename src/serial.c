@@ -181,6 +181,12 @@ int serial_tryconnect( char *device_name )
 
 int recieve_throw( char *buf, int len, double t, void *data )
 {
+	buf[len] = 0;
+	strcat( ( char * )data, buf );
+	if( strstr( ( char * )data, "\n\n" ) )
+	{
+		return -2;
+	}
 	return 0;
 }
 
@@ -193,6 +199,7 @@ int serial_change_baudrate( int baud )
 #ifndef _WIN32
 	struct termios newtio;
 	int ret, errnum;
+	char buf[2048];
 
 	memset( &newtio, 0, sizeof ( newtio ) );	// 新しいポートの設定の構造体をクリアする
 
@@ -265,7 +272,7 @@ int serial_change_baudrate( int baud )
 
 	ret = write( g_device_port, "\n\nVV\n\n", 6 );
 	yp_usleep( 10000 );
-	serial_recieve( recieve_throw, NULL );
+	serial_recieve( recieve_throw, buf );
 #else
 	// Windows用
 	DCB dcb;

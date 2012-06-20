@@ -26,20 +26,27 @@ volatile unsigned char duty_set = 0;
 volatile unsigned short pe;
 
 // //////////////////////// init PWM //////////////////////////////////
+void noPWM_break(  )
+{
+	PFC.PEIOR.WORD &= ~0x0500;					/* don't use TIOC3A, TIOC3C port */
+	PFC.PEIOR.WORD = 0x0FA0;
+	PE.DR.WORD &= ~0x0500; //PE8 PE10
+}
+
 void initPWM(  )
 {
 	int i;
+
+	MTU.TSTR.BYTE &= ~0xc0;						/* pwm disable */
+	PFC.PEIOR.WORD = 0x0aa0;
 
 	PFC.PEIOR.WORD |= 0x0500;					/* use TIOC3A, TIOC3C port */
 	MTU3.TCR.BYTE = 0x20;						/* cycle=TGRA, duty=TGRB */
 	MTU3.TMDR.BYTE = 0xc2;						/* pwm mode 1, buffer disable */
 	MTU3.TIOR.BYTE.H = 0x12;					/* CMA=0, CMB=1 */
 	MTU3.TIOR.BYTE.L = 0x12;					/* CMC=0, CMD=1 */
-	MTU3.TGRA = MTU3.TGRC = MTR_PWM_DEFAULT_MAX;	/* cycle */
-	pwm_max[0] = MTR_PWM_DEFAULT_MAX;
-	pwm_max[1] = MTR_PWM_DEFAULT_MAX;
-	pwm_min[0] = -MTR_PWM_DEFAULT_MAX;
-	pwm_min[1] = -MTR_PWM_DEFAULT_MAX;
+	MTU3.TGRA = ( pwm_max[0] > -pwm_min[0] ) ? pwm_max[0] : -pwm_min[0];
+	MTU3.TGRC = ( pwm_max[1] > -pwm_min[1] ) ? pwm_max[1] : -pwm_min[1];
 
 	PFC.PECR1.WORD |= 0x0011;					/* use TGRA, TGRC port */
 
@@ -47,7 +54,6 @@ void initPWM(  )
 
 	PFC.PECR1.WORD &= ~0x0044;					/* TIOC3B, TIOC3D */
 	PFC.PECR2.WORD &= ~0x4400;					/* TIOC1B, TIOC2B */
-	PFC.PEIOR.WORD |= 0x0aa0;
 
 	pe = PE.DR.WORD;
 	for ( i = 0; i < 2; i++ )
@@ -82,7 +88,7 @@ void set_mode( const unsigned char id, const int mode )
 		/* DIR(PE5), EN(PE7) */
 		if( mode == MTR_MODE_CCW_BRAKE )
 		{
-			pe &= ~0x0020;				/* DIR(PE5)=1 */
+			pe &= ~0x0020;				/* DIR(PE5)=0 */
 			pe &= ~0x0080;				/* EN(PE7)=0 */
 		}
 		else if( mode == MTR_MODE_CW_BRAKE )
@@ -91,7 +97,7 @@ void set_mode( const unsigned char id, const int mode )
 			pe &= ~0x0080;				/* EN(PE7)=0 */
 		}
 		else
-		{										/* MTR_MODE_FREE */
+		{									/* MTR_MODE_FREE */
 			pe |=  0x0080;				/* EN(PE7)=1 */
 		}
 
@@ -101,13 +107,13 @@ void set_mode( const unsigned char id, const int mode )
 		/* DIR(PE9), EN(PE11) */
 		if( mode == MTR_MODE_CCW_BRAKE )
 		{
-			pe &= ~0x0200;				/* DIR(PE9)=1 */
-			pe &= ~0x0800;				/* EN(PE11)=1 */
+			pe &= ~0x0200;				/* DIR(PE9)=0 */
+			pe &= ~0x0800;				/* EN(PE11)=0 */
 		}
 		else if( mode == MTR_MODE_CW_BRAKE )
 		{
-			pe |=  0x0200;				/* DIR(PE9)=0 */
-			pe &= ~0x0800;				/* EN(PE11)=1 */
+			pe |=  0x0200;				/* DIR(PE9)=1 */
+			pe &= ~0x0800;				/* EN(PE11)=0 */
 		}
 		else
 		{										/* MTR_MODE_FREE */
@@ -181,9 +187,7 @@ void initCounter( void )
 // ///////////////// カウント値取り込み cnt_read ////////////////////
 void cnt_read( void )
 {
-
 	static short cnt_old[2];
-
 	short int i;
 
 #if MOTOR_IS_REVERSE

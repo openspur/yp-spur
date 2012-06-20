@@ -813,8 +813,8 @@ void param_update( void *filename )
 /* パラメータ適用 */
 int apply_robot_params(  )
 {
-	robot_speed( 0, 0 );
-
+	yprintf( OUTPUT_LV_MODULE, "Applying parameters.\n" );
+	
 	/* モータのパラメータ */
 	set_param_motor(  );
 	yp_usleep( 50000 );
@@ -943,15 +943,6 @@ void set_param_velocity( void )
 		parameter_set( PARAM_int_min, j, -g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
 
 		parameter_set( PARAM_w_ref, j, 0 );
-	}
-
-	if( option( OPTION_PASSIVE ) )
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
-	}
-	else
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_VELOCITY );
 	}
 }
 

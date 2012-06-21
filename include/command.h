@@ -32,6 +32,8 @@ typedef struct _spur_user_params
 	double y;
 	double torque_r;
 	double torque_l;
+	double grav_torque_r;
+	double grav_torque_l;
 	double wheel_accel_r;
 	double wheel_accel_l;
 	double wheel_vel_r;

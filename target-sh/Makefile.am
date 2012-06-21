@@ -39,7 +39,7 @@ all : $(MOT)
 $(MOT) : $(OUTPUT)
 	$(SHOBJCOPY) $(SHOBJ) $(OUTPUT) $@
 
-.c.o: *.h
+.c.o: *.h ../include/shvel-param.h
 	$(SHCC) -c $< $(SHCFLAGS)
 
 .s.o:

@@ -48,6 +48,7 @@ typedef enum
 	PARAM_int_max,
 	PARAM_int_min,
 	PARAM_p_toq_offset,
+	PARAM_toq_limit,
 	PARAM_servo = 64,
 	PARAM_watch_dog_limit,
 	PARAM_io_dir = 96,

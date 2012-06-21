@@ -138,6 +138,16 @@ int_cmi1(  )
 			/* 出力段 */
 			for ( i = 0; i < MOTOR_NUM; i++ )
 			{
+				/* トルクでクリッピング */
+				if( toq[i] >= toq_max[i] )
+				{
+					toq[i] = toq_max[i];
+				}
+				else if( toq[i] <= toq_min[i] )
+				{
+					toq[i] = toq_min[i];
+				}
+
 				/* 摩擦補償（線形） */
 				if( cnt_dif[i] > 0 )
 				{
@@ -155,14 +165,14 @@ int_cmi1(  )
 				/* トルク補償 */
 				toq[i] += p_toq_offset[i];
 
-				/* トルクでクリッピング */
-				if( toq[i] >= toq_max[i] )
+				/* トルクリミット */
+				if( toq[i] >= toq_limit[i] )
 				{
-					toq[i] = toq_max[i];
+					toq[i] = toq_limit[i];
 				}
-				if( toq[i] <= toq_min[i] )
+				else if( toq[i] <= -toq_limit[i] )
 				{
-					toq[i] = toq_min[i];
+					toq[i] = -toq_limit[i];
 				}
 
 				/* トルク→pwm変換 */
@@ -493,6 +503,10 @@ int command_analyze( char *data, int len )
 		break;
 	case PARAM_p_toq_offset:
 		p_toq_offset[motor] = i.integer;
+		watch_dog = 0;
+		break;
+	case PARAM_toq_limit:
+		toq_limit[motor] = i.integer;
 		watch_dog = 0;
 		break;
 	case PARAM_int_max:

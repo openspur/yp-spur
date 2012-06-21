@@ -372,7 +372,7 @@ void param_calc( )
 			{
 				double d;
 				d = formula_eval( g_Pf[i][j] );
-				yprintf( OUTPUT_LV_DEBUG, "[%d][%d] %f\n", i, j, d );
+				yprintf( OUTPUT_LV_DEBUG, "Evaluated: [%d][%d] %f\n", i, j, d );
 			}
 		}
 	}
@@ -748,6 +748,14 @@ int set_param( char *filename, char *concrete_path )
 		return 0;
 	}
 
+	for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+	{
+		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
+		{
+			yprintf( OUTPUT_LV_WARNING, "TORQUE_LIMIT[%d] doesn't set. TORQUE_MAX[%d] will be used.\n", j );
+			g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
+		}
+	}
 
 	// パラメータの指定によって自動的に求まるパラメータの計算
 	calc_param_inertia2ff();
@@ -907,6 +915,8 @@ void set_param_motor( void )
 
 		parameter_set( PARAM_toq_max, j, g_P[YP_PARAM_TORQUE_MAX][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
 		parameter_set( PARAM_toq_min, j, -g_P[YP_PARAM_TORQUE_MAX][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
+
+		parameter_set( PARAM_toq_limit, j, g_P[YP_PARAM_TORQUE_LIMIT][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
 
 		parameter_set( PARAM_pwm_max, j, g_P[YP_PARAM_PWM_MAX][j] );
 		parameter_set( PARAM_pwm_min, j, -g_P[YP_PARAM_PWM_MAX][j] );

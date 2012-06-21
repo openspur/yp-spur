@@ -265,9 +265,9 @@ double gravity_compensation( OdometryPtr odm, SpurUserParamsPtr spur )
 	f = p( YP_PARAM_MASS, 0 ) * GRAVITY * sin( tilt );
 	/* [N]=[kg]*[m/ss]*tilt */
 	/* [Nm] [N]* [m] /[in/out] */
-	spur->torque_r = f * p( YP_PARAM_RADIUS, MOTOR_RIGHT ) / 2.0;
-	spur->torque_l = f * p( YP_PARAM_RADIUS, MOTOR_LEFT ) / 2.0;
-	yprintf( OUTPUT_LV_DEBUG, "Force:%f Torque:%f/%f\n", f, spur->torque_r, spur->torque_l );
+	spur->grav_torque_r = f * p( YP_PARAM_RADIUS, MOTOR_RIGHT ) / 2.0;
+	spur->grav_torque_l = f * p( YP_PARAM_RADIUS, MOTOR_LEFT ) / 2.0;
+	yprintf( OUTPUT_LV_DEBUG, "Force:%f Torque:%f/%f\n", f, spur->grav_torque_r, spur->grav_torque_l );
 	return tilt;
 }
 
@@ -359,17 +359,24 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 	else
 	{
 		int is_vehicle_control;
+		float torque_ref[ 2 ] = { 0, 0 };
+		int torque_set = 0;
+
 		/* 重力補償 */
 		if( state( YP_STATE_GRAVITY ) )
 		{
 			gravity_compensation( &odometry, spur );
-			motor_torque( spur->torque_r, spur->torque_l );
+			torque_ref[ 0 ] = spur->torque_r;
+			torque_ref[ 1 ] = spur->torque_l;
+			torque_set = 1;
 		}
 		else
 		{
 			if( isset_p( YP_PARAM_TORQUE_OFFSET, 0 ) && isset_p( YP_PARAM_TORQUE_OFFSET, 1 ) )
 			{
-				motor_torque( p( YP_PARAM_TORQUE_OFFSET, 0 ), p( YP_PARAM_TORQUE_OFFSET, 1 ) );
+				torque_ref[ 0 ] = p( YP_PARAM_TORQUE_OFFSET, 0 );
+				torque_ref[ 1 ] = p( YP_PARAM_TORQUE_OFFSET, 1 );
+				torque_set = 1;
 			}
 		}
 
@@ -378,8 +385,7 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		switch ( spur->run_mode )
 		{
 		case RUN_FREE:
-			parameter_set( PARAM_p_toq_offset, 0, 0 );
-			parameter_set( PARAM_p_toq_offset, 1, 0 );
+			torque_set = 1;
 			break;
 		case RUN_STOP:							// ストップする（スピードを0にする）
 			robot_speed_smooth( 0, 0, spur );
@@ -389,7 +395,9 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			motor_speed( spur->wrref, spur->wlref );
 			break;
 		case RUN_WHEEL_TORQUE:					// トルク直接指定
-			motor_torque( spur->torque_r, spur->torque_l );
+			torque_set = 1;
+			torque_ref[ 0 ] += spur->torque_r;
+			torque_ref[ 1 ] += spur->torque_l;
 			break;
 		case RUN_VEL:							// 速度角速度指定
 			if( state( YP_STATE_BODY ) == ENABLE )
@@ -426,6 +434,10 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 				wheel_angle( &odometry, spur );
 			is_vehicle_control = 1;
 			break;
+		}
+		if( torque_set )
+		{
+			motor_torque( torque_ref[ 0 ], torque_ref[ 1 ] );
 		}
 		if( !is_vehicle_control )
 		{

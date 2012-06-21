@@ -52,6 +52,7 @@ GLOBAL int p_fr_minus[MOTOR_NUM];
 GLOBAL int p_fr_wminus[MOTOR_NUM];
 
 GLOBAL int p_toq_offset[MOTOR_NUM];
+GLOBAL int toq_limit[MOTOR_NUM];
 
 /* PWSのパラメータ */
 GLOBAL int p_A, p_B, p_C, p_D, p_E, p_F;

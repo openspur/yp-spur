@@ -113,6 +113,7 @@ extern "C"
 		YP_PARAM_TORQUE_VISCOS,
 		YP_PARAM_INTEGRAL_MAX,
 		YP_PARAM_TORQUE_OFFSET,
+		YP_PARAM_TORQUE_LIMIT,
 
 		// 慣性パラメータ
 		YP_PARAM_MASS,							///< [kg] ロボット全体の質量
@@ -149,7 +150,7 @@ extern "C"
 	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 	"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
-	"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "INTEGRAL_MAX", "TORQUE_OFFSET",\
+	"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "INTEGRAL_MAX", "TORQUE_OFFSET", "TORQUE_LIMIT",\
 	"MASS","MOMENT_INERTIA", "MOTOR_M_INERTIA", "TIRE_M_INERTIA",\
 	"SIZE_FRONT", "SIZE_REAR", "SIZE_LEFT", "SIZE_RIGHT",\
 	"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
@@ -172,7 +173,7 @@ extern "C"
 	"[rad/ss / m] Feedback gain for distance error","[rad/ss / rad] Feedback gain for angular error",\
 	"[rad/ss / rad/s] Feedback gain for angular velocity",\
 	"[m] Clipping value of line following control","[1/s] PI control parameter Kp","[1/ss] PI control parameter Ki",\
-	"[Nm] Motor maximum torque","[Nm] Constant friction","[Nm/(rad/s)] Viscous friction",\
+	"[Nm] Motor maximum torque","[Nm] Constant friction","[Nm/(rad/s)] Viscous friction","[Nm] Motor torque limit",\
 	"[rev] Maximum integrated error of PI control","[Nm] Offset value of motor torque",\
 	"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
 	"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\

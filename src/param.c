@@ -920,6 +920,8 @@ void set_param_motor( void )
 
 		parameter_set( PARAM_pwm_max, j, g_P[YP_PARAM_PWM_MAX][j] );
 		parameter_set( PARAM_pwm_min, j, -g_P[YP_PARAM_PWM_MAX][j] );
+
+		parameter_set( PARAM_enc_rev, j, g_P[YP_PARAM_COUNT_REV][j] );
 	}
 }
 

@@ -606,7 +606,7 @@ int set_param( char *filename, char *concrete_path )
 								yprintf( OUTPUT_LV_WARNING, "Parameter alias: %s -> %s[%d]\n",
 										param_names[i], param_names[param_alias[j].param], param_alias[j].motor );
 								i = param_alias[j].param;
-								num = param_alias[j].motor;
+								motor_num = param_alias[j].motor;
 								break;
 							}
 						}
@@ -752,7 +752,7 @@ int set_param( char *filename, char *concrete_path )
 	{
 		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
 		{
-			yprintf( OUTPUT_LV_WARNING, "TORQUE_LIMIT[%d] doesn't set. TORQUE_MAX[%d] will be used.\n", j );
+			yprintf( OUTPUT_LV_WARNING, "TORQUE_LIMIT[%d] doesn't set. TORQUE_MAX[%d] will be used.\n", j, j );
 			g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
 		}
 	}

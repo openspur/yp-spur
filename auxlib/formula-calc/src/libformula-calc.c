@@ -171,7 +171,7 @@ struct operation_t operation[] =
 	{ "+",     4, TYPE_OP,   math_add,   2 },
 	{ "-",     4, TYPE_OP,   math_sub,   2 },
 	{ "*",     5, TYPE_OP,   math_mul,   2 },
-	{ "/",     6, TYPE_OP,   math_div,   2 },
+	{ "/",     5, TYPE_OP,   math_div,   2 },
 	{ "^",     7, TYPE_OP,   math_pow,   2 },
 	{ "=",     2, TYPE_OP,   math_let,   2 },
 	{ "pi",    8, TYPE_MATH, math_pi,    0 },
@@ -272,7 +272,7 @@ struct rpf_t *formula_output( struct stack_t *num, int *sp_num, struct stack_t *
 	}
 	if( *sp_op <= 0 ) return NULL;
 	
-	if( op[*sp_op-1].rank > rank )
+	if( op[*sp_op-1].rank >= rank )
 	{
 		int j;
 		struct rpf_t rpf2, *rpf2_tmp;
@@ -408,7 +408,7 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 				expr += strlen( operation[i].op );
 				for( ; isspace( *expr ); expr ++ );
 				
-				if( sp_op == 0 && operation[i].func == math_sub )
+				if( sp_num == 0 && operation[i].func == math_sub )
 				{
 					// Case: start with -
 					num[sp_num].rank = 0;
@@ -421,7 +421,8 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 					op[sp_op].value = &operation[OPERATION_MUL];
 					sp_op ++;
 					op_cont = 0;
-					continue;
+					expr --;
+					break;
 				}
 				else if( op_cont == 1 && operation[i].type != TYPE_MATH )
 				{
@@ -438,7 +439,8 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 						op[sp_op].value = &operation[OPERATION_MUL];
 						sp_op ++;
 						op_cont = 0;
-						continue;
+						expr --;
+						break;
 					}
 					else
 					{

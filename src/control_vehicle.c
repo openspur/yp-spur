@@ -52,13 +52,26 @@ void motor_speed( double r, double l )
 
 	g_wl_ref = l;
 	g_wr_ref = r;
-	ir = ( double )( r * p( YP_PARAM_GEAR, MOTOR_RIGHT ) * p( YP_PARAM_COUNT_REV, MOTOR_RIGHT )
-	                  * p( YP_PARAM_CYCLE, MOTOR_RIGHT ) / ( 2 * M_PI ) );
-	il = ( double )( l * p( YP_PARAM_GEAR, MOTOR_LEFT ) * p( YP_PARAM_COUNT_REV, MOTOR_LEFT )
-	                  * p( YP_PARAM_CYCLE, MOTOR_LEFT ) / ( 2 * M_PI ) );
+	if( option( OPTION_HIGH_PREC ) )
+	{
+		ir = ( double )( 16 * r * p( YP_PARAM_GEAR, MOTOR_RIGHT ) * p( YP_PARAM_COUNT_REV, MOTOR_RIGHT )
+		                  * p( YP_PARAM_CYCLE, MOTOR_RIGHT ) / ( 2 * M_PI ) );
+		il = ( double )( 16 * l * p( YP_PARAM_GEAR, MOTOR_LEFT ) * p( YP_PARAM_COUNT_REV, MOTOR_LEFT )
+		                  * p( YP_PARAM_CYCLE, MOTOR_LEFT ) / ( 2 * M_PI ) );
 
-	parameter_set( PARAM_w_ref, 0, ir );
-	parameter_set( PARAM_w_ref, 1, il );
+		parameter_set( PARAM_w_ref_highprec, 0, ir );
+		parameter_set( PARAM_w_ref_highprec, 1, il );
+	}
+	else
+	{
+		ir = ( double )( r * p( YP_PARAM_GEAR, MOTOR_RIGHT ) * p( YP_PARAM_COUNT_REV, MOTOR_RIGHT )
+		                  * p( YP_PARAM_CYCLE, MOTOR_RIGHT ) / ( 2 * M_PI ) );
+		il = ( double )( l * p( YP_PARAM_GEAR, MOTOR_LEFT ) * p( YP_PARAM_COUNT_REV, MOTOR_LEFT )
+		                  * p( YP_PARAM_CYCLE, MOTOR_LEFT ) / ( 2 * M_PI ) );
+
+		parameter_set( PARAM_w_ref, 0, ir );
+		parameter_set( PARAM_w_ref, 1, il );
+	}
 }
 
 /* [rad/s] */

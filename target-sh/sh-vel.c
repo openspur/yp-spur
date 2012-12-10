@@ -29,7 +29,7 @@ void init( void )
 	// コンペアマッチタイマの初期化
 	setIntMask( 9 );							// レベル10〜15は割り込み許可
 	initServo(  );
-	noPWM_break(  );
+	noPWM_brake(  );
 
 	initCounter(  );							// エンコーダカウンタの初期化
 	initAD(  );
@@ -124,8 +124,8 @@ int_cmi1(  )
 				}
 
 				/* PWSでの相互の影響を考慮したフィードフォワード */
-				s_a = ( toq_pi[0] + w_ref_diff[0] );
-				s_b = ( toq_pi[1] + w_ref_diff[1] );
+				s_a = ( toq_pi[0] + w_ref_diff[0] ) / 16;
+				s_b = ( toq_pi[1] + w_ref_diff[1] ) / 16;
 
 				toq[0] = ( s_a * p_A + s_b * p_C + w_ref[0] * p_E ) >> 8;
 				toq[1] = ( s_b * p_B + s_a * p_D + w_ref[1] * p_F ) >> 8;
@@ -152,11 +152,11 @@ int_cmi1(  )
 				/* 摩擦補償（線形） */
 				if( cnt_dif[i] > 0 )
 				{
-					toq[i] += ( p_fr_wplus[i] * cnt_dif[i] + p_fr_plus[i] );
+					toq[i] += ( p_fr_wplus[i] * cnt_dif[i] / 16 + p_fr_plus[i] );
 				}
 				else if( cnt_dif[i] < 0 )
 				{
-					toq[i] -= ( p_fr_wminus[i] * ( -cnt_dif[i] ) + p_fr_minus[i] );
+					toq[i] -= ( p_fr_wminus[i] * ( -cnt_dif[i] ) / 16 + p_fr_minus[i] );
 				}
 				else
 				{
@@ -177,7 +177,7 @@ int_cmi1(  )
 				}
 
 				/* トルク→pwm変換 */
-				out_pwm[i] = ( toq[i] * p_ki[i] + cnt_dif[i] * p_kv[i] ) / 65536;
+				out_pwm[i] = ( toq[i] * p_ki[i] + cnt_dif[i] * p_kv[i] / 16 ) / 65536;
 
 				/* PWMでクリッピング */
 				if( out_pwm[i] > pwm_max[i] - 1 )
@@ -422,6 +422,11 @@ int command_analyze( char *data, int len )
 	switch ( data[0] )
 	{
 	case PARAM_w_ref:
+		w_ref[motor + 2] = i.integer * 16;
+		param_change |= ( 1 << motor );
+		watch_dog = 0;
+		break;
+	case PARAM_w_ref_highprec:
 		w_ref[motor + 2] = i.integer;
 		param_change |= ( 1 << motor );
 		break;
@@ -503,7 +508,7 @@ int command_analyze( char *data, int len )
 			}
 			if( servo_level_old >= SERVO_LEVEL_TORQUE && servo_level < SERVO_LEVEL_TORQUE )
 			{
-				noPWM_break(  );
+				noPWM_brake(  );
 			}
 			if( servo_level_old < SERVO_LEVEL_VELOCITY && servo_level >= SERVO_LEVEL_VELOCITY )
 			{
@@ -627,7 +632,7 @@ main(  )
 			analog_mask = 0;
 			cnt_updated = 0;
 			servo_level = SERVO_LEVEL_STOP;
-			noPWM_break(  );
+			noPWM_brake(  );
 			if( speed != 38400 )
 			{
 				sci_init( 38400 );

@@ -22,6 +22,7 @@ typedef enum
 	OPTION_ENABLE_GET_DIGITAL_IO = 0x10000,
 	OPTION_PASSIVE               = 0x20000,
 	OPTION_UPDATE_PARAM          = 0x40000,
+	OPTION_HIGH_PREC             = 0x80000,
 } ParamOptions;
 
 #define DEFAULT_PARAMETER_FILE "./robot.param"

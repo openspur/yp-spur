@@ -26,7 +26,7 @@ enum
 typedef enum
 {
 	PARAM_w_ref = 0,
-	PARAM_w_ref_diff,
+	PARAM_w_ref_highprec,
 	PARAM_p_ki,
 	PARAM_p_kv,
 	PARAM_p_fr_plus,

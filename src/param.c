@@ -123,8 +123,8 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
 	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
+	fprintf( stderr, "  --high-resolution        Enable high resolution velocity control mode.\n" );
 	fprintf( stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n" );
-
 }
 
 
@@ -234,6 +234,10 @@ int arg_analyze( int argc, char *argv[] )
 			disable_state( YP_STATE_VELOCITY );
 			disable_state( YP_STATE_BODY );
 			disable_state( YP_STATE_TRACKING );
+		}
+		else if( !strcmp( argv[i], "--high-resolution" ) )
+		{
+			g_param.option |= OPTION_HIGH_PREC;
 		}
 		else if( !strcmp( argv[i], "--version" ) || !strcmp( argv[i], "-v" ) )
 		{

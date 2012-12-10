@@ -22,6 +22,7 @@ void set_mode( const unsigned char id, const int mode );
 void initCounter( void );
 // //////////////////////// init PWM //////////////////////////////////
 void initPWM(  );
+void noPWM_brake(  );
 // ///////////////// カウント値取り込み cnt_read ////////////////////
 void cnt_read( void );
 #endif

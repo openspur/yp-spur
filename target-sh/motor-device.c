@@ -26,7 +26,7 @@ volatile unsigned char duty_set = 0;
 volatile unsigned short pe;
 
 // //////////////////////// init PWM //////////////////////////////////
-void noPWM_break(  )
+void noPWM_brake(  )
 {
 	MTU.TSTR.BYTE &= ~0xc0;    // pwm disable
 
@@ -210,10 +210,59 @@ void cnt_read( void )
 	counter[MOTOR_ID_CON1] = ( volatile )MTU2.TCNT;
 #endif
 
-	for ( i = 0; i < 2; i++ )
 	{
-		cnt_dif[i] = ( short )( counter[i] - cnt_old[i] );
-		cnt_old[i] = counter[i];
+		static int _vel[2][16] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+		static unsigned short __enc[2];
+		static unsigned char cnt = 0;
+		int vel;
+
+		for( i = 0; i < 2; i++ )
+		{
+			int j, n;
+			int __vel;
+			
+			__vel = ( short )( counter[i] - cnt_old[i] );
+			cnt_old[i] = counter[i];
+			_vel[i][cnt] = __vel;
+			j = cnt;
+			
+			if( abs( __vel ) < 8 )
+			{
+				vel = 0;
+				for( n = 0; n < 16; n ++ ) vel += _vel[i][n];
+			}
+			else if( abs( __vel ) < 16 )
+			{
+				vel = 0;
+				for( n = 0; n < 8; n ++ )
+				{
+					vel += _vel[i][j];
+					if( j == 0 ) j = 15;
+					else j--;
+				}
+				vel *= 2;
+			}
+			else if( abs( __vel ) < 32 )
+			{
+				vel = 0;
+				for( n = 0; n < 4; n ++ )
+				{
+					vel += _vel[i][j];
+					if( j == 0 ) j = 15;
+					else j--;
+				}
+				vel *= 4;
+			}
+			else
+			{
+				vel = __vel * 16;
+			}
+			
+			cnt_dif[i] = vel;
+		}
+		cnt++;
+		if( cnt >= 16 )
+			cnt = 0;
 	}
 }
 

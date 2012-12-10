@@ -28,9 +28,21 @@ volatile unsigned short pe;
 // //////////////////////// init PWM //////////////////////////////////
 void noPWM_break(  )
 {
-	PFC.PEIOR.WORD &= ~0x0500;					/* don't use TIOC3A, TIOC3C port */
+	MTU.TSTR.BYTE &= ~0xc0;    // pwm disable
+
+	pe = PE.DR.WORD;
+	pe |=  0x0020;				/* DIR(PE5)=1 */
+	pe &= ~0x0080;				/* EN(PE7)=0 */
+	pe |=  0x0200;				/* DIR(PE9)=1 */
+	pe &= ~0x0800;				/* EN(PE11)=0 */
+	PE.DR.WORD = pe;
+	MTU3.TGRB = 0;
+	MTU3.TGRD = 0;
+
+	PFC.PEIOR.WORD &= ~0x0500; // don't use TIOC3A, TIOC3C port
 	PFC.PEIOR.WORD = 0x0FA0;
-	PE.DR.WORD &= ~0x0500; //PE8 PE10
+	PFC.PECR1.WORD &= ~0x0011; // don't use TGRA, TGRC port
+	PE.DR.WORD &= ~0x0500;     // PE8 PE10
 }
 
 void initPWM(  )

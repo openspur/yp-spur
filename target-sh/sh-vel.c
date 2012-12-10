@@ -55,6 +55,7 @@ int_cmi1(  )
 	static int tick = 0;
 	
 	tick ++;
+	watch_dog++;
 
 	/* エンコーダ値入力 */
 	cnt_read(  );
@@ -204,7 +205,6 @@ int_cmi1(  )
 			pwm_sum[1] = 0;
 		}
 	}
-	watch_dog++;
 
 	CMT1.CMCSR.BIT.CMF = 0;						// コンペアマッチフラッグのクリア	
 }
@@ -397,9 +397,6 @@ int extended_command_analyze( int channel, char *data )
 		sci_send_txt( channel, data );
 		sci_send_txt( channel, "\n0Ee" );
 		sci_send_txt( channel, "\n\n" );
-
-		// タイムアウトを長めに設定
-		watch_dog = -1000;
 	}
 	return 1;
 }
@@ -427,131 +424,111 @@ int command_analyze( char *data, int len )
 	case PARAM_w_ref:
 		w_ref[motor + 2] = i.integer;
 		param_change |= ( 1 << motor );
-		watch_dog = 0;
 		break;
 	case PARAM_p_ki:
 		p_ki[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_kv:
 		p_kv[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_fr_plus:
 		p_fr_plus[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_fr_wplus:
 		p_fr_wplus[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_fr_minus:
 		p_fr_minus[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_fr_wminus:
 		p_fr_wminus[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_A:
 		p_A = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_B:
 		p_B = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_C:
 		p_C = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_D:
 		p_D = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_E:
 		p_E = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_F:
 		p_F = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_pi_kp:
 		p_pi_kp[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_pi_ki:
 		p_pi_ki[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_pwm_max:
 		pwm_max[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_pwm_min:
 		pwm_min[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_toq_max:
 		toq_max[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_toq_min:
 		toq_min[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_p_toq_offset:
 		p_toq_offset[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_toq_limit:
 		toq_limit[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_int_max:
 		int_max[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_int_min:
 		int_min[motor] = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_servo:
-		if( servo_level < SERVO_LEVEL_TORQUE && i.integer >= SERVO_LEVEL_TORQUE )
 		{
-			initPWM(  );								// PWMの初期化
+			char servo_level_old;
+
+			servo_level_old = servo_level;
+			servo_level = i.integer;
+			if( servo_level_old < SERVO_LEVEL_TORQUE && servo_level >= SERVO_LEVEL_TORQUE )
+			{
+				initPWM(  );	// PWMの初期化
+			}
+			if( servo_level_old >= SERVO_LEVEL_TORQUE && servo_level < SERVO_LEVEL_TORQUE )
+			{
+				noPWM_break(  );
+			}
+			if( servo_level_old < SERVO_LEVEL_VELOCITY && servo_level >= SERVO_LEVEL_VELOCITY )
+			{
+				// servo levelが速度制御に推移した
+				int_w[0] = 0;
+				int_w[1] = 0;
+			}
 		}
-		if( servo_level > SERVO_LEVEL_TORQUE && i.integer <= SERVO_LEVEL_TORQUE )
-		{
-			noPWM_break(  );
-		}
-		if( servo_level < SERVO_LEVEL_VELOCITY && i.integer >= SERVO_LEVEL_VELOCITY )
-		{
-			// servo levelが速度制御に推移した
-			int_w[0] = 0;
-			int_w[1] = 0;
-		}
-		servo_level = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_watch_dog_limit:
 		p_watch_dog_limit = i.integer;
-		watch_dog = 0;
 		break;
 	case PARAM_io_dir:
 		PFC.PEIOR.WORD  = ( PFC.PEIOR.WORD  & 0xFFF0 ) | ( ( i.integer & 0x0F ) << 0 );
 		PFC.PBIOR.WORD  = ( PFC.PBIOR.WORD  & 0xFFC3 ) | ( ( i.integer & 0xF0 ) >> 2 );
-		watch_dog = 0;
 		break;
 	case PARAM_io_data:
 		PE.DR.WORD   = ( PE.DR.WORD   & 0xFFF0 ) | ( ( i.integer & 0x0F ) << 0 );
 		PB.DR.WORD   = ( PB.DR.WORD   & 0xFFC3 ) | ( ( i.integer & 0xF0 ) >> 2 );
-		watch_dog = 0;
 		break;
 	default:
+		return 0;
 		break;
 	}
+	watch_dog = 0;
 	return 0;
 }
 
@@ -640,7 +617,6 @@ main(  )
 
 			counter_buf2[0] = counter_buf[0];
 			counter_buf2[1] = counter_buf[1];
-
 		}
 		if( watch_dog > p_watch_dog_limit )
 		{

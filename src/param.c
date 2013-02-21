@@ -125,6 +125,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
 	fprintf( stderr, "  --high-resolution        Enable high resolution velocity control mode.\n" );
 	fprintf( stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n" );
+	fprintf( stderr, "  --daemon                 Run in daemon mode.\n" );
 }
 
 
@@ -166,6 +167,10 @@ int arg_analyze( int argc, char *argv[] )
 		else if( !strcmp( argv[i], "--long-help" ) )
 		{
 			g_param.option |= OPTION_SHOW_LONGHELP;
+		}
+		else if( !strcmp( argv[i], "--daemon" ) )
+		{
+			g_param.option |= OPTION_DAEMON;
 		}
 		else if( !strcmp( argv[i], "--param-help" ) )
 		{

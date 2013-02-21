@@ -88,6 +88,25 @@ int main( int argc, char *argv[] )
 	int quit;
 
 	ret = arg_analyze( argc, argv );
+	if( option( OPTION_DAEMON ) )
+	{
+		pid_t pid;
+		
+		pid = fork();
+		if( pid < 0 )
+		{
+			return -1;
+		}
+		else if( pid != 0 )
+		{
+			return 0;
+		}
+		setsid();
+		chdir( "/" );
+		close( STDIN_FILENO );
+		close( STDOUT_FILENO );
+		close( STDERR_FILENO );
+	}
 	if( option( OPTION_SHOW_HELP ) )
 	{
 		arg_help( argc, argv );

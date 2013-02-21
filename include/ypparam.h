@@ -82,7 +82,7 @@ extern "C"
 		YP_PARAM_MOTOR_R,
 		YP_PARAM_MOTOR_TC,
 		YP_PARAM_MOTOR_VC,
-		YP_PARAM_MOTOR_VTC,				///< 未使用（用途不明）
+		YP_PARAM_MOTOR_PHASE,
 
 		// キネマティクス
 		YP_PARAM_RADIUS,
@@ -116,10 +116,10 @@ extern "C"
 		YP_PARAM_TORQUE_LIMIT,
 
 		// 慣性パラメータ
-		YP_PARAM_MASS,							///< [kg] ロボット全体の質量
-		YP_PARAM_MOMENT_INERTIA,				///< [kgm^2] ロボット全体の慣性モーメント
-		YP_PARAM_MOTOR_M_INERTIA,				///< [kgm^2] モーターの慣性モーメント
-		YP_PARAM_TIRE_M_INERTIA,				///< [kgm^2] タイヤのイナーシャ
+		YP_PARAM_MASS,
+		YP_PARAM_MOMENT_INERTIA,
+		YP_PARAM_MOTOR_M_INERTIA,
+		YP_PARAM_TIRE_M_INERTIA,
 
 		// ボディサイズパラメータ
 		YP_PARAM_SIZE_FRONT,
@@ -146,7 +146,7 @@ extern "C"
 #define YP_PARAM_NAME \
 {\
 	"VERSION", "TORQUE_UNIT","VOLT_UNIT", "METER_UNIT", "ANPERE_UNIT", "AVEL_UNIT",\
-	"PWM_MAX", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "_MOTOR_VTC",\
+	"PWM_MAX", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
 	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 	"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
@@ -165,7 +165,7 @@ extern "C"
 	"[Integer A/A]  Fixed-point position of PC-MCU communication", \
 	"[Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
 	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
-	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","",\
+	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
 	"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
 	"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
 	"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\

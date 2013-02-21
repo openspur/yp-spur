@@ -899,6 +899,7 @@ void set_param_motor( void )
 	// モータのパラメータ
 	for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
 	{
+		parameter_set( PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j] );
 		parameter_set( PARAM_p_ki, j,
 					   ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
 								   ( g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] * g_P[YP_PARAM_VOLT][j] ) ) );

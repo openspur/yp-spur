@@ -95,14 +95,14 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_GETAD, {"get_ad_value"}, 1},
 	{SPUR_VEL, {"vel"}, 2},
 	{SPUR_WHEEL_VEL, {"wheel_vel"}, 2},
-	{SPUR_GET_WHEEL_VEL, {"get_wheel_vel"}, 0},
-	{SPUR_GET_WHEEL_ANG, {"get_wheel_ang"}, 0},
-	{SPUR_GET_WHEEL_TORQUE, {"get_wheel_torque"}, 0},
+	{SPUR_GET_WHEEL_VEL, {"get_wheel_vel"}, 2},
+	{SPUR_GET_WHEEL_ANG, {"get_wheel_ang"}, 2},
+	{SPUR_GET_WHEEL_TORQUE, {"get_wheel_torque"}, 2},
 	{SPUR_WHEEL_TORQUE, {"wheel_torque"}, 2},
 	{SPUR_ORIENT, {"orient"}, 1},
-	{SPUR_SET_WHEEL_VEL, {"set_wheel_vel"}, 0},
-	{SPUR_SET_WHEEL_ACCEL, {"set_wheel_accel"}, 0},
-	{SPUR_WHEEL_ANG, {"wheel_ang"}, 0},
+	{SPUR_SET_WHEEL_VEL, {"set_wheel_vel"}, 2},
+	{SPUR_SET_WHEEL_ACCEL, {"set_wheel_accel"}, 2},
+	{SPUR_WHEEL_ANG, {"wheel_ang"}, 2},
 	{SPUR_SLEEP, {"sleep"}, 1},
 	{HELP, {"help"}, 0},
 	{EXIT, {"exit"}, 0}
@@ -357,6 +357,10 @@ int main( int argc, char *argv[] )
 	double angvel = 0;
 	double accel = 0;
 	double angaccel = 0;
+	int set_vel = 0;
+	int set_accel = 0;
+	int set_angvel = 0;
+	int set_angaccel = 0;
 	int msqid = 0;
 	struct option options[8] =
 	{
@@ -377,15 +381,19 @@ int main( int argc, char *argv[] )
 		{
 		case 'V':
 			vel = atof( optarg );
+			set_vel = 1;
 			break;
 		case 'W':
 			angvel = atof( optarg );
+			set_angvel = 1;
 			break;
 		case 'A':
 			accel = atof( optarg );
+			set_accel = 1;
 			break;
 		case 'O':
 			angaccel = atof( optarg );
+			set_angaccel = 1;
 			break;
 		case 'c':
 			if( msqid == 0 ) YPSpur_init(  );
@@ -411,10 +419,10 @@ int main( int argc, char *argv[] )
 
 	if( msqid == 0 ) YPSpur_init(  );
 	else YPSpur_initex( msqid );
-	YPSpur_set_vel( vel );
-	YPSpur_set_angvel( angvel );
-	YPSpur_set_accel( accel );
-	YPSpur_set_angaccel( angaccel );
+	if( set_vel ) YPSpur_set_vel( vel );
+	if( set_angvel ) YPSpur_set_angvel( angvel );
+	if( set_accel ) YPSpur_set_accel( accel );
+	if( set_angaccel ) YPSpur_set_angaccel( angaccel );
 
 #if HAVE_LIBREADLINE
 	using_history(  );
@@ -451,10 +459,10 @@ int main( int argc, char *argv[] )
 			{
 				if( msqid == 0 ) YPSpur_init(  );
 				else YPSpur_initex( msqid );
-				YPSpur_set_vel( vel );
-				YPSpur_set_angvel( angvel );
-				YPSpur_set_accel( accel );
-				YPSpur_set_angaccel( angaccel );
+				if( set_vel ) YPSpur_set_vel( vel );
+				if( set_angvel ) YPSpur_set_angvel( angvel );
+				if( set_accel ) YPSpur_set_accel( accel );
+				if( set_angaccel ) YPSpur_set_angaccel( angaccel );
 				if( err == 0 )
 				{
 					fprintf( stderr, "WARN: YPSpur-coordinator terminated.\n" );

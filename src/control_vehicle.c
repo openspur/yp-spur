@@ -405,7 +405,9 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_VEL:					// 速度直接指定
-			motor_speed( spur->wrref, spur->wlref );
+			if( state( YP_STATE_BODY ) == ENABLE )
+				wheel_vel( &odometry, spur );
+			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_TORQUE:					// トルク直接指定
 			torque_set = 1;

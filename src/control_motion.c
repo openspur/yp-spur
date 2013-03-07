@@ -230,7 +230,7 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 }
 
 
-/* 回転 */
+/* ホイール角度指令 */
 double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 {
 	double q, w_limit;
@@ -280,8 +280,44 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	}
 
 	motor_speed( wr, wl );
-//	printf("v %f %f a %f %f tg %f %f  wref %f %f w %f %f\n",spur->wheel_vel_r, spur->wheel_vel_l,
-//		spur->wheel_accel_r, spur->wheel_accel_l, 
-//		spur->wheel_angle_r, spur->wheel_angle_l, nwr, nwl, wr,wl);
 	return 0;
 }
+
+/* ホイール速度指令 */
+double wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur )
+{
+	double wr, wl;
+	double nwl, nwr;
+
+	reference_motor_speed( &nwl, &nwr );
+
+	wl = spur->wlref;
+	if( wl > spur->wheel_vel_l ) wl = spur->wheel_vel_l;
+	else if( wl < -spur->wheel_vel_l ) wl = -spur->wheel_vel_l;
+
+	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl + spur->wheel_accel_l * spur->control_dt;
+	}
+	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl - spur->wheel_accel_l * spur->control_dt;
+	}
+
+	wr = spur->wrref;
+    if( wr > spur->wheel_vel_r ) wr = spur->wheel_vel_r;
+    else if( wr < -spur->wheel_vel_r ) wr = -spur->wheel_vel_r;
+
+	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr + spur->wheel_accel_r * spur->control_dt;
+	}
+	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr - spur->wheel_accel_r * spur->control_dt;
+	}
+
+	motor_speed( wr, wl );
+	return 0;
+}
+

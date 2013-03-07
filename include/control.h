@@ -19,6 +19,7 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur );
 double spin( OdometryPtr odm, SpurUserParamsPtr spur );
 double orient( OdometryPtr odm, SpurUserParamsPtr spur );
 double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur );
+double wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur );
 
 double regurator( double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur );
 

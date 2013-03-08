@@ -175,18 +175,18 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 	int limit;
 	double dw, dv;
 
-	dw = spur->dw * p( YP_PARAM_CONTROL_CYCLE, 0 );
-	dv = spur->dv * p( YP_PARAM_CONTROL_CYCLE, 0 );
+	dw = spur->dw * spur->control_dt;
+	dv = spur->dv * spur->control_dt;
 
 	if( fabs( g_v_ref ) > fabs( spur->v ) )
 	{
 		// 直前の速度が最大速度より大きかったら、ハードウェア最大加速度で減速
-		dv = p( YP_PARAM_MAX_ACC_V, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
+		dv = p( YP_PARAM_MAX_ACC_V, 0 ) * spur->control_dt;
 	}
 	if( fabs( g_w_ref ) > fabs( spur->w ) )
 	{
 		// 直前の角速度が最大角速度より大きかったら、ハードウェア最大角加速度で減速
-		dw = p( YP_PARAM_MAX_ACC_W, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
+		dw = p( YP_PARAM_MAX_ACC_W, 0 ) * spur->control_dt;
 	}
 
 	limit = 31;

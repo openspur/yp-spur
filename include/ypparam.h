@@ -135,6 +135,11 @@ extern "C"
 		YP_PARAM_GAIN_E,
 		YP_PARAM_GAIN_F,
 
+		// サーボ制御パラメータ
+		YP_PARAM_STOP_LINEAR,
+		YP_PARAM_SPIN_LINEAR,
+		YP_PARAM_WHEEL_ANG_LINEAR,
+
 		YP_PARAM_MIN_WHEEL_ANGLE,
 		YP_PARAM_MAX_WHEEL_ANGLE,
 
@@ -154,6 +159,7 @@ extern "C"
 	"MASS","MOMENT_INERTIA", "MOTOR_M_INERTIA", "TIRE_M_INERTIA",\
 	"SIZE_FRONT", "SIZE_REAR", "SIZE_LEFT", "SIZE_RIGHT",\
 	"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
+	"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
 	"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
 }
 
@@ -178,6 +184,7 @@ extern "C"
 	"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
 	"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
 	"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
+	"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command"\
 	"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)"\
 }
 

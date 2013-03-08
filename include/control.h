@@ -32,4 +32,5 @@ void init_control_thread( pthread_t * thread );
 void set_run_mode( SpurRunMode mode );
 SpurRunMode get_run_mode( void );
 
+
 #endif

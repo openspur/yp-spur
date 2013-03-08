@@ -22,7 +22,16 @@ extern "C"
 		char serialno[128];
 	} Ver_t;
 
+/** Structure of PP command */
+	typedef struct PARAMETER_INFO
+	{
+		char pwm_resolution[128];
+		char motor_num[128];
+		char torque_unit[128];
+	} Param_t;
+
 	int get_version( Ver_t * apVer );
+	int get_parameter( Param_t * apParam );
 	int set_baudrate( int baud );
 
 #ifdef __cplusplus

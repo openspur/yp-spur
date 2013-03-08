@@ -57,8 +57,8 @@ void initPWM(  )
 	MTU3.TMDR.BYTE = 0xc2;						/* pwm mode 1, buffer disable */
 	MTU3.TIOR.BYTE.H = 0x12;					/* CMA=0, CMB=1 */
 	MTU3.TIOR.BYTE.L = 0x12;					/* CMC=0, CMD=1 */
-	MTU3.TGRA = ( pwm_max[0] > -pwm_min[0] ) ? pwm_max[0] : -pwm_min[0];
-	MTU3.TGRC = ( pwm_max[1] > -pwm_min[1] ) ? pwm_max[1] : -pwm_min[1];
+	MTU3.TGRA = 1000;
+	MTU3.TGRC = 1000;
 
 	PFC.PECR1.WORD |= 0x0011;					/* use TGRA, TGRC port */
 

@@ -80,7 +80,7 @@ int get_version( Ver_t * apVer )
 	/* Send & Recive Buffer */
 	char buf[2048], *readpos;
 	/* Temporary */
-	char *tmp, *lf;
+	char *tmp, *lf, *val;
 	char *tag, *wbuf;
 
 	readpos = buf;
@@ -128,13 +128,82 @@ int get_version( Ver_t * apVer )
 			continue;
 		}
 		tmp = strchr( tag, ';' );
-		if( tmp )
+		val = strchr( tag, ':' );
+		if( tmp && val )
 		{
 			*tmp = 0;
 			if( wbuf )
-				strcpy( wbuf, tag + 5 );
+			{
+				strcpy( wbuf, val + 1 );
+			}
 		}
 		readpos = lf + 1;
 	}
 	return 1;
 }
+
+/**
+  @brief Get version info
+  @param *apVer Pointer to version structure
+  @return failed: 0, succeeded: 1
+ */
+int get_parameter( Param_t * apParam )
+{
+	/* Send & Recive Buffer */
+	char buf[2048], *readpos;
+	/* Temporary */
+	char *tmp, *lf, *val;
+	char *tag, *wbuf;
+
+	readpos = buf;
+	memset( apParam, 0, sizeof ( Param_t ) );
+
+	strcpy( buf, "\n\n\n\n" );
+	serial_write( buf, strlen( buf ) );
+	yp_usleep( 50000 );
+	serial_flush_in(  );
+	yp_usleep( 50000 );
+	strcpy( buf, "PP\n" );
+	serial_write( buf, strlen( buf ) );
+
+	buf[0] = 0;
+	serial_recieve( vv_receive, buf );
+
+	while( 1 )
+	{
+		if( ( lf = strchr( readpos, '\n' ) ) == NULL )
+			break;
+		*lf = 0;
+		if( ( tag = strstr( readpos, "PWMRES:" ) ) != 0 )
+		{
+			wbuf = ( apParam->pwm_resolution );
+		}
+		else if( ( tag = strstr( readpos, "MOTORNUM:" ) ) != 0 )
+		{
+			wbuf = ( apParam->motor_num );
+		}
+		else if( ( tag = strstr( readpos, "TORQUEUNIT:" ) ) != 0 )
+		{
+			wbuf = ( apParam->torque_unit );
+		}
+		else
+		{
+			readpos = lf + 1;
+			continue;
+		}
+		tmp = strchr( tag, ';' );
+		val = strchr( tag, ':' );
+		if( tmp && val )
+		{
+			*tmp = 0;
+			if( wbuf )
+			{
+				strcpy( wbuf, val + 1 );
+			}
+		}
+		readpos = lf + 1;
+	}
+	return 1;
+}
+
+

@@ -211,6 +211,25 @@ int_cmi1(  )
 
 #define sci_send_txt(c,a) sci_send(c, a,strlen(a))
 
+int itoa10( unsigned char *buf, int data )
+{
+	int i;
+	int len;
+	char txt[16];
+	for( i = 0; data; i++ )
+	{
+		txt[i] = data % 10 + '0';
+		data = data / 10;
+	}
+	len = i;
+	for( i = 0; i < len; i ++ )
+	{
+		buf[ len - i - 1 ] = txt[ i ];
+	}
+	buf[len] = 0;
+	return len;
+}
+
 // //////////////////////////////////////////////////
 /* 受信したYPSpur拡張コマンドの解析 */
 int extended_command_analyze( int channel, char *data )
@@ -232,6 +251,22 @@ int extended_command_analyze( int channel, char *data )
 		sci_send_txt( channel, "; \nPROT:" );
 		sci_send_txt( channel, YP_PROTOCOL_NAME );
 		sci_send_txt( channel, "; \nSERI:Reserved; \n\n" );
+		// set long timeout
+		watch_dog = -1000;
+	}
+	else if( strstr( data, "PP" ) == data )
+	{
+		char val[8];
+		sci_send_txt( channel, data );
+		sci_send_txt( channel, "\n00P\nPWMRES:" );
+		itoa10( (unsigned char*)val, YP_DRIVERPARAM_PWMRES );
+		sci_send_txt( channel, val );
+		sci_send_txt( channel, "; \nMOTORNUM:" );
+		itoa10( (unsigned char*)val, MOTOR_NUM );
+		sci_send_txt( channel, val );
+		sci_send_txt( channel, "; \nTORQUEUNIT:" );
+		sci_send_txt( channel, YP_DRIVERPARAM_TORQUEUNIT );
+		sci_send_txt( channel, "; \n\n" );
 		// set long timeout
 		watch_dog = -1000;
 	}

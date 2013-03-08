@@ -82,6 +82,7 @@ int main( int argc, char *argv[] )
 	int control_thread_en;
 	int update_thread_en;
 	Ver_t version;
+	Param_t driver_param;
 	int i, ret;
 	ParametersPtr param;
 	char paramfile[ 512 ];
@@ -212,8 +213,7 @@ int main( int argc, char *argv[] )
 				yprintf( OUTPUT_LV_PARAM, " Firmware: %s\n", version.firmware );
 				yprintf( OUTPUT_LV_PARAM, " Protcol : %s\n", version.protocol );
 				yprintf( OUTPUT_LV_PARAM, " Serialno: %s\n", version.serialno );
-
-				yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+				yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				if( i == 3 )
 				{
 					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n" );
@@ -227,6 +227,37 @@ int main( int argc, char *argv[] )
 			}
 			fflush( stderr );
 
+			if( get_parameter( &driver_param ) == -1 )
+			{
+				continue;
+			}
+			yprintf( OUTPUT_LV_PARAM, "Driver depending parameters\n" );
+			yprintf( OUTPUT_LV_PARAM, " PWM resolution: %s\n", driver_param.pwm_resolution );
+			yprintf( OUTPUT_LV_PARAM, " Motor number  : %s\n", driver_param.motor_num );
+			yprintf( OUTPUT_LV_PARAM, " Torque unit   : %s\n", driver_param.torque_unit );
+			yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
+
+			if( strlen( driver_param.pwm_resolution ) <= 0 || 
+			    strlen( driver_param.motor_num ) <= 0 || 
+			    strlen( driver_param.torque_unit ) <= 0 )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n" );
+				if( option( OPTION_RECONNECT ) && g_emergency == 0 )
+				{
+					yp_usleep( 500000 );
+					continue;
+				}
+				break;
+			}
+			{
+				int i;
+				for( i = 0; i < YP_PARAM_MOTOR_NUM; i ++ )
+				{
+					*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
+					*pp( YP_PARAM_TORQUE_UNIT, i ) = atoi( driver_param.torque_unit );
+				}
+
+			}
 			if( param->speed )
 			{
 				yprintf( OUTPUT_LV_MODULE, "Setting baudrate to %d baud.\n", param->speed );

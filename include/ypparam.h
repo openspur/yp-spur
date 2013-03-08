@@ -70,7 +70,7 @@ extern "C"
 		YP_PARAM_TORQUE_UNIT,
 		YP_PARAM_VOLT_UNIT,
 		YP_PARAM_METER_UNIT,
-		YP_PARAM_ANPERE_UNIT,
+		YP_PARAM_AMPERE_UNIT,
 		YP_PARAM_AVEL_UNIT,
 		YP_PARAM_PWM_MAX,
 
@@ -145,8 +145,8 @@ extern "C"
 // 自分で指定しない（できない）パラメータは最初の文字が'_'で始まっている
 #define YP_PARAM_NAME \
 {\
-	"VERSION", "TORQUE_UNIT","VOLT_UNIT", "METER_UNIT", "ANPERE_UNIT", "AVEL_UNIT",\
-	"PWM_MAX", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
+	"VERSION", "_TORQUE_UNIT","_VOLT_UNIT", "_METER_UNIT", "_AMPERE_UNIT", "_AVEL_UNIT",\
+	"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
 	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 	"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
@@ -160,10 +160,10 @@ extern "C"
 #define YP_PARAM_COMMENT \
 {\
 	"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication",\
-	"[Integer V/V] Fixed-point position of PC-MCU communication", \
-	"[Integer m/m]  Fixed-point position of PC-MCU communication", \
-	"[Integer A/A]  Fixed-point position of PC-MCU communication", \
-	"[Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
+	"*OBSOLETED [Integer V/V] Fixed-point position of PC-MCU communication", \
+	"*OBSOLETED [Integer m/m] Fixed-point position of PC-MCU communication", \
+	"*OBSOLETED [Integer A/A] Fixed-point position of PC-MCU communication", \
+	"*OBSOLETED [Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
 	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
 	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
 	"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\

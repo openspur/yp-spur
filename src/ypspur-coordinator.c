@@ -85,15 +85,15 @@ int main( int argc, char *argv[] )
 	Param_t driver_param;
 	int i, ret;
 	ParametersPtr param;
-	char paramfile[ 512 ];
+	char paramfile[512];
 	int quit;
 
 	ret = arg_analyze( argc, argv );
 	if( option( OPTION_DAEMON ) )
 	{
 		pid_t pid;
-		
-		pid = fork();
+
+		pid = fork(  );
 		if( pid < 0 )
 		{
 			return -1;
@@ -102,7 +102,7 @@ int main( int argc, char *argv[] )
 		{
 			return 0;
 		}
-		setsid();
+		setsid(  );
 		chdir( "/" );
 		close( STDIN_FILENO );
 		close( STDOUT_FILENO );
@@ -120,7 +120,7 @@ int main( int argc, char *argv[] )
 	}
 	if( option( OPTION_SHOW_PARAMHELP ) )
 	{
-		param_help( );
+		param_help(  );
 		return EXIT_SUCCESS;
 	}
 	if( option( OPTION_VERSION ) )
@@ -156,20 +156,13 @@ int main( int argc, char *argv[] )
 	init_odometry(  );
 	init_spur_command(  );
 
-	yprintf( OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename );
-	if( !set_param( param->parameter_filename, paramfile ) )
-	{
-		yprintf( OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n" );
-		return 0;
-	}
-	yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n" );
-
 	fflush( stderr );
 
 	command_thread_en = 0;
 	command_thread_en = 0;
 	do
 	{
+		FILE *temp_paramfile = NULL;
 		quit = 0;
 
 		yprintf( OUTPUT_LV_PROCESS, "Device Infomation\n" );
@@ -179,7 +172,6 @@ int main( int argc, char *argv[] )
 		{
 			if( !serial_connect( param->device_name ) )
 			{
-				// fprintf( stderr, "Error: init_serial()\n" );
 				// quit=0;でbreakしたら異常終了と判断される
 				break;
 			}
@@ -222,7 +214,7 @@ int main( int argc, char *argv[] )
 						yp_usleep( 500000 );
 						continue;
 					}
-					break; // quit=0でbreakしたら異常終了と判断
+					break;						// quit=0でbreakしたら異常終了と判断
 				}
 			}
 			fflush( stderr );
@@ -232,14 +224,14 @@ int main( int argc, char *argv[] )
 				continue;
 			}
 			yprintf( OUTPUT_LV_PARAM, "Driver depending parameters\n" );
+			yprintf( OUTPUT_LV_PARAM, " Name          : %s\n", driver_param.robot_name );
 			yprintf( OUTPUT_LV_PARAM, " PWM resolution: %s\n", driver_param.pwm_resolution );
 			yprintf( OUTPUT_LV_PARAM, " Motor number  : %s\n", driver_param.motor_num );
 			yprintf( OUTPUT_LV_PARAM, " Torque unit   : %s\n", driver_param.torque_unit );
 			yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 
-			if( strlen( driver_param.pwm_resolution ) <= 0 || 
-			    strlen( driver_param.motor_num ) <= 0 || 
-			    strlen( driver_param.torque_unit ) <= 0 )
+			if( strlen( driver_param.pwm_resolution ) <= 0 ||
+				strlen( driver_param.motor_num ) <= 0 || strlen( driver_param.torque_unit ) <= 0 )
 			{
 				yprintf( OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n" );
 				if( option( OPTION_RECONNECT ) && g_emergency == 0 )
@@ -249,26 +241,83 @@ int main( int argc, char *argv[] )
 				}
 				break;
 			}
+		}
+		if( !( option( OPTION_PARAM_FILE ) ) )
+		{
+			// パラメータファイルが指定されておらず、ドライバにパラメータが内蔵されている場合
+			if( strcmp( driver_param.robot_name, "embedded" ) == 0 )
 			{
-				int i;
-				for( i = 0; i < YP_PARAM_MOTOR_NUM; i ++ )
-				{
-					*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
-					*pp( YP_PARAM_TORQUE_UNIT, i ) = atoi( driver_param.torque_unit );
-				}
+				char param[2048];
 
+				yprintf( OUTPUT_LV_MODULE, "Reading device embedded parameter.\n" );
+				temp_paramfile = tmpfile(  );
+				if( !temp_paramfile )
+				{
+					yprintf( OUTPUT_LV_ERROR, "Error: Failed to create temporary file.\n" );
+					return 0;
+				}
+				if( !get_embedded_param( param ) )
+				{
+					yprintf( OUTPUT_LV_ERROR, "Error: Failed to read embedded parameters.\n" );
+					if( option( OPTION_RECONNECT ) && g_emergency == 0 )
+					{
+						yp_usleep( 500000 );
+						continue;
+					}
+					break;
+				}
+				fprintf( temp_paramfile, "%s", param );
+				fseek( temp_paramfile, 0L, SEEK_SET );
 			}
+			// パラメータファイルが指定されておらず、ドライバにロボット名が登録されている場合
+			else if( strlen( driver_param.robot_name ) > 0 && strcmp( driver_param.robot_name, "unknown" ) != 0 )
+			{
+				strcpy( param->parameter_filename, driver_param.robot_name );
+				strcat( param->parameter_filename, ".param" );
+			}
+		}
+		if( temp_paramfile )
+		{
+			yprintf( OUTPUT_LV_PARAM, "Embedded parameter file\n" );
+			if( !set_paramptr( temp_paramfile ) )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Error: Cannot use embedded parameter.\n" );
+				return 0;
+			}
+		}
+		else
+		{
+			yprintf( OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename );
+			if( !set_param( param->parameter_filename, paramfile ) )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n" );
+				return 0;
+			}
+		}
+		{
+			int i;
+			for ( i = 0; i < YP_PARAM_MOTOR_NUM; i++ )
+			{
+				*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
+				*pp( YP_PARAM_TORQUE_UNIT, i ) = atoi( driver_param.torque_unit );
+			}
+
+		}
+		yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n" );
+
+		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
+		{
 			if( param->speed )
 			{
 				yprintf( OUTPUT_LV_MODULE, "Setting baudrate to %d baud.\n", param->speed );
 				if( !set_baudrate( param->speed ) )
 				{
 					yprintf( OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n" );
-					
+
 					serial_close(  );
 
 					quit = 0;
-					break;	// quit=0でbreakしたら異常終了と判断
+					break;						// quit=0でbreakしたら異常終了と判断
 				}
 			}
 
@@ -337,7 +386,8 @@ int main( int argc, char *argv[] )
 			}
 			else
 			{
-				while( 1 ) yp_usleep( 1000000 );
+				while( 1 )
+					yp_usleep( 1000000 );
 			}
 			yprintf( OUTPUT_LV_MODULE, "Connection to %s was closed.\n", param->device_name );
 		}
@@ -397,4 +447,3 @@ int main( int argc, char *argv[] )
 
 	return ( quit ? EXIT_SUCCESS : EXIT_FAILURE );
 }
-

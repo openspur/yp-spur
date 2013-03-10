@@ -15,6 +15,8 @@ typedef enum
 	OPTION_VERSION         = 0x0040,
 	OPTION_DAEMON          = 0x0080,
 
+	OPTION_PARAM_FILE            = 0x00400,
+
 	OPTION_WITHOUT_DEVICE        = 0x00800,
 	OPTION_WITHOUT_SSM           = 0x01000,
 	OPTION_ENABLE_SET_BS         = 0x02000,
@@ -65,6 +67,7 @@ void arg_help( int argc, char *argv[] );
 void param_help( void );
 void arg_longhelp( int argc, char *argv[] );
 int set_param( char *filename, char *concrete_path );
+int set_paramptr( FILE * paramfile );
 void calc_param_inertia2ff( void );
 void set_param_motor( void );
 void set_param_velocity( void );
@@ -84,11 +87,10 @@ double *pp( YPSpur_param id, enum motor_id motor );
 ParametersPtr get_param_ptr(  );
 int option( ParamOptions option );
 ParamOutputLv output_lv( void );
-void param_calc( );
+void param_calc(  );
 
 void param_update( void *filename );
 void init_param_update_thread( pthread_t * thread, char *filename );
 void param_update_loop_cleanup( void *data );
 
 #endif
-

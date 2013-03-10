@@ -20,7 +20,6 @@
 #include <utility.h>
 #include <yprintf.h>
 
-
 int ss_receive( char *buf, int len, double receive_time, void *data )
 {
 	buf[len] = 0;
@@ -38,7 +37,6 @@ int set_baudrate( int baud )
 	char buf[2048];
 	/* Temporary */
 
-
 	strcpy( buf, "\n\n\n\n" );
 	serial_write( buf, strlen( buf ) );
 	yp_usleep( 50000 );
@@ -50,12 +48,12 @@ int set_baudrate( int baud )
 	buf[0] = 0;
 	serial_recieve( ss_receive, buf );
 
-	if( strstr( buf, "00P" ) != NULL )
+	if( strstr( buf, "\n00P\n" ) != NULL )
 	{
 		yp_usleep( 100000 );
 		return serial_change_baudrate( baud );
 	}
-	
+
 	return 0;
 }
 
@@ -96,6 +94,10 @@ int get_version( Ver_t * apVer )
 
 	buf[0] = 0;
 	serial_recieve( vv_receive, buf );
+	if( strstr( buf, "\n00P\n" ) == 0 )
+	{
+		return 0;
+	}
 
 	while( 1 )
 	{
@@ -168,6 +170,10 @@ int get_parameter( Param_t * apParam )
 
 	buf[0] = 0;
 	serial_recieve( vv_receive, buf );
+	if( strstr( buf, "\n00P\n" ) == 0 )
+	{
+		return 0;
+	}
 
 	while( 1 )
 	{
@@ -185,6 +191,10 @@ int get_parameter( Param_t * apParam )
 		else if( ( tag = strstr( readpos, "TORQUEUNIT:" ) ) != 0 )
 		{
 			wbuf = ( apParam->torque_unit );
+		}
+		else if( ( tag = strstr( readpos, "NAME:" ) ) != 0 )
+		{
+			wbuf = ( apParam->robot_name );
 		}
 		else
 		{
@@ -206,4 +216,45 @@ int get_parameter( Param_t * apParam )
 	return 1;
 }
 
+int get_embedded_param( char *param )
+{
+	/* Send & Recive Buffer */
+	char buf[2048], *readpos;
+	/* Temporary */
+	char *lf;
 
+	readpos = buf;
+	memset( buf, 0, sizeof ( buf ) );
+
+	strcpy( buf, "\n\n\n\n" );
+	serial_write( buf, strlen( buf ) );
+	yp_usleep( 50000 );
+	serial_flush_in(  );
+	yp_usleep( 50000 );
+	strcpy( buf, "GETEMBEDDEDPARAM\n" );
+	serial_write( buf, strlen( buf ) );
+
+	buf[0] = 0;
+	serial_recieve( vv_receive, buf );
+	if( strstr( buf, "\n00P\n" ) == 0 )
+	{
+		return 0;
+	}
+
+	while( 1 )
+	{
+		if( ( lf = strchr( readpos, '\n' ) ) == NULL )
+			break;
+		*lf = 0;
+		if( strstr( readpos, "00P" ) != 0 )
+		{
+			lf++;
+			break;
+		}
+		readpos = lf + 1;
+	}
+	if( lf == NULL )
+		return 0;
+	strcpy( param, lf );
+	return 1;
+}

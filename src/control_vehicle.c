@@ -81,7 +81,6 @@ void motor_torque( double r, double l )
 
 	ir = r * p(YP_PARAM_TORQUE_UNIT,MOTOR_RIGHT) / p(YP_PARAM_GEAR,MOTOR_RIGHT);
 	il = l * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) / p(YP_PARAM_GEAR,MOTOR_LEFT);
-
 	parameter_set( PARAM_p_toq_offset, 0, ir );
 	parameter_set( PARAM_p_toq_offset, 1, il );
 }

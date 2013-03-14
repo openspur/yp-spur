@@ -188,10 +188,6 @@ int get_parameter( Param_t * apParam )
 		{
 			wbuf = ( apParam->motor_num );
 		}
-		else if( ( tag = strstr( readpos, "TORQUEUNIT:" ) ) != 0 )
-		{
-			wbuf = ( apParam->torque_unit );
-		}
 		else if( ( tag = strstr( readpos, "NAME:" ) ) != 0 )
 		{
 			wbuf = ( apParam->robot_name );

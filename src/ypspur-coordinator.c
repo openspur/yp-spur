@@ -227,11 +227,10 @@ int main( int argc, char *argv[] )
 			yprintf( OUTPUT_LV_PARAM, " Name          : %s\n", driver_param.robot_name );
 			yprintf( OUTPUT_LV_PARAM, " PWM resolution: %s\n", driver_param.pwm_resolution );
 			yprintf( OUTPUT_LV_PARAM, " Motor number  : %s\n", driver_param.motor_num );
-			yprintf( OUTPUT_LV_PARAM, " Torque unit   : %s\n", driver_param.torque_unit );
 			yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 
-			if( strlen( driver_param.pwm_resolution ) <= 0 ||
-				strlen( driver_param.motor_num ) <= 0 || strlen( driver_param.torque_unit ) <= 0 )
+			if( strlen( driver_param.pwm_resolution ) <= 0 || 
+			    strlen( driver_param.motor_num ) <= 0 )
 			{
 				yprintf( OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n" );
 				if( option( OPTION_RECONNECT ) && g_emergency == 0 )
@@ -299,7 +298,6 @@ int main( int argc, char *argv[] )
 			for ( i = 0; i < YP_PARAM_MOTOR_NUM; i++ )
 			{
 				*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
-				*pp( YP_PARAM_TORQUE_UNIT, i ) = atoi( driver_param.torque_unit );
 			}
 
 		}

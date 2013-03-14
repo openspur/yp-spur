@@ -68,10 +68,7 @@ extern "C"
 		YP_PARAM_VERSION = 0,
 
 		YP_PARAM_TORQUE_UNIT,
-		YP_PARAM_VOLT_UNIT,
-		YP_PARAM_METER_UNIT,
-		YP_PARAM_AMPERE_UNIT,
-		YP_PARAM_AVEL_UNIT,
+		YP_PARAM_TORQUE_FINENESS,
 		YP_PARAM_PWM_MAX,
 
 		// モータパラメータ
@@ -150,7 +147,7 @@ extern "C"
 // 自分で指定しない（できない）パラメータは最初の文字が'_'で始まっている
 #define YP_PARAM_NAME \
 {\
-	"VERSION", "_TORQUE_UNIT","_VOLT_UNIT", "_METER_UNIT", "_AMPERE_UNIT", "_AVEL_UNIT",\
+	"VERSION", "_TORQUE_UNIT", "TORQUE_FINENESS",\
 	"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
 	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
@@ -163,13 +160,24 @@ extern "C"
 	"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
 }
 
+#define YP_PARAM_NECESSARY \
+{\
+	1, 0, 1,\
+	0, 1, 1, 1, 1, 1, 1, 1, 0,\
+	1, 0, 0, 1, 1,\
+	1, 1, 1, 1, 1,\
+	1, 1, 1, 1, 1, 1, 1,\
+	1, 0, 0, 1, 0, 0,\
+	1, 1, 1, 1,\
+	0, 0, 0, 0,\
+	0, 0, 0, 0, 0, 0,\
+	0, 0, 0,\
+	0, 0,\
+}
+
 #define YP_PARAM_COMMENT \
 {\
-	"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication",\
-	"*OBSOLETED [Integer V/V] Fixed-point position of PC-MCU communication", \
-	"*OBSOLETED [Integer m/m] Fixed-point position of PC-MCU communication", \
-	"*OBSOLETED [Integer A/A] Fixed-point position of PC-MCU communication", \
-	"*OBSOLETED [Integer rad/s / rad/s]  Fixed-point position of PC-MCU communication",\
+	"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication","[Nm] Calculation fineness of torque control",\
 	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
 	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
 	"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
@@ -202,7 +210,7 @@ enum motor_id
 	{ YP_PARAM_RADIUS_R, YP_PARAM_RADIUS, MOTOR_RIGHT },\
 }
 
-#define YP_PARAM_REQUIRED_VERSION	3.0
+#define YP_PARAM_REQUIRED_VERSION	4.0
 
 	/* パラメータの有効・無効 */
 	/* control_state用　　 */

@@ -394,8 +394,10 @@ int set_paramptr( FILE * paramfile )
 	char param_names[YP_PARAM_NUM][20] = YP_PARAM_NAME;
 	char param_names0[YP_PARAM_NUM][24] = YP_PARAM_NAME;
 	char param_names1[YP_PARAM_NUM][24] = YP_PARAM_NAME;
-#define VARIABLE_NUM 9
-	char variable_names[VARIABLE_NUM][20] = {
+	int param_necessary[YP_PARAM_NUM] = YP_PARAM_NECESSARY;
+	#define VARIABLE_NUM 9
+	char variable_names[VARIABLE_NUM][20] = 
+	{
 		"X", "Y", "THETA", "V", "W",
 		"WHEEL_VEL[0]", "WHEEL_VEL[1]", "WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]"
 	};
@@ -698,13 +700,33 @@ int set_paramptr( FILE * paramfile )
 		return 0;
 	}
 
-	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+	int param_error;
+	
+	param_error = 0;
+	for ( i = 0; i < YP_PARAM_NUM; i++ )
+	{
+		for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+		{
+			if( param_necessary[i] && !g_P_set[i][j] )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Error: %s[%d] undifined!\n", param_names[i], j );
+				param_error = 1;
+			}
+		}
+	}
+	if( param_error )
+	{
+		return 0;
+	}
+
+	for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
 	{
 		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
 		{
-			yprintf( OUTPUT_LV_WARNING, "TORQUE_LIMIT[%d] doesn't set. TORQUE_MAX[%d] will be used.\n", j, j );
+			yprintf( OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undifined. TORQUE_MAX[%d] will be used.\n", j, j );
 			g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
 		}
+		g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
 	}
 
 	// パラメータの指定によって自動的に求まるパラメータの計算
@@ -881,10 +903,8 @@ void calc_param_inertia2ff( void )
 	Rr = g_P[YP_PARAM_RADIUS][0];
 	Rl = g_P[YP_PARAM_RADIUS][1];
 	T = g_P[YP_PARAM_TREAD][0];
-	fl = fr = 0.0;								// モータ制御器の中に摩擦補償が入っているのでいらない？
-
-	// printf("M = %lf\n",M);
-	// printf("J = %lf\n",J);
+	fl = fr = 0.0;	// モータ制御器の中に摩擦補償が入っているのでいらない？
+	
 	// パラメータの計算
 	A = ( Gr * Gr * Jmr + Jtr + Rr * Rr / 2.0 * ( M / 2.0 + J / ( T * T ) ) ) / Gr;
 	B = ( Gl * Gl * Jml + Jtl + Rl * Rl / 2.0 * ( M / 2.0 + J / ( T * T ) ) ) / Gl;
@@ -916,6 +936,7 @@ void set_param_motor( void )
 	// モータのパラメータ
 	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
 	{
+		parameter_set( PARAM_vsrc, j, g_P[YP_PARAM_VOLT][j] * 256 );
 		parameter_set( PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j] );
 		parameter_set( PARAM_p_ki, j,
 					   ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
@@ -956,25 +977,27 @@ void set_param_velocity( void )
 	parameter_set( PARAM_watch_dog_limit, 0, 300 );
 
 	// FF制御パラメータ
-	// カウンタ値から角速度に直すための固定値(8bit固定小数点的な計算) &
-	// トルク計算のためのオフセット
-	ffr = 2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][MOTOR_RIGHT] * 256.0 * g_P[YP_PARAM_TORQUE_UNIT][MOTOR_RIGHT];
-	ffl = 2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][MOTOR_LEFT] * 256.0 * g_P[YP_PARAM_TORQUE_UNIT][MOTOR_LEFT];
+	// A-F単位 [kgf・m・m] * wheel_acc[rad/ss]
+	//				wheel_acc[rad/ss] = 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+	//  = [kgf・m・m] * 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+	ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * g_P[YP_PARAM_GEAR][0] );
+	ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / ( g_P[YP_PARAM_COUNT_REV][1] * g_P[YP_PARAM_GEAR][1] );
+
 	parameter_set( PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr );
 	parameter_set( PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl );
 	parameter_set( PARAM_p_C, 0, g_P[YP_PARAM_GAIN_C][0] * ffr );
 	parameter_set( PARAM_p_D, 0, g_P[YP_PARAM_GAIN_D][0] * ffl );
 	parameter_set( PARAM_p_E, 0, g_P[YP_PARAM_GAIN_E][0] * ffr );
 	parameter_set( PARAM_p_F, 0, g_P[YP_PARAM_GAIN_F][0] * ffl );
+	// 値は
+	
 	// PI制御のパラメータ
 	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
 	{
-		// [1/s] -> [1/ms] & トルク計算のためのオフセット
-		parameter_set( PARAM_p_pi_kp, j,
-					   g_P[YP_PARAM_GAIN_KP][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_CYCLE][j] );
-		// [1/s^2] -> [1/ms^2] & トルク計算のためのオフセット
-		parameter_set( PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j] * g_P[YP_PARAM_TORQUE_UNIT][j]
-					   * g_P[YP_PARAM_CYCLE][j] * g_P[YP_PARAM_CYCLE][j] );
+		// [1/s]
+		parameter_set( PARAM_p_pi_kp, j, g_P[YP_PARAM_GAIN_KP][j] );
+		// [1/s^2]
+		parameter_set( PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j] );
 		// 各種制限
 		parameter_set( PARAM_int_max, j,
 					   g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );

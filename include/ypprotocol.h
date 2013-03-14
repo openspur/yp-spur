@@ -27,7 +27,6 @@ extern "C"
 	{
 		char pwm_resolution[128];
 		char motor_num[128];
-		char torque_unit[128];
 		char robot_name[128];
 	} Param_t;
 

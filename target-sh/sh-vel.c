@@ -91,8 +91,9 @@ int_cmi1(  )
 			}
 			else
 			{
-				w_ref_diff[0] = ( w_ref[0] - w_ref_before[0] );
-				w_ref_diff[1] = ( w_ref[1] - w_ref_before[1] );
+				// [cnt/msms] * 1000[ms/s] * 1000[ms/s] = [cnt/ss]
+				w_ref_diff[0] = ( w_ref[0] - w_ref_before[0] ) * 1000000;
+				w_ref_diff[1] = ( w_ref[1] - w_ref_before[1] ) * 1000000;
 
 				divider[ wcnt_cycle ]( &w_ref_diff[0] );
 				divider[ wcnt_cycle ]( &w_ref_diff[1] );
@@ -120,7 +121,7 @@ int_cmi1(  )
 						int_w[i] = int_min[i];
 
 					/* PI制御分 */
-					toq_pi[i] = ( w_ref[i] - cnt_dif[i] ) * p_pi_kp[i] + int_w[i] * p_pi_ki[i];
+					toq_pi[i] = ( w_ref[i] - cnt_dif[i] ) * 1000 * p_pi_kp[i] + int_w[i] * p_pi_ki[i];
 				}
 
 				/* PWSでの相互の影響を考慮したフィードフォワード */
@@ -259,13 +260,10 @@ int extended_command_analyze( int channel, char *data )
 		char val[8];
 		sci_send_txt( channel, data );
 		sci_send_txt( channel, "\n00P\nPWMRES:" );
-		itoa10( (unsigned char*)val, YP_DRIVERPARAM_PWMRES );
-		sci_send_txt( channel, val );
+		sci_send_txt( channel, YP_DRIVERPARAM_PWMRES );
 		sci_send_txt( channel, "; \nMOTORNUM:" );
 		itoa10( (unsigned char*)val, MOTOR_NUM );
 		sci_send_txt( channel, val );
-		sci_send_txt( channel, "; \nTORQUEUNIT:" );
-		sci_send_txt( channel, YP_DRIVERPARAM_TORQUEUNIT );
 		sci_send_txt( channel, "; \n\n" );
 		// set long timeout
 		watch_dog = -1000;

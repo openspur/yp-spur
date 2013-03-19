@@ -264,6 +264,10 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	{
 		wl = -SIGN( q ) * w_limit;
 	}
+	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) )
+	{
+		wl = -sqrt( 2 * spur->wheel_accel_l * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT);
+	}
 	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
 	{
 		wl = nwl + spur->wheel_accel_l * spur->control_dt;
@@ -272,13 +276,9 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	{
 		wl = nwl - spur->wheel_accel_l * spur->control_dt;
 	}
-	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) )
-	{
-		wl = -sqrt( 2 * spur->dw * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT);
-	}
 
 	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_RIGHT) ) * 2;
-	q = ( odm->theta_r + nwr * spur->control_dt ) - spur->wheel_angle_r;
+	q = ( odm->theta_r + nwr * delay ) - spur->wheel_angle_r;
 	/* 次の制御周期で停止するのに限界の速度を計算 */
 	w_limit = sqrt( 2 * spur->wheel_accel_r * fabs( q ) );
 	if( spur->wheel_vel_r < w_limit )
@@ -289,6 +289,10 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	{
 		wr = -SIGN( q ) * w_limit;
 	}
+	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) )
+	{
+		wr = -sqrt( 2 * spur->wheel_accel_r * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT);
+	}
 	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
 	{
 		wr = nwr + spur->wheel_accel_r * spur->control_dt;
@@ -296,10 +300,6 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
 	{
 		wr = nwr - spur->wheel_accel_r * spur->control_dt;
-	}
-	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) )
-	{
-		wr = -sqrt( 2 * spur->dw * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT);
 	}
 
 	motor_speed( wr, wl );

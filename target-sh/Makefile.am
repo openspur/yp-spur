@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign 1.10
 
-EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c \
+EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c filter.c filter.h \
              sh-vel.h sh7040s.h sh-globals.h motor-device.h sh-serial.h \
              sh7045linker.x startup.s adc.c adc.h divider.c divider.h
 
@@ -24,7 +24,7 @@ endif
 endif
 
 
-OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o
+OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o filter.o
 SHLINK = sh7045linker.x
 SHSTART = startup.o
 

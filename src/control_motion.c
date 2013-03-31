@@ -193,7 +193,6 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	y = odm->y + nv * sin( odm->theta ) * delay;
 
 	a = ( x - spur->x ) * cos( spur->theta ) + ( y - spur->y ) * sin( spur->theta );
-	// a *= SIGN( spur->v );
 	over = 0;
 
 	vel = sqrt( 2 * spur->dv * fabs( a ) );

@@ -9,16 +9,20 @@
 #include <sh-serial.h>
 #include <sh-vel.h>
 #include <divider.h>
+#include <filter.h>
 
 // ./configureによって生成
 #include <config.h>
 
 #define GLOBAL_DEFINE							// グローバル変数設定
 #include <sh-globals.h>
-
 #include <shvel-param.h>
-
 #include <string.h>
+
+
+Filter1st accelf[2];
+#define sci_send_txt(c,a) sci_send(c, a,strlen(a))
+
 
 // 全体の初期化
 void init( void )
@@ -98,6 +102,7 @@ int_cmi1(  )
 				divider[ wcnt_cycle ]( &w_ref_diff[0] );
 				divider[ wcnt_cycle ]( &w_ref_diff[1] );
 			}
+		
 			w_ref_before[0] = w_ref[0];
 			w_ref_before[1] = w_ref[1];
 
@@ -113,20 +118,20 @@ int_cmi1(  )
 				// servo_level 3 (speed enable)
 				for ( i = 0; i < MOTOR_NUM; i++ )
 				{
-					/* 積分 */
+					// 積分
 					int_w[i] += ( w_ref[i] - cnt_dif[i] );
 					if( int_w[i] > int_max[i] )
 						int_w[i] = int_max[i];
 					if( int_w[i] < int_min[i] )
 						int_w[i] = int_min[i];
 
-					/* PI制御分 */
+					// PI制御分
 					toq_pi[i] = ( w_ref[i] - cnt_dif[i] ) * 1000 * p_pi_kp[i] + int_w[i] * p_pi_ki[i];
 				}
 
-				/* PWSでの相互の影響を考慮したフィードフォワード */
-				s_a = ( toq_pi[0] + w_ref_diff[0] ) / 16;
-				s_b = ( toq_pi[1] + w_ref_diff[1] ) / 16;
+				// PWSでの相互の影響を考慮したフィードフォワード
+				s_a = ( toq_pi[0] + Filter1st_Filter( &accelf[0], w_ref_diff[0] ) ) / 16;
+				s_b = ( toq_pi[1] + Filter1st_Filter( &accelf[1], w_ref_diff[1] ) ) / 16;
 
 				toq[0] = ( s_a * p_A + s_b * p_C + w_ref[0] * p_E ) >> 8;
 				toq[1] = ( s_b * p_B + s_a * p_D + w_ref[1] * p_F ) >> 8;
@@ -137,10 +142,10 @@ int_cmi1(  )
 				toq[0] = 0;
 				toq[1] = 0;
 			}
-			/* 出力段 */
+			// 出力段
 			for ( i = 0; i < MOTOR_NUM; i++ )
 			{
-				/* トルクでクリッピング */
+				// トルクでクリッピング
 				if( toq[i] >= toq_max[i] )
 				{
 					toq[i] = toq_max[i];
@@ -150,7 +155,7 @@ int_cmi1(  )
 					toq[i] = toq_min[i];
 				}
 
-				/* 摩擦補償（線形） */
+				// 摩擦補償（線形）
 				if( cnt_dif[i] > 0 )
 				{
 					toq[i] += ( p_fr_wplus[i] * cnt_dif[i] / 16 + p_fr_plus[i] );
@@ -164,10 +169,10 @@ int_cmi1(  )
 					toq[i] = toq[i];
 				}
 
-				/* トルク補償 */
+				// トルク補償
 				toq[i] += p_toq_offset[i];
 
-				/* トルクリミット */
+				// トルクリミット
 				if( toq[i] >= toq_limit[i] )
 				{
 					toq[i] = toq_limit[i];
@@ -177,17 +182,17 @@ int_cmi1(  )
 					toq[i] = -toq_limit[i];
 				}
 
-				/* トルク→pwm変換 */
+				// トルク→pwm変換
 				out_pwm[i] = ( toq[i] * p_ki[i] + cnt_dif[i] * p_kv[i] / 16 ) / 65536;
 
-				/* PWMでクリッピング */
+				// PWMでクリッピング
 				if( out_pwm[i] > pwm_max[i] - 1 )
 					out_pwm[i] = pwm_max[i] - 1;
 				if( out_pwm[i] < pwm_min[i] + 1 )
 					out_pwm[i] = pwm_min[i] + 1;
 			}
 
-			/* 出力 */
+			// 出力
 			put_pwm( 0, out_pwm[0] );
 			put_pwm( 1, out_pwm[1] );
 
@@ -207,10 +212,9 @@ int_cmi1(  )
 		}
 	}
 
-	CMT1.CMCSR.BIT.CMF = 0;						// コンペアマッチフラッグのクリア	
+	// コンペアマッチフラッグのクリア	
+	CMT1.CMCSR.BIT.CMF = 0;
 }
-
-#define sci_send_txt(c,a) sci_send(c, a,strlen(a))
 
 int itoa10( unsigned char *buf, int data )
 {
@@ -596,6 +600,9 @@ main(  )
 
 	/* 初期化 */
 	init(  );
+	
+	Filter1st_CreateLPF( &accelf[0] );
+	Filter1st_CreateLPF( &accelf[1] );
 
 	counter_buf2[0] = 0;
 	counter_buf2[1] = 0;

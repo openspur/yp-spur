@@ -77,11 +77,11 @@ int_cmi1(  )
 	}
 	else
 	{
+		static int init_w_ref_diff = 0;
 		// servo_level 1 (counter enable)
 		if( param_change == 3 )
 		{
 			static int tick_before = 0;
-			static int init_w_ref_diff = 0;
 			short int wcnt_cycle;
 
 			w_ref[0] = w_ref[2];
@@ -108,6 +108,13 @@ int_cmi1(  )
 
 			tick_before = tick;
 			param_change = 0;
+		}
+		if ( servo_level != SERVO_LEVEL_VELOCITY )
+		{
+			init_w_ref_diff = 0;
+			int_w[0] = int_w[1] = 0;
+			w_ref[0] = cnt_dif[0];
+			w_ref[1] = cnt_dif[1];
 		}
 
 		if( servo_level >= SERVO_LEVEL_TORQUE )

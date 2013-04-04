@@ -8,7 +8,9 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur );
 void motor_speed( double r, double l );
 void robot_speed( double v, double w );
 int reference_speed( double *v, double *w );
+void update_ref_speed( );
 int reference_motor_speed( double *wl, double *wr );
+double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur );
 
 double dist_pos( OdometryPtr odm, SpurUserParamsPtr spur );
 double trans_q( double theta );
@@ -19,7 +21,6 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur );
 double spin( OdometryPtr odm, SpurUserParamsPtr spur );
 double orient( OdometryPtr odm, SpurUserParamsPtr spur );
 double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur );
-double wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur );
 
 double regurator( double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur );
 

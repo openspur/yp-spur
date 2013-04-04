@@ -128,7 +128,10 @@ double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 
 	delay = spur->control_dt
 		 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
-
+	if( p(YP_PARAM_GAIN_KP,0) == 0 || p(YP_PARAM_GAIN_KP,1) == 0 )
+	{
+		delay = spur->control_dt;
+	}
 	reference_speed( &nv, &nw );
 
 	q = ( odm->theta + nw * delay ) - spur->theta;
@@ -187,6 +190,10 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 
 	delay = spur->control_dt
 		 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
+	if( p(YP_PARAM_GAIN_KP,0) == 0 || p(YP_PARAM_GAIN_KP,1) == 0 )
+	{
+		delay = spur->control_dt;
+	}
 	reference_speed( &nv, &nw );
 
 	x = odm->x + nv * cos( odm->theta ) * delay;
@@ -212,7 +219,6 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 
 		q = odm->theta - spur->theta;
 		q = trans_q( q );
-
 		if( fabs( a ) < p(YP_PARAM_STOP_LINEAR,0) )
 		{
 			vel = - sqrt( 2 * spur->dv * p(YP_PARAM_STOP_LINEAR,0) ) * a / p(YP_PARAM_STOP_LINEAR,0);
@@ -252,6 +258,10 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	reference_motor_speed( &nwl, &nwr );
 
 	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_LEFT) ) * 2;
+	if( p(YP_PARAM_GAIN_KP,MOTOR_LEFT) == 0 )
+	{
+		delay = spur->control_dt;
+	}
 	q = ( odm->theta_l + nwl * delay ) - spur->wheel_angle_l;
 	/* 次の制御周期で停止するのに限界の速度を計算 */
 	w_limit = sqrt( 2 * spur->wheel_accel_l * fabs( q ) );
@@ -277,6 +287,10 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	}
 
 	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_RIGHT) ) * 2;
+	if( p(YP_PARAM_GAIN_KP,MOTOR_RIGHT) == 0 )
+	{
+		delay = spur->control_dt;
+	}
 	q = ( odm->theta_r + nwr * delay ) - spur->wheel_angle_r;
 	/* 次の制御周期で停止するのに限界の速度を計算 */
 	w_limit = sqrt( 2 * spur->wheel_accel_r * fabs( q ) );
@@ -305,41 +319,4 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	return 0;
 }
 
-/* ホイール速度指令 */
-double wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur )
-{
-	double wr, wl;
-	double nwl, nwr;
-
-	reference_motor_speed( &nwl, &nwr );
-
-	wl = spur->wlref;
-	if( wl > spur->wheel_vel_l ) wl = spur->wheel_vel_l;
-	else if( wl < -spur->wheel_vel_l ) wl = -spur->wheel_vel_l;
-
-	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
-	{
-		wl = nwl + spur->wheel_accel_l * spur->control_dt;
-	}
-	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
-	{
-		wl = nwl - spur->wheel_accel_l * spur->control_dt;
-	}
-
-	wr = spur->wrref;
-    if( wr > spur->wheel_vel_r ) wr = spur->wheel_vel_r;
-    else if( wr < -spur->wheel_vel_r ) wr = -spur->wheel_vel_r;
-
-	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
-	{
-		wr = nwr + spur->wheel_accel_r * spur->control_dt;
-	}
-	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
-	{
-		wr = nwr - spur->wheel_accel_r * spur->control_dt;
-	}
-
-	motor_speed( wr, wl );
-	return 0;
-}
 

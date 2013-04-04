@@ -44,6 +44,47 @@ double g_w_ref;
 double g_wl_ref;
 double g_wr_ref;
 
+/* ホイール速度指令 */
+double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur )
+{
+	double wr, wl;
+	double nwl, nwr;
+
+	reference_motor_speed( &nwl, &nwr );
+
+	wl = spur->wlref;
+	if( wl > spur->wheel_vel_l ) wl = spur->wheel_vel_l;
+	else if( wl < -spur->wheel_vel_l ) wl = -spur->wheel_vel_l;
+
+	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl + spur->wheel_accel_l * spur->control_dt;
+	}
+	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
+	{
+		wl = nwl - spur->wheel_accel_l * spur->control_dt;
+	}
+
+	wr = spur->wrref;
+	if( wr > spur->wheel_vel_r ) wr = spur->wheel_vel_r;
+	else if( wr < -spur->wheel_vel_r ) wr = -spur->wheel_vel_r;
+
+	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr + spur->wheel_accel_r * spur->control_dt;
+	}
+	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
+	{
+		wr = nwr - spur->wheel_accel_r * spur->control_dt;
+	}
+
+	motor_speed( wr, wl );
+
+	g_v_ref = odm->v;
+	g_w_ref = odm->w;
+
+	return 0;
+}
 
 /* [rad/s] */
 void motor_speed( double r, double l )
@@ -83,6 +124,17 @@ void motor_torque( double r, double l )
 	il = l * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) / p(YP_PARAM_GEAR,MOTOR_LEFT);
 	parameter_set( PARAM_p_toq_offset, 0, ir );
 	parameter_set( PARAM_p_toq_offset, 1, il );
+}
+
+void update_ref_speed(  )
+{
+	OdometryPtr podm;
+
+	podm = get_odometry_ptr();
+	g_wl_ref = podm->wr;
+	g_wr_ref = podm->wl;
+	g_v_ref = podm->v;
+	g_w_ref = podm->w;
 }
 
 /* m/s rad/s */
@@ -139,6 +191,9 @@ void robot_speed( double v, double w )
 
 		parameter_set( PARAM_p_toq_offset, 0, tr * p(YP_PARAM_TORQUE_UNIT,MOTOR_RIGHT) );
 		parameter_set( PARAM_p_toq_offset, 1, tl * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) );
+
+		g_wl_ref = podm->wl;
+		g_wr_ref = podm->wr;
 	}
 	else
 	{
@@ -398,6 +453,7 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		{
 		case RUN_FREE:
 			torque_set = 1;
+			update_ref_speed(  );
 			break;
 		case RUN_STOP:							// ストップする（スピードを0にする）
 			robot_speed_smooth( 0, 0, spur );
@@ -405,13 +461,14 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			break;
 		case RUN_WHEEL_VEL:					// 速度直接指定
 			if( state( YP_STATE_BODY ) == ENABLE )
-				wheel_vel( &odometry, spur );
+				wheel_vel_smooth( &odometry, spur );
 			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_TORQUE:					// トルク直接指定
 			torque_set = 1;
 			torque_ref[ 0 ] += spur->torque_r;
 			torque_ref[ 1 ] += spur->torque_l;
+			update_ref_speed(  );
 			break;
 		case RUN_VEL:							// 速度角速度指定
 			if( state( YP_STATE_BODY ) == ENABLE )
@@ -452,16 +509,6 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		if( torque_set )
 		{
 			motor_torque( torque_ref[ 0 ], torque_ref[ 1 ] );
-		}
-		if( !is_vehicle_control )
-		{
-			OdometryPtr podm;
-
-			podm = get_odometry_ptr();
-			g_v_ref = podm->v;
-			g_w_ref = podm->w;
-			g_wl_ref = podm->wl;
-			g_wr_ref = podm->wr;
 		}
 	}
 	/* 保護終わり */

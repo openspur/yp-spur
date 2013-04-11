@@ -166,10 +166,13 @@ void command( void )
 			stop_com( msg.data, &g_spur );
 			yprintf( OUTPUT_LV_COMMAND, "Command: stop\n" );
 			break;
+		case YPSPUR_OPENFREE:
+			openfree_com( msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: openfree\n" );
+			break;
 		case YPSPUR_FREE:
 			free_com( msg.data, &g_spur );
 			yprintf( OUTPUT_LV_COMMAND, "Command: free\n" );
-			// motor_free();
 			break;
 		case YPSPUR_FREEZE:
 			g_spur.freeze = 1;
@@ -297,22 +300,27 @@ void command( void )
 		/* 走行モードに変化があったか */
 		if( g_spur.run_mode != g_spur.before_run_mode || g_spur.before_freeze != g_spur.freeze )
 		{
-			if( ( g_spur.run_mode != RUN_FREE && g_spur.run_mode != RUN_WHEEL_TORQUE ) || g_spur.freeze )
+			if( !g_spur.freeze )
 			{
-				motor_servo(  );
-				if( g_spur.freeze )
+				if( g_spur.run_mode == RUN_FREE || g_spur.run_mode == RUN_WHEEL_TORQUE )
+				{									/* フリーになった */
+					motor_free(  );
+					yprintf( OUTPUT_LV_CONTROL, "Mode: free\n" );
+				}
+				else if( g_spur.run_mode == RUN_OPENFREE )
 				{
-					yprintf( OUTPUT_LV_CONTROL, "Mode: freeze\n" );
+					motor_openfree(  );
+					yprintf( OUTPUT_LV_CONTROL, "Mode: openfree\n" );
 				}
 				else
 				{
+					motor_servo(  );
 					yprintf( OUTPUT_LV_CONTROL, "Mode: servo %d\n", g_spur.run_mode );
 				}
 			}
-			else if( g_spur.run_mode == RUN_FREE || g_spur.run_mode == RUN_WHEEL_TORQUE )
-			{									/* フリーになった */
-				motor_free(  );
-				yprintf( OUTPUT_LV_CONTROL, "Mode: free\n" );
+			else
+			{
+				yprintf( OUTPUT_LV_CONTROL, "Mode: freeze\n" );
 			}
 		}
 		g_spur.before_run_mode = g_spur.run_mode;

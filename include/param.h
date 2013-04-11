@@ -74,6 +74,7 @@ void set_param_velocity( void );
 int parameter_set( char param, char id, int value );
 void motor_stop( void );
 void motor_free( void );
+void motor_openfree( void );
 void motor_servo( void );
 int apply_robot_params( void );
 

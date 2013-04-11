@@ -4,6 +4,7 @@
 
 typedef enum
 {
+	RUN_OPENFREE = -1,
 	RUN_FREE = 0,
 	RUN_STOP,
 	RUN_LINEFOLLOW,
@@ -71,6 +72,7 @@ void spin_com( int cs, double *data, SpurUserParamsPtr spur );
 void orient_com( int cs, double *data, SpurUserParamsPtr spur );
 void stop_com( double *data, SpurUserParamsPtr spur );
 void free_com( double *data, SpurUserParamsPtr spur );
+void openfree_com( double *data, SpurUserParamsPtr spur );
 void vel_com( double *data, SpurUserParamsPtr spur );
 void wheel_vel_com( double *data, SpurUserParamsPtr spur );
 void wheel_angle_com( double *data, SpurUserParamsPtr spur );

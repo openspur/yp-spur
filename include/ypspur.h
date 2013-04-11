@@ -108,6 +108,7 @@ extern "C"
 	/** motor servo */
 	int YPSpur_stop( void );
 	int YPSpur_free( void );
+	int YP_openfree( void );
 
 	/** spur */
 	int YPSpur_line( int cs, double x, double y, double theta );

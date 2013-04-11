@@ -43,6 +43,7 @@ typedef struct SPUR_COMMAND
 		SPUR_SETANGACCEL,
 		SPUR_INIT,
 		SPUR_FREE,
+		SPUR_OPENFREE,
 		SPUR_STOP,
 		SPUR_FREEZE,
 		SPUR_UNFREEZE,
@@ -87,6 +88,7 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_SETACCEL, {"set_accel"}, 1},
 	{SPUR_SETANGACCEL, {"set_angaccel"}, 1},
 	{SPUR_FREE, {"free"}, 0},
+	{SPUR_OPENFREE, {"openfree"}, 0},
 	{SPUR_STOP, {"stop"}, 0},
 	{SPUR_INIT, {"init"}, 0},
 	{SPUR_FREEZE, {"freeze"}, 0},
@@ -264,6 +266,9 @@ int proc_spur( char *line, int *coordinate )
 		break;
 	case SPUR_FREE:
 		YPSpur_free(  );
+		break;
+	case SPUR_OPENFREE:
+		YP_openfree(  );
 		break;
 	case SPUR_FREEZE:
 		YPSpur_freeze(  );

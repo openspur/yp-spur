@@ -134,6 +134,24 @@ void set_mode( const unsigned char id, const int mode )
 	}
 }
 
+void put_pwm_free( int ch )
+{
+	set_mode( ch, MTR_MODE_FREE );
+	if( ch == MOTOR_ID_CON0 )
+	{
+		duty_set |= 0x1;
+	}
+	else if( ch == MOTOR_ID_CON1 )
+	{
+		duty_set |= 0x2;
+	}
+	if( duty_set == 0x3 )
+	{
+		PE.DR.WORD = pe;
+		duty_set = 0;
+	}
+}
+
 void put_pwm( int ch, int pwm )
 {
 #if MOTOR_IS_REVERSE

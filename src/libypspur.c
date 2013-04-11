@@ -92,6 +92,12 @@ int YPSpur_free( void )
 	return YPSpur_md_free( &spur );
 }
 
+/* 制御なしフリーモード */
+int YP_openfree( void )
+{
+	return YP_md_openfree( &spur );
+}
+
 /* 位置指定 */
 int YPSpur_set_pos( int cs, double x, double y, double theta )
 {

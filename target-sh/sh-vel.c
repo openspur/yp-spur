@@ -120,7 +120,7 @@ int_cmi1(  )
 		if( servo_level >= SERVO_LEVEL_TORQUE )
 		{
 			// servo_level 2(toque enable)
-			if( servo_level >= SERVO_LEVEL_VELOCITY )
+			if( servo_level >= SERVO_LEVEL_VELOCITY && servo_level != SERVO_LEVEL_OPENFREE )
 			{
 				// servo_level 3 (speed enable)
 				for ( i = 0; i < MOTOR_NUM; i++ )
@@ -148,6 +148,8 @@ int_cmi1(  )
 				// servo_level 2(toque enable)
 				toq[0] = 0;
 				toq[1] = 0;
+				Filter1st_Filter( &accelf[0], 0 );
+				Filter1st_Filter( &accelf[1], 0 );
 			}
 			// 出力段
 			for ( i = 0; i < MOTOR_NUM; i++ )
@@ -200,8 +202,16 @@ int_cmi1(  )
 			}
 
 			// 出力
-			put_pwm( 0, out_pwm[0] );
-			put_pwm( 1, out_pwm[1] );
+			if( servo_level != SERVO_LEVEL_OPENFREE )
+			{
+				put_pwm( 0, out_pwm[0] );
+				put_pwm( 1, out_pwm[1] );
+			}
+			else
+			{
+				put_pwm_free( 0 );
+				put_pwm_free( 1 );
+			}
 
 			pwm_sum[0] += out_pwm[0];
 			pwm_sum[1] += out_pwm[1];

@@ -79,7 +79,6 @@ double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur )
 	}
 
 	motor_speed( wr, wl );
-
 	g_v_ref = odm->v;
 	g_w_ref = odm->w;
 
@@ -451,6 +450,10 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		/* 走行状態に応じた処理 */
 		switch ( spur->run_mode )
 		{
+		case RUN_OPENFREE:
+			torque_set = 1;
+			update_ref_speed(  );
+			break;
 		case RUN_FREE:
 			torque_set = 1;
 			update_ref_speed(  );
@@ -509,6 +512,9 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		if( torque_set )
 		{
 			motor_torque( torque_ref[ 0 ], torque_ref[ 1 ] );
+		}
+		if( is_vehicle_control )
+		{
 		}
 	}
 	/* 保護終わり */

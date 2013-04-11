@@ -1018,6 +1018,11 @@ void motor_free( void )
 	parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
 }
 
+void motor_openfree( void )
+{
+	parameter_set( PARAM_servo, 0, SERVO_LEVEL_OPENFREE );
+}
+
 void motor_servo( void )
 {
 	if( option( OPTION_PASSIVE ) )

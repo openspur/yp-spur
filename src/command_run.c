@@ -118,6 +118,11 @@ void free_com( double *data, SpurUserParamsPtr spur )
 	spur->run_mode = RUN_FREE;
 }
 
+void openfree_com( double *data, SpurUserParamsPtr spur )
+{
+	spur->run_mode = RUN_OPENFREE;
+}
+
 void vel_com( double *data, SpurUserParamsPtr spur )
 {
 	spur->vref = data[0];

@@ -244,6 +244,25 @@ int YPSpur_md_free( YPSpur *dev )
 	return 1;
 }
 
+/* 制御なしフリーモード */
+int YP_md_openfree( YPSpur *dev )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = dev->pid;
+	msg.type = YPSPUR_OPENFREE;
+
+	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	{
+		/* error */
+		dev->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
 /* 位置指定 */
 int YPSpur_md_set_pos( YPSpur *dev, int cs, double x, double y, double theta )
 {

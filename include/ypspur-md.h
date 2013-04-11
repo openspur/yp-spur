@@ -113,6 +113,7 @@ int YPSpur_md_unfreeze( YPSpur *dev );
 /** motor servo */
 int YPSpur_md_stop( YPSpur *dev );
 int YPSpur_md_free( YPSpur *dev );
+int YP_md_openfree( YPSpur *dev );
 
 /** Spur_md */
 int YPSpur_md_line( YPSpur *dev, int cs, double x, double y, double theta );

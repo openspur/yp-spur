@@ -17,6 +17,7 @@
 void set_pwm( const unsigned char id, const int duty );
 void put_pwm( int ch, int pwm );
 void set_mode( const unsigned char id, const int mode );
+void put_pwm_free( int ch );
 
 // /////////////////////// init counter ///////////////////////////
 void initCounter( void );

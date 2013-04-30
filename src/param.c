@@ -953,8 +953,8 @@ void set_param_motor( void )
 		else
 			parameter_set( PARAM_p_fr_minus, j, g_P[YP_PARAM_TORQUE_NEWTON][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
 
-		// 1/(rad/s) -> 1/(count/1ms) = 1/(rad/s) * rad/count * 1ms/s = 1/(rad/s) * 2pi/COUNT_REV * CYCLE
-		tvc = ( 2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j] ) * g_P[YP_PARAM_CYCLE][j];
+		// cnt/ms -> rad/s = cnt/ms * ms/s * rad/cnt = cnt/ms * 2pi/COUNT_REV / CYCLE
+		tvc = ( 2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j] ) / g_P[YP_PARAM_CYCLE][j];
 		parameter_set( PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );
 		if( g_P_set[YP_PARAM_TORQUE_NEWTON_NEG][j] )
 			parameter_set( PARAM_p_fr_wminus, j, g_P[YP_PARAM_TORQUE_VISCOS_NEG][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );

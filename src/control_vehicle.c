@@ -130,8 +130,8 @@ void update_ref_speed(  )
 	OdometryPtr podm;
 
 	podm = get_odometry_ptr();
-	g_wl_ref = podm->wr;
-	g_wr_ref = podm->wl;
+	g_wl_ref = podm->wl;
+	g_wr_ref = podm->wr;
 	g_v_ref = podm->v;
 	g_w_ref = podm->w;
 }

@@ -145,22 +145,22 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	if( wr > 0 )
 	{
 		mtorque_r -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( wr * p( YP_PARAM_GEAR, MOTOR_RIGHT ) );
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( mwr );
 	}
 	else if( wr < 0 )
 	{
 		mtorque_r += p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( wr * p( YP_PARAM_GEAR, MOTOR_RIGHT ) );
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( mwr );
 	}
 	if( wl > 0 )
 	{
 		mtorque_l -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( wl * p( YP_PARAM_GEAR, MOTOR_LEFT ) );
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( mwl );
 	}
 	else if( wl < 0 )
 	{
 		mtorque_l += p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( wl * p( YP_PARAM_GEAR, MOTOR_LEFT ) );
+		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( mwl );
 	}
 
 	torque_r = mtorque_r * p( YP_PARAM_GEAR, MOTOR_RIGHT );

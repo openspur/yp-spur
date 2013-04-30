@@ -475,7 +475,7 @@ int set_paramptr( FILE * paramfile )
 			{
 				read_state = 1;
 			}
-			if( is_character( c ) )
+			if( is_character( c ) || c == '-' )
 			{
 				name[0] = c;
 				read_state = 2;
@@ -490,7 +490,7 @@ int set_paramptr( FILE * paramfile )
 			break;
 		case 2:								/* name */
 			name[str_wp] = c;
-			if( !( is_character( c ) || is_number( c ) || c == '[' || c == ']' ) )
+			if( !( is_character( c ) || is_number( c ) || c == '[' || c == ']' || c == '-' ) )
 			{
 				name[str_wp] = 0;
 				read_state = 3;
@@ -948,12 +948,18 @@ void set_param_motor( void )
 									 g_P[YP_PARAM_CYCLE][j] ) ) );
 		// 摩擦補償
 		parameter_set( PARAM_p_fr_plus, j, g_P[YP_PARAM_TORQUE_NEWTON][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
-		parameter_set( PARAM_p_fr_minus, j, g_P[YP_PARAM_TORQUE_NEWTON][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
+		if( g_P_set[YP_PARAM_TORQUE_NEWTON_NEG][j] )
+			parameter_set( PARAM_p_fr_minus, j, g_P[YP_PARAM_TORQUE_NEWTON_NEG][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
+		else
+			parameter_set( PARAM_p_fr_minus, j, g_P[YP_PARAM_TORQUE_NEWTON][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
 
 		// 1/(rad/s) -> 1/(count/1ms) = 1/(rad/s) * rad/count * 1ms/s = 1/(rad/s) * 2pi/COUNT_REV * CYCLE
 		tvc = ( 2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j] ) * g_P[YP_PARAM_CYCLE][j];
 		parameter_set( PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );
-		parameter_set( PARAM_p_fr_wminus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );
+		if( g_P_set[YP_PARAM_TORQUE_NEWTON_NEG][j] )
+			parameter_set( PARAM_p_fr_wminus, j, g_P[YP_PARAM_TORQUE_VISCOS_NEG][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );
+		else
+			parameter_set( PARAM_p_fr_wminus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc );
 
 		parameter_set( PARAM_p_toq_offset, j, g_P[YP_PARAM_TORQUE_OFFSET][j] * g_P[YP_PARAM_TORQUE_UNIT][j] );
 

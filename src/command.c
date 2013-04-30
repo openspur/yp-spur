@@ -193,7 +193,7 @@ void command( void )
 			break;
 		case YPSPUR_WHEEL_VEL:
 			wheel_vel_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.vref, g_spur.wref );
+			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.wrref, g_spur.wlref);
 			break;
 		case YPSPUR_WHEEL_TORQUE:
 			set_torque_com( msg.data, &g_spur );

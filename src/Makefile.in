@@ -1168,7 +1168,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 
 @BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_MD_DLL) : $(lib_LTLIBRARIES)
-@BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur-md_dll-*.dll $(LIBYPSPUR_MD_DLL)
+@BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur_md_dll-*.dll $(LIBYPSPUR_MD_DLL)
 @BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_DLL) : $(lib_LTLIBRARIES)
 @BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur_dll-*.dll $(LIBYPSPUR_DLL)
 

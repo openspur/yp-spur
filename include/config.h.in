@@ -9,6 +9,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `fork' function. */
+#undef HAVE_FORK
+
 /* Define to 1 if you have the `getline' function. */
 #undef HAVE_GETLINE
 

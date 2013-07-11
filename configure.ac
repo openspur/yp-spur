@@ -81,6 +81,7 @@ AC_CHECK_FUNCS([nanosleep])
 AC_CHECK_FUNCS([siglongjmp])
 AC_CHECK_FUNCS([longjmp])
 AC_CHECK_FUNCS([getline])
+AC_CHECK_FUNCS([fork])
 AC_CHECK_LIB(readline, readline)
 
 LD_LIBREADLINE=""

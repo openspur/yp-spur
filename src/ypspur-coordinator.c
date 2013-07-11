@@ -91,6 +91,7 @@ int main( int argc, char *argv[] )
 	ret = arg_analyze( argc, argv );
 	if( option( OPTION_DAEMON ) )
 	{
+#if HAVE_FORK
 		pid_t pid;
 
 		pid = fork(  );
@@ -107,6 +108,10 @@ int main( int argc, char *argv[] )
 		close( STDIN_FILENO );
 		close( STDOUT_FILENO );
 		close( STDERR_FILENO );
+#else
+		yprintf( OUTPUT_LV_ERROR, "Daemon mode is not supported in your system.\n" );
+		return EXIT_FAILURE;
+#endif
 	}
 	if( option( OPTION_SHOW_HELP ) )
 	{

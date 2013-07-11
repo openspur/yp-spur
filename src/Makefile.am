@@ -50,7 +50,7 @@ LIBYPSPUR_LIB = libypspur_dll.lib
 LIBYPSPUR_DEF = libypspur_dll.def
 
 $(LIBYPSPUR_MD_DLL) : $(lib_LTLIBRARIES)
-	$(DLL_CP) ./.libs/libypspur-md_dll-*.dll $(LIBYPSPUR_MD_DLL)
+	$(DLL_CP) ./.libs/libypspur_md_dll-*.dll $(LIBYPSPUR_MD_DLL)
 $(LIBYPSPUR_DLL) : $(lib_LTLIBRARIES)
 	$(DLL_CP) ./.libs/libypspur_dll-*.dll $(LIBYPSPUR_DLL)
 

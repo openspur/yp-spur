@@ -9,7 +9,8 @@ extern "C"
 #endif
 
 #define Spur_md_init(dev)               YPSpur_md_init(dev)
-#define Spur_md_initex(dev, msq)          YPSpur_md_initex(dev, msq)
+#define Spur_md_initex(dev, msq)        YPSpur_md_initex(dev, msq)
+#define Spur_md_init_socket(ip, port)     YPSpur_md_init_socket(ip, port)
 #define Spur_md_stop(dev)               YPSpur_md_stop(dev)
 #define Spur_md_free(dev)               YPSpur_md_free(dev)
 
@@ -96,14 +97,15 @@ extern "C"
 
 typedef struct
 {
+	struct ipcmd_t dev;
 	int pid;
-	int msq_id;
 	int connection_error;
 } YPSpur;
 
 /** init */
 int YPSpur_md_init( YPSpur *dev );
 int YPSpur_md_initex( YPSpur *dev, int msq_key );
+int YPSpur_md_init_socket( YPSpur *dev, char *ip, int port );
 
 /** freeze */
 int YPSpur_md_isfreeze( YPSpur *dev );

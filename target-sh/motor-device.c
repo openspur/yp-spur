@@ -11,6 +11,12 @@
 #define SH_MOTOR_RIGHT		1					/* モータの右 */
 
 /* 
+ * 低速回転時にエンコーダからの速度計算時間を最大16倍までのばす
+ * 無効：0, 有効：1 (遅れが生じて制御が不安定になるため非推奨)
+ */
+#define ENC_COUNT_X16		0
+
+/* 
  * B-Locoボードのコネクタでの配置
  * 右と左を入れ替えるときはこちらを変更 
  */
@@ -228,8 +234,9 @@ void cnt_read( void )
 	counter[MOTOR_ID_CON1] = ( volatile )MTU2.TCNT;
 #endif
 
+#if ENC_COUNT_X16
 	{
-		static int _vel[2][16] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+		static int _vel[2][16] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }
 		static unsigned short __enc[2];
 		static unsigned char cnt = 0;
 		int vel;
@@ -238,12 +245,12 @@ void cnt_read( void )
 		{
 			int j, n;
 			int __vel;
-			
+
 			__vel = ( short )( counter[i] - cnt_old[i] );
 			cnt_old[i] = counter[i];
 			_vel[i][cnt] = __vel;
 			j = cnt;
-			
+
 			if( abs( __vel ) < 8 )
 			{
 				vel = 0;
@@ -275,12 +282,22 @@ void cnt_read( void )
 			{
 				vel = __vel * 16;
 			}
-			
+
 			cnt_dif[i] = vel;
 		}
 		cnt++;
 		if( cnt >= 16 )
 			cnt = 0;
 	}
+#else
+	for( i = 0; i < 2; i++ )
+	{
+		int __vel;
+
+		__vel = ( short )( counter[i] - cnt_old[i] );
+		cnt_dif[i] = __vel * 16;
+		cnt_old[i] = counter[i];
+	}
+#endif
 }
 

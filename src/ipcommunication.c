@@ -7,9 +7,15 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+
+#ifdef __WIN32
+#include <winsock2.h>
+#include <windows.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -20,6 +26,16 @@
 #include <ipcommunication.h>
 #include <utility.h>
 #include <yprintf.h>
+
+#ifdef __WIN32
+#define SOCK_SHUTDOWN_OPTION	SD_BOTH
+#define SOCK_DATATYPE			char*
+#define SIZE_TYPE				int
+#else
+#define SOCK_SHUTDOWN_OPTION	SHUT_RDWR
+#define SOCK_DATATYPE			void*
+#define SIZE_TYPE				unsigned int
+#endif
 
 
 int ipcmd_open_msq( struct ipcmd_t *ipcmd, int key, int creat )
@@ -39,7 +55,7 @@ int ipcmd_open_msq( struct ipcmd_t *ipcmd, int key, int creat )
 	
 	/* 内部データの初期化 */
 	ipcmd->pid = 0x07fff & getpid(  );
-	if( creat ) ipcmd->pid = 0;//YPSPUR_MSG_CMD;
+	if( creat ) ipcmd->pid = YPSPUR_MSG_CMD;
 	ipcmd->connection_error = 0;
 	ipcmd->send = ipcmd_send_msq;
 	ipcmd->recv = ipcmd_recv_msq;
@@ -100,6 +116,15 @@ int ipcmd_open_tcp( struct ipcmd_t *ipcmd, char *host, int port )
 {
 	struct sockaddr_in addr;
 	int i;
+	
+#if HAVE_LIBWS2_32
+    WSADATA wsadata;
+    
+	if( WSAStartup( MAKEWORD( 2, 2 ), &wsadata ) != 0 )
+	{
+		return -1;
+	}
+#endif
 
 	ipcmd->send = ipcmd_send;
 	ipcmd->recv = ipcmd_recv;
@@ -156,13 +181,13 @@ int ipcmd_send_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 	}
 	else
 	{
-		sock = ipcmd->clients[(int)data->pid];
+		sock = ipcmd->clients[(int)data->msg_type];
 	}
-	if( send( sock, data, len, 0 ) < 0 )
+	if( send( sock, (SOCK_DATATYPE)data, len, 0 ) < 0 )
 	{
 		if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
 		{
-			shutdown( ipcmd->socket, SHUT_RDWR );
+			shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
 			ipcmd->connection_error = 1;
 		}
 		return -1;
@@ -184,9 +209,9 @@ int ipcmd_recv_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 	do
 	{
 		int recved;
-		do
+		while( 1 )
 		{
-			unsigned int addr_size;
+			SIZE_TYPE addr_size;
 			int nfds = 0;
 
 			FD_ZERO( &fds );
@@ -236,14 +261,14 @@ int ipcmd_recv_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 				return -1;
 			}
 			ipcmd->clients[i] = sock;
-			yprintf( OUTPUT_LV_PROCESS, "Connection accepted from %s.\n", inet_ntoa( client.sin_addr ) );
+			yprintf( OUTPUT_LV_PROCESS, "Connection %d accepted from %s.\n", i, inet_ntoa( client.sin_addr ) );
 		}
-		while( 1 );
 
 		recved = -1;
 		if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
 		{
-			recved = recv( ipcmd->socket, data, len, 0 );
+			recved = recv( ipcmd->socket, (SOCK_DATATYPE)data, len, 0 );
+			data->pid = 0;
 		}
 		else
 		{
@@ -251,24 +276,25 @@ int ipcmd_recv_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 			{
 				if( FD_ISSET( ipcmd->clients[i], &fds ) )
 				{
-					recved = recv( ipcmd->clients[i], data, len, 0 );
+					recved = recv( ipcmd->clients[i], (SOCK_DATATYPE)data, len, 0 );
+					data->pid = i;
 					break;
 				}
 			}
 		}
-		if( recved == 0 )
+		if( recved <= 0 )
 		{
-			yprintf( OUTPUT_LV_PROCESS, "Connection closed.\n" );
 			if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
 			{
+				yprintf( OUTPUT_LV_PROCESS, "Connection closed.\n" );
 				ipcmd->connection_error = 1;
-				shutdown( ipcmd->socket, SHUT_RDWR );
+				shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
 				return -1;
 			}
+			yprintf( OUTPUT_LV_PROCESS, "Connection %d closed.\n", i );
 			ipcmd->clients[i] = -1;
 			continue;
 		}
-		data->pid = i;
 	}
 	while( 0 );
 	return len;
@@ -287,7 +313,10 @@ void ipcmd_close( struct ipcmd_t *ipcmd )
 		msgctl( ipcmd->socket, IPC_RMID, NULL );
 		break;
 	case IPCMD_TCP:
-		shutdown( ipcmd->socket, SHUT_RDWR );
+		shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
+#if HAVE_LIBWS2_32
+		WSACleanup();
+#endif
 		break;
 	}
 	ipcmd->send = ipcmd_send;

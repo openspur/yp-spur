@@ -1,3 +1,6 @@
+#ifndef __MSQ_WIN32_H__
+#define __MSQ_WIN32_H__
+
 #ifdef __MINGW32__
 // Windows用
 
@@ -79,3 +82,5 @@ int msgctl( int msqid, int cmd, struct msqid_ds *buf );
 #endif
 
 
+
+#endif

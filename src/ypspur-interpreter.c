@@ -357,7 +357,7 @@ int main( int argc, char *argv[] )
 {
 	int coordinate = CS_FS;
 	char ip[64];
-	int port;
+	int port = 0;
 	int active = 1;
 	int err = 0;
 	double vel = 0;
@@ -444,6 +444,7 @@ int main( int argc, char *argv[] )
 	if( msqid == -1 ) YPSpur_init_socket( ip, port );
 	else if( msqid == 0 ) YPSpur_init(  );
 	else YPSpur_initex( msqid );
+	
 	if( set_vel ) YPSpur_set_vel( vel );
 	if( set_angvel ) YPSpur_set_angvel( angvel );
 	if( set_accel ) YPSpur_set_accel( accel );
@@ -463,7 +464,6 @@ int main( int argc, char *argv[] )
 		size_t len;
 #	endif
 #endif
-
 #if HAVE_SIGLONGJMP
 		if( sigsetjmp( ctrlc_capture, 1 ) != 0 )
 		{

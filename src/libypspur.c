@@ -193,10 +193,22 @@ int YP_set_parameter( int param_id, double value )
 	return YP_md_set_parameter( &spur, param_id, value );
 }
 
+/* 内部パラメータの変更 */
+int YP_set_parameter_array( int param_id, double *value )
+{
+	return YP_md_set_parameter_array( &spur, param_id, value );
+}
+
 /* 内部パラメータの取得 */
 int YP_get_parameter( int param_id, double *value )
 {
 	return YP_md_get_parameter( &spur, param_id, value );
+}
+
+/* 内部パラメータの取得 */
+int YP_get_parameter_array( int param_id, double *value )
+{
+	return YP_md_get_parameter_array( &spur, param_id, value );
 }
 
 /* 内部状態の変更 */

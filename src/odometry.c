@@ -149,8 +149,8 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	}
 	else if( wr < 0 )
 	{
-		mtorque_r += p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( mwr );
+		mtorque_r += p( YP_PARAM_TORQUE_NEWTON_NEG, MOTOR_RIGHT )
+		           + p( YP_PARAM_TORQUE_VISCOS_NEG, MOTOR_RIGHT ) * fabs( mwr );
 	}
 	if( wl > 0 )
 	{
@@ -159,16 +159,19 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	}
 	else if( wl < 0 )
 	{
-		mtorque_l += p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( mwl );
+		mtorque_l += p( YP_PARAM_TORQUE_NEWTON_NEG, MOTOR_LEFT )
+		           + p( YP_PARAM_TORQUE_VISCOS_NEG, MOTOR_LEFT ) * fabs( mwl );
 	}
+	
+	//printf("%+f %+f     %+f %+f   %+f %+f\n",wr,wl,mtorque_r,mtorque_l,volt_r,volt_l);
 
 	torque_r = mtorque_r * p( YP_PARAM_GEAR, MOTOR_RIGHT );
 	torque_l = mtorque_l * p( YP_PARAM_GEAR, MOTOR_LEFT );
 
 	torque_trans = torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT ) + 
 	               torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT );
-	torque_angular = ( torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT ) - torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT ) )
+	torque_angular = ( -torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT ) +
+						torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT ) )
 	                   * p( YP_PARAM_TREAD, 0 ) / 2;
 
 	/* オドメトリ計算 */

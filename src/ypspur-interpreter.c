@@ -49,6 +49,8 @@ typedef struct SPUR_COMMAND
 		SPUR_UNFREEZE,
 		SPUR_ISFREEZE,
 		SPUR_GETAD,
+		SPUR_SET_IO_DIR,
+		SPUR_SET_IO_DATA,
 		SPUR_VEL,
 		SPUR_WHEEL_VEL,
 		SPUR_GET_WHEEL_VEL,
@@ -95,6 +97,8 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_UNFREEZE, {"unfreeze"}, 0},
 	{SPUR_ISFREEZE, {"isfreeze"}, 0},
 	{SPUR_GETAD, {"get_ad_value"}, 1},
+	{SPUR_SET_IO_DIR, {"set_io_dir"}, 1},
+	{SPUR_SET_IO_DATA, {"set_io_data"}, 1},
 	{SPUR_VEL, {"vel"}, 2},
 	{SPUR_WHEEL_VEL, {"wheel_vel"}, 2},
 	{SPUR_GET_WHEEL_VEL, {"get_wheel_vel"}, 0},
@@ -284,6 +288,12 @@ int proc_spur( char *line, int *coordinate )
 		ad = YP_get_ad_value( ( int )spur.arg[0] );
 		printf( "%d\n", ad );
 		break;
+	case SPUR_SET_IO_DIR:
+		YP_set_io_dir( ( int )spur.arg[0] );
+		break;
+	case SPUR_SET_IO_DATA:
+		YP_set_io_data( ( int )spur.arg[0] );
+		break;
 	case SPUR_VEL:
 		YPSpur_vel( spur.arg[0], spur.arg[1] );
 		break;
@@ -344,13 +354,13 @@ int proc_spur( char *line, int *coordinate )
 void print_help( char *argv[] )
 {
 	fprintf( stderr, "USAGE: %s\n", argv[0] );
-	fputs( "\t-V | --set-vel      VALUE  : [m/s]   set max vel of SPUR to VALUE\n", stderr );
-	fputs( "\t-W | --set-angvel   VALUE  : [rad/s] set max angvel of SPUR to VALUE\n", stderr );
-	fputs( "\t-A | --set-accel    VALUE  : [m/ss]   set accel of SPUR to VALUE\n", stderr );
-	fputs( "\t-O | --set-angaccel VALUE  : [rad/ss] set angaccel of SPUR to VALUE\n", stderr );
-	fputs( "\t-c | --command     \"VALUE\" : execute command VALUE\n", stderr );
-	fputs( "\t-q | --msq-id       VALUE  : set message-queue id\n", stderr );
-	fputs( "\t-h | --help                : print this help\n", stderr );
+	fputs( "\t-V | --set-vel      VALUE    : [m/s]   set max vel of SPUR to VALUE\n", stderr );
+	fputs( "\t-W | --set-angvel   VALUE    : [rad/s] set max angvel of SPUR to VALUE\n", stderr );
+	fputs( "\t-A | --set-accel    VALUE    : [m/ss]   set accel of SPUR to VALUE\n", stderr );
+	fputs( "\t-O | --set-angaccel VALUE    : [rad/ss] set angaccel of SPUR to VALUE\n", stderr );
+	fputs( "\t-c | --command     \"VALUE\"   : execute command VALUE\n", stderr );
+	fputs( "\t-q | --msq-id       VALUE    : set message-queue id\n", stderr );
+	fputs( "\t-h | --help                  : print this help\n", stderr );
 }
 
 int main( int argc, char *argv[] )
@@ -424,6 +434,7 @@ int main( int argc, char *argv[] )
 
 	if( msqid == 0 ) YPSpur_init(  );
 	else YPSpur_initex( msqid );
+	
 	if( set_vel ) YPSpur_set_vel( vel );
 	if( set_angvel ) YPSpur_set_angvel( angvel );
 	if( set_accel ) YPSpur_set_accel( accel );
@@ -443,7 +454,6 @@ int main( int argc, char *argv[] )
 		size_t len;
 #	endif
 #endif
-
 #if HAVE_SIGLONGJMP
 		if( sigsetjmp( ctrlc_capture, 1 ) != 0 )
 		{

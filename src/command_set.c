@@ -78,6 +78,7 @@ void set_GL_on_GL_com( double *data, SpurUserParamsPtr spur )
 void set_adjust_com( int cs, double *data, SpurUserParamsPtr spur )
 {
 	double x, y, theta;
+	double xgl, ygl, thetagl;
 
 	x = data[0];
 	y = data[1];
@@ -89,8 +90,9 @@ void set_adjust_com( int cs, double *data, SpurUserParamsPtr spur )
 	CS_turn_base( &x, &y, &theta );
 	/* それはBS上のどこか */
 	cstrans_xy( CS_FS, CS_BS, &x, &y, &theta );
-	/* GLをセット */
-	set_cs( CS_GL, x, y, theta );
+	xgl = x;
+	ygl = y;
+	thetagl = theta;
 
 	// 走行制御用座標系も修正
 	x = data[0];
@@ -102,7 +104,10 @@ void set_adjust_com( int cs, double *data, SpurUserParamsPtr spur )
 	CS_turn_base( &x, &y, &theta );
 	/* それはBS上のどこか */
 	cstrans_xy( CS_FS, CS_BS, &x, &y, &theta );
+	
 	/* SPをセット */
+	/* GLをセット */
+	set_cs( CS_GL, xgl, ygl, thetagl );
 	set_cs( CS_SP, x, y, theta );
 }
 

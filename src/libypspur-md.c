@@ -453,6 +453,72 @@ double YPSpur_md_get_vel( YPSpur *spur, double *v, double *w )
 }
 
 /* 速度取得 */
+double YP_md_get_vref( YPSpur *spur, double *v, double *w )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_VREF;
+	msg.cs = 0;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*v = msg.data[0];
+	*w = msg.data[1];
+	time = msg.data[2];
+	return time;
+}
+
+/* 速度取得 */
+double YP_md_get_wheel_vref( YPSpur *spur, double *wr, double *wl )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_WHEEL_VREF;
+	msg.cs = 0;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*wr = msg.data[0];
+	*wl = msg.data[1];
+	time = msg.data[2];
+	return time;
+}
+
+/* 速度取得 */
 double YP_md_get_wheel_vel( YPSpur *spur, double *wr, double *wl )
 {
 	YPSpur_msg msg;

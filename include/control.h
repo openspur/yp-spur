@@ -9,7 +9,7 @@ void motor_speed( double r, double l );
 void robot_speed( double v, double w );
 int reference_speed( double *v, double *w );
 void update_ref_speed( );
-int reference_motor_speed( double *wl, double *wr );
+int reference_motor_speed( double *wr, double *wl );
 double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur );
 
 double dist_pos( OdometryPtr odm, SpurUserParamsPtr spur );

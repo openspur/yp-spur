@@ -163,6 +163,8 @@ extern "C"
 	int YP_wheel_ang( double r, double l );
 	int YP_set_wheel_accel( double r, double l );
 	int YP_set_wheel_vel( double r, double l );
+	double YP_get_vref( double *vref, double *wref );
+	double YP_get_wheel_vref( double *wrref, double *wlref );
 #ifdef __cplusplus
 }
 #endif

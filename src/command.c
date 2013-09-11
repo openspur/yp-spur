@@ -224,6 +224,16 @@ void command( void )
 			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: getvel %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
+		case YPSPUR_GET_VREF:
+			get_vref_com( msg.cs, msg.data, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: getvref %f %f\n", res_msg.data[0], res_msg.data[1] );
+			break;
+		case YPSPUR_GET_WHEEL_VREF:
+			get_wheel_vref_com( msg.cs, msg.data, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: getwheelvref %f %f\n", res_msg.data[0], res_msg.data[1] );
+			break;
 		case YPSPUR_GET_FORCE:
 			get_force_com( msg.cs, msg.data, res_msg.data, &g_spur );
 			message_return( &ipcmd, msg.pid, &res_msg );

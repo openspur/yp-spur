@@ -188,8 +188,8 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	double x, y, nw, nv;
 	double delay;
 
-	delay = spur->control_dt
-		 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
+	delay = spur->control_dt;
+	//	 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
 	if( p(YP_PARAM_GAIN_KP,0) == 0 || p(YP_PARAM_GAIN_KP,1) == 0 )
 	{
 		delay = spur->control_dt;
@@ -255,7 +255,7 @@ double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 	double nwl, nwr;
 	double delay;
 
-	reference_motor_speed( &nwl, &nwr );
+	reference_motor_speed( &nwr, &nwl );
 
 	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_LEFT) ) * 2;
 	if( p(YP_PARAM_GAIN_KP,MOTOR_LEFT) == 0 )

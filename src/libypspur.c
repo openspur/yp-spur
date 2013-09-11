@@ -152,6 +152,18 @@ double YPSpur_get_vel( double *v, double *w )
 }
 
 /* 速度取得 */
+double YP_get_vref( double *v, double *w )
+{
+	return YP_md_get_vref( &spur, v, w );
+}
+
+/* 速度取得 */
+double YP_get_wheel_vref( double *wr, double *wl )
+{
+	return YP_md_get_wheel_vref( &spur, wr, wl );
+}
+
+/* 速度取得 */
 double YP_get_wheel_vel( double *wr, double *wl )
 {
 	return YP_md_get_wheel_vel( &spur, wr, wl );

@@ -168,6 +168,8 @@ double YP_md_get_wheel_torque( YPSpur *dev, double *torque_r, double *torque_l )
 int YP_md_set_wheel_vel( YPSpur *dev, double r, double l );
 int YP_md_set_wheel_accel( YPSpur *dev, double r, double l );
 int YP_md_wheel_ang( YPSpur *dev, double r, double l );
+double YP_md_get_vref( YPSpur *dev, double *vref, double *wref );
+double YP_md_get_wheel_vref( YPSpur *dev, double *wrref, double *wlref );
 
 #ifdef __cplusplus
 }

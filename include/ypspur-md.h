@@ -10,7 +10,7 @@ extern "C"
 
 #define Spur_md_init(dev)               YPSpur_md_init(dev)
 #define Spur_md_initex(dev, msq)        YPSpur_md_initex(dev, msq)
-#define Spur_md_init_socket(ip, port)     YPSpur_md_init_socket(ip, port)
+#define Spur_md_init_socket(dev, ip, port)     YPSpur_md_init_socket(dev, ip, port)
 #define Spur_md_stop(dev)               YPSpur_md_stop(dev)
 #define Spur_md_free(dev)               YPSpur_md_free(dev)
 

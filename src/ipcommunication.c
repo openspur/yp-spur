@@ -134,16 +134,16 @@ int ipcmd_open_tcp( struct ipcmd_t *ipcmd, char *host, int port )
 	addr.sin_family = AF_INET;
 
 	ipcmd->socket = socket( AF_INET, SOCK_STREAM, 0 );
+	for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
+	{
+		ipcmd->clients[i] = -1;
+	}
 	
 	if( !host )
 	{
 		addr.sin_addr.s_addr = htonl( INADDR_ANY );
 		bind( ipcmd->socket, (struct sockaddr *)&addr, sizeof( addr ) );
 
-		for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
-		{
-			ipcmd->clients[i] = -1;
-		}
 		listen( ipcmd->socket, YPSPUR_MAX_SOCKET );
 		ipcmd->tcp_type = IPCMD_TCP_SERVER;
 	}

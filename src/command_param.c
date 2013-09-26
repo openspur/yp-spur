@@ -38,7 +38,10 @@
 void param_set_com( int cs, double *data, SpurUserParamsPtr spur )
 {
 	if( cs >= 0 && cs < YP_PARAM_NUM )
+	{
 		*pp( cs, 0 ) = data[0];
+		*pp( cs, 1 ) = data[1];
+	}
 }
 
 int param_get_com( int cs, double *resdata, SpurUserParamsPtr spur )
@@ -46,6 +49,7 @@ int param_get_com( int cs, double *resdata, SpurUserParamsPtr spur )
 	if( cs >= 0 && cs < YP_PARAM_NUM )
 	{
 		resdata[0] = *pp( cs, 0 );
+		resdata[1] = *pp( cs, 1 );
 		return cs;
 	}
 	else

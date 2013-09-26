@@ -50,7 +50,7 @@ double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur )
 	double wr, wl;
 	double nwl, nwr;
 
-	reference_motor_speed( &nwl, &nwr );
+	reference_motor_speed( &nwr, &nwl );
 
 	wl = spur->wlref;
 	if( wl > spur->wheel_vel_l ) wl = spur->wheel_vel_l;
@@ -215,7 +215,7 @@ int reference_speed( double *v, double *w )
 	return 0;
 }
 
-int reference_motor_speed( double *wl, double *wr )
+int reference_motor_speed( double *wr, double *wl )
 {
 	*wl = g_wl_ref;
 	*wr = g_wr_ref;

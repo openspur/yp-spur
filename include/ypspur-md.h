@@ -152,7 +152,9 @@ int YPSpur_md_tilt( YPSpur *dev, int cs, double dir, double tilt );
 int YP_md_get_error_state( YPSpur *dev );
 
 int YP_md_set_parameter( YPSpur *dev, int param_id, double value );
+int YP_md_set_parameter_array( YPSpur *dev, int param_id, double *value );
 int YP_md_get_parameter( YPSpur *dev, int param_id, double *value );
+int YP_md_get_parameter_array( YPSpur *dev, int param_id, double *value );
 int YP_md_set_control_state( YPSpur *dev, int control_id, int state );
 
 int YP_md_get_ad_value( YPSpur *dev, int num );
@@ -166,6 +168,8 @@ double YP_md_get_wheel_torque( YPSpur *dev, double *torque_r, double *torque_l )
 int YP_md_set_wheel_vel( YPSpur *dev, double r, double l );
 int YP_md_set_wheel_accel( YPSpur *dev, double r, double l );
 int YP_md_wheel_ang( YPSpur *dev, double r, double l );
+double YP_md_get_vref( YPSpur *dev, double *vref, double *wref );
+double YP_md_get_wheel_vref( YPSpur *dev, double *wrref, double *wlref );
 
 #ifdef __cplusplus
 }

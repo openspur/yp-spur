@@ -41,6 +41,26 @@ void get_pos_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur 
 	// printf( "get %f %f %f\n", x, y, theta );
 }
 
+void get_wheel_vref_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur )
+{
+	OdometryPtr odometry;
+	
+	odometry = get_odometry_ptr(  );
+
+	reference_motor_speed( &resdata[0], &resdata[1] );
+	resdata[2] = odometry->time;
+}
+
+void get_vref_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur )
+{
+	OdometryPtr odometry;
+	
+	odometry = get_odometry_ptr(  );
+
+	reference_speed( &resdata[0], &resdata[1] );
+	resdata[2] = odometry->time;
+}
+
 void get_vel_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur )
 {
 	OdometryPtr odometry;

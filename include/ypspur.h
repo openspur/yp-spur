@@ -147,7 +147,9 @@ extern "C"
 	int YP_get_error_state( void );
 
 	int YP_set_parameter( int param_id, double value );
+	int YP_set_parameter_array( int param_id, double *value );
 	int YP_get_parameter( int param_id, double *value );
+	int YP_get_parameter_array( int param_id, double *value );
 	int YP_set_control_state( int control_id, int state );
 
 	int YP_get_ad_value( int num );
@@ -161,6 +163,8 @@ extern "C"
 	int YP_wheel_ang( double r, double l );
 	int YP_set_wheel_accel( double r, double l );
 	int YP_set_wheel_vel( double r, double l );
+	double YP_get_vref( double *vref, double *wref );
+	double YP_get_wheel_vref( double *wrref, double *wlref );
 #ifdef __cplusplus
 }
 #endif

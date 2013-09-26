@@ -453,6 +453,72 @@ double YPSpur_md_get_vel( YPSpur *spur, double *v, double *w )
 }
 
 /* 速度取得 */
+double YP_md_get_vref( YPSpur *spur, double *v, double *w )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_VREF;
+	msg.cs = 0;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*v = msg.data[0];
+	*w = msg.data[1];
+	time = msg.data[2];
+	return time;
+}
+
+/* 速度取得 */
+double YP_md_get_wheel_vref( YPSpur *spur, double *wr, double *wl )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_WHEEL_VREF;
+	msg.cs = 0;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*wr = msg.data[0];
+	*wl = msg.data[1];
+	time = msg.data[2];
+	return time;
+}
+
+/* 速度取得 */
 double YP_md_get_wheel_vel( YPSpur *spur, double *wr, double *wl )
 {
 	YPSpur_msg msg;
@@ -646,6 +712,7 @@ int YP_md_set_parameter( YPSpur *spur, int param_id, double value )
 	msg.type = YPSPUR_PARAM_SET;
 	msg.cs = param_id;
 	msg.data[0] = value;
+	msg.data[1] = value;
 
 	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
@@ -657,7 +724,27 @@ int YP_md_set_parameter( YPSpur *spur, int param_id, double value )
 	return 1;
 }
 
+/* 内部パラメータの変更 */
+int YP_md_set_parameter_array( YPSpur *spur, int param_id, double *value )
+{
+	YPSpur_msg msg;
 
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_PARAM_SET;
+	msg.cs = param_id;
+	msg.data[0] = value[0];
+	msg.data[1] = value[1];
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
 
 /* 内部パラメータの取得 */
 int YP_md_get_parameter( YPSpur *spur, int param_id, double *value )
@@ -686,6 +773,36 @@ int YP_md_get_parameter( YPSpur *spur, int param_id, double *value )
 	}
 
 	*value = msg.data[0];
+	return msg.cs;
+}
+
+int YP_md_get_parameter_array( YPSpur *spur, int param_id, double *value )
+{
+	YPSpur_msg msg;
+	int len;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_PARAM_GET;
+	msg.cs = param_id;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	value[0] = msg.data[0];
+	value[1] = msg.data[1];
 	return msg.cs;
 }
 

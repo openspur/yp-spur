@@ -152,6 +152,18 @@ double YPSpur_get_vel( double *v, double *w )
 }
 
 /* 速度取得 */
+double YP_get_vref( double *v, double *w )
+{
+	return YP_md_get_vref( &spur, v, w );
+}
+
+/* 速度取得 */
+double YP_get_wheel_vref( double *wr, double *wl )
+{
+	return YP_md_get_wheel_vref( &spur, wr, wl );
+}
+
+/* 速度取得 */
 double YP_get_wheel_vel( double *wr, double *wl )
 {
 	return YP_md_get_wheel_vel( &spur, wr, wl );
@@ -193,10 +205,22 @@ int YP_set_parameter( int param_id, double value )
 	return YP_md_set_parameter( &spur, param_id, value );
 }
 
+/* 内部パラメータの変更 */
+int YP_set_parameter_array( int param_id, double *value )
+{
+	return YP_md_set_parameter_array( &spur, param_id, value );
+}
+
 /* 内部パラメータの取得 */
 int YP_get_parameter( int param_id, double *value )
 {
 	return YP_md_get_parameter( &spur, param_id, value );
+}
+
+/* 内部パラメータの取得 */
+int YP_get_parameter_array( int param_id, double *value )
+{
+	return YP_md_get_parameter_array( &spur, param_id, value );
 }
 
 /* 内部状態の変更 */

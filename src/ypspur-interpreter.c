@@ -57,6 +57,8 @@ typedef struct SPUR_COMMAND
 		SPUR_GET_WHEEL_ANG,
 		SPUR_GET_WHEEL_TORQUE,
 		SPUR_WHEEL_TORQUE,
+		SPUR_GET_VREF,
+		SPUR_GET_WHEEL_VREF,
 		SPUR_ORIENT,
 		SPUR_SET_WHEEL_VEL,
 		SPUR_SET_WHEEL_ACCEL,
@@ -106,6 +108,8 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_GET_WHEEL_TORQUE, {"get_wheel_torque"}, 0},
 	{SPUR_WHEEL_TORQUE, {"wheel_torque"}, 2},
 	{SPUR_ORIENT, {"orient"}, 1},
+	{SPUR_GET_VREF, {"get_vref"}, 0},
+	{SPUR_GET_WHEEL_VREF, {"get_wheel_vref"}, 0},
 	{SPUR_SET_WHEEL_VEL, {"set_wheel_vel"}, 2},
 	{SPUR_SET_WHEEL_ACCEL, {"set_wheel_accel"}, 2},
 	{SPUR_WHEEL_ANG, {"wheel_ang"}, 2},
@@ -230,6 +234,14 @@ int proc_spur( char *line, int *coordinate )
 		break;
 	case SPUR_GET_WHEEL_TORQUE:
 		YP_get_wheel_torque( &spur.arg[0], &spur.arg[1] );
+		printf( "%f %f\n", spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_GET_VREF:
+		YP_get_vref( &spur.arg[0], &spur.arg[1] );
+		printf( "%f %f\n", spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_GET_WHEEL_VREF:
+		YP_get_wheel_vref( &spur.arg[0], &spur.arg[1] );
 		printf( "%f %f\n", spur.arg[0], spur.arg[1] );
 		break;
 	case SPUR_SETPOS:

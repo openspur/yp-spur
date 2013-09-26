@@ -94,6 +94,8 @@ void set_wheel_accel_com( double *data, SpurUserParamsPtr spur );
 /* command_get.c */
 void get_pos_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
 void get_vel_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
+void get_vref_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
+void get_wheel_vref_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
 int near_pos_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
 int near_ang_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );
 int over_line_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur );

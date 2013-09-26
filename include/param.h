@@ -15,6 +15,7 @@ typedef enum
 	OPTION_VERSION         = 0x0040,
 	OPTION_DAEMON          = 0x0080,
 
+	OPTION_SOCKET                = 0x00200,
 	OPTION_PARAM_FILE            = 0x00400,
 
 	OPTION_WITHOUT_DEVICE        = 0x00800,
@@ -55,6 +56,7 @@ typedef struct _parameters
 	char parameter_filename[132];
 	char device_name[132];
 	int msq_key;
+	int port;
 	int speed;
 	ParamOptions option;
 	ParamOutputLv output_lv;

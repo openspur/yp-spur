@@ -16,112 +16,110 @@
 
 #include <ipcommunication.h>
 #include <ypspur-md.h>
+#include <param.h>
 
 
 /* エラー確認 */
-int YP_md_get_error_state( YPSpur *dev )
+int YP_md_get_error_state( YPSpur *spur )
 {
-	return dev->connection_error;
+	return spur->dev.connection_error;
 }
 
 /* coordinatorとのメッセージ通信を開始する */
-int YPSpur_md_initex( YPSpur *dev, int msq_key )
+int YPSpur_md_initex( YPSpur *spur, int msq_key )
 {
 
 	/* メッセージ・キューのオープン */
-	dev->msq_id = msgget( msq_key, 0666 );
-
-	if( dev->msq_id == -1 ){
-		dev->connection_error = 1;
+	if( ipcmd_open_msq( &spur->dev, msq_key, 0 ) < 0 )
+	{
 		return -1;
 	}
-	
-	/* 内部データの初期化 */
-	dev->pid = 0x07fff & getpid(  );
-	dev->connection_error = 0;
+
+	spur->pid = spur->dev.pid;
+
+	return 1;
+}
+
+int YPSpur_md_init_socket( YPSpur *spur, char *ip, int port )
+{
+
+	/* メッセージ・キューのオープン */
+	if( ipcmd_open_tcp( &spur->dev, ip, port ) < 0 )
+	{
+		return -1;
+	}
+
+	spur->pid = spur->dev.pid;
 
 	return 1;
 }
 
 /* coordinatorとのメッセージ通信を開始する */
-int YPSpur_md_init( YPSpur *dev )
+int YPSpur_md_init( YPSpur *spur )
 {
-
-	/* メッセージ・キューのオープン */
-	dev->msq_id = msgget( YPSPUR_MSQ_KEY, 0666 );
-	
-	if( dev->msq_id == -1 ){
-		dev->connection_error = 1;
-		return -1;
-	}
-
-	/* 内部データの初期化 */
-	dev->pid = 0x07fff & getpid(  );
-	dev->connection_error = 0;
-
-	return 1;
+	return YPSpur_md_initex( spur, YPSPUR_MSQ_KEY );
 }
 
 /* 直線追従 */
-int YPSpur_md_line( YPSpur *dev, int cs, double x, double y, double theta )
+int YPSpur_md_line( YPSpur *spur, int cs, double x, double y, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_LINE;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = theta;
 	msg.cs = cs;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 	return 1;
 }
 
 /* 直線追従 */
-int YPSpur_md_stop_line( YPSpur *dev, int cs, double x, double y, double theta )
+int YPSpur_md_stop_line( YPSpur *spur, int cs, double x, double y, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_STOP_LINE;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = theta;
 	msg.cs = cs;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 	return 1;
 }
 
 /* 円弧追従 */
-int YPSpur_md_circle( YPSpur *dev, int cs, double x, double y, double r )
+int YPSpur_md_circle( YPSpur *spur, int cs, double x, double y, double r )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_CIRCLE;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = r;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -129,19 +127,19 @@ int YPSpur_md_circle( YPSpur *dev, int cs, double x, double y, double r )
 }
 
 /* 旋回 */
-int YPSpur_md_spin( YPSpur *dev, int cs, double theta )
+int YPSpur_md_spin( YPSpur *spur, int cs, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SPIN;
 	msg.data[0] = theta;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -149,19 +147,19 @@ int YPSpur_md_spin( YPSpur *dev, int cs, double theta )
 }
 
 /* 方位 */
-int YPSpur_md_orient( YPSpur *dev, int cs, double theta )
+int YPSpur_md_orient( YPSpur *spur, int cs, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_ORIENT;
 	msg.data[0] = theta;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -169,18 +167,18 @@ int YPSpur_md_orient( YPSpur *dev, int cs, double theta )
 }
 
 /* 急ブレーキ */
-int YPSpur_md_stop( YPSpur *dev )
+int YPSpur_md_stop( YPSpur *spur )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_STOP;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -188,18 +186,18 @@ int YPSpur_md_stop( YPSpur *dev )
 }
 
 /* 緊急停止 */
-int YPSpur_md_freeze( YPSpur *dev )
+int YPSpur_md_freeze( YPSpur *spur )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_FREEZE;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -207,18 +205,18 @@ int YPSpur_md_freeze( YPSpur *dev )
 }
 
 /* 緊急停止解除 */
-int YPSpur_md_unfreeze( YPSpur *dev )
+int YPSpur_md_unfreeze( YPSpur *spur )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_UNFREEZE;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -226,18 +224,18 @@ int YPSpur_md_unfreeze( YPSpur *dev )
 }
 
 /* ソフトウェア補助フリーモード */
-int YPSpur_md_free( YPSpur *dev )
+int YPSpur_md_free( YPSpur *spur )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_FREE;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -245,18 +243,18 @@ int YPSpur_md_free( YPSpur *dev )
 }
 
 /* 制御なしフリーモード */
-int YP_md_openfree( YPSpur *dev )
+int YP_md_openfree( YPSpur *spur )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_OPENFREE;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -264,63 +262,63 @@ int YP_md_openfree( YPSpur *dev )
 }
 
 /* 位置指定 */
-int YPSpur_md_set_pos( YPSpur *dev, int cs, double x, double y, double theta )
+int YPSpur_md_set_pos( YPSpur *spur, int cs, double x, double y, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_POS;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = theta;
 	msg.cs = cs;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 	return 1;
 }
 
 /* 位置指定 */
-int YPSpur_md_adjust_pos( YPSpur *dev, int cs, double x, double y, double theta )
+int YPSpur_md_adjust_pos( YPSpur *spur, int cs, double x, double y, double theta )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_ADJUST;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = theta;
 	msg.cs = cs;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 	return 1;
 }
 
 /* 速度指定 */
-int YPSpur_md_set_vel( YPSpur *dev, double v )
+int YPSpur_md_set_vel( YPSpur *spur, double v )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_VEL;
 	msg.data[0] = v;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -328,19 +326,19 @@ int YPSpur_md_set_vel( YPSpur *dev, double v )
 }
 
 /* 角速度指定 */
-int YPSpur_md_set_angvel( YPSpur *dev, double w )
+int YPSpur_md_set_angvel( YPSpur *spur, double w )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_ANGVEL;
 	msg.data[0] = w;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -348,19 +346,19 @@ int YPSpur_md_set_angvel( YPSpur *dev, double w )
 }
 
 /* 速度指定 */
-int YPSpur_md_set_accel( YPSpur *dev, double dv )
+int YPSpur_md_set_accel( YPSpur *spur, double dv )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_ACCEL;
 	msg.data[0] = dv;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -368,19 +366,19 @@ int YPSpur_md_set_accel( YPSpur *dev, double dv )
 }
 
 /* 角速度指定 */
-int YPSpur_md_set_angaccel( YPSpur *dev, double dw )
+int YPSpur_md_set_angaccel( YPSpur *spur, double dw )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_ANGACCEL;
 	msg.data[0] = dw;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -388,29 +386,29 @@ int YPSpur_md_set_angaccel( YPSpur *dev, double dw )
 }
 
 /* 位置取得 */
-double YPSpur_md_get_pos( YPSpur *dev, int cs, double *x, double *y, double *theta )
+double YPSpur_md_get_pos( YPSpur *spur, int cs, double *x, double *y, double *theta )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_POS;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -422,29 +420,29 @@ double YPSpur_md_get_pos( YPSpur *dev, int cs, double *x, double *y, double *the
 }
 
 /* 速度取得 */
-double YPSpur_md_get_vel( YPSpur *dev, double *v, double *w )
+double YPSpur_md_get_vel( YPSpur *spur, double *v, double *w )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_VEL;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -455,29 +453,29 @@ double YPSpur_md_get_vel( YPSpur *dev, double *v, double *w )
 }
 
 /* 速度取得 */
-double YP_md_get_wheel_vel( YPSpur *dev, double *wr, double *wl )
+double YP_md_get_wheel_vel( YPSpur *spur, double *wr, double *wl )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_WHEEL_VEL;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -488,29 +486,29 @@ double YP_md_get_wheel_vel( YPSpur *dev, double *wr, double *wl )
 }
 
 /* 角度取得 */
-double YP_md_get_wheel_ang( YPSpur *dev, double *theta_r, double *theta_l )
+double YP_md_get_wheel_ang( YPSpur *spur, double *theta_r, double *theta_l )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_WHEEL_ANG;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -521,29 +519,29 @@ double YP_md_get_wheel_ang( YPSpur *dev, double *theta_r, double *theta_l )
 }
 
 /* トルク取得 */
-double YP_md_get_wheel_torque( YPSpur *dev, double *torque_r, double *torque_l )
+double YP_md_get_wheel_torque( YPSpur *spur, double *torque_r, double *torque_l )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_WHEEL_TORQUE;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -554,29 +552,29 @@ double YP_md_get_wheel_torque( YPSpur *dev, double *torque_r, double *torque_l )
 }
 
 /* 力取得 */
-double YPSpur_md_get_force( YPSpur *dev, double *trans, double *angular )
+double YPSpur_md_get_force( YPSpur *spur, double *trans, double *angular )
 {
 	YPSpur_msg msg;
 	int len;
 	double time;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GET_FORCE;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -587,29 +585,29 @@ double YPSpur_md_get_force( YPSpur *dev, double *trans, double *angular )
 }
 
 /* 緊急停止状態取得 */
-int YPSpur_md_isfreeze( YPSpur *dev )
+int YPSpur_md_isfreeze( YPSpur *spur )
 {
 	YPSpur_msg msg;
 	int len;
 	int ret;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_ISFREEZE;
 	msg.cs = 0;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -618,20 +616,20 @@ int YPSpur_md_isfreeze( YPSpur *dev )
 }
 
 /* 直接速度入力 */
-int YPSpur_md_vel( YPSpur *dev, double v, double w )
+int YPSpur_md_vel( YPSpur *spur, double v, double w )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_VEL;
 	msg.data[0] = v;
 	msg.data[1] = w;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -639,20 +637,20 @@ int YPSpur_md_vel( YPSpur *dev, double v, double w )
 }
 
 /* 内部パラメータの変更 */
-int YP_md_set_parameter( YPSpur *dev, int param_id, double value )
+int YP_md_set_parameter( YPSpur *spur, int param_id, double value )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_PARAM_SET;
 	msg.cs = param_id;
 	msg.data[0] = value;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -662,28 +660,28 @@ int YP_md_set_parameter( YPSpur *dev, int param_id, double value )
 
 
 /* 内部パラメータの取得 */
-int YP_md_get_parameter( YPSpur *dev, int param_id, double *value )
+int YP_md_get_parameter( YPSpur *spur, int param_id, double *value )
 {
 	YPSpur_msg msg;
 	int len;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_PARAM_GET;
 	msg.cs = param_id;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -692,20 +690,20 @@ int YP_md_get_parameter( YPSpur *dev, int param_id, double *value )
 }
 
 /* 内部状態の変更 */
-int YP_md_set_control_state( YPSpur *dev, int control_id, int state )
+int YP_md_set_control_state( YPSpur *spur, int control_id, int state )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_PARAM_STATE;
 	msg.cs = control_id;
 	msg.data[0] = state;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -714,21 +712,21 @@ int YP_md_set_control_state( YPSpur *dev, int control_id, int state )
 
 
 /* 重力補償用地面の傾き指定 */
-int YPSpur_md_tilt( YPSpur *dev, int cs, double dir, double tilt )
+int YPSpur_md_tilt( YPSpur *spur, int cs, double dir, double tilt )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_TILT;
 	msg.data[0] = dir;
 	msg.data[1] = tilt;
 	msg.cs = cs;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -736,31 +734,31 @@ int YPSpur_md_tilt( YPSpur *dev, int cs, double dir, double tilt )
 }
 
 /* 位置判定 */
-int YPSpur_md_near_pos( YPSpur *dev, int cs, double x, double y, double r )
+int YPSpur_md_near_pos( YPSpur *spur, int cs, double x, double y, double r )
 {
 	YPSpur_msg msg;
 	int len;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_NEAR_POS;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = r;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -768,30 +766,30 @@ int YPSpur_md_near_pos( YPSpur *dev, int cs, double x, double y, double r )
 }
 
 /* 角度判定 */
-int YPSpur_md_near_ang( YPSpur *dev, int cs, double th, double d )
+int YPSpur_md_near_ang( YPSpur *spur, int cs, double th, double d )
 {
 	YPSpur_msg msg;
 	int len;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_NEAR_ANG;
 	msg.data[0] = th;
 	msg.data[1] = d;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -799,31 +797,31 @@ int YPSpur_md_near_ang( YPSpur *dev, int cs, double th, double d )
 }
 
 /* 領域判定 */
-int YPSpur_md_over_line( YPSpur *dev, int cs, double x, double y, double theta )
+int YPSpur_md_over_line( YPSpur *spur, int cs, double x, double y, double theta )
 {
 	YPSpur_msg msg;
 	int len;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_OVER_LINE;
 	msg.data[0] = x;
 	msg.data[1] = y;
 	msg.data[2] = theta;
 	msg.cs = cs;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -831,30 +829,30 @@ int YPSpur_md_over_line( YPSpur *dev, int cs, double x, double y, double theta )
 }
 
 /* アナログ値取得 */
-int YP_md_get_ad_value( YPSpur *dev, int num )
+int YP_md_get_ad_value( YPSpur *spur, int num )
 {
 	YPSpur_msg msg;
 	int len;
 	int ret;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_GETAD;
 	msg.cs = 0;
 	msg.data[0] = ( double )num;
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	/* 指定のコマンド受け取り */
-	len = msgrcv( dev->msq_id, &msg, YPSPUR_MSG_SIZE, dev->pid, 0 );
+	len = spur->dev.recv( &spur->dev, &msg );
 	if( len < 0 )
 	{
 		/* receive error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -862,38 +860,38 @@ int YP_md_get_ad_value( YPSpur *dev, int num )
 	return ret;
 }
 
-int YP_md_set_io_dir( YPSpur *dev, unsigned char dir )
+int YP_md_set_io_dir( YPSpur *spur, unsigned char dir )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SETIODIR;
 	msg.data[0] = dir;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
-int YP_md_set_io_data( YPSpur *dev, unsigned char data )
+int YP_md_set_io_data( YPSpur *spur, unsigned char data )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SETIODATA;
 	msg.data[0] = data;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
@@ -901,104 +899,108 @@ int YP_md_set_io_data( YPSpur *dev, unsigned char data )
 }
 
 /* 直接タイヤ回転速度入力 */
-int YP_md_wheel_vel( YPSpur *dev, double r, double l )
+int YP_md_wheel_vel( YPSpur *spur, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_WHEEL_VEL;
 	msg.data[0] = r;
 	msg.data[1] = l;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
-int YP_md_wheel_torque( YPSpur *dev, double r, double l )
+int YP_md_wheel_torque( YPSpur *spur, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_WHEEL_TORQUE;
 	msg.data[0] = r;
 	msg.data[1] = l;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
-int YP_md_set_wheel_vel( YPSpur *dev, double r, double l )
+int YP_md_set_wheel_vel( YPSpur *spur, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_WHEEL_VEL;
 	msg.data[0] = r;
 	msg.data[1] = l;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
-int YP_md_set_wheel_accel( YPSpur *dev, double r, double l )
+int YP_md_set_wheel_accel( YPSpur *spur, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_SET_WHEEL_ACCEL;
 	msg.data[0] = r;
 	msg.data[1] = l;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
-int YP_md_wheel_ang( YPSpur *dev, double r, double l )
+int YP_md_wheel_ang( YPSpur *spur, double r, double l )
 {
 	YPSpur_msg msg;
 
 	msg.msg_type = YPSPUR_MSG_CMD;
-	msg.pid = dev->pid;
+	msg.pid = spur->pid;
 	msg.type = YPSPUR_WHEEL_ANGLE;
 	msg.data[0] = r;
 	msg.data[1] = l;
 
-	if( msgsnd( dev->msq_id, &msg, YPSPUR_MSG_SIZE, 0 ) < 0 )
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
 	{
 		/* error */
-		dev->connection_error = 1;
+		spur->connection_error = 1;
 		return -1;
 	}
 
 	return 1;
 }
 
+ParamOutputLv output_lv( void )
+{
+	return OUTPUT_LV_DEFAULT;
+}
 

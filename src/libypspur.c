@@ -32,6 +32,11 @@ int YPSpur_initex( int msq_key )
 	return YPSpur_md_initex( &spur, msq_key );
 }
 
+int YPSpur_init_socket( char *ip, int port )
+{
+	return YPSpur_md_init_socket( &spur, ip, port );
+}
+
 /* coordinatorとのメッセージ通信を開始する */
 int YPSpur_init( void )
 {

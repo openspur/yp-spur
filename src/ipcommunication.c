@@ -1,172 +1,348 @@
-
-#ifdef __WIN32
-
-#include <windows.h>
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
-#include <tchar.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+
+#ifdef __WIN32
+#include <winsock2.h>
+#include <windows.h>
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include <ypparam.h>
+#include <msq.win32.h>
 #include <ipcommunication.h>
 #include <utility.h>
+#include <yprintf.h>
 
-HANDLE g_shm = NULL;
-void *g_shm_data;
-HANDLE g_mutex = NULL;
+#ifdef __WIN32
+#define SOCK_SHUTDOWN_OPTION	SD_BOTH
+#define SOCK_DATATYPE			char*
+#define SIZE_TYPE				int
+#else
+#define SOCK_SHUTDOWN_OPTION	SHUT_RDWR
+#define SOCK_DATATYPE			void*
+#define SIZE_TYPE				unsigned int
+#endif
 
-int msgget( key_t key, int msgflg )
+
+int ipcmd_open_msq( struct ipcmd_t *ipcmd, int key, int creat )
 {
-	TCHAR name[512];
+	if( creat ) creat = IPC_CREAT;
+	/* メッセージ・キューのオープン */
+	ipcmd->socket = msgget( key, 0666 | creat );
 
-	_stprintf( name, "MessageQueueShm%d", (int)key );
-	g_shm = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 8192, name );
-
-	g_shm_data = ( void * )MapViewOfFile( g_shm, FILE_MAP_ALL_ACCESS, 0, 0, 8192 );
-	
-	_stprintf( name, "MessageQueueMutex%d", (int)key );
-	if( msgflg & IPC_CREAT )
+	ipcmd->send = ipcmd_send;
+	ipcmd->recv = ipcmd_recv;
+	ipcmd->flush = ipcmd_flush;
+	if( ipcmd->socket == -1 )
 	{
-		g_mutex = CreateMutex( NULL, FALSE, name );
-		*( ( int32_t * )g_shm_data ) = 0;
+		ipcmd->connection_error = 1;
+		return -1;
+	}
+	
+	/* 内部データの初期化 */
+	ipcmd->pid = 0x07fff & getpid(  );
+	if( creat ) ipcmd->pid = YPSPUR_MSG_CMD;
+	ipcmd->connection_error = 0;
+	ipcmd->send = ipcmd_send_msq;
+	ipcmd->recv = ipcmd_recv_msq;
+	ipcmd->flush = ipcmd_flush_msq;
+
+	ipcmd->type = IPCMD_MSQ;
+
+	return 1;
+}
+
+int ipcmd_send_msq( struct ipcmd_t *ipcmd, YPSpur_msg *data )
+{
+	size_t len = YPSPUR_MSG_SIZE;
+
+	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
+	
+	if( msgsnd( ipcmd->socket, data, len, 0 ) < 0 )
+	{
+		ipcmd->connection_error = 1;
+		return -1;
+	}
+	return len;
+}
+
+int ipcmd_recv_msq( struct ipcmd_t *ipcmd, YPSpur_msg *data )
+{
+	int received;
+	size_t len = YPSPUR_MSG_SIZE;
+
+	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
+	
+	received = msgrcv( ipcmd->socket, data, len, ipcmd->pid, 0 );
+	if( received < 0 )
+	{
+		ipcmd->connection_error = 1;
+		return -1;
+	}
+	return received;
+}
+
+void ipcmd_flush_msq( struct ipcmd_t *ipcmd )
+{
+	char dummy[128];
+	
+	if( ipcmd == NULL || ipcmd->connection_error ) return;
+	
+	while( 1 )
+	{
+		if( msgrcv( ipcmd->socket, &dummy, 128, YPSPUR_MSG_CMD, IPC_NOWAIT ) == -1 )
+		{
+			break;
+		}
+	}
+}
+
+
+int ipcmd_open_tcp( struct ipcmd_t *ipcmd, char *host, int port )
+{
+	struct sockaddr_in addr;
+	int i;
+	
+#if HAVE_LIBWS2_32
+    WSADATA wsadata;
+    
+	if( WSAStartup( MAKEWORD( 2, 2 ), &wsadata ) != 0 )
+	{
+		return -1;
+	}
+#endif
+
+	ipcmd->send = ipcmd_send;
+	ipcmd->recv = ipcmd_recv;
+	ipcmd->flush = ipcmd_flush;
+	memset( &addr, 0, sizeof( addr ) );
+	addr.sin_port = htons( port );
+	addr.sin_family = AF_INET;
+
+	ipcmd->socket = socket( AF_INET, SOCK_STREAM, 0 );
+	for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
+	{
+		ipcmd->clients[i] = -1;
+	}
+	
+	if( !host )
+	{
+		addr.sin_addr.s_addr = htonl( INADDR_ANY );
+		bind( ipcmd->socket, (struct sockaddr *)&addr, sizeof( addr ) );
+
+		listen( ipcmd->socket, YPSPUR_MAX_SOCKET );
+		ipcmd->tcp_type = IPCMD_TCP_SERVER;
 	}
 	else
 	{
-		g_mutex = OpenMutex( MUTEX_ALL_ACCESS, FALSE, name );
-	}
-	if( g_mutex == NULL )
-	{
-		return -1;
-	}
+		addr.sin_addr.s_addr = inet_addr( host );
 
-	return 1;
-}
-
-int msgsnd( int msqid, const void *msgp, size_t msgsz, int msgflg )
-{
-	char *pos;
-
-	if( WaitForSingleObject( g_mutex, INFINITE ) == WAIT_FAILED ){
-		CloseHandle( g_mutex );
-		CloseHandle( g_shm );
-		return -1;
-	}
-
-	pos = ( char * )g_shm_data;
-	while( 1 )
-	{
-		int32_t size;
-
-		size = *( int32_t * )pos;
-		if( size == 0 )
-			break;
-
-		pos += sizeof ( int32_t ) + size;
-	}
-
-	if( ( char * )pos + msgsz + sizeof ( int32_t ) - ( char * )g_shm_data > 8192 )
-		return 0;
-
-	*( ( int32_t * )pos ) = ( int32_t )msgsz;
-	pos += sizeof ( int32_t );
-	memcpy( pos, msgp, msgsz );
-	pos += msgsz;
-	*( ( int32_t * )pos ) = 0;
-
-	ReleaseMutex( g_mutex );
-
-	return 1;
-}
-
-ssize_t msgrcv( int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg )
-{
-	char *pos;
-	char *pos_before;
-	char *pos_target;
-	int32_t readsize;
-
-	readsize = 0;
-	while( 1 )
-	{
-		if( WaitForSingleObject( g_mutex, INFINITE ) == WAIT_FAILED ){
-			CloseHandle( g_mutex );
-			CloseHandle( g_shm );
+		if( connect( ipcmd->socket, (struct sockaddr *)&addr, sizeof( addr ) ) == -1 )
+		{
 			return -1;
 		}
-
-		pos = ( char * )g_shm_data;
-		pos_target = NULL;
-		while( 1 )
-		{
-			int32_t size;
-			int32_t *ptype;
-
-			size = *( int32_t * )pos;
-			if( size == 0 )
-				break;
-
-			pos_before = pos;
-			ptype = ( int32_t * )( pos_before + sizeof ( int32_t ) );
-			if( ( ( *ptype == msgtyp && msgtyp > 0 ) || ( *ptype <= -msgtyp && msgtyp < 0 ) ) && !pos_target )
-			{
-				pos_target = pos_before;
-			}
-			pos += sizeof ( int32_t ) + size;
-		}
-		if( pos_target )
-		{
-			char *pos_next;
-			int32_t sizeleft;
-
-			if( *( ( int32_t * )pos_target ) < msgsz )
-			{
-				readsize = *( ( int32_t * )pos_target );
-			}
-			else
-			{
-				readsize = msgsz;
-			}
-			pos_next = pos_target + sizeof ( int32_t ) + *( ( int32_t * )pos_target );
-			sizeleft = pos - pos_next + 1;
-			memcpy( msgp, pos_target + sizeof ( int32_t ), readsize );
-			memcpy( pos_target, pos_next, sizeleft );
-		}
-
-		ReleaseMutex( g_mutex );
-
-		if( !( msgflg & IPC_NOWAIT ) && !pos_target )
-		{
-			yp_usleep( 5000 );
-			continue;
-		}
-		break;
+		ipcmd->tcp_type = IPCMD_TCP_CLIENT;
 	}
-	if( !pos_target )
-		return -1;
 
-	return readsize;
+	ipcmd->type = IPCMD_TCP;
+	ipcmd->send = ipcmd_send_tcp;
+	ipcmd->recv = ipcmd_recv_tcp;
+	ipcmd->flush = ipcmd_flush_tcp;
+
+	ipcmd->connection_error = 0;
+
+	return 1;
 }
 
-int msgctl( int msqid, int cmd, struct msqid_ds *buf )
+int ipcmd_send_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 {
-	switch( cmd )
+	int sock;
+	size_t len = YPSPUR_MSG_SIZE;
+	
+	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
+	
+	if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
 	{
-	case IPC_RMID:
-		if( g_shm ) CloseHandle( g_shm );
-		if( g_mutex ) CloseHandle( g_mutex );
-		return 1;
+		sock = ipcmd->socket;
+	}
+	else
+	{
+		sock = ipcmd->clients[(int)data->msg_type];
+	}
+	if( send( sock, (SOCK_DATATYPE)data, len, 0 ) < 0 )
+	{
+		if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
+		{
+			shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
+			ipcmd->connection_error = 1;
+		}
+		return -1;
+	}
+
+	return len;
+}
+
+int ipcmd_recv_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
+{
+	fd_set fds;
+	struct sockaddr_in client;
+	int sock;
+	int i;
+	size_t len = YPSPUR_MSG_SIZE;
+
+	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
+
+	do
+	{
+		int recved;
+		while( 1 )
+		{
+			SIZE_TYPE addr_size;
+			int nfds = 0;
+
+			FD_ZERO( &fds );
+			FD_SET( ipcmd->socket, &fds );
+			if( nfds < ipcmd->socket ) nfds = ipcmd->socket;
+			for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
+			{
+				if( ipcmd->clients[i] != -1 )
+				{
+					FD_SET( ipcmd->clients[i], &fds );
+					if( nfds < ipcmd->clients[i] ) nfds = ipcmd->clients[i];
+				}
+			}
+
+			nfds ++;
+			if( !select( nfds, &fds, NULL, NULL, NULL ) )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Couldn't select the socket.\n" );
+				return -1;
+			}
+			if( !FD_ISSET( ipcmd->socket, &fds ) )
+			{
+				break;
+			}
+			if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
+			{
+				break;
+			}
+
+			addr_size = sizeof( client );
+			sock = accept( ipcmd->socket, (struct sockaddr *)&client, &addr_size );
+			if( sock <= 0 )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Invalid socket.\n" );
+				return -1;
+			}
+			for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
+			{
+				if( ipcmd->clients[i] == -1 )
+				{
+					break;
+				}
+			}
+			if( i == YPSPUR_MAX_SOCKET )
+			{
+				yprintf( OUTPUT_LV_ERROR, "Too many connection requests.\n" );
+				return -1;
+			}
+			ipcmd->clients[i] = sock;
+			yprintf( OUTPUT_LV_PROCESS, "Connection %d accepted from %s.\n", i, inet_ntoa( client.sin_addr ) );
+		}
+
+		recved = -1;
+		if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
+		{
+			recved = recv( ipcmd->socket, (SOCK_DATATYPE)data, len, 0 );
+			data->pid = 0;
+		}
+		else
+		{
+			for( i = 0; i < YPSPUR_MAX_SOCKET; i ++ )
+			{
+				if( FD_ISSET( ipcmd->clients[i], &fds ) )
+				{
+					recved = recv( ipcmd->clients[i], (SOCK_DATATYPE)data, len, 0 );
+					data->pid = i;
+					break;
+				}
+			}
+		}
+		if( recved <= 0 )
+		{
+			if( ipcmd->tcp_type == IPCMD_TCP_CLIENT )
+			{
+				yprintf( OUTPUT_LV_PROCESS, "Connection closed.\n" );
+				ipcmd->connection_error = 1;
+				shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
+				return -1;
+			}
+			yprintf( OUTPUT_LV_PROCESS, "Connection %d closed.\n", i );
+			ipcmd->clients[i] = -1;
+			continue;
+		}
+	}
+	while( 0 );
+	return len;
+}
+
+void ipcmd_flush_tcp( struct ipcmd_t *ipcmd )
+{
+}
+
+void ipcmd_close( struct ipcmd_t *ipcmd )
+{
+	if( ipcmd == NULL ) return;
+	switch( ipcmd->type )
+	{
+	case IPCMD_MSQ:
+		msgctl( ipcmd->socket, IPC_RMID, NULL );
 		break;
-	case IPC_SET:
-	case IPC_STAT:
-	default:
+	case IPCMD_TCP:
+		shutdown( ipcmd->socket, SOCK_SHUTDOWN_OPTION );
+#if HAVE_LIBWS2_32
+		WSACleanup();
+#endif
 		break;
 	}
+	ipcmd->send = ipcmd_send;
+	ipcmd->recv = ipcmd_recv;
+	ipcmd->flush = ipcmd_flush;
+}
+
+
+
+
+
+
+int ipcmd_send( struct ipcmd_t *ipcmd, YPSpur_msg *data )
+{
+	ipcmd->connection_error = 1;
 	return -1;
 }
 
-#endif
+int ipcmd_recv( struct ipcmd_t *ipcmd, YPSpur_msg *data )
+{
+	ipcmd->connection_error = 1;
+	return -1;
+}
+
+void ipcmd_flush( struct ipcmd_t *ipcmd )
+{
+}
+
+

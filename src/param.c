@@ -125,6 +125,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
 	fprintf( stderr, "  --high-resolution        Enable high resolution velocity control mode.\n" );
 	fprintf( stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n" );
+	fprintf( stderr, "  --socket <port>          Use socket ipc.\n" );
 	fprintf( stderr, "  --daemon                 Run in daemon mode.\n" );
 }
 
@@ -191,6 +192,17 @@ int arg_analyze( int argc, char *argv[] )
 				i++;
 				strcpy( g_param.parameter_filename, argv[i] );
 				g_param.option |= OPTION_PARAM_FILE;
+			}
+			else
+				break;
+		}
+		else if( !strcmp( argv[i], "--socket" ) )
+		{
+			if( i + 1 < argc )
+			{
+				i++;
+				g_param.port = atoi( argv[i] );
+				g_param.option |= OPTION_SOCKET;
 			}
 			else
 				break;

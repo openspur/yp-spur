@@ -147,74 +147,74 @@ extern "C"
 	} YPSpur_param;
 
 
-// 自分で指定しない（できない）パラメータは最初の文字が'_'で始まっている
+	// 自分で指定しない（できない）パラメータは最初の文字が'_'で始まっている
 #define YP_PARAM_NAME \
-{\
-	"VERSION", "_TORQUE_UNIT", "TORQUE_FINENESS",\
-	"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
-	"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
-	"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
-	"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
-	"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "-TORQUE_NEWTON", "-TORQUE_VISCOS", \
-	"INTEGRAL_MAX", "TORQUE_OFFSET", "TORQUE_LIMIT",\
-	"MASS","MOMENT_INERTIA", "MOTOR_M_INERTIA", "TIRE_M_INERTIA",\
-	"SIZE_FRONT", "SIZE_REAR", "SIZE_LEFT", "SIZE_RIGHT",\
-	"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
-	"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
-	"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
-}
+	{\
+		"VERSION", "_TORQUE_UNIT", "TORQUE_FINENESS",\
+		"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
+		"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
+		"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
+		"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
+		"TORQUE_MAX", "TORQUE_NEWTON", "TORQUE_VISCOS", "-TORQUE_NEWTON", "-TORQUE_VISCOS", \
+		"INTEGRAL_MAX", "TORQUE_OFFSET", "TORQUE_LIMIT",\
+		"MASS","MOMENT_INERTIA", "MOTOR_M_INERTIA", "TIRE_M_INERTIA",\
+		"SIZE_FRONT", "SIZE_REAR", "SIZE_LEFT", "SIZE_RIGHT",\
+		"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
+		"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
+		"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
+	}
 
 #define YP_PARAM_NECESSARY \
-{\
-	1, 0, 1,\
-	0, 1, 1, 1, 1, 1, 1, 1, 0,\
-	1, 0, 0, 1, 1,\
-	1, 1, 1, 1, 1,\
-	1, 1, 1, 1, 1, 1, 1,\
-	1, 0, 0, 0, 0,\
-	1, 0, 0,\
-	1, 1, 1, 1,\
-	0, 0, 0, 0,\
-	0, 0, 0, 0, 0, 0,\
-	0, 0, 0,\
-	0, 0,\
-}
+	{\
+		1, 0, 1,\
+		0, 1, 1, 1, 1, 1, 1, 1, 0,\
+		1, 0, 0, 1, 1,\
+		1, 1, 1, 1, 1,\
+		1, 1, 1, 1, 1, 1, 1,\
+		1, 0, 0, 0, 0,\
+		1, 0, 0,\
+		1, 1, 1, 1,\
+		0, 0, 0, 0,\
+		0, 0, 0, 0, 0, 0,\
+		0, 0, 0,\
+		0, 0,\
+	}
 
 #define YP_PARAM_COMMENT \
-{\
-	"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication","[Nm] Calculation fineness of torque control",\
-	"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
-	"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
-	"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
-	"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
-	"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\
-	"[m/s / rad/s] Deacceleration factor of trajectory control",\
-	"[rad/ss / m] Feedback gain for distance error","[rad/ss / rad] Feedback gain for angular error",\
-	"[rad/ss / rad/s] Feedback gain for angular velocity",\
-	"[m] Clipping value of line following control","[1/s] PI control parameter Kp","[1/ss] PI control parameter Ki",\
-	"[Nm] Motor maximum torque","[Nm] Constant friction","[Nm/(rad/s)] Viscous friction",\
-	"[Nm] Constant friction (neg-direction)","[Nm/(rad/s)] Viscous friction (neg-direction)","[Nm] Motor torque limit",\
-	"[rev] Maximum integrated error of PI control","[Nm] Offset value of motor torque",\
-	"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
-	"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
-	"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
-	"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command",\
-	"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)"\
-}
+	{\
+		"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication","[Nm] Calculation fineness of torque control",\
+		"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
+		"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
+		"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
+		"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
+		"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\
+		"[m/s / rad/s] Deacceleration factor of trajectory control",\
+		"[rad/ss / m] Feedback gain for distance error","[rad/ss / rad] Feedback gain for angular error",\
+		"[rad/ss / rad/s] Feedback gain for angular velocity",\
+		"[m] Clipping value of line following control","[1/s] PI control parameter Kp","[1/ss] PI control parameter Ki",\
+		"[Nm] Motor maximum torque","[Nm] Constant friction","[Nm/(rad/s)] Viscous friction",\
+		"[Nm] Constant friction (neg-direction)","[Nm/(rad/s)] Viscous friction (neg-direction)","[Nm] Motor torque limit",\
+		"[rev] Maximum integrated error of PI control","[Nm] Offset value of motor torque",\
+		"[kg] Robot weight","[kgm^2] Robot moment of inertia","[kgm^2] Rotor moment of inertia of motor","[kgm^2] Tire moment of inertia",\
+		"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
+		"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
+		"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command",\
+		"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)"\
+	}
 
-enum motor_id
-{
-	MOTOR_RIGHT = 0,
-	MOTOR_LEFT,
-	YP_PARAM_MOTOR_NUM
-};
+	enum motor_id
+	{
+		MOTOR_RIGHT = 0,
+		MOTOR_LEFT,
+		YP_PARAM_MOTOR_NUM
+	};
 
 #define YP_PARAM_ALIAS_NUM 2
 #define YP_PARAM_ALIAS \
-{\
-	{ YP_PARAM_RADIUS_L, YP_PARAM_RADIUS, MOTOR_LEFT },\
-	{ YP_PARAM_RADIUS_R, YP_PARAM_RADIUS, MOTOR_RIGHT },\
-}
+	{\
+		{ YP_PARAM_RADIUS_L, YP_PARAM_RADIUS, MOTOR_LEFT },\
+		{ YP_PARAM_RADIUS_R, YP_PARAM_RADIUS, MOTOR_RIGHT },\
+	}
 
 #define YP_PARAM_REQUIRED_VERSION	4.0
 
@@ -227,7 +227,7 @@ enum motor_id
 		YP_STATE_BODY,
 		YP_STATE_TRACKING,
 		YP_STATE_GRAVITY,
-		
+
 		YP_STATE_NUM
 	} YPSpur_state;
 
@@ -260,6 +260,31 @@ enum motor_id
 		int cs;
 		double data[4];
 	} YPSpur_msg;
+
+#define YPSPUR_MAX_SOCKET 64
+
+	struct ipcmd_t
+	{
+		enum ipcmd_type_t{
+			IPCMD_MSQ,
+			IPCMD_TCP
+		} type;
+		enum ipcmd_tcp_type_t{
+			IPCMD_TCP_SERVER,
+			IPCMD_TCP_CLIENT
+		} tcp_type;
+		int socket;
+		int clients[YPSPUR_MAX_SOCKET];
+		int connection_error;
+		pid_t pid;
+		pid_t pids[YPSPUR_MAX_SOCKET];
+		int (*send)( struct ipcmd_t *ipcmd, YPSpur_msg *data );
+		int (*recv)( struct ipcmd_t *ipcmd, YPSpur_msg *data );
+		void (*flush)( struct ipcmd_t *ipcmd );
+	};
+
+
+
 
 #define YPSPUR_MSQ_KEY 0x7045
 #define YPSPUR_MSG_CMD 1

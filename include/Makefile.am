@@ -6,7 +6,7 @@ include_HEADERS = ypspur.h ypspur-md.h ypparam.h
 noinst_HEADERS = ypspur-coordinator.h control.h param.h shvel-param.h \
                  command.h serial.h ypprotocol.h odometry.h utility.h \
 		 ssm_spur_handler.h communication.h adinput.h \
-		 ipcommunication.h yprintf.h
+		 ipcommunication.h yprintf.h msq.win32.h
 
 nobase_include_HEADERS = ssmtype/pws-motor.h ssmtype/spur-odometry.h ssmtype/ypspur-ad.h
 

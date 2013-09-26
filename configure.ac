@@ -84,11 +84,8 @@ AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([fork])
 AC_CHECK_LIB(readline, readline)
 
-LD_LIBREADLINE=""
-if test "x$HAVE_LIBREADLINE" == "x1"; then
-	LD_LIBREADLINE="-lreadline"
-fi
-AC_SUBST(LD_LIBREADLINE)
+AC_CHECK_LIB(ws2_32, main)
+
 
 AM_SYS_POSIX_TERMIOS
 

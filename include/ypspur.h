@@ -11,6 +11,7 @@ extern "C"
 	/* YPSpurコマンド集 */
 #define Spur_init()               YPSpur_init()
 #define Spur_initex(msq)          YPSpur_initex(msq)
+#define Spur_init_socket(ip, port) YPSpur_init_socket(ip, port)
 #define Spur_stop()               YPSpur_stop()
 #define Spur_free()               YPSpur_free()
 
@@ -99,6 +100,7 @@ extern "C"
 	/** init */
 	int YPSpur_init( void );
 	int YPSpur_initex( int msq_key );
+	int YPSpur_init_socket( char *ip, int port );
 
 	/** freeze */
 	int YPSpur_isfreeze( void );

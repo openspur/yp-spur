@@ -1,6 +1,7 @@
 #ifndef __COMMAND__
 #define __COMMAND__
 #include <ypspur.h>
+#include <ipcommunication.h>
 
 typedef enum
 {
@@ -59,7 +60,7 @@ typedef struct _spur_user_params
 
 void init_spur_command( void );
 void command( void );
-void message_return( int msq_id, long retpid, YPSpur_msg * res_msg );
+void message_return( struct ipcmd_t *ipcmd, long retpid, YPSpur_msg * res_msg );
 
 void init_command_thread( pthread_t * thread );
 SpurUserParamsPtr get_spur_user_param_ptr(  );

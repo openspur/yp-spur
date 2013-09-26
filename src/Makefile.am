@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libypspur.la libypspur-md.la
 bin_PROGRAMS = ypspur-coordinator ypspur-free ypspur-interpreter
 
 ## libypspur-md
-libypspur_md_la_SOURCES = libypspur-md.c ipcommunication.c utility.c
+libypspur_md_la_SOURCES = libypspur-md.c ipcommunication.c utility.c yprintf.c msq.win32.c
 libypspur_md_la_CFLAGS = $(AM_CFLAGS) -Werror
 libypspur_md_la_CXXFLAGS = $(libypspur_la_CFLAGS)
 
@@ -32,7 +32,7 @@ libypspur_la_LDFLAGS = $(libypspur_md_la_LDFLAGS)
 if BUILD_DLL_FOR_WIN32
 lib_LTLIBRARIES += libypspur_dll.la libypspur_md_dll.la
 
-libypspur_md_dll_la_SOURCES = libypspur-md.c ipcommunication.c utility.c
+libypspur_md_dll_la_SOURCES = libypspur-md.c ipcommunication.c utility.c yprintf.c msq.win32.c
 libypspur_md_dll_la_CFLAGS = $(libypspur_la_CFLAGS)
 libypspur_md_dll_la_CXXFLAGS = $(libypspur_la_CXXFLAGS)
 libypspur_md_dll_la_LDFLAGS = $(libypspur_la_LDFLAGS) -module -shared $(LDFLAG_DLL_FOR_WIN32)
@@ -75,7 +75,7 @@ endif
 
 ## ypspur-coordinator
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
-  control_motion.c param.c ipcommunication.c command_ad.c yprintf.c \
+  control_motion.c param.c ipcommunication.c msq.win32.c command_ad.c yprintf.c \
   command.c command_param.c command_set.c command_run.c command_get.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
@@ -100,7 +100,7 @@ ypspur_free_DEPENDENCIES = libypspur.la
 ## ypspur-interpreter
 bin_PROGRAMS += ypspur-interpreter
 ypspur_interpreter_SOURCES = ypspur-interpreter.c utility.c
-ypspur_interpreter_LDADD = libypspur.la $(LD_LIBREADLINE)
+ypspur_interpreter_LDADD = libypspur.la
 ypspur_interpreter_DEPENDENCIES = libypspur.la
 
 

@@ -266,7 +266,6 @@ int proc_spur( char *line, int *coordinate )
 		YPSpur_stop(  );
 		break;
 	case SPUR_INIT:
-		YPSpur_init(  );
 		break;
 	case SPUR_FREE:
 		YPSpur_free(  );
@@ -360,12 +359,15 @@ void print_help( char *argv[] )
 	fputs( "\t-O | --set-angaccel VALUE    : [rad/ss] set angaccel of SPUR to VALUE\n", stderr );
 	fputs( "\t-c | --command     \"VALUE\"   : execute command VALUE\n", stderr );
 	fputs( "\t-q | --msq-id       VALUE    : set message-queue id\n", stderr );
+	fputs( "\t-s | --socket       IP:PORT  : use socket ipc\n", stderr );
 	fputs( "\t-h | --help                  : print this help\n", stderr );
 }
 
 int main( int argc, char *argv[] )
 {
 	int coordinate = CS_FS;
+	char ip[64];
+	int port = 0;
 	int active = 1;
 	int err = 0;
 	double vel = 0;
@@ -377,7 +379,7 @@ int main( int argc, char *argv[] )
 	int set_angvel = 0;
 	int set_angaccel = 0;
 	int msqid = 0;
-	struct option options[8] =
+	struct option options[9] =
 	{
 		{"set-vel", 1, 0, 'V'},
 		{"set-angvel", 1, 0, 'W'},
@@ -385,12 +387,13 @@ int main( int argc, char *argv[] )
 		{"set-angaccel", 1, 0, 'O'},
 		{"command", 1, 0, 'c'},
 		{"msq-id", 1, 0, 'q'},
+		{"socket", 1, 0, 's'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
 	int opt;
 	
-	while( ( opt = getopt_long( argc, argv, "V:W:A:O:c:q:h", options, NULL ) ) != -1 )
+	while( ( opt = getopt_long( argc, argv, "V:W:A:O:c:q:s:h", options, NULL ) ) != -1 )
 	{
 		switch ( opt )
 		{
@@ -411,13 +414,29 @@ int main( int argc, char *argv[] )
 			set_angaccel = 1;
 			break;
 		case 'c':
-			if( msqid == 0 ) YPSpur_init(  );
+			if( msqid == -1 ) YPSpur_init_socket( ip, port );
+			else if( msqid == 0 ) YPSpur_init(  );
 			else YPSpur_initex( msqid );
 			proc_spur( optarg, &coordinate );
 			return 1;
 			break;
 		case 'q':
 			msqid = atoi( optarg );
+			break;
+		case 's':
+			strncpy( ip, optarg, 64 );
+			{
+				char *p;
+				p = strchr( ip, ':' );
+				if( p == NULL )
+				{
+					fprintf( stderr, "USAGE: %s -s ip:port\n", argv[0] );
+					return -1;
+				}
+				*p = 0;
+				port = atoi( p + 1 );
+				msqid = -1;
+			}
 			break;
 		case 'h':
 			print_help( argv );
@@ -432,7 +451,8 @@ int main( int argc, char *argv[] )
 	signal( SIGINT, ctrlc );
 #endif
 
-	if( msqid == 0 ) YPSpur_init(  );
+	if( msqid == -1 ) YPSpur_init_socket( ip, port );
+	else if( msqid == 0 ) YPSpur_init(  );
 	else YPSpur_initex( msqid );
 	
 	if( set_vel ) YPSpur_set_vel( vel );
@@ -460,7 +480,6 @@ int main( int argc, char *argv[] )
 #if HAVE_LIBREADLINE
 			write_history( ".spurip_history" );
 #endif
-			printf( "\n" );
 		}
 		else
 #endif
@@ -472,7 +491,8 @@ int main( int argc, char *argv[] )
 			}
 			if( YP_get_error_state() )
 			{
-				if( msqid == 0 ) YPSpur_init(  );
+				if( msqid == -1 ) YPSpur_init_socket( ip, port );
+				else if( msqid == 0 ) YPSpur_init(  );
 				else YPSpur_initex( msqid );
 				if( set_vel ) YPSpur_set_vel( vel );
 				if( set_angvel ) YPSpur_set_angvel( angvel );

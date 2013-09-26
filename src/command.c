@@ -39,13 +39,12 @@ SpurUserParamsPtr get_spur_user_param_ptr(  )
 
 void command_loop_cleanup( void *data )
 {
-	int *msq_id;
+	struct ipcmd_t *ipcmd;
 
-	msq_id = data;
+	ipcmd = data;
 	yprintf( OUTPUT_LV_MODULE, "Command analyser stopped.\n" );
 
-	// メッセージキュー削除
-	msgctl( *msq_id, IPC_RMID, NULL );
+	ipcmd_close( ipcmd );
 }
 
 void init_spur_command( void )
@@ -69,12 +68,20 @@ void init_spur_command( void )
 void command( void )
 {
 	YPSpur_msg msg, res_msg;
-	int msq_id, len;
+	int len;
+	struct ipcmd_t ipcmd;
 	char param_name[YP_PARAM_NUM][30] = YP_PARAM_NAME;
 
 	/* initialize message queue */
-	msq_id = msgget( get_param_ptr(  )->msq_key, 0666 | IPC_CREAT );
-	if( msq_id < 0 )
+	if( option( OPTION_SOCKET ) )
+	{
+		len = ipcmd_open_tcp( &ipcmd, NULL, get_param_ptr(  )->port );
+	}
+	else
+	{
+		len = ipcmd_open_msq( &ipcmd, get_param_ptr(  )->msq_key, 1 );
+	}
+	if( len < 0 )
 	{
 		/* queue_error */
 		yprintf( OUTPUT_LV_ERROR, "Error: Can't initialize message queue.\n" );
@@ -82,21 +89,15 @@ void command( void )
 	}
 
 	// メッセージキューを空にする
-	while( 1 )
-	{
-		if( msgrcv( msq_id, &msg, YPSPUR_MSG_SIZE, YPSPUR_MSG_CMD, IPC_NOWAIT ) == -1 )
-		{
-			break;
-		}
-	}
+	ipcmd.flush( &ipcmd );
 
 	yprintf( OUTPUT_LV_MODULE, "Command analyser started.\n" );
-	pthread_cleanup_push( command_loop_cleanup, &msq_id );
+	pthread_cleanup_push( command_loop_cleanup, &ipcmd );
 
 	while( 1 )
 	{
 		/* 1コマンド取得 */
-		len = msgrcv( msq_id, &msg, YPSPUR_MSG_SIZE, YPSPUR_MSG_CMD, 0 );
+		len = ipcmd.recv( &ipcmd, &msg );
 		if( len < YPSPUR_MSG_SIZE )
 		{
 			yprintf( OUTPUT_LV_ERROR, "Error: Invalid command received\n" );
@@ -184,7 +185,7 @@ void command( void )
 			break;
 		case YPSPUR_ISFREEZE:
 			res_msg.data[0] = g_spur.freeze;
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: isfreeze %d\n", g_spur.freeze );
 			break;
 		case YPSPUR_VEL:
@@ -215,47 +216,47 @@ void command( void )
 		/*----------command_get.c------------------*/
 		case YPSPUR_GET_POS:
 			get_pos_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: get %f %f %f\n", res_msg.data[0], res_msg.data[1], res_msg.data[2] );
 			break;
 		case YPSPUR_GET_VEL:
 			get_vel_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: getvel %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
 		case YPSPUR_GET_FORCE:
 			get_force_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: getforce %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
 		case YPSPUR_GET_WHEEL_TORQUE:
 			get_wheel_torque_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: getwheeltorque %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
 		case YPSPUR_GET_WHEEL_VEL:
 			get_wheel_vel_com( msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelvel %f %f\n", g_spur.vref, g_spur.wref );
 			break;
 		case YPSPUR_GET_WHEEL_ANG:
 			get_wheel_ang_com( msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelang %f %f\n", g_spur.vref, g_spur.wref );
 			break;
 		case YPSPUR_NEAR_POS:
 			res_msg.cs = near_pos_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: near pos ( dist = %f )\n", res_msg.data[0] );
 			break;
 		case YPSPUR_NEAR_ANG:
 			res_msg.cs = near_ang_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: near ang ( dist = %f )\n", res_msg.data[0] );
 			break;
 		case YPSPUR_OVER_LINE:
 			res_msg.cs = over_line_com( msg.cs, msg.data, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: over line ( dist = %f )\n", res_msg.data[0] );
 			break;
 
@@ -267,7 +268,7 @@ void command( void )
 
 		case YPSPUR_PARAM_GET:
 			res_msg.cs = param_get_com( msg.cs, res_msg.data, &g_spur );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: param_get %s %f\n", param_name[msg.cs], msg.data[0] );
 			break;
 
@@ -278,7 +279,7 @@ void command( void )
 		/*-------------command_ad.c---------------*/
 		case YPSPUR_GETAD:
 			get_ad_com( msg.data, res_msg.data );
-			message_return( msq_id, msg.pid, &res_msg );
+			message_return( &ipcmd, msg.pid, &res_msg );
 			yprintf( OUTPUT_LV_COMMAND, "Command: get A/D%d value %d\n", ( int )msg.data[0], ( int )res_msg.data[0] );
 			break;
 
@@ -335,12 +336,12 @@ void command( void )
 }
 
 /* メッセージを返す */
-void message_return( int msq_id, long retpid, YPSpur_msg * res_msg )
+void message_return( struct ipcmd_t *ipcmd, long retpid, YPSpur_msg * res_msg )
 {
 	res_msg->type = 0;
 	res_msg->msg_type = retpid;
 	res_msg->pid = 0;
-	msgsnd( msq_id, res_msg, YPSPUR_MSG_SIZE, 0 );
+	ipcmd->send( ipcmd, res_msg );
 }
 
 /* すれっどの初期化 */

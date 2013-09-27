@@ -310,18 +310,36 @@ int main( int argc, char *argv[] )
 
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
+			// ボーレートの設定
 			if( param->speed )
 			{
 				yprintf( OUTPUT_LV_MODULE, "Setting baudrate to %d baud.\n", param->speed );
-				if( !set_baudrate( param->speed ) )
-				{
-					yprintf( OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n" );
+			}
+			else {
+				// 指定されてない場合デフォルトの値
+				param->speed = DEFAULT_BAUDRATE;
+			}
 
-					serial_close(  );
+			ret = set_baudrate( param->speed );
+			if( ret == 0 )
+			{
+				// 設定失敗
+				yprintf( OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n" );
 
-					quit = 0;
-					break;						// quit=0でbreakしたら異常終了と判断
-				}
+				serial_close(  );
+
+				quit = 0;
+				break;						// quit=0でbreakしたら異常終了と判断
+			}
+			if (ret == 4)
+			{
+				// ボーレートの設定未対応
+				yprintf( OUTPUT_LV_WARNING, "Warn: Failed to change baudrate. It is not RS-232c connection.\n" );
+			}
+			else 
+			{
+				// 設定成功
+				// 正常ならば何もしない
 			}
 
 			if( param->admask )

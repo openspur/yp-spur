@@ -224,6 +224,10 @@ OdometryPtr get_odometry_ptr(  )
 	return &g_odometry;
 }
 
+/**
+ * @brief 時刻の推定 (n回目の計測結果の時刻を計算する)
+ * @param int readnum[in] : 計測回数
+ */
 double time_estimate( int readnum )
 {
 	return g_offset + g_interval * ( double )( readnum - g_offset_point );
@@ -237,70 +241,77 @@ double time_estimate( int readnum )
  */
 double time_synchronize( double receive_time, int readnum, int wp )
 {
-	//static double time_log[100];
-	//static double start_time;
-	static int time_wp, offset_wp;
-	static double offset_min, diff_min, offset_log[10];
-	static int min_num;
-	static int min_log[10];
-	double estimated_time, measured_time;
+	static double prev_time = 0.0;
+	static double minsub = 0;
+	static double minsub_time = 0;
+	static int minsub_readnum = 0;
+	static int prev_readnum = 0;
+	double estimated_time;
+	double measured_time;
+	double sub;
 
-	if( g_offset_point == 0 )
-	{
+	// 受信開始時刻を計算
+	if ( SER_BAUDRATE != 0 ) {
+		measured_time = receive_time;
+	}
+	else {
+		measured_time = receive_time - ( wp / ( SER_BAUDRATE / 8.0 ) );
+	}
+	
+	// 初回の場合 
+	if( g_offset_point <= 0 ) {
+		// 初回のデータを基準として保存
+		g_offset = measured_time;
 		g_interval = SER_INTERVAL;
-		g_offset = receive_time;
 		g_offset_point = readnum;
-		diff_min = 100000;
-		time_wp = 0;
-		offset_wp = 0;
-	//	start_time = receive_time;
+
+		// 更新時のデータを保存
+		prev_time = measured_time;
+		prev_readnum = readnum;
+
+		// 推定値に対して最も早い受信時刻のデータを初期化
+		minsub_time = measured_time;
+		minsub_readnum = readnum;
+		// 適当な大きな値(インターバル以上遅れると異常)
+		minsub = g_interval;
+		
+		// オドメトリの更新回数からの推定値を計算
+		return measured_time;
 	}
+	else {
+		// オドメトリの更新回数からの推定値を計算
+		estimated_time = time_estimate(readnum);
 
-	// 推定観測時刻の計算
-	if( wp > 0 )
-	{											/* 次のを受信中 */
-		/* 最後のデータの時刻を次を何バイト目を受信したかで推定 */
-		measured_time = receive_time - ( wp / SER_BOUDRATE ) - SER_INTERVAL;
-		/* 受信時刻　　　バイト数/毎秒何バイトか　5ms */
-		//time_log[time_wp % 100] = measured_time;
-
-		/* ログに記録 */
-		estimated_time = time_estimate( readnum );
-		if( time_wp >= 50 )
-		{										/* オフセット登録、周期計算 */
-			offset_log[offset_wp % 10] = offset_min;
-			min_log[offset_wp % 10] = min_num;
-			g_offset = offset_min;
-			g_offset_point = min_num;
-			if( offset_wp >= 10 )
-			{
-				g_interval =
-					( offset_log[offset_wp % 10] -
-					  offset_log[( offset_wp - 9 ) % 10] ) / ( double )( min_log[offset_wp % 10] -
-																		 min_log[( offset_wp - 9 ) % 10] );
-			}
-			offset_wp++;
-			time_wp = 0;
-			diff_min = 100000;
-			if( option( OPTION_SHOW_TIMESTAMP ) )
-				printf( "%f %f \n", g_offset, g_interval * 1000.0 );
+		// オドメトリの更新回数からの推定値より早いデータほど計測時刻に近いと期待
+		sub = measured_time - estimated_time;
+		if( minsub > sub) {
+			// 最も早い受信時刻を保存
+			minsub = sub;
+			minsub_time = measured_time;
+			minsub_readnum = readnum;
 		}
 
-		/* 最小値 */
-		if( diff_min > measured_time - estimated_time )
-		{
-			diff_min = measured_time - estimated_time;
-			offset_min = measured_time;
-			min_num = readnum;
-		}
-		time_wp++;
-	}
-	else
-	{
-		estimated_time = time_estimate( readnum );
-	}
+		// 十分に時間が経過している場合
+		if( receive_time - prev_time > 0.5 ) {
+			// 基準のデータを更新			
+			g_offset = minsub_time;
+			g_offset_point = minsub_readnum;
 
-	return estimated_time;
+			// オドメトリの更新間隔を推定
+			g_interval = (measured_time - prev_time) / (double)( readnum - prev_readnum );
+
+			// 更新時のデータを保存
+			prev_time = measured_time;
+			prev_readnum = readnum;
+
+			// 推定値に対して最も早い受信時刻のデータを初期化
+			minsub_time = measured_time;
+			minsub_readnum = readnum;
+			minsub = sub;
+		}
+
+		return estimated_time;
+	}
 }
 
 /* シリアル受信処理 */
@@ -315,6 +326,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 	int readdata_num;
 	int decoded_len = 0;
 	int decoded_len_success; // デコードした際の、正しいバイト数
+	int readdata_len = 0;
 
 	// Odometry *odm;
 	Odometry odm_log[100];
@@ -365,8 +377,6 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 			process_addata( &data[8], decoded_len - 8 );
 
-			// printf( "%05d %05d %05d %05d %d\n", cnt1.integer, cnt2.integer, pwm1.integer, pwm2.integer, ret );
-
 			cnt1_log[readdata_num] = cnt1;
 			cnt2_log[readdata_num] = cnt2;
 			pwm1_log[readdata_num] = pwm1;
@@ -382,8 +392,9 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 			if( option( OPTION_SHOW_ODOMETRY ) )
 				printf( "%f %f %f\n", g_odometry.x, g_odometry.y, g_odometry.theta );
-
+		
 			readdata_num++;
+			readdata_len = com_wp;
 			com_wp = 0;
 		}
 		else
@@ -398,8 +409,10 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 		}
 	}
 
-	receive_count += readdata_num;
-	time_synchronize( receive_time, receive_count, com_wp );
+	if ( readdata_num > 0 ) {
+		receive_count += readdata_num;
+		time_synchronize( receive_time, receive_count, readdata_len + com_wp );
+	}
 
 	write_ypspurSSM( odometry_updated, receive_count, odm_log, readdata_num, cnt1_log, cnt2_log, pwm1_log, pwm2_log,
 					 ad_log );

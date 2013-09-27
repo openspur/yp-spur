@@ -26,7 +26,7 @@
 #include <yprintf.h>
 
 #include <errno.h>
-double SER_BOUDRATE;
+double SER_BAUDRATE;
 
 /* serial */
 #ifndef _WIN32
@@ -229,8 +229,7 @@ int serial_change_baudrate( int baud )
 		yprintf( OUTPUT_LV_VERBOSE, "Error: cfsetospeed: %s(%d)\n", strerror( errnum ), errnum );
 		return 0;
 	}
-	SER_BOUDRATE = ( double )baud / 10.0;		// (bit/sec) -> (Byte/sec) 
-
+	SER_BAUDRATE = ( double )baud;		
 	newtio.c_iflag = IGNPAR;					// パリティエラーのデータは無視する
 	newtio.c_oflag = 1;							// Raw モードでの出力
 
@@ -289,7 +288,7 @@ int serial_change_baudrate( int baud )
 	dcb.StopBits = ONESTOPBIT;
 	dcb.ByteSize = 8;
 	dcb.BaudRate = i2baud( baud );
-	SER_BOUDRATE = ( double )baud;
+	SER_BAUDRATE = ( double )baud;
 	SetCommState( g_hdevices, &dcb );			// シリアルポートの状態を設定
 #endif
 	return 1;

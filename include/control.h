@@ -5,12 +5,15 @@
 #include <odometry.h>
 
 int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur );
-void motor_speed( double r, double l );
+int motor_speed_smooth( double r, double l, SpurUserParamsPtr spur );
 void robot_speed( double v, double w );
+void motor_speed( double r, double l );
+
 int reference_speed( double *v, double *w );
 void update_ref_speed( );
 int reference_motor_speed( double *wr, double *wl );
-double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur );
+
+double timeoptimal_servo( double err, double vel_max, double vel, double acc );
 
 double dist_pos( OdometryPtr odm, SpurUserParamsPtr spur );
 double trans_q( double theta );

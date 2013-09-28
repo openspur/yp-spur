@@ -247,12 +247,12 @@ void command( void )
 		case YPSPUR_GET_WHEEL_VEL:
 			get_wheel_vel_com( msg.data, res_msg.data, &g_spur );
 			message_return( &ipcmd, msg.pid, &res_msg );
-			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelvel %f %f\n", g_spur.vref, g_spur.wref );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelvel %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
 		case YPSPUR_GET_WHEEL_ANG:
 			get_wheel_ang_com( msg.data, res_msg.data, &g_spur );
 			message_return( &ipcmd, msg.pid, &res_msg );
-			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelang %f %f\n", g_spur.vref, g_spur.wref );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get wheelang %f %f\n", res_msg.data[0], res_msg.data[1] );
 			break;
 		case YPSPUR_NEAR_POS:
 			res_msg.cs = near_pos_com( msg.cs, msg.data, res_msg.data, &g_spur );

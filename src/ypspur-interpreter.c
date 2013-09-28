@@ -124,6 +124,7 @@ sigjmp_buf ctrlc_capture;
 
 void ctrlc( int num )
 {
+	printf( "\n" );
 #if HAVE_SIGLONGJMP
 	siglongjmp( ctrlc_capture, 1 );
 #endif
@@ -142,11 +143,12 @@ int proc_spur( char *line, int *coordinate )
 		MODE_COMMAND,
 		MODE_ARG
 	} mode = MODE_COMMAND;
+	char *toksave;
 	
 	spur.id = -1;
 	lcoordinate = *coordinate;
 
-	argv = strtok( line, " >\t\n\r" );
+	argv = strtok_r( line, " >\t\n\r", &toksave );
 	if( !argv )
 	{
 		return 0;
@@ -187,7 +189,7 @@ int proc_spur( char *line, int *coordinate )
 				break;
 			break;
 		}
-		argv = strtok( NULL, " >\t\n\r" );
+		argv = strtok_r( NULL, " >\t\n\r", &toksave );
 	}
 
 	if( spur.id < 0 )
@@ -573,11 +575,26 @@ int main( int argc, char *argv[] )
 #	endif
 			line_prev = line;
 #endif
-			if( proc_spur( line, &coordinate ) < 0 ) active = 0;
+			{
+				char *line_div;
+				char *toksave;
+
+				line_div = strtok_r( line, ";\n\r", &toksave );
+				while( line_div )
+				{
+					if( proc_spur( line_div, &coordinate ) < 0 )
+					{
+						active = 0;
+						break;
+					}
+					line_div = strtok_r( NULL, ";\n\r", &toksave );
+				}
+			}
 
 			if( line_prev ) free( line_prev );
 		}
 	}
+	printf( "\n" );
 #if HAVE_LIBREADLINE
 	write_history( ".spurip_history" );
 #endif

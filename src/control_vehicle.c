@@ -201,8 +201,8 @@ void robot_speed( double v, double w )
 		g_v_ref = v;
 		g_w_ref = w;
 
-		wr = -( 0.5 * w * p( YP_PARAM_TREAD, 0 ) - v ) / p( YP_PARAM_RADIUS, MOTOR_RIGHT );
-		wl = ( 0.5 * w * p( YP_PARAM_TREAD, 0 ) + v ) / p( YP_PARAM_RADIUS, MOTOR_LEFT );
+		wr =  ( 0.5 * w * p( YP_PARAM_TREAD, 0 ) + v ) / p( YP_PARAM_RADIUS, MOTOR_RIGHT );
+		wl = -( 0.5 * w * p( YP_PARAM_TREAD, 0 ) - v ) / p( YP_PARAM_RADIUS, MOTOR_LEFT );
 
 		motor_speed( wr, wl );
 	}

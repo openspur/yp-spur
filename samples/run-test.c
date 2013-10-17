@@ -29,8 +29,8 @@ int main( int argc, char *argv[] )
 	Spur_set_pos_GL( 0, 0, 0 );
 	printf( "line\n" );
 	// 走行
-	Spur_line_GL( 0, 0, 0 );
-	while( !Spur_over_line_GL( 1.0, 0.0, 0.0 ) )
+	Spur_stop_line_GL( 1.0, 0, 0 );
+	while( !Spur_over_line_GL( 1.0 - 0.005, 0.0, 0.0 ) )
 		usleep( 100000 );
 
 	// 回転
@@ -46,8 +46,8 @@ int main( int argc, char *argv[] )
 	Spur_set_angaccel( M_PI );
 	
 	// 走行
-	Spur_line_GL( 1.0, 0.1, M_PI / 2.0 );
-	while( !Spur_over_line_GL( 1.0, 0.1, M_PI / 2.0 ) )
+	Spur_stop_line_GL( 1.0, 0.1, M_PI / 2.0 );
+	while( !Spur_over_line_GL( 1.0, 0.1 - 0.005, M_PI / 2.0 ) )
 		usleep( 100000 );
 	
 	// 回転
@@ -58,8 +58,8 @@ int main( int argc, char *argv[] )
 
 	// 走行
 	printf( "line\n" );
-	Spur_line_GL( 0, 0.1, M_PI );
-	while( !Spur_over_line_GL( 0.0, 0.1, M_PI ) )
+	Spur_stop_line_GL( 0, 0.1, M_PI );
+	while( !Spur_over_line_GL( 0.0 + 0.005, 0.1, M_PI ) )
 		usleep( 100000 );
 
 	// 回転
@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
 	// 走行
 	printf( "line\n" );
 	Spur_stop_line_GL( 0, 0.0, -M_PI / 2.0 );
-	while( !( Spur_near_pos_GL( 0.0, 0.0, 0.01 ) || Spur_over_line_GL( 0.0, 0.0, -M_PI / 2.0 ) ) )
+	while( !Spur_over_line_GL( 0.0, 0.0 + 0.005, -M_PI / 2.0 ) )
 		usleep( 100000 );
 
 	// 回転

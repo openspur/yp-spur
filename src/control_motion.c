@@ -101,7 +101,6 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 	else if( wref < -fabs( w_max ) )
 		wref = -fabs( w_max );
 
-	// printf("d%f q%f r%f v%f w%f wref%f\n",d,q,r,nv,nw,wref);fflush(stdout);
 	cd = d;
 	if( cd > p( YP_PARAM_L_DIST, 0 ) )
 		cd = p( YP_PARAM_L_DIST, 0 );
@@ -110,7 +109,6 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 	w = nw -
 		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1, 0 ) * cd +
 							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( nw - wref ) );
-	// 円弧追従の制御を正しく[AWD]
 
 	v = v_max;
 
@@ -121,52 +119,41 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 /* 回転 */
 double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 {
-	double q, w_limit;
-	double w;
-	double nw, nv;
-	double delay;
+	double w, theta;
+	double nw, nv, dt;
 
-	delay = spur->control_dt
-		 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
-	if( p(YP_PARAM_GAIN_KP,0) == 0 || p(YP_PARAM_GAIN_KP,1) == 0 )
-	{
-		delay = spur->control_dt;
-	}
 	reference_speed( &nv, &nw );
 
-	q = ( odm->theta + nw * delay ) - spur->theta;
-	q = trans_q( q );
-
-	/* 次の制御周期で停止するのに限界の速度を計算 */
-	w_limit = sqrt( 2 * spur->dw * fabs( q ) );
-
-	if( spur->w < w_limit )
-	{
-		w = -SIGN( q ) * fabs( spur->w );
-	}
-	else
-	{
-		w = -SIGN( q ) * w_limit;
-	}
-	if( fabs( q ) < p(YP_PARAM_SPIN_LINEAR,0) )
-	{
-		w = -sqrt( 2 * spur->dw * p(YP_PARAM_SPIN_LINEAR,0) ) * q / p(YP_PARAM_SPIN_LINEAR,0);
-	}
+	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
+	theta = odm->theta + nw * dt;
+	w = timeoptimal_servo( 
+			theta - spur->theta,
+			spur->w,
+			0,
+			spur->dw );
 
 	robot_speed_smooth( 0, w, spur );
-	return fabs( q );
+	return fabs( odm->theta - spur->theta );
 }
 
 /* 方角 */
 double orient( OdometryPtr odm, SpurUserParamsPtr spur )
 {
-	double q;
+	double w, theta;
+	double nw, nv, dt;
 
-	q = odm->theta - spur->theta;
-	q = trans_q( q );
+	reference_speed( &nv, &nw );
 
-	return regurator( 0, q, 1000, spur->v, spur->w, spur );
-	// 1000は無限大のつもり(1km)
+	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
+	theta = odm->theta + nw * dt;
+	w = timeoptimal_servo( 
+			theta - spur->theta,
+			spur->w,
+			0,
+			spur->dw );
+
+	robot_speed_smooth( spur->v, w, spur );
+	return fabs( odm->theta - spur->theta );
 }
 
 /* 点までの距離 */
@@ -185,26 +172,25 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	double q;
 	double vel;
 	int over;
-	double x, y, nw, nv;
-	double delay;
+	double x, y;
+	double nv, nw;
+	double dt;
 
-	delay = spur->control_dt;
-	//	 + 2 * ( 1 / p(YP_PARAM_GAIN_KP,0) + 1 / p(YP_PARAM_GAIN_KP,1) ) / 2;
-	if( p(YP_PARAM_GAIN_KP,0) == 0 || p(YP_PARAM_GAIN_KP,1) == 0 )
-	{
-		delay = spur->control_dt;
-	}
 	reference_speed( &nv, &nw );
 
-	x = odm->x + nv * cos( odm->theta ) * delay;
-	y = odm->y + nv * sin( odm->theta ) * delay;
+	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
+	x = odm->x + nv * cos( odm->theta ) * dt;
+	y = odm->y + nv * sin( odm->theta ) * dt;
 
 	a = ( x - spur->x ) * cos( spur->theta ) + ( y - spur->y ) * sin( spur->theta );
+	vel = timeoptimal_servo( 
+			a,
+			spur->v,
+			0,
+			spur->dv );
 	over = 0;
 
-	vel = sqrt( 2 * spur->dv * fabs( a ) );
-
-	if( fabs( spur->v ) < vel )
+	if( fabs( spur->v ) <= fabs( vel ) )
 	{
 		SpurUserParams spur_line;
 
@@ -215,14 +201,8 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	}
 	else
 	{
-		vel = -SIGN( a ) * vel;
-
 		q = odm->theta - spur->theta;
 		q = trans_q( q );
-		if( fabs( a ) < p(YP_PARAM_STOP_LINEAR,0) )
-		{
-			vel = - sqrt( 2 * spur->dv * p(YP_PARAM_STOP_LINEAR,0) ) * a / p(YP_PARAM_STOP_LINEAR,0);
-		}
 		regurator( 0, q, 1000, vel, spur->w, spur );
 	}
 
@@ -235,13 +215,11 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	{
 		// まだ
 		over = 1;
-		// vel = dist;
 	}
 	else
 	{
 		// 大体乗った
 		over = 2;
-		// vel = dist;
 	}
 	return over;
 }
@@ -250,73 +228,55 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 /* ホイール角度指令 */
 double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
 {
-	double q, w_limit;
 	double wr, wl;
-	double nwl, nwr;
-	double delay;
 
-	reference_motor_speed( &nwr, &nwl );
+	wl = timeoptimal_servo( 
+			odm->theta_l - spur->wheel_angle_l, 
+			spur->wheel_vel_l,
+			odm->wl,
+			spur->wheel_accel_l );
+	wr = timeoptimal_servo( 
+			odm->theta_r - spur->wheel_angle_r, 
+			spur->wheel_vel_r,
+			odm->wr,
+			spur->wheel_accel_r );
 
-	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_LEFT) ) * 2;
-	if( p(YP_PARAM_GAIN_KP,MOTOR_LEFT) == 0 )
-	{
-		delay = spur->control_dt;
-	}
-	q = ( odm->theta_l + nwl * delay ) - spur->wheel_angle_l;
-	/* 次の制御周期で停止するのに限界の速度を計算 */
-	w_limit = sqrt( 2 * spur->wheel_accel_l * fabs( q ) );
-	if( spur->wheel_vel_l < w_limit )
-	{
-		wl = -SIGN( q ) * fabs( spur->wheel_vel_l );
-	}
-	else
-	{
-		wl = -SIGN( q ) * w_limit;
-	}
-	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) )
-	{
-		wl = -sqrt( 2 * spur->wheel_accel_l * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_LEFT);
-	}
-	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
-	{
-		wl = nwl + spur->wheel_accel_l * spur->control_dt;
-	}
-	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
-	{
-		wl = nwl - spur->wheel_accel_l * spur->control_dt;
-	}
+	//printf("%f %f %f\n",odm->theta_r - spur->wheel_angle_r,
+	//		wr,odm->wr);
 
-	delay = spur->control_dt + ( 1 / p(YP_PARAM_GAIN_KP,MOTOR_RIGHT) ) * 2;
-	if( p(YP_PARAM_GAIN_KP,MOTOR_RIGHT) == 0 )
-	{
-		delay = spur->control_dt;
-	}
-	q = ( odm->theta_r + nwr * delay ) - spur->wheel_angle_r;
-	/* 次の制御周期で停止するのに限界の速度を計算 */
-	w_limit = sqrt( 2 * spur->wheel_accel_r * fabs( q ) );
-	if( spur->wheel_vel_r < w_limit )
-	{
-		wr = -SIGN( q ) * fabs( spur->wheel_vel_r );
-	}
-	else
-	{
-		wr = -SIGN( q ) * w_limit;
-	}
-	if( fabs( q ) < p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) )
-	{
-		wr = -sqrt( 2 * spur->wheel_accel_r * p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT) ) * q / p(YP_PARAM_WHEEL_ANG_LINEAR,MOTOR_RIGHT);
-	}
-	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
-	{
-		wr = nwr + spur->wheel_accel_r * spur->control_dt;
-	}
-	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
-	{
-		wr = nwr - spur->wheel_accel_r * spur->control_dt;
-	}
-
-	motor_speed( wr, wl );
+	motor_speed_smooth( wr, wl, spur );
 	return 0;
 }
+
+double timeoptimal_servo( double err, double vel_max, double vel, double acc )
+{
+	double vel_ref_next;
+	double v;
+	double _err;
+
+	_err = err + vel * p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
+	if( _err * err < 0 ) _err = 0;
+
+	// 次の目標位置で停止するために必要な現在の速度を計算
+	v = sqrt( 2 * acc * fabs( _err ) );
+	if( vel_max < v )
+	{
+		vel_ref_next = -SIGN( _err ) * fabs( vel_max );
+	}
+	else
+	{
+		vel_ref_next = -SIGN( _err ) * v;
+	}
+
+	// 次の制御周期で目標値をこえてしまう場合をクリップ
+	if( ( err + vel_ref_next * p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5 ) * ( err ) < 0 )
+	{
+		vel_ref_next = -err / p( YP_PARAM_CONTROL_CYCLE, 0 );
+	}
+	return vel_ref_next;
+}
+
+
+
 
 

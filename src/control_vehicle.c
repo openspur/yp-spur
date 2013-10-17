@@ -45,42 +45,44 @@ double g_wl_ref;
 double g_wr_ref;
 
 /* ホイール速度指令 */
-double wheel_vel_smooth( OdometryPtr odm, SpurUserParamsPtr spur )
+int motor_speed_smooth( double r, double l, SpurUserParamsPtr spur )
 {
 	double wr, wl;
 	double nwl, nwr;
+	OdometryPtr podm;
 
+	podm = get_odometry_ptr();
 	reference_motor_speed( &nwr, &nwl );
 
-	wl = spur->wlref;
+	wl = l;
 	if( wl > spur->wheel_vel_l ) wl = spur->wheel_vel_l;
 	else if( wl < -spur->wheel_vel_l ) wl = -spur->wheel_vel_l;
 
-	if( wl > nwl + spur->wheel_accel_l * spur->control_dt )
+	if( wl > nwl + spur->wheel_accel_l * p( YP_PARAM_CONTROL_CYCLE, 0 ) )
 	{
-		wl = nwl + spur->wheel_accel_l * spur->control_dt;
+		wl = nwl + spur->wheel_accel_l * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
-	else if( wl < nwl - spur->wheel_accel_l * spur->control_dt )
+	else if( wl < nwl - spur->wheel_accel_l * p( YP_PARAM_CONTROL_CYCLE, 0 ) )
 	{
-		wl = nwl - spur->wheel_accel_l * spur->control_dt;
+		wl = nwl - spur->wheel_accel_l * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 
-	wr = spur->wrref;
+	wr = r;
 	if( wr > spur->wheel_vel_r ) wr = spur->wheel_vel_r;
 	else if( wr < -spur->wheel_vel_r ) wr = -spur->wheel_vel_r;
 
-	if( wr > nwr + spur->wheel_accel_r * spur->control_dt )
+	if( wr > nwr + spur->wheel_accel_r * p( YP_PARAM_CONTROL_CYCLE, 0 ) )
 	{
-		wr = nwr + spur->wheel_accel_r * spur->control_dt;
+		wr = nwr + spur->wheel_accel_r * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
-	else if( wr < nwr - spur->wheel_accel_r * spur->control_dt )
+	else if( wr < nwr - spur->wheel_accel_r * p( YP_PARAM_CONTROL_CYCLE, 0 ) )
 	{
-		wr = nwr - spur->wheel_accel_r * spur->control_dt;
+		wr = nwr - spur->wheel_accel_r * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 
 	motor_speed( wr, wl );
-	g_v_ref = odm->v;
-	g_w_ref = odm->w;
+	g_v_ref = podm->v;
+	g_w_ref = podm->w;
 
 	return 0;
 }
@@ -139,73 +141,15 @@ void update_ref_speed(  )
 /* m/s rad/s */
 void robot_speed( double v, double w )
 {
-	if( option( OPTION_PASSIVE ) )
-	{
-		double tr, tl;
-		double v2, w2, werr;
-		double vover;
-		static double werr_int = 0.0;
-		OdometryPtr podm;
+	double wr, wl;
 
-		podm = get_odometry_ptr();
-		v2 = podm->v;
-		g_v_ref = v;
-		g_w_ref = w;
-		//printf("vref %f wref%f ",v, w );
-		
-		if( fabs( v2 ) < 0.01 || fabs( v ) < 0.01 )
-		{
-			w2 = 0;
-		}
-		else
-		{
-			w2 = ( w * v2 ) / v;
-		}
+	g_v_ref = v;
+	g_w_ref = w;
 
-		vover = 0;
-		if( v >= 0 )
-		{
-			if( v2 > v ) vover = v2 - v;
-			else if( v2 < -0.05 ) vover = v2 + 0.05;
-		}
-		else
-		{
-			if( v2 < v ) vover = v2 - v;
-			else if( v2 > 0.05 ) vover = v2 - 0.05;
-		}
+	wr =  ( 0.5 * w * p( YP_PARAM_TREAD, 0 ) + v ) / p( YP_PARAM_RADIUS, MOTOR_RIGHT );
+	wl = -( 0.5 * w * p( YP_PARAM_TREAD, 0 ) - v ) / p( YP_PARAM_RADIUS, MOTOR_LEFT );
 
-		werr = ( w2 - podm->w );
-		werr_int += werr * p( YP_PARAM_CONTROL_CYCLE, 0 );
-
-		if( werr_int > 50  ) werr_int = 50;
-		if( werr_int < -50 ) werr_int = -50;
-
-		tr = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS,0)
-			 + ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA,0) );
-		tl = - ( vover * vover * SIGN(vover) ) * 50 * p(YP_PARAM_MASS,0)
-			 - ( -( werr * 20 + werr_int * 30 ) * p(YP_PARAM_MOMENT_INERTIA,0) );
-		tr *= ( ( p(YP_PARAM_RADIUS,MOTOR_RIGHT) + p(YP_PARAM_RADIUS,MOTOR_LEFT) ) / 2.0 ) / p(YP_PARAM_GEAR,MOTOR_RIGHT);
-		tl *= ( ( p(YP_PARAM_RADIUS,MOTOR_RIGHT) + p(YP_PARAM_RADIUS,MOTOR_LEFT) ) / 2.0 ) / p(YP_PARAM_GEAR,MOTOR_LEFT);
-		//printf("v%f w%f %f %f   %f %f c%f vo%f\n",v2,w2,tr,tl,werr,werr_int, p( YP_PARAM_CONTROL_CYCLE ),vover);
-
-		parameter_set( PARAM_p_toq_offset, 0, tr * p(YP_PARAM_TORQUE_UNIT,MOTOR_RIGHT) );
-		parameter_set( PARAM_p_toq_offset, 1, tl * p(YP_PARAM_TORQUE_UNIT,MOTOR_LEFT) );
-
-		g_wl_ref = podm->wl;
-		g_wr_ref = podm->wr;
-	}
-	else
-	{
-		double wr, wl;
-
-		g_v_ref = v;
-		g_w_ref = w;
-
-		wr =  ( 0.5 * w * p( YP_PARAM_TREAD, 0 ) + v ) / p( YP_PARAM_RADIUS, MOTOR_RIGHT );
-		wl = -( 0.5 * w * p( YP_PARAM_TREAD, 0 ) - v ) / p( YP_PARAM_RADIUS, MOTOR_LEFT );
-
-		motor_speed( wr, wl );
-	}
+	motor_speed( wr, wl );
 }
 
 int reference_speed( double *v, double *w )
@@ -228,18 +172,18 @@ int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur )
 	int limit;
 	double dw, dv;
 
-	dw = spur->dw * spur->control_dt;
-	dv = spur->dv * spur->control_dt;
+	dw = spur->dw * p( YP_PARAM_CONTROL_CYCLE, 0 );
+	dv = spur->dv * p( YP_PARAM_CONTROL_CYCLE, 0 );
 
 	if( fabs( g_v_ref ) > fabs( spur->v ) )
 	{
 		// 直前の速度が最大速度より大きかったら、ハードウェア最大加速度で減速
-		dv = p( YP_PARAM_MAX_ACC_V, 0 ) * spur->control_dt;
+		dv = p( YP_PARAM_MAX_ACC_V, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 	if( fabs( g_w_ref ) > fabs( spur->w ) )
 	{
 		// 直前の角速度が最大角速度より大きかったら、ハードウェア最大角加速度で減速
-		dw = p( YP_PARAM_MAX_ACC_W, 0 ) * spur->control_dt;
+		dw = p( YP_PARAM_MAX_ACC_W, 0 ) * p( YP_PARAM_CONTROL_CYCLE, 0 );
 	}
 
 	limit = 31;
@@ -464,7 +408,7 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			break;
 		case RUN_WHEEL_VEL:					// 速度直接指定
 			if( state( YP_STATE_BODY ) == ENABLE )
-				wheel_vel_smooth( &odometry, spur );
+				motor_speed_smooth( spur->wrref, spur->wlref, spur );
 			is_vehicle_control = 1;
 			break;
 		case RUN_WHEEL_TORQUE:					// トルク直接指定

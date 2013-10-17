@@ -7,10 +7,10 @@
 #define DEFAULT_BAUDRATE	38400
 
 /* for measurement time estimation */
-extern double SER_BOUDRATE; /// (Byte/sec) シリアルの通信速度
+extern double SER_BAUDRATE; /// (Byte/sec) シリアルの通信速度
 #define SER_INTERVAL 0.0050
 // #define SER_BYTES 13.0
-// #define SER_TIME_BYTE (11.0/SER_BOUDRATE) 
+// #define SER_TIME_BYTE (11.0/SER_BAUDRATE) 
 
 int serial_tryconnect( char *device_name );
 int serial_connect( char *device_name );

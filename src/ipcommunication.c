@@ -8,7 +8,7 @@
 #include <fcntl.h>
 
 
-#ifdef __WIN32
+#if defined(__MINGW32__)
 #include <winsock2.h>
 #include <windows.h>
 #else
@@ -27,7 +27,7 @@
 #include <utility.h>
 #include <yprintf.h>
 
-#ifdef __WIN32
+#if defined(__MINGW32__)
 #define SOCK_SHUTDOWN_OPTION	SD_BOTH
 #define SOCK_DATATYPE			char*
 #define SIZE_TYPE				int

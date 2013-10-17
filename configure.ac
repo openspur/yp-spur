@@ -82,6 +82,7 @@ AC_CHECK_FUNCS([siglongjmp])
 AC_CHECK_FUNCS([longjmp])
 AC_CHECK_FUNCS([getline])
 AC_CHECK_FUNCS([fork])
+AC_CHECK_FUNCS([strtok_r])
 AC_CHECK_LIB(readline, readline)
 
 AC_CHECK_LIB(ws2_32, main)
@@ -115,19 +116,42 @@ fi
 AC_SUBST(LDCONFIG)
 
 
-LDFLAG_DLL_FOR_WIN32=""
-case "$host" in
-i*86-*-cygwin* | i*86-*-mingw*) LDFLAG_DLL_FOR_WIN32="-no-undefined";;
+AC_CANONICAL_HOST
+case $host_os in
+	cygwin* | mingw*)
+		AC_MSG_WARN([***** Configured for Cygwin and MinGW environment *****])
+		AC_DISABLE_SHARED
+		AC_ENABLE_STATIC
+		if test "x$enable_shared" = xyes; then
+			LDFLAG_DLL_FOR_WIN32="-no-undefined"
+		fi
+		NOINST_LT_LDFLAGS="-all-static"
+		AC_CHECK_PROGS(DLL_PEXPORTS, pexports,, $PATH)
+		AC_CHECK_PROGS(DLL_DLLTOOL, dlltool,, $PATH)
+		;;
+	*)
+		AC_ENABLE_SHARED
+		AC_ENABLE_STATIC
+		;;
 esac
-
+AC_SUBST(NOINST_LT_LDFLAGS)
 AC_SUBST(LDFLAG_DLL_FOR_WIN32)
-
-if test "x$LDFLAG_DLL_FOR_WIN32" != "x"; then
-	AC_CHECK_PROGS(DLL_PEXPORTS, pexports,, $PATH)
-	AC_CHECK_PROGS(DLL_DLLTOOL, dlltool,, $PATH)
-fi
-
 AC_CHECK_PROGS(DLL_CP, cp,, $PATH)
+
+AC_ARG_ENABLE(all-static, AS_HELP_STRING([--enable-all-static],
+              [Build fully static binaries.]),
+	[
+		if test "$enableval" = "yes" ; then
+			LT_LDFLAGS="-all-static $LT_LDFLAGS"
+			case $host_os in
+				mingw*)
+					CFLAGS="-DPTW32_STATIC_LIB $CFLAGS"
+					;;
+			esac
+			AC_MSG_WARN([***** Fully static link enabled *****])
+		fi
+	])
+AC_SUBST(LT_LDFLAGS)
 
 AM_CONDITIONAL(HAVE_PEXPORTS, test -n "$DLL_PEXPORTS")
 AM_CONDITIONAL(HAVE_DLLTOOL, test -n "$DLL_DLLTOOL")

@@ -406,7 +406,9 @@ int main( int argc, char *argv[] )
 		{0, 0, 0, 0}
 	};
 	int opt;
-	
+
+	hook_pre_global();
+
 	while( ( opt = getopt_long( argc, argv, "V:W:A:O:c:q:s:h", options, NULL ) ) != -1 )
 	{
 		switch ( opt )

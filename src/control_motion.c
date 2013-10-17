@@ -127,7 +127,7 @@ double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
 	theta = odm->theta + nw * dt;
 	w = timeoptimal_servo( 
-			theta - spur->theta,
+			trans_q( theta - spur->theta ),
 			spur->w,
 			0,
 			spur->dw );
@@ -147,7 +147,7 @@ double orient( OdometryPtr odm, SpurUserParamsPtr spur )
 	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
 	theta = odm->theta + nw * dt;
 	w = timeoptimal_servo( 
-			theta - spur->theta,
+			trans_q( theta - spur->theta ),
 			spur->w,
 			0,
 			spur->dw );

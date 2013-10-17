@@ -1,6 +1,3 @@
-// TODO:あとでコーディングを直す
-// 
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

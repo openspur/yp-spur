@@ -12,6 +12,7 @@
 
 int main( int argc, char **argv )
 {
+	hook_pre_global();
 	if( argc > 1 )
 	{
 		char ip[64];

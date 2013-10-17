@@ -48,6 +48,22 @@ jmp_buf ctrlc_capture;
 #endif
 int g_emergency;
 
+
+#if defined(__MINGW32__)
+BOOL WINAPI win32_ctrlc_handler( DWORD type )
+{
+	fprintf( stderr, "\n" );
+	g_emergency = 1;
+#ifdef HAVE_SSM
+	/* SSM終了処理 */
+	if( !option( OPTION_WITHOUT_SSM ) )
+		end_ypspurSSM(  );
+#endif
+	serial_close(  );
+	
+	return TRUE;
+}
+#else
 static void emergency( int sig )
 {
 	fprintf( stderr, "\n" );
@@ -57,19 +73,28 @@ static void emergency( int sig )
 #elif HAVE_LONGJMP
 	longjmp( ctrlc_capture, 1 );
 #else
-	serial_close(  );
 #ifdef HAVE_SSM
 	/* SSM終了処理 */
 	if( !option( OPTION_WITHOUT_SSM ) )
 		end_ypspurSSM(  );
 #endif
+	serial_close(  );
+
 	exit( 0 );
 #endif
 }
+#endif
 
 void escape_road( void )
 {
+#if defined(__MINGW32__)
+	if( !SetConsoleCtrlHandler( win32_ctrlc_handler, TRUE ) )
+	{
+		yprintf( OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler registration failed.\n" );
+	}
+#else
 	signal( SIGINT, emergency );
+#endif
 }
 
 /* main */
@@ -87,6 +112,8 @@ int main( int argc, char *argv[] )
 	ParametersPtr param;
 	char paramfile[512];
 	int quit;
+
+	hook_pre_global();
 
 	ret = arg_analyze( argc, argv );
 	if( option( OPTION_DAEMON ) )
@@ -137,7 +164,6 @@ int main( int argc, char *argv[] )
 	if( !ret )									/* オプション解析に失敗したとき */
 		return EXIT_FAILURE;
 
-	yprintf( OUTPUT_LV_PROCESS, "\n" );
 	yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 	yprintf( OUTPUT_LV_PROCESS, "YamabicoProject-Spur\n" );
 	yprintf( OUTPUT_LV_PROCESS, " Ver. %s\n", PACKAGE_VERSION );

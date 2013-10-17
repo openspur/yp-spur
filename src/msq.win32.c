@@ -11,7 +11,7 @@
 #include <utility.h>
 
 
-#ifdef __WIN32
+#if defined(__MINGW32__)
 #include <windows.h>
 #include <tchar.h>
 

@@ -82,6 +82,7 @@ ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
 ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -I../auxlib/formula-calc/src
 ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
 ypspur_coordinator_DEPENDENCIES = ../auxlib/libcarte2d.la
+ypspur_coordinator_LDFLAGS = $(LT_LDFLAGS)
 
 
 if HAVE_SSM
@@ -96,12 +97,14 @@ endif
 ypspur_free_SOURCES = ypspur-free.c utility.c
 ypspur_free_LDADD = libypspur.la
 ypspur_free_DEPENDENCIES = libypspur.la
+ypspur_free_LDFLAGS = $(LT_LDFLAGS)
 
 ## ypspur-interpreter
 bin_PROGRAMS += ypspur-interpreter
 ypspur_interpreter_SOURCES = ypspur-interpreter.c utility.c
 ypspur_interpreter_LDADD = libypspur.la
 ypspur_interpreter_DEPENDENCIES = libypspur.la
+ypspur_interpreter_LDFLAGS = $(LT_LDFLAGS)
 
 
 

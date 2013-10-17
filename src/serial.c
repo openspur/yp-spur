@@ -29,7 +29,7 @@
 double SER_BAUDRATE;
 
 /* serial */
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 
 // Unix用コード
 #	include <sys/select.h>
@@ -47,7 +47,7 @@ COMMTIMEOUTS g_oldcto;
 
 #endif
 
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 speed_t i2baud( int baud )
 {
 	switch ( baud )
@@ -158,7 +158,7 @@ DWORD i2baud( int baud )
 // ポートが接続可能か調べる
 int serial_tryconnect( char *device_name )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	// Unix用
 	g_device_port = open( device_name, O_RDWR );
 	if( g_device_port < 0 )
@@ -196,7 +196,7 @@ int recieve_throw( char *buf, int len, double t, void *data )
  */
 int serial_change_baudrate( int baud )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	struct termios newtio;
 	int ret, errnum;
 	char buf[2048];
@@ -297,7 +297,7 @@ int serial_change_baudrate( int baud )
 // ポートをオープンして 通信の準備をする
 int serial_connect( char *device_name )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	g_device_port = open( device_name, O_RDWR );
 
 	if( g_device_port < 0 )
@@ -329,9 +329,9 @@ int serial_connect( char *device_name )
 	GetCommTimeouts( g_hdevices, &g_oldcto );	// タイムアウトの設定状態を取得
 	cto.ReadIntervalTimeout = 0;
 	cto.ReadTotalTimeoutMultiplier = 0;
-	cto.ReadTotalTimeoutConstant = 0;
+	cto.ReadTotalTimeoutConstant = 1000;
 	cto.WriteTotalTimeoutMultiplier = 0;
-	cto.WriteTotalTimeoutConstant = 0;
+	cto.WriteTotalTimeoutConstant = 1000;
 	SetCommTimeouts( g_hdevices, &cto );		// タイムアウトの状態を設定
 #endif
 	return 1;
@@ -340,7 +340,7 @@ int serial_connect( char *device_name )
 // ポートを閉じる
 int serial_close( void )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	// Unix用
 	// 設定を元に戻す
 	tcsetattr( g_device_port, TCSANOW, &g_oldtio );
@@ -357,7 +357,7 @@ int serial_close( void )
 
 void serial_flush_in( void )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	// Unix用
 	tcflush( g_device_port, TCIFLUSH );
 #else
@@ -392,7 +392,7 @@ void serial_flush_in( void )
 
 void serial_flush_out( void )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	// Unix用
 	tcflush( g_device_port, TCOFLUSH );
 #else
@@ -409,7 +409,7 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 
 	while( 1 )
 	{
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 		// Unix用
 		fd_set rfds;
 		struct timeval tv;
@@ -452,17 +452,21 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 		DWORD len;
 		DWORD ret;
 		COMSTAT state;
-		/* 
-		 * if( WaitForSingleObject( g_hdevices, 1000 ) != WAIT_OBJECT_0 ){ return -1; } */
+		int timeout_count;
+		
+		timeout_count = 0;
 		while( 1 )
 		{
-			ClearCommError( g_hdevices, &ret, &state );
+			if( !ClearCommError( g_hdevices, &ret, &state ) ) return -1;
+			if( ret ) return -1;
 			len = state.cbInQue;
 			if( len > 4000 )
 				len = 4000;
 			if( len > 0 )
 				break;
 			yp_usleep( 5000 );
+			timeout_count ++;
+			if( timeout_count > 500 / 5 ) return -1;
 		}
 		if( !ReadFile( g_hdevices, buf, len, &len, NULL ) )
 		{
@@ -484,7 +488,7 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 
 int serial_write( char *buf, int len )
 {
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 	// Unix用
 	int ret;
 #else
@@ -494,7 +498,7 @@ int serial_write( char *buf, int len )
 
 	do
 	{
-#ifndef _WIN32
+#if !defined(__MINGW32__)
 		// Unix用
 		ret = write( g_device_port, buf, len );
 #else

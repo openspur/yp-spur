@@ -9,13 +9,13 @@ AM_CXXFLAGS = $(AM_CFLAGS)
 noinst_PROGRAMS = run-test cartesian2d-test MOI-estimate
 
 run_test_SOURCES = run-test.c
-run_test_LDFLAGS = -L../src -lypspur -lm
+run_test_LDFLAGS = -L../src -lypspur -lm $(NOINST_LT_LDFLAGS) $(LT_LDFLAGS)
 run_test_DEPENDENCIES = ../src/libypspur.la
 
 MOI_estimate_SOURCES = MOI-estimate.c
-MOI_estimate_LDFLAGS = -L../src -lypspur -lm
+MOI_estimate_LDFLAGS = -L../src -lypspur -lm $(NOINST_LT_LDFLAGS) $(LT_LDFLAGS)
 MOI_estimate_DEPENDENCIES = ../src/libypspur.la
 
 cartesian2d_test_SOURCES = cartesian2d-test.c
-cartesian2d_test_LDFLAGS = -L../auxlib -lcarte2d -lm
+cartesian2d_test_LDFLAGS = -L../auxlib -lcarte2d -lm $(NOINST_LT_LDFLAGS) $(LT_LDFLAGS)
 cartesian2d_test_DEPENDENCIES = ../auxlib/libcarte2d.la

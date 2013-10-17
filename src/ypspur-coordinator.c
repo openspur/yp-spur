@@ -334,7 +334,7 @@ int main( int argc, char *argv[] )
 			if (ret == 4)
 			{
 				// ボーレートの設定未対応
-				yprintf( OUTPUT_LV_WARNING, "Warn: Failed to change baudrate. It is not RS-232c connection.\n" );
+				yprintf( OUTPUT_LV_WARNING, "Warn: Baudrate setting is not supported on this device.\n" );
 			}
 			else 
 			{

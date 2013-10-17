@@ -300,6 +300,9 @@ double time_synchronize( double receive_time, int readnum, int wp )
 			// オドメトリの更新間隔を推定
 			g_interval = (measured_time - prev_time) / (double)( readnum - prev_readnum );
 
+			if( option( OPTION_SHOW_TIMESTAMP ) )
+				printf( "%f %f \n", g_offset, g_interval * 1000.0 );
+
 			// 更新時のデータを保存
 			prev_time = measured_time;
 			prev_readnum = readnum;

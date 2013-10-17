@@ -130,7 +130,7 @@ void ctrlc( int num )
 #endif
 }
 
-int proc_spur( char *line, int *coordinate )
+int proc_spur_cmd( char *line, int *coordinate )
 {
 	int i;
 	SpurCommand spur;
@@ -364,6 +364,26 @@ int proc_spur( char *line, int *coordinate )
 	return 1;
 }
 
+int proc_spur( char *line, int *coordinate )
+{
+	char *line_div;
+	char *toksave;
+	int ret;
+
+	ret = 0;
+	line_div = strtok_r( line, ";\n\r", &toksave );
+	while( line_div )
+	{
+		ret = proc_spur_cmd( line_div, coordinate );
+		if( ret < 0 )
+		{
+			break;
+		}
+		line_div = strtok_r( NULL, ";\n\r", &toksave );
+	}
+	return ret;
+}
+
 void print_help( char *argv[] )
 {
 	fprintf( stderr, "USAGE: %s\n", argv[0] );
@@ -575,20 +595,9 @@ int main( int argc, char *argv[] )
 #	endif
 			line_prev = line;
 #endif
+			if( proc_spur( line, &coordinate ) < 0 )
 			{
-				char *line_div;
-				char *toksave;
-
-				line_div = strtok_r( line, ";\n\r", &toksave );
-				while( line_div )
-				{
-					if( proc_spur( line_div, &coordinate ) < 0 )
-					{
-						active = 0;
-						break;
-					}
-					line_div = strtok_r( NULL, ";\n\r", &toksave );
-				}
+				active = 0;
 			}
 
 			if( line_prev ) free( line_prev );

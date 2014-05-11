@@ -1,8 +1,7 @@
 AUTOMAKE_OPTIONS = foreign 1.10
 
 # set the include path found by configure
-INCLUDES= $(all_includes) -I../include -I../auxlib -I../auxlib/formula-calc/src
-
+AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib -I../auxlib/formula-calc/src
 AM_CFLAGS   = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
 

@@ -5,7 +5,7 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c filter.c filter.h \
              sh7045linker.x startup.s adc.c adc.h divider.c divider.h
 
 # set the include path found by configure
-INCLUDES= $(all_includes) -I../include -I../auxlib -I../target-sh
+AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib -I../target-sh
 
 TARGET = sh-vel
 
@@ -29,7 +29,7 @@ SHLINK = sh7045linker.x
 SHSTART = startup.o
 
 SHOPT = -O2
-SHCFLAGS = $(INCLUDES) -m2 $(SHOPT)
+SHCFLAGS = $(AM_CPPFLAGS) -m2 $(SHOPT)
 SHLDFLAGS = -m2 -T $(SHLINK) -nostartfiles -lc -lm
 SHOBJ = -O srec
 

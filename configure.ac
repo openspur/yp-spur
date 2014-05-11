@@ -13,9 +13,10 @@
 AC_PREREQ(2.61)
 AC_INIT([yp-spur], [1.14.0], [platform@roboken.esys.tsukuba.ac.jp])
 AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE([disable])
 
 AC_CONFIG_SRCDIR([src/libypspur.c])
-AC_CONFIG_HEADER([include/config.h])
+AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SUBDIRS(auxlib/formula-calc)
@@ -42,9 +43,14 @@ if test -n "$PKG_CONFIG"; then
 fi
 
 # Checks for SSM
-AC_CHECK_HEADERS(ssm.h, AC_DEFINE(HAVE_SSM,, [Define if you have SSM.]))
 AC_CHECK_PROGS(SSM_COORDINATOR, ssm-coordinator,, $PATH)
-AM_CONDITIONAL(HAVE_SSM, test -n "$SSM_COORDINATOR")
+AC_CHECK_HEADERS(ssm.h, HAVE_SSM_H=yes, HAVE_SSM_H=no)
+AC_ARG_ENABLE([ssm],
+        AS_HELP_STRING([--enable-ssm], [Enable SSM output]),
+        [],
+	[enable_ssm=yes])
+AM_CONDITIONAL(HAVE_SSM, test -n "$SSM_COORDINATOR" -a -n "$HAVE_SSM_H" -a "x$enable_ssm" == xyes )
+AM_COND_IF(HAVE_SSM, [AC_MSG_WARN([********** with SSM **********])], [AC_MSG_WARN([********** w/o SSM **********])])
 
 # Checks for SH_CROSS
 AC_CHECK_PROGS(SH_CROSS_CC, sh-coff-gcc sh-hitachi-coff-gcc,, $PATH)
@@ -88,7 +94,7 @@ AC_CHECK_LIB(readline, readline)
 AC_CHECK_LIB(ws2_32, main)
 
 
-AM_SYS_POSIX_TERMIOS
+AC_SYS_POSIX_TERMIOS
 
 AC_ARG_ENABLE([debug],
         AS_HELP_STRING([--enable-debug], [Enable all debugging message]),
@@ -165,25 +171,6 @@ if test "x$LDFLAG_DLL_FOR_WIN32" != "x"; then
 		AC_MSG_WARN([***************************************])
 	fi
 fi
-
-
-#AC_CONFIG_SUBDIRS([target-sh])
-
-# Check for 64 bit
-if test "x$prefix" = "xNONE" ; then
-  prefix="/usr/local"
-fi
-
-case "$CFLAGS" in
-  *-m64*)
-    libdir="$prefix/lib64"
-    ;;
-  *-m32*)
-    libdir="$prefix/lib"
-    ;;
-  *)
-    ;;
-esac
 
 CFLAGS+=" -Wall -O2"
 CXXFLAGS=CFLAGS

@@ -46,9 +46,6 @@
 /* Define to 1 if you have the `siglongjmp' function. */
 #undef HAVE_SIGLONGJMP
 
-/* Define if you have SSM. */
-#undef HAVE_SSM
-
 /* Define to 1 if you have the <ssm.h> header file. */
 #undef HAVE_SSM_H
 

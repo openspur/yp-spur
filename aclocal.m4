@@ -14,8 +14,8 @@
 
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.68],,
-[m4_warning([this file was generated for autoconf 2.68.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.69],,
+[m4_warning([this file was generated for autoconf 2.69.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically `autoreconf'.])])
@@ -112,6 +112,46 @@ AC_DEFUN([AM_AUX_DIR_EXPAND],
 AC_PREREQ([2.50])dnl
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
+])
+
+# AM_COND_IF                                            -*- Autoconf -*-
+
+# Copyright (C) 2008, 2010 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# serial 3
+
+# _AM_COND_IF
+# _AM_COND_ELSE
+# _AM_COND_ENDIF
+# --------------
+# These macros are only used for tracing.
+m4_define([_AM_COND_IF])
+m4_define([_AM_COND_ELSE])
+m4_define([_AM_COND_ENDIF])
+
+
+# AM_COND_IF(COND, [IF-TRUE], [IF-FALSE])
+# ---------------------------------------
+# If the shell condition COND is true, execute IF-TRUE, otherwise execute
+# IF-FALSE.  Allow automake to learn about conditional instantiating macros
+# (the AC_CONFIG_FOOS).
+AC_DEFUN([AM_COND_IF],
+[m4_ifndef([_AM_COND_VALUE_$1],
+	   [m4_fatal([$0: no such condition "$1"])])dnl
+_AM_COND_IF([$1])dnl
+if test -z "$$1_TRUE"; then :
+  m4_n([$2])[]dnl
+m4_ifval([$3],
+[_AM_COND_ELSE([$1])dnl
+else
+  $3
+])dnl
+_AM_COND_ENDIF([$1])dnl
+fi[]dnl
 ])
 
 # AM_CONDITIONAL                                            -*- Autoconf -*-
@@ -600,6 +640,46 @@ fi
 rmdir .tst 2>/dev/null
 AC_SUBST([am__leading_dot])])
 
+# Add --enable-maintainer-mode option to configure.         -*- Autoconf -*-
+# From Jim Meyering
+
+# Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2004, 2005, 2008,
+# 2011 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# serial 5
+
+# AM_MAINTAINER_MODE([DEFAULT-MODE])
+# ----------------------------------
+# Control maintainer-specific portions of Makefiles.
+# Default is to disable them, unless `enable' is passed literally.
+# For symmetry, `disable' may be passed as well.  Anyway, the user
+# can override the default with the --enable/--disable switch.
+AC_DEFUN([AM_MAINTAINER_MODE],
+[m4_case(m4_default([$1], [disable]),
+       [enable], [m4_define([am_maintainer_other], [disable])],
+       [disable], [m4_define([am_maintainer_other], [enable])],
+       [m4_define([am_maintainer_other], [enable])
+        m4_warn([syntax], [unexpected argument to AM@&t@_MAINTAINER_MODE: $1])])
+AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
+  dnl maintainer-mode's default is 'disable' unless 'enable' is passed
+  AC_ARG_ENABLE([maintainer-mode],
+[  --][am_maintainer_other][-maintainer-mode  am_maintainer_other make rules and dependencies not useful
+			  (and sometimes confusing) to the casual installer],
+      [USE_MAINTAINER_MODE=$enableval],
+      [USE_MAINTAINER_MODE=]m4_if(am_maintainer_other, [enable], [no], [yes]))
+  AC_MSG_RESULT([$USE_MAINTAINER_MODE])
+  AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
+  MAINT=$MAINTAINER_MODE_TRUE
+  AC_SUBST([MAINT])dnl
+]
+)
+
+AU_DEFUN([jm_MAINTAINER_MODE], [AM_MAINTAINER_MODE])
+
 # Check to see how 'make' treats includes.	            -*- Autoconf -*-
 
 # Copyright (C) 2001, 2002, 2003, 2005, 2009  Free Software Foundation, Inc.
@@ -758,43 +838,6 @@ case $mkdir_p in
   */*) mkdir_p="\$(top_builddir)/$mkdir_p" ;;
 esac
 ])
-
-# Copyright (C) 2002, 2003, 2005  Free Software Foundation, Inc.
-#
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
-# serial 2
-
-# Obsolete Automake macros.
-
-# We put here only the macros whose substitution is not an Automake
-# macro; otherwise including this file would trigger dependencies for
-# all the substitutions.  Generally, obsolete Automake macros are
-# better AU_DEFUNed in the same file as their replacement, or alone in
-# a separate file (see obsol-gt.m4 or obsol-lt.m4 for instance).
-
-AU_DEFUN([AC_FEATURE_CTYPE],     [AC_HEADER_STDC])
-AU_DEFUN([AC_FEATURE_ERRNO],     [AC_REPLACE_FUNCS([strerror])])
-AU_DEFUN([AM_CYGWIN32],	         [AC_CYGWIN])
-AU_DEFUN([AM_EXEEXT],            [AC_EXEEXT])
-AU_DEFUN([AM_FUNC_MKTIME],       [AC_FUNC_MKTIME])
-AU_DEFUN([AM_HEADER_TIOCGWINSZ_NEEDS_SYS_IOCTL],
-				 [AC_HEADER_TIOCGWINSZ])
-AU_DEFUN([AM_MINGW32],           [AC_MINGW32])
-AU_DEFUN([AM_PROG_INSTALL],      [AC_PROG_INSTALL])
-AU_DEFUN([AM_SANITY_CHECK_CC],   [AC_PROG_CC])
-AU_DEFUN([AM_SYS_POSIX_TERMIOS], [AC_SYS_POSIX_TERMIOS])
-AU_DEFUN([fp_FUNC_FNMATCH],      [AC_FUNC_FNMATCH])
-AU_DEFUN([fp_PROG_INSTALL],      [AC_PROG_INSTALL])
-AU_DEFUN([md_TYPE_PTRDIFF_T],    [AC_CHECK_TYPES([ptrdiff_t])])
-
-# Don't know how to translate these.
-# If used, Autoconf will complain that they are possibly unexpended;
-# this seems a good enough error message.
-# AC_FEATURE_EXIT
-# AC_SYSTEM_HEADER
 
 # Helper functions for option handling.                     -*- Autoconf -*-
 

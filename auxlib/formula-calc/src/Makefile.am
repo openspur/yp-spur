@@ -1,6 +1,5 @@
 # set the include path found by configure
-INCLUDES= $(all_includes) -I./
-
+AM_CPPFLAGS = $(all_includes) -I./
 AM_CFLAGS   = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
 

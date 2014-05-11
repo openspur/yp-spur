@@ -120,6 +120,7 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LT_LDFLAGS = @LT_LDFLAGS@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -214,7 +215,7 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c filter.c filter.h \
 
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I../include -I../auxlib -I../target-sh
+AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib -I../target-sh
 TARGET = sh-vel
 @HAVE_SH_CROSS_TRUE@@HAVE_SH_ELF_CROSS_FALSE@MOT = $(TARGET).mot
 @HAVE_SH_ELF_CROSS_TRUE@MOT = $(TARGET).mot
@@ -228,14 +229,14 @@ OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o filter.o
 SHLINK = sh7045linker.x
 SHSTART = startup.o
 SHOPT = -O2
-SHCFLAGS = $(INCLUDES) -m2 $(SHOPT)
+SHCFLAGS = $(AM_CPPFLAGS) -m2 $(SHOPT)
 SHLDFLAGS = -m2 -T $(SHLINK) -nostartfiles -lc -lm
 SHOBJ = -O srec
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .s
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -260,9 +261,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 

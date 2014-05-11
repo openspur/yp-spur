@@ -117,7 +117,7 @@ void arg_longhelp( int argc, char *argv[] )
 	arg_help( argc, argv );
 	fprintf( stderr, "  -o, --show-odometry      Display estimated robot position.\n" );
 	fprintf( stderr, "  -t, --show-timestamp     Display timestamp of serial communication \n"
-			"                           with the B-Loco device.\n" );
+			 "                            with the B-Loco device.\n" );
 	fprintf( stderr, "  --reconnect              Try reconnect device when device was closed.\n" );
 	fprintf( stderr, "  --without-ssm            Run without ssm output.\n" );
 	fprintf( stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY (default = 28741).\n" );
@@ -129,7 +129,7 @@ void arg_longhelp( int argc, char *argv[] )
 	fprintf( stderr, "  --no-yp-protocol         Run without checking plotocol of B-Loco device.\n" );
 	fprintf( stderr, "  --passive                Passive run mode.\n" );
 	fprintf( stderr, "  --update-param           Automatically reload parameter file.\n" );
-	fprintf( stderr, "  --high-resolution        Enable high resolution velocity control mode.\n" );
+	fprintf( stderr, "  --high-resolution[=ARG]  Use high resolution velocity control mode (default = yes).\n" );
 	fprintf( stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n" );
 	fprintf( stderr, "  --socket <port>          Use socket ipc.\n" );
 	fprintf( stderr, "  --daemon                 Run in daemon mode.\n" );
@@ -156,7 +156,7 @@ int arg_analyze( int argc, char *argv[] )
 {
 	int i;
 
-	g_param.option = 0;
+	g_param.option = OPTION_DEFAULT;
 	g_param.msq_key = YPSPUR_MSQ_KEY;
 	g_param.output_lv = OUTPUT_LV_DEFAULT;
 	g_param.speed = 0;
@@ -259,9 +259,14 @@ int arg_analyze( int argc, char *argv[] )
 			disable_state( YP_STATE_BODY );
 			disable_state( YP_STATE_TRACKING );
 		}
-		else if( !strcmp( argv[i], "--high-resolution" ) )
+		else if( !strcmp( argv[i], "--high-resolution" ) ||
+			 !strcmp( argv[i], "--high-resolution=yes" ) )
 		{
 			g_param.option |= OPTION_HIGH_PREC;
+		}
+		else if( !strcmp( argv[i], "--high-resolution=no" ) )
+		{
+			g_param.option &= ~OPTION_HIGH_PREC;
 		}
 		else if( !strcmp( argv[i], "--version" ) || !strcmp( argv[i], "-v" ) )
 		{

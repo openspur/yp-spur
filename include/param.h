@@ -29,6 +29,8 @@ typedef enum
 	OPTION_HIGH_PREC             = 0x80000,
 } ParamOptions;
 
+#define OPTION_DEFAULT (OPTION_HIGH_PREC)
+
 #define DEFAULT_PARAMETER_FILE "./robot.param"
 #define DEFAULT_DEVICE_NAME "/dev/ttyUSB0"
 

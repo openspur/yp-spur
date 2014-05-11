@@ -40,7 +40,7 @@
 #include <cartesian2d.h>
 
 void escape_road( void );
-static void emergency( int );
+void emergency( int );
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;
 #elif HAVE_LONGJMP
@@ -64,7 +64,7 @@ BOOL WINAPI win32_ctrlc_handler( DWORD type )
 	return TRUE;
 }
 #else
-static void emergency( int sig )
+void emergency( int sig )
 {
 	fprintf( stderr, "\n" );
 	g_emergency = 1;

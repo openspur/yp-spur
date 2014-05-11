@@ -1,6 +1,8 @@
 #ifndef __YP_PARAM_H__
 #define __YP_PARAM_H__
 
+#include <unistd.h>
+
 #ifdef __cplusplus
 extern "C"
 {

@@ -3,7 +3,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,6 +32,9 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
+
+#include <pthread.h>
+
 
 double g_P[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];

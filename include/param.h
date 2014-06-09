@@ -1,8 +1,10 @@
 #ifndef __PARAM__
 #define __PARAM__
 
-#include <pthread.h>
 #include <ypparam.h>
+#include <utility.h>
+
+#include <pthread.h>
 
 typedef enum
 {

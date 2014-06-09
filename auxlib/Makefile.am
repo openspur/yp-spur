@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign 1.10
 SUBDIRS = formula-calc
 
 # set the include path found by configure
-AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)/auxlib
 AM_CFLAGS   = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
 

@@ -4,7 +4,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 
 /* high prec. timer */
 #include <time.h>
@@ -38,6 +37,9 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
+
+#include <pthread.h>
+
 
 double g_v_ref;
 double g_w_ref;

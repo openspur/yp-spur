@@ -1,10 +1,8 @@
-
 /* high level I/O */
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
-#include <pthread.h>
 
 /* low level I/O */
 #include <fcntl.h>
@@ -33,6 +31,7 @@
 /* ライブラリ用 */
 #include <ypspur.h>
 #include <cartesian2d.h>
+
 
 double g_interval;
 double g_offset;

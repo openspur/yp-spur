@@ -6,7 +6,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 
 int process_addata( unsigned char *buf, int len );
 const int *get_addataptr(  );

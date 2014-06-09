@@ -292,7 +292,6 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDCONFIG = @LDCONFIG@
 LDFLAGS = @LDFLAGS@
-LDFLAG_DLL_FOR_WIN32 = @LDFLAG_DLL_FOR_WIN32@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -392,7 +391,7 @@ AUTOMAKE_OPTIONS = foreign 1.10
 SUBDIRS = formula-calc
 
 # set the include path found by configure
-AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)/auxlib
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
 @HAVE_SSM_FALSE@lib_LTLIBRARIES = libcarte2d.la

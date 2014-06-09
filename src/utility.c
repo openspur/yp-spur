@@ -3,7 +3,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 #include <stdarg.h>
 
 /* low level I/O */
@@ -17,9 +16,7 @@
 #include <config.h>
 #endif
 
-#include <param.h>
 #include <utility.h>
-#include <yprintf.h>
 
 #ifdef __WIN32
 #include <windows.h>
@@ -66,6 +63,7 @@ void hook_pre_global()
 
 
 #if !defined(HAVE_STRTOK_R)
+#ifndef strtok_r
 
 /* 
  * public domain strtok_r() by Charlie Gordon
@@ -95,4 +93,5 @@ char* strtok_r( char *str, const char *delim, char **nextp )
     return ret;
 }
 
+#endif
 #endif

@@ -1,7 +1,6 @@
 /* high level I/O */
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

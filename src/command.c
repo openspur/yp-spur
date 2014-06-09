@@ -4,7 +4,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 
 /* low level I/O */
 #include <fcntl.h>
@@ -29,6 +28,9 @@
 /* ライブラリ用 */
 #include <ypspur.h>
 #include <cartesian2d.h>
+
+#include <pthread.h>
+
 
 SpurUserParams g_spur;
 

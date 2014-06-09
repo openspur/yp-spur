@@ -4,7 +4,6 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
-#include <pthread.h>
 
 /* high prec. timer */
 #include <time.h>

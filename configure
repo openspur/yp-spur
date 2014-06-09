@@ -644,13 +644,12 @@ HAVE_PEXPORTS_FALSE
 HAVE_PEXPORTS_TRUE
 LT_LDFLAGS
 DLL_CP
-LDFLAG_DLL_FOR_WIN32
 NOINST_LT_LDFLAGS
 DLL_DLLTOOL
 DLL_PEXPORTS
 LDCONFIG
-POW_LIB
 LIBOBJS
+POW_LIB
 CXXCPP
 OTOOL64
 OTOOL
@@ -804,7 +803,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_debug
-with_ldconfig
+enable_ldconfig
 enable_all_static
 '
       ac_precious_vars='build_alias
@@ -1454,6 +1453,7 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-debug          Enable all debugging message
+  --enable-ldconfig       Execute ldconfig after install
   --enable-all-static     Build fully static binaries.
 
 Optional Packages:
@@ -1464,7 +1464,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
-  --disable-ldconfig      don't execute ldconfig after install
 
 Some influential environment variables:
   CC          C compiler command
@@ -7872,7 +7871,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -7890,7 +7889,10 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_i386"
 	    ;;
-	  ppc64-*linux*|powerpc64-*linux*)
+	  powerpc64le-*linux*)
+	    LD="${LD-ld} -m elf32lppclinux"
+	    ;;
+	  powerpc64-*linux*)
 	    LD="${LD-ld} -m elf32ppclinux"
 	    ;;
 	  s390x-*linux*)
@@ -7909,7 +7911,10 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
-	  ppc*-*linux*|powerpc*-*linux*)
+	  powerpcle-*linux*)
+	    LD="${LD-ld} -m elf64lppc"
+	    ;;
+	  powerpc-*linux*)
 	    LD="${LD-ld} -m elf64ppc"
 	    ;;
 	  s390*-*linux*|s390*-*tpf*)
@@ -16309,73 +16314,6 @@ fi
 
 
 # Checks for library functions.
-for ac_header in stdlib.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdlib_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_STDLIB_H 1
-_ACEOF
-
-fi
-
-done
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible malloc" >&5
-$as_echo_n "checking for GNU libc compatible malloc... " >&6; }
-if ${ac_cv_func_malloc_0_nonnull+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test "$cross_compiling" = yes; then :
-  ac_cv_func_malloc_0_nonnull=no
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#if defined STDC_HEADERS || defined HAVE_STDLIB_H
-# include <stdlib.h>
-#else
-char *malloc ();
-#endif
-
-int
-main ()
-{
-return ! malloc (0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  ac_cv_func_malloc_0_nonnull=yes
-else
-  ac_cv_func_malloc_0_nonnull=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_malloc_0_nonnull" >&5
-$as_echo "$ac_cv_func_malloc_0_nonnull" >&6; }
-if test $ac_cv_func_malloc_0_nonnull = yes; then :
-
-$as_echo "#define HAVE_MALLOC 1" >>confdefs.h
-
-else
-  $as_echo "#define HAVE_MALLOC 0" >>confdefs.h
-
-   case " $LIBOBJS " in
-  *" malloc.$ac_objext "* ) ;;
-  *) LIBOBJS="$LIBOBJS malloc.$ac_objext"
- ;;
-esac
-
-
-$as_echo "#define malloc rpl_malloc" >>confdefs.h
-
-fi
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strtod" >&5
 $as_echo_n "checking for working strtod... " >&6; }
 if ${ac_cv_func_strtod+:} false; then :
@@ -16489,7 +16427,6 @@ fi
 
 fi
 
-#AC_CHECK_FUNCS([gettimeofday])
 for ac_func in nanosleep
 do :
   ac_fn_c_check_func "$LINENO" "nanosleep" "ac_cv_func_nanosleep"
@@ -16556,6 +16493,51 @@ _ACEOF
 fi
 done
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for tputs in -ltermcap" >&5
+$as_echo_n "checking for tputs in -ltermcap... " >&6; }
+if ${ac_cv_lib_termcap_tputs+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ltermcap  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char tputs ();
+int
+main ()
+{
+return tputs ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_termcap_tputs=yes
+else
+  ac_cv_lib_termcap_tputs=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_termcap_tputs" >&5
+$as_echo "$ac_cv_lib_termcap_tputs" >&6; }
+if test "x$ac_cv_lib_termcap_tputs" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBTERMCAP 1
+_ACEOF
+
+  LIBS="-ltermcap $LIBS"
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for readline in -lreadline" >&5
 $as_echo_n "checking for readline in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_readline+:} false; then :
@@ -16599,6 +16581,98 @@ _ACEOF
 
   LIBS="-lreadline $LIBS"
 
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pow in -lm" >&5
+$as_echo_n "checking for pow in -lm... " >&6; }
+if ${ac_cv_lib_m_pow+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lm  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pow ();
+int
+main ()
+{
+return pow ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_m_pow=yes
+else
+  ac_cv_lib_m_pow=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_pow" >&5
+$as_echo "$ac_cv_lib_m_pow" >&6; }
+if test "x$ac_cv_lib_m_pow" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBM 1
+_ACEOF
+
+  LIBS="-lm $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pthread_create in -lpthread" >&5
+$as_echo_n "checking for pthread_create in -lpthread... " >&6; }
+if ${ac_cv_lib_pthread_pthread_create+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pthread_create ();
+int
+main ()
+{
+return pthread_create ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pthread_pthread_create=yes
+else
+  ac_cv_lib_pthread_pthread_create=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_pthread_create" >&5
+$as_echo "$ac_cv_lib_pthread_pthread_create" >&6; }
+if test "x$ac_cv_lib_pthread_pthread_create" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPTHREAD 1
+_ACEOF
+
+  LIBS="-lpthread $LIBS"
+
+else
+  as_fn_error $? "libpthread required" "$LINENO" 5
 fi
 
 
@@ -16689,13 +16763,12 @@ ac_config_files="$ac_config_files Makefile include/Makefile auxlib/Makefile src/
 
 
 # utilities/Makefile
-
-# Check whether --with-ldconfig was given.
-if test "${with_ldconfig+set}" = set; then :
-  withval=$with_ldconfig;
+# Check whether --enable-ldconfig was given.
+if test "${enable_ldconfig+set}" = set; then :
+  enableval=$enable_ldconfig;
 fi
 
-if test "$enable_ldconfig" = "no"; then
+if test "x$enable_ldconfig" != "xyes"; then
 	LDCONFIG="#ldconfig"
 else
 	# Extract the first word of "ldconfig", so it can be a program name with args.
@@ -16748,34 +16821,6 @@ case $host_os in
 	cygwin* | mingw*)
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ***** Configured for Cygwin and MinGW environment *****" >&5
 $as_echo "$as_me: WARNING: ***** Configured for Cygwin and MinGW environment *****" >&2;}
-		# Check whether --enable-shared was given.
-if test "${enable_shared+set}" = set; then :
-  enableval=$enable_shared; p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_shared=yes ;;
-    no) enable_shared=no ;;
-    *)
-      enable_shared=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
-      for pkg in $enableval; do
-	IFS="$lt_save_ifs"
-	if test "X$pkg" = "X$p"; then
-	  enable_shared=yes
-	fi
-      done
-      IFS="$lt_save_ifs"
-      ;;
-    esac
-else
-  enable_shared=no
-fi
-
-
-
-
-
-
 		# Check whether --enable-static was given.
 if test "${enable_static+set}" = set; then :
   enableval=$enable_static; p=${PACKAGE-default}
@@ -16804,9 +16849,6 @@ fi
 
 
 
-		if test "x$enable_shared" = xyes; then
-			LDFLAG_DLL_FOR_WIN32="-no-undefined"
-		fi
 		NOINST_LT_LDFLAGS="-all-static"
 		for ac_prog in pexports
 do
@@ -16850,7 +16892,7 @@ fi
   test -n "$DLL_PEXPORTS" && break
 done
 
-		for ac_prog in dlltool
+		for ac_prog in dlltool ${host}-dlltool
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -16892,6 +16934,9 @@ fi
   test -n "$DLL_DLLTOOL" && break
 done
 
+		if test "x$enable_shared" = xyes; then
+			ENABLE_DLL=yes
+		fi
 		;;
 	*)
 		# Check whether --enable-shared was given.
@@ -16952,7 +16997,6 @@ fi
 
 		;;
 esac
-
 
 for ac_prog in cp
 do
@@ -17031,7 +17075,7 @@ else
   HAVE_DLLTOOL_FALSE=
 fi
 
- if test "x$LDFLAG_DLL_FOR_WIN32" != "x"; then
+ if test "x$ENABLE_DLL" != "x"; then
   BUILD_DLL_FOR_WIN32_TRUE=
   BUILD_DLL_FOR_WIN32_FALSE='#'
 else
@@ -17040,7 +17084,8 @@ else
 fi
 
 
-if test "x$LDFLAG_DLL_FOR_WIN32" != "x"; then
+
+if test "x$BUILD_DLL_FOR_WIN32" != "x"; then
 	if test -z "$DLL_PEXPORTS"; then
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ***************************************" >&5
 $as_echo "$as_me: WARNING: ***************************************" >&2;}
@@ -17052,10 +17097,6 @@ $as_echo "$as_me: WARNING: *      to generate .lib for MS VC++   *" >&2;}
 $as_echo "$as_me: WARNING: ***************************************" >&2;}
 	fi
 fi
-
-CFLAGS+=" -Wall -O2"
-CXXFLAGS=CFLAGS
-
 
 
 cat >confcache <<\_ACEOF

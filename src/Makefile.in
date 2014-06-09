@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -82,9 +83,11 @@ host_triplet = @host@
 bin_PROGRAMS = ypspur-coordinator$(EXEEXT) ypspur-free$(EXEEXT) \
 	ypspur-interpreter$(EXEEXT) ypspur-interpreter$(EXEEXT)
 @BUILD_DLL_FOR_WIN32_TRUE@am__append_1 = libypspur_dll.la libypspur_md_dll.la
+@HAVE_SSM_TRUE@am__append_2 = -lssm
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp
+	$(top_srcdir)/depcomp $(am__dist_libypspur_dll_la_DATA_DIST) \
+	$(am__dist_libypspur_md_dll_la_DATA_DIST)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -123,7 +126,9 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(libypspur_dll_ladir)" \
+	"$(DESTDIR)$(libypspur_md_dll_ladir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libypspur_md_la_LIBADD =
 am_libypspur_md_la_OBJECTS = libypspur_md_la-libypspur-md.lo \
@@ -204,18 +209,22 @@ am_ypspur_coordinator_OBJECTS =  \
 	ypspur_coordinator-communication.$(OBJEXT) \
 	ypspur_coordinator-adinput.$(OBJEXT)
 ypspur_coordinator_OBJECTS = $(am_ypspur_coordinator_OBJECTS)
+ypspur_coordinator_DEPENDENCIES = libypspur.la ../auxlib/libcarte2d.la \
+	../auxlib/formula-calc/src/libformula-calc.la
 ypspur_coordinator_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ypspur_coordinator_CFLAGS) $(CFLAGS) \
 	$(ypspur_coordinator_LDFLAGS) $(LDFLAGS) -o $@
 am_ypspur_free_OBJECTS = ypspur-free.$(OBJEXT) utility.$(OBJEXT)
 ypspur_free_OBJECTS = $(am_ypspur_free_OBJECTS)
+ypspur_free_DEPENDENCIES = libypspur.la
 ypspur_free_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ypspur_free_LDFLAGS) $(LDFLAGS) -o $@
 am_ypspur_interpreter_OBJECTS = ypspur-interpreter.$(OBJEXT) \
 	utility.$(OBJEXT)
 ypspur_interpreter_OBJECTS = $(am_ypspur_interpreter_OBJECTS)
+ypspur_interpreter_DEPENDENCIES = libypspur.la
 ypspur_interpreter_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(AM_CFLAGS) $(CFLAGS) $(ypspur_interpreter_LDFLAGS) \
@@ -268,6 +277,9 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__dist_libypspur_dll_la_DATA_DIST = libypspur_dll.lib
+am__dist_libypspur_md_dll_la_DATA_DIST = libypspur-md_dll.lib
+DATA = $(dist_libypspur_dll_la_DATA) $(dist_libypspur_md_dll_la_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -330,7 +342,6 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDCONFIG = @LDCONFIG@
 LDFLAGS = @LDFLAGS@
-LDFLAG_DLL_FOR_WIN32 = @LDFLAG_DLL_FOR_WIN32@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -429,7 +440,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign 1.10
 
 # set the include path found by configure
-AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib -I../auxlib/formula-calc/src
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)/include -I$(top_srcdir)/auxlib -I$(top_srcdir)/auxlib/formula-calc/src
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = $(AM_CFLAGS)
 lib_LTLIBRARIES = libypspur.la libypspur-md.la $(am__append_1)
@@ -450,7 +461,7 @@ libypspur_la_LDFLAGS = $(libypspur_md_la_LDFLAGS)
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_SOURCES = libypspur-md.c ipcommunication.c utility.c yprintf.c msq.win32.c
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_CFLAGS = $(libypspur_la_CFLAGS)
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_CXXFLAGS = $(libypspur_la_CXXFLAGS)
-@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_LDFLAGS = $(libypspur_la_LDFLAGS) -module -shared $(LDFLAG_DLL_FOR_WIN32)
+@BUILD_DLL_FOR_WIN32_TRUE@libypspur_md_dll_la_LDFLAGS = $(libypspur_la_LDFLAGS) -module -shared -no-undefined -avoid-version
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_SOURCES = libypspur.c $(libypspur_md_dll_la_SOURCES)
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CFLAGS = $(libypspur_md_dll_la_CFLAGS)
 @BUILD_DLL_FOR_WIN32_TRUE@libypspur_dll_la_CXXFLAGS = $(libypspur_md_dll_la_CXXFLAGS)
@@ -461,28 +472,26 @@ libypspur_la_LDFLAGS = $(libypspur_md_la_LDFLAGS)
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_DLL = libypspur_dll.dll
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_LIB = libypspur_dll.lib
 @BUILD_DLL_FOR_WIN32_TRUE@LIBYPSPUR_DEF = libypspur_dll.def
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@libypspur_md_dll_ladir = $(libdir)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@dist_libypspur_md_dll_la_DATA = $(LIBYPSPUR_MD_LIB)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@libypspur_dll_ladir = $(libdir)
+@BUILD_DLL_FOR_WIN32_TRUE@@HAVE_DLLTOOL_TRUE@@HAVE_PEXPORTS_TRUE@dist_libypspur_dll_la_DATA = $(LIBYPSPUR_LIB)
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
   control_motion.c param.c ipcommunication.c msq.win32.c command_ad.c yprintf.c \
   command.c command_param.c command_set.c command_run.c command_get.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
-ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -O -I../auxlib/formula-calc/src
+ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -I$(top_srcdir)/auxlib/formula-calc/src
 ypspur_coordinator_CXXFLAGS = $(ypspur_coordinator_CFLAGS)
-ypspur_coordinator_DEPENDENCIES = ../auxlib/libcarte2d.la
-ypspur_coordinator_LDFLAGS = $(LT_LDFLAGS)
-@HAVE_SSM_FALSE@ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la \
-@HAVE_SSM_FALSE@                           -lm -lpthread ../auxlib/formula-calc/src/libformula-calc.la
-
-@HAVE_SSM_TRUE@ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la -lssm \
-@HAVE_SSM_TRUE@                           -lm -lpthread ../auxlib/formula-calc/src/libformula-calc.la
+ypspur_coordinator_LDFLAGS = $(LT_LDFLAGS) $(am__append_2)
+ypspur_coordinator_LDADD = libypspur.la ../auxlib/libcarte2d.la \
+                           ../auxlib/formula-calc/src/libformula-calc.la
 
 ypspur_free_SOURCES = ypspur-free.c utility.c
 ypspur_free_LDADD = libypspur.la
-ypspur_free_DEPENDENCIES = libypspur.la
 ypspur_free_LDFLAGS = $(LT_LDFLAGS)
 ypspur_interpreter_SOURCES = ypspur-interpreter.c utility.c
 ypspur_interpreter_LDADD = libypspur.la
-ypspur_interpreter_DEPENDENCIES = libypspur.la
 ypspur_interpreter_LDFLAGS = $(LT_LDFLAGS)
 all: all-am
 
@@ -1139,6 +1148,48 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-dist_libypspur_dll_laDATA: $(dist_libypspur_dll_la_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_libypspur_dll_la_DATA)'; test -n "$(libypspur_dll_ladir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libypspur_dll_ladir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libypspur_dll_ladir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(libypspur_dll_ladir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(libypspur_dll_ladir)" || exit $$?; \
+	done
+
+uninstall-dist_libypspur_dll_laDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_libypspur_dll_la_DATA)'; test -n "$(libypspur_dll_ladir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(libypspur_dll_ladir)'; $(am__uninstall_files_from_dir)
+install-dist_libypspur_md_dll_laDATA: $(dist_libypspur_md_dll_la_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_libypspur_md_dll_la_DATA)'; test -n "$(libypspur_md_dll_ladir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libypspur_md_dll_ladir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libypspur_md_dll_ladir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(libypspur_md_dll_ladir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(libypspur_md_dll_ladir)" || exit $$?; \
+	done
+
+uninstall-dist_libypspur_md_dll_laDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_libypspur_md_dll_la_DATA)'; test -n "$(libypspur_md_dll_ladir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(libypspur_md_dll_ladir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1224,11 +1275,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(DATA)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libypspur_dll_ladir)" "$(DESTDIR)$(libypspur_md_dll_ladir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1284,7 +1335,8 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dist_libypspur_dll_laDATA \
+	install-dist_libypspur_md_dll_laDATA
 
 install-dvi: install-dvi-am
 
@@ -1330,7 +1382,10 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-binPROGRAMS \
+	uninstall-dist_libypspur_dll_laDATA \
+	uninstall-dist_libypspur_md_dll_laDATA \
+	uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -1340,21 +1395,25 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	install-data-am install-dist_libypspur_dll_laDATA \
+	install-dist_libypspur_md_dll_laDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-dist_libypspur_dll_laDATA \
+	uninstall-dist_libypspur_md_dll_laDATA \
 	uninstall-libLTLIBRARIES
 
 
-@BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_MD_DLL) : $(lib_LTLIBRARIES)
-@BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur_md_dll-*.dll $(LIBYPSPUR_MD_DLL)
-@BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_DLL) : $(lib_LTLIBRARIES)
-@BUILD_DLL_FOR_WIN32_TRUE@	$(DLL_CP) ./.libs/libypspur_dll-*.dll $(LIBYPSPUR_DLL)
+@BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_MD_DLL): $(lib_LTLIBRARIES)
+@BUILD_DLL_FOR_WIN32_TRUE@	cp .libs/$(subst -,_,$(LIBYPSPUR_MD_DLL)) $(LIBYPSPUR_MD_DLL)
+@BUILD_DLL_FOR_WIN32_TRUE@$(LIBYPSPUR_DLL): $(lib_LTLIBRARIES)
+@BUILD_DLL_FOR_WIN32_TRUE@	cp .libs/$(subst -,_,$(LIBYPSPUR_DLL)) $(LIBYPSPUR_DLL)
 
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@$(LIBYPSPUR_MD_DEF) : $(LIBYPSPUR_MD_DLL)
 @BUILD_DLL_FOR_WIN32_TRUE@@HAVE_PEXPORTS_TRUE@	$(DLL_PEXPORTS) $(LIBYPSPUR_MD_DLL) > $(LIBYPSPUR_MD_DEF)

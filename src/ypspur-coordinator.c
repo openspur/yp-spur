@@ -133,7 +133,11 @@ int main( int argc, char *argv[] )
 			return 0;
 		}
 		setsid(  );
-		chdir( "/" );
+		if( chdir( "/" ) < 0 )
+		{
+			yprintf( OUTPUT_LV_ERROR, "Failed to chdir.\n" );
+			return EXIT_FAILURE;
+		}
 		close( STDIN_FILENO );
 		close( STDOUT_FILENO );
 		close( STDERR_FILENO );

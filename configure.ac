@@ -25,7 +25,7 @@ AC_CHECK_HEADERS([stdlib.h string.h])
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([pow sqrt strstr])
+AC_CHECK_LIB(m, pow)
 
 AC_OUTPUT
 

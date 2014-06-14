@@ -4,7 +4,6 @@
 AC_PREREQ([2.68])
 AC_INIT([formula-calc], [0.0.1], [atusi_w at roboken.esys.tsukuba.ac.jp])
 AM_INIT_AUTOMAKE
-AM_MAINTAINER_MODE([disable])
 
 LT_INIT
 

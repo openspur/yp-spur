@@ -13,6 +13,7 @@
 AC_PREREQ(2.61)
 AC_INIT([yp-spur], [1.14.0], [platform@roboken.esys.tsukuba.ac.jp])
 AM_INIT_AUTOMAKE
+
 AM_MAINTAINER_MODE([disable])
 
 AC_CONFIG_SRCDIR([src/libypspur.c])

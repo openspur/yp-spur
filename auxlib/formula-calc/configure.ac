@@ -2,8 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([formula-calc], [0.0.1], [atusi_w at roboken.esys.tsukuba.ac.jp])
+AC_INIT([formula-calc], [0.0.1], [atsushi.w at ieee.org])
 AM_INIT_AUTOMAKE
+
+AM_MAINTAINER_MODE([disable])
 
 LT_INIT
 

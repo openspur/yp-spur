@@ -202,7 +202,7 @@ int main( int argc, char *argv[] )
 		FILE *temp_paramfile = NULL;
 		quit = 0;
 
-		yprintf( OUTPUT_LV_PROCESS, "Device Infomation\n" );
+		yprintf( OUTPUT_LV_PROCESS, "Device Information\n" );
 		yprintf( OUTPUT_LV_PROCESS, " Port    : %s \n", param->device_name );
 
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
@@ -217,7 +217,7 @@ int main( int argc, char *argv[] )
 				int current, age;
 				sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
 
-				yprintf( OUTPUT_LV_PROCESS, " Checking device infomation...\r" );
+				yprintf( OUTPUT_LV_PROCESS, " Checking device information...\r" );
 				for ( i = 0; i < 3; i++ )
 				{
 					int device_current, device_age;

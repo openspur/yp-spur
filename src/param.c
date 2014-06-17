@@ -106,7 +106,7 @@ void arg_help( int argc, char *argv[] )
 	fprintf( stderr, "  -v, --version            Display version info and exit.\n" );
 	fprintf( stderr, "  -d, --device <device>    Specify a B-Loco device. e.g. /dev/ttyUSB0\n" );
 	fprintf( stderr, "  -p, --param <tile>       Specify a robot parameter file.\n" );
-	fprintf( stderr, "  --verbose                Display detail infomation.\n" );
+	fprintf( stderr, "  --verbose                Display detail information.\n" );
 	fprintf( stderr, "  --quiet                  Display nothing.\n" );
 	fprintf( stderr, "  -h, --help               This help\n" );
 	fprintf( stderr, "  --long-help              Long help\n" );
@@ -745,7 +745,7 @@ int set_paramptr( FILE * paramfile )
 		{
 			if( param_necessary[i] && !g_P_set[i][j] )
 			{
-				yprintf( OUTPUT_LV_ERROR, "Error: %s[%d] undifined!\n", param_names[i], j );
+				yprintf( OUTPUT_LV_ERROR, "Error: %s[%d] undefined!\n", param_names[i], j );
 				param_error = 1;
 			}
 		}
@@ -759,7 +759,7 @@ int set_paramptr( FILE * paramfile )
 	{
 		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
 		{
-			yprintf( OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undifined. TORQUE_MAX[%d] will be used.\n", j, j );
+			yprintf( OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undefined. TORQUE_MAX[%d] will be used.\n", j, j );
 			g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
 			g_P_changed[YP_PARAM_TORQUE_LIMIT][j] = ischanged_p(YP_PARAM_TORQUE_MAX,j);
 		}

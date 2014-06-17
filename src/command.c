@@ -44,7 +44,7 @@ void command_loop_cleanup( void *data )
 	struct ipcmd_t *ipcmd;
 
 	ipcmd = data;
-	yprintf( OUTPUT_LV_MODULE, "Command analyser stopped.\n" );
+	yprintf( OUTPUT_LV_MODULE, "Command analyzer stopped.\n" );
 
 	ipcmd_close( ipcmd );
 }
@@ -93,7 +93,7 @@ void command( void )
 	// メッセージキューを空にする
 	ipcmd.flush( &ipcmd );
 
-	yprintf( OUTPUT_LV_MODULE, "Command analyser started.\n" );
+	yprintf( OUTPUT_LV_MODULE, "Command analyzer started.\n" );
 	pthread_cleanup_push( command_loop_cleanup, &ipcmd );
 
 	while( 1 )

@@ -131,7 +131,7 @@ case $host_os in
 		AC_ENABLE_STATIC
 		NOINST_LT_LDFLAGS="-all-static"
 		AC_CHECK_PROGS(DLL_PEXPORTS, pexports,, $PATH)
-		AC_CHECK_PROGS(DLL_DLLTOOL, dlltool ${host}-dlltool,, $PATH)
+		AC_CHECK_TOOL(DLL_DLLTOOL, dlltool,, $PATH)
 		if test "x$enable_shared" = xyes; then
 			ENABLE_DLL=yes
 		fi
@@ -163,8 +163,9 @@ AM_CONDITIONAL(HAVE_PEXPORTS, test -n "$DLL_PEXPORTS")
 AM_CONDITIONAL(HAVE_DLLTOOL, test -n "$DLL_DLLTOOL")
 AM_CONDITIONAL(BUILD_DLL_FOR_WIN32, test "x$ENABLE_DLL" != "x")
 
-
 if test "x$BUILD_DLL_FOR_WIN32" != "x"; then
+	AM_COND_IF(HAVE_PEXPORTS, [AC_MSG_WARN([********** with pexports **********])], [AC_MSG_WARN([********** w/o pexports **********])])
+	AM_COND_IF(HAVE_DLLTOOL, [AC_MSG_WARN([********** with dlltool **********])], [AC_MSG_WARN([********** w/o dlltool **********])])
 	if test -z "$DLL_PEXPORTS"; then
 		AC_MSG_WARN([***************************************])
 		AC_MSG_WARN([* Consider installing pexports        *])

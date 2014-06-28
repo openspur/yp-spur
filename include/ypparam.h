@@ -1,12 +1,17 @@
 #ifndef __YP_PARAM_H__
 #define __YP_PARAM_H__
 
-#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif											// __cplusplus
+
+#if defined(_WIN32)
+	typedef int pid_t;
+#else
+#	include <unistd.h>
+#endif
 
 	/* コマンドナンバー */
 	enum

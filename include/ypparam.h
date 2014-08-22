@@ -147,6 +147,10 @@ extern "C"
 		YP_PARAM_MIN_WHEEL_ANGLE,
 		YP_PARAM_MAX_WHEEL_ANGLE,
 
+		YP_PARAM_BACKLASH_MAX,
+		YP_PARAM_GAIN_A_BACKLASH,
+		YP_PARAM_GAIN_B_BACKLASH,
+
 		YP_PARAM_NUM							///< パラメータの最大値
 	} YPSpur_param;
 
@@ -166,6 +170,7 @@ extern "C"
 		"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
 		"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
 		"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
+		"BACKLASH_MAX", "_GAIN_A_BACKLASH","_GAIN_B_BACKLASH"\
 	}
 
 #define YP_PARAM_NECESSARY \
@@ -182,6 +187,7 @@ extern "C"
 		0, 0, 0, 0, 0, 0,\
 		0, 0, 0,\
 		0, 0,\
+		0, 0, 0,\
 	}
 
 #define YP_PARAM_COMMENT \
@@ -203,7 +209,8 @@ extern "C"
 		"[m] Robot size of front","[m] Robot size of rear","[m] Robot size of left","[m] Robot size of right",\
 		"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
 		"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command",\
-		"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)"\
+		"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)",\
+		"[rev] Backlash angle", "PWS parameter A","PWS parameter B"\
 	}
 
 	enum motor_id

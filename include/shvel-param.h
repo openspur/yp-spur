@@ -53,6 +53,10 @@ typedef enum
 	PARAM_enc_rev,
 	PARAM_motor_phase,
 	PARAM_vsrc,
+
+	PARAM_backlash_max,
+	PARAM_p_A_backlash,
+	PARAM_p_B_backlash,
 	PARAM_servo = 64,
 	PARAM_watch_dog_limit,
 	PARAM_io_dir = 96,

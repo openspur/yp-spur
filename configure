@@ -4996,6 +4996,11 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ********** w/o SSM **********" >&5
 $as_echo "$as_me: WARNING: ********** w/o SSM **********" >&2;}
 fi
+if test -z "$HAVE_SSM_TRUE"; then :
+
+$as_echo "#define HAVE_SSM 1" >>confdefs.h
+
+fi
 
 # Checks for SH_CROSS
 for ac_prog in sh-coff-gcc sh-hitachi-coff-gcc

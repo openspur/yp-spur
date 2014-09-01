@@ -52,6 +52,7 @@ AC_ARG_ENABLE([ssm],
 	[enable_ssm=yes])
 AM_CONDITIONAL(HAVE_SSM, test -n "$SSM_COORDINATOR" -a -n "$HAVE_SSM_H" -a "x$enable_ssm" == xyes )
 AM_COND_IF(HAVE_SSM, [AC_MSG_WARN([********** with SSM **********])], [AC_MSG_WARN([********** w/o SSM **********])])
+AM_COND_IF(HAVE_SSM, [AC_DEFINE(HAVE_SSM, 1, [Define if you want to compile with SSM])])
 
 # Checks for SH_CROSS
 AC_CHECK_PROGS(SH_CROSS_CC, sh-coff-gcc sh-hitachi-coff-gcc,, $PATH)

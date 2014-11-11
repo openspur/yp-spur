@@ -1005,9 +1005,17 @@ void set_param_motor( void )
 		{
 			parameter_set( PARAM_vsrc, j, g_P[YP_PARAM_VOLT][j] * 256 );
 		}
+		if( ischanged_p(YP_PARAM_CYCLE,j) )
+		{
+			parameter_set( PARAM_control_cycle, j, g_P[YP_PARAM_CYCLE][j] * 1000 );
+		}
 		if( ischanged_p(YP_PARAM_MOTOR_PHASE,j) )
 		{
 			parameter_set( PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j] );
+		}
+		if( ischanged_p(YP_PARAM_ENCODER_TYPE,j) )
+		{
+			parameter_set( PARAM_enc_type, j, g_P[YP_PARAM_ENCODER_TYPE][j] );
 		}
 		if( ischanged_p(YP_PARAM_PWM_MAX,j) ||
 				ischanged_p(YP_PARAM_MOTOR_R,j) ||

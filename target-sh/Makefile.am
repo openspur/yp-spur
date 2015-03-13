@@ -5,7 +5,7 @@ EXTRA_DIST = sh-vel.c motor-device.c sh-serial.c filter.c filter.h \
              sh7045linker.x startup.s adc.c adc.h divider.c divider.h
 
 # set the include path found by configure
-AM_CPPFLAGS = $(all_includes) -I../include -I../auxlib -I../target-sh
+AM_CPPFLAGS = $(all_includes) -I$(top_srcdir)/include -I$(top_srcdir)/auxlib -I$(top_srcdir)/target-sh -I$(top_builddir)/include
 
 TARGET = sh-vel
 
@@ -25,7 +25,7 @@ endif
 
 
 OBJS = sh-vel.o motor-device.o sh-serial.o adc.o divider.o filter.o
-SHLINK = sh7045linker.x
+SHLINK = $(top_srcdir)/target-sh/sh7045linker.x
 SHSTART = startup.o
 
 SHOPT = -O2
@@ -39,7 +39,7 @@ all : $(MOT)
 $(MOT) : $(OUTPUT)
 	$(SHOBJCOPY) $(SHOBJ) $(OUTPUT) $@
 
-.c.o: *.h ../include/shvel-param.h Makafile
+.c.o: *.h $(top_srcdir)/include/shvel-param.h Makafile
 	$(SHCC) -c $< $(SHCFLAGS)
 
 .s.o:

@@ -56,6 +56,8 @@ int msgsnd( int msqid, const void *msgp, size_t msgsz, int msgflg )
 		return -1;
 	}
 
+	msgsz += sizeof(long); // add size of msg_type
+
 	pos = ( char * )g_shm_data;
 	while( 1 )
 	{
@@ -88,6 +90,8 @@ ssize_t msgrcv( int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg )
 	char *pos_before;
 	char *pos_target;
 	int32_t readsize;
+
+	msgsz += sizeof(long); // add size of msg_type
 
 	readsize = 0;
 	while( 1 )

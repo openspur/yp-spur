@@ -171,7 +171,7 @@ int ipcmd_open_tcp( struct ipcmd_t *ipcmd, char *host, int port )
 int ipcmd_send_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 {
 	int sock;
-	size_t len = YPSPUR_MSG_SIZE;
+	size_t len = sizeof(YPSpur_msg);
 	
 	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
 	
@@ -202,7 +202,7 @@ int ipcmd_recv_tcp( struct ipcmd_t *ipcmd, YPSpur_msg *data )
 	struct sockaddr_in client;
 	int sock;
 	int i;
-	size_t len = YPSPUR_MSG_SIZE;
+	size_t len = sizeof(YPSpur_msg);
 
 	if( ipcmd == NULL || ipcmd->connection_error ) return -1;
 

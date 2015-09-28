@@ -402,20 +402,25 @@ int main( int argc, char *argv[] )
 
 		/* スレッド初期化 */
 		init_command_thread( &command_thread );
-		pthread_detach( command_thread );
 		command_thread_en = 1;
 
 		if( !( option( OPTION_WITHOUT_DEVICE ) ) )
 		{
 			init_control_thread( &control_thread );
-			pthread_detach( control_thread );
 			control_thread_en = 1;
+		}
+		else
+		{
+			control_thread_en = 0;
 		}
 		if( option( OPTION_UPDATE_PARAM ) )
 		{
 			init_param_update_thread( &update_thread, paramfile );
-			pthread_detach( update_thread );
 			update_thread_en = 1;
+		}
+		else
+		{
+			update_thread_en = 0;
 		}
 
 		// オドメトリ受信ループ

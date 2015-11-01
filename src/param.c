@@ -36,10 +36,10 @@
 #include <pthread.h>
 
 
-double g_P[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-int g_P_changed[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-double g_P_set[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
+double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+double g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
 int g_param_init = 1;
@@ -401,8 +401,9 @@ void param_calc(  )
 	int i, j;
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 		{
+			if( !g_param.motor_enable[j] ) continue;
 			if( g_Pf[i][j] )
 			{
 				double d;
@@ -420,11 +421,26 @@ int set_paramptr( FILE * paramfile )
 	char param_names0[YP_PARAM_NUM][24] = YP_PARAM_NAME;
 	char param_names1[YP_PARAM_NUM][24] = YP_PARAM_NAME;
 	int param_necessary[YP_PARAM_NUM] = YP_PARAM_NECESSARY;
-#define VARIABLE_NUM 9
+#define VARIABLE_NUM 37
 	char variable_names[VARIABLE_NUM][20] = 
 	{
 		"X", "Y", "THETA", "V", "W",
-		"WHEEL_VEL[0]", "WHEEL_VEL[1]", "WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]"
+		"WHEEL_VEL[0]", "WHEEL_VEL[1]", 
+		"WHEEL_VEL[2]", "WHEEL_VEL[3]", 
+		"WHEEL_VEL[4]", "WHEEL_VEL[5]", 
+		"WHEEL_VEL[6]", "WHEEL_VEL[7]", 
+		"WHEEL_VEL[8]", "WHEEL_VEL[9]", 
+		"WHEEL_VEL[10]", "WHEEL_VEL[11]", 
+		"WHEEL_VEL[12]", "WHEEL_VEL[13]", 
+		"WHEEL_VEL[14]", "WHEEL_VEL[15]", 
+		"WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]",
+		"WHEEL_ANGLE[2]", "WHEEL_ANGLE[3]",
+		"WHEEL_ANGLE[4]", "WHEEL_ANGLE[5]",
+		"WHEEL_ANGLE[6]", "WHEEL_ANGLE[7]",
+		"WHEEL_ANGLE[8]", "WHEEL_ANGLE[9]",
+		"WHEEL_ANGLE[10]", "WHEEL_ANGLE[11]",
+		"WHEEL_ANGLE[12]", "WHEEL_ANGLE[13]",
+		"WHEEL_ANGLE[14]", "WHEEL_ANGLE[15]",
 	};
 	struct variables_t variables[YP_PARAM_NUM * 3 + 1 + VARIABLE_NUM];
 	struct
@@ -462,17 +478,17 @@ int set_paramptr( FILE * paramfile )
 	variables[i++].pointer = &odm->theta;
 	variables[i++].pointer = &odm->v;
 	variables[i++].pointer = &odm->w;
-	variables[i++].pointer = &odm->wr;
-	variables[i++].pointer = &odm->wl;
-	variables[i++].pointer = &odm->theta_r;
-	variables[i++].pointer = &odm->theta_l;
+	for(int j = 0; j < 16; j ++)
+		variables[i++].pointer = &odm->wvel[j];
+	for(int j = 0; j < 16; j ++)
+		variables[i++].pointer = &odm->wang[j];
 	variables[i].name = NULL;
 	variables[i].pointer = NULL;
 
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 		{
 			g_P_changed[i][j] = 0;
 		}
@@ -480,12 +496,15 @@ int set_paramptr( FILE * paramfile )
 	if( g_param_init )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+		{
 			g_P_changed[YP_PARAM_PWM_MAX][j] = 1;
+			g_param.motor_enable[j] = 0;
+		}
 		// パラメータの初期化
 		for ( i = 0; i < YP_PARAM_NUM; i++ )
 		{
-			for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+			for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 			{
 				g_P[i][j] = 0;
 				g_P_set[i][j] = 0;
@@ -614,7 +633,7 @@ int set_paramptr( FILE * paramfile )
 				else if( motor_num == -1 )
 				{
 					int j;
-					for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+					for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 					{
 						g_P[param_num][j] = strtod( value_str, 0 );
 						g_P_set[param_num][j] = 1;
@@ -632,6 +651,7 @@ int set_paramptr( FILE * paramfile )
 					g_P[param_num][motor_num] = strtod( value_str, 0 );
 					g_P_set[param_num][motor_num] = 1;
 					g_P_changed[param_num][motor_num] = 1;
+					g_param.motor_enable[motor_num] = 1;
 					if( g_Pf[param_num][motor_num] )
 					{
 						formula_free( g_Pf[param_num][motor_num] );
@@ -664,7 +684,7 @@ int set_paramptr( FILE * paramfile )
 				else if( motor_num == -1 )
 				{
 					int j;
-					for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+					for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 					{
 						g_P[param_num][j] = 0;
 						g_P_set[param_num][j] = 1;
@@ -678,7 +698,7 @@ int set_paramptr( FILE * paramfile )
 					}
 					else
 					{
-						for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+						for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 						{
 							g_Pf[param_num][j] = formula_optimize( g_Pf[param_num][j] );
 						}
@@ -741,8 +761,9 @@ int set_paramptr( FILE * paramfile )
 	param_error = 0;
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
-		for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+		for( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j ++ )
 		{
+			if( !g_param.motor_enable[j] ) continue;
 			if( param_necessary[i] && !g_P_set[i][j] )
 			{
 				yprintf( OUTPUT_LV_ERROR, "Error: %s[%d] undefined!\n", param_names[i], j );
@@ -755,8 +776,14 @@ int set_paramptr( FILE * paramfile )
 		return 0;
 	}
 
-	for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+	g_param.num_motor_enable = 0;
+	for( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j ++ )
 	{
+		// Count motor number
+		if( !g_param.motor_enable[j] ) continue;
+		g_param.num_motor_enable ++;
+
+		// Check undefined parameters
 		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
 		{
 			yprintf( OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undefined. TORQUE_MAX[%d] will be used.\n", j, j );
@@ -775,6 +802,8 @@ int set_paramptr( FILE * paramfile )
 	enable_state( YP_STATE_VELOCITY );
 	enable_state( YP_STATE_BODY );
 	enable_state( YP_STATE_TRACKING );
+
+	yprintf( OUTPUT_LV_PARAM, "Info: %d motors defined\n", g_param.num_motor_enable );
 
 	return 1;
 }
@@ -908,8 +937,11 @@ int apply_robot_params(  )
 	if( g_param_init )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+		{
+			if( !g_param.motor_enable[j] ) continue;
 			parameter_set( PARAM_w_ref, j, 0 );
+		}
 		g_param_init = 0;
 	}
 	/* モータのパラメータ */
@@ -999,8 +1031,9 @@ void set_param_motor( void )
 	double tvc;									// 変換用定数
 	int j;
 	// モータのパラメータ
-	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 	{
+		if( !g_param.motor_enable[j] ) continue;
 		if( ischanged_p(YP_PARAM_VOLT,j) )
 		{
 			parameter_set( PARAM_vsrc, j, g_P[YP_PARAM_VOLT][j] * 256 );
@@ -1153,8 +1186,9 @@ void set_param_velocity( void )
 	}
 
 	// PI制御のパラメータ
-	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 	{
+		if( !g_param.motor_enable[j] ) continue;
 		// [1/s]
 		if( ischanged_p(YP_PARAM_GAIN_KP,j) )
 			parameter_set( PARAM_p_pi_kp, j, g_P[YP_PARAM_GAIN_KP][j] );
@@ -1174,30 +1208,4 @@ void set_param_velocity( void )
 	}
 }
 
-void motor_stop( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_COUNTER );
-}
-
-void motor_free( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
-}
-
-void motor_openfree( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_OPENFREE );
-}
-
-void motor_servo( void )
-{
-	if( option( OPTION_PASSIVE ) )
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
-	}
-	else
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_VELOCITY );
-	}
-}
 

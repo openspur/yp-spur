@@ -73,6 +73,9 @@ void command( void )
 	int len;
 	struct ipcmd_t ipcmd;
 	char param_name[YP_PARAM_NUM][30] = YP_PARAM_NAME;
+	ParametersPtr param;
+
+	param = get_param_ptr();
 
 	/* initialize message queue */
 	if( option( OPTION_SOCKET ) )
@@ -196,7 +199,7 @@ void command( void )
 			break;
 		case YPSPUR_WHEEL_VEL:
 			wheel_vel_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.wrref, g_spur.wlref);
+			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.wvelref[0], g_spur.wvelref[1]);
 			break;
 		case YPSPUR_WHEEL_TORQUE:
 			set_torque_com( msg.data, &g_spur );
@@ -204,15 +207,15 @@ void command( void )
 			break;
 		case YPSPUR_SET_WHEEL_VEL:
 			set_wheel_vel_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_vel %f %f\n", g_spur.wheel_vel_r, g_spur.wheel_vel_l );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_vel %f %f\n", g_spur.wheel_vel[0], g_spur.wheel_vel[1] );
 			break;
 		case YPSPUR_SET_WHEEL_ACCEL:
 			set_wheel_accel_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_accel %f %f\n", g_spur.wheel_accel_r, g_spur.wheel_accel_l );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set_wheel_accel %f %f\n", g_spur.wheel_accel[0], g_spur.wheel_accel[1] );
 			break;
 		case YPSPUR_WHEEL_ANGLE:
 			wheel_angle_com( msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_angle %f %f\n", g_spur.wheel_angle_r, g_spur.wheel_angle_l );
+			yprintf( OUTPUT_LV_COMMAND, "Command: wheel_angle %f %f\n", g_spur.wheel_angle[0], g_spur.wheel_angle[1] );
 			break;
 
 		/*----------command_get.c------------------*/
@@ -305,6 +308,51 @@ void command( void )
 			yprintf( OUTPUT_LV_COMMAND, "Command: set IO data %d\n", ( int )msg.data[0] );
 			break;
 
+		/*-------------command_ad.c---------------*/
+		case YPSPUR_JOINT_TORQUE:
+			joint_torque_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d torque %f\n", msg.cs, msg.data[0] );
+			break;
+
+		case YPSPUR_JOINT_VEL:
+			joint_vel_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d vel %f\n", msg.cs, msg.data[0] );
+			break;
+
+		case YPSPUR_JOINT_ANG:
+			joint_ang_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d ang %f\n", msg.cs, msg.data[0] );
+			break;
+
+		case YPSPUR_SET_JOINT_ACCEL:
+			set_joint_accel_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set joint %d accel %f\n", msg.cs, msg.data[0] );
+			break;
+
+		case YPSPUR_SET_JOINT_VEL:
+			set_joint_vel_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d vel %f\n", msg.cs, msg.data[0] );
+			break;
+
+		case YPSPUR_GET_JOINT_VEL:
+			get_joint_vel_com( msg.cs, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get joint %d vel %f\n", msg.cs, res_msg.data[0] );
+			break;
+
+		case YPSPUR_GET_JOINT_VREF:
+			get_joint_vref_com( msg.cs, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get joint %d vref %f\n", msg.cs, res_msg.data[0] );
+			break;
+
+		case YPSPUR_GET_JOINT_ANG:
+			get_joint_ang_com( msg.cs, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get joint %d ang %f\n", msg.cs, res_msg.data[0] );
+			break;
+
+
 		default:
 			yprintf( OUTPUT_LV_WARNING, "Command: unknown\n" );
 			break;
@@ -317,17 +365,35 @@ void command( void )
 			{
 				if( g_spur.run_mode == RUN_FREE || g_spur.run_mode == RUN_WHEEL_TORQUE )
 				{									/* フリーになった */
-					motor_free(  );
+					int i;
+					for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
+					{
+						if( !param->motor_enable[i] ) continue;
+						if( p( YP_PARAM_VEHICLE_CONTROL, i ) > 0 )
+							g_spur.wheel_mode[i] = MOTOR_CONTROL_FREE;
+					}
 					yprintf( OUTPUT_LV_CONTROL, "Mode: free\n" );
 				}
 				else if( g_spur.run_mode == RUN_OPENFREE )
 				{
-					motor_openfree(  );
+					int i;
+					for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
+					{
+						if( !param->motor_enable[i] ) continue;
+						if( p( YP_PARAM_VEHICLE_CONTROL, i ) > 0 )
+							g_spur.wheel_mode[i] = MOTOR_CONTROL_OPENFREE;
+					}
 					yprintf( OUTPUT_LV_CONTROL, "Mode: openfree\n" );
 				}
 				else
 				{
-					motor_servo(  );
+					int i;
+					for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
+					{
+						if( !param->motor_enable[i] ) continue;
+						if( p( YP_PARAM_VEHICLE_CONTROL, i ) > 0 )
+							g_spur.wheel_mode[i] = MOTOR_CONTROL_VEHICLE;
+					}
 					yprintf( OUTPUT_LV_CONTROL, "Mode: servo %d\n", g_spur.run_mode );
 				}
 			}

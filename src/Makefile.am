@@ -80,7 +80,7 @@ endif
 ## ypspur-coordinator
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
   control_motion.c param.c ipcommunication.c msq.win32.c command_ad.c yprintf.c \
-  command.c command_param.c command_set.c command_run.c command_get.c serial.c \
+  command.c command_param.c command_set.c command_run.c command_get.c command_joint.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
 ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -I$(top_srcdir)/auxlib/formula-calc/src

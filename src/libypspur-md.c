@@ -1116,6 +1116,203 @@ int YP_md_wheel_ang( YPSpur *spur, double r, double l )
 	return 1;
 }
 
+
+int YP_md_joint_torque( YPSpur *spur, int id, double t )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_JOINT_TORQUE;
+	msg.cs = id;
+	msg.data[0] = t;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_joint_vel( YPSpur *spur, int id, double v )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_JOINT_VEL;
+	msg.cs = id;
+	msg.data[0] = v;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_joint_ang( YPSpur *spur, int id, double a )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_JOINT_ANG;
+	msg.cs = id;
+	msg.data[0] = a;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_set_joint_accel( YPSpur *spur, int id, double a )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_SET_JOINT_ACCEL;
+	msg.cs = id;
+	msg.data[0] = a;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+int YP_md_set_joint_vel( YPSpur *spur, int id, double v )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_SET_JOINT_VEL;
+	msg.cs = id;
+	msg.data[0] = v;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
+
+double YP_md_get_joint_vel( YPSpur *spur, int id, double *v )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_JOINT_VEL;
+	msg.cs = id;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*v = msg.data[0];
+	time = msg.data[1];
+	return time;
+}
+
+double YP_md_get_joint_vref( YPSpur *spur, int id, double *v )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_JOINT_VREF;
+	msg.cs = id;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*v = msg.data[0];
+	time = msg.data[1];
+	return time;
+}
+
+double YP_md_get_joint_ang( YPSpur *spur, int id, double *a )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_JOINT_ANG;
+	msg.cs = id;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*a = msg.data[0];
+	time = msg.data[1];
+	return time;
+}
+
+
+
 ParamOutputLv output_lv( void )
 {
 	return OUTPUT_LV_DEFAULT;

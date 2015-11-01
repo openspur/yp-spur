@@ -165,6 +165,16 @@ extern "C"
 	int YP_set_wheel_vel( double r, double l );
 	double YP_get_vref( double *vref, double *wref );
 	double YP_get_wheel_vref( double *wrref, double *wlref );
+
+	int YP_joint_torque( int id, double t );
+	int YP_joint_vel( int id, double v );
+	int YP_joint_ang( int id, double a );
+	int YP_set_joint_accel( int id, double a );
+	int YP_set_joint_vel( int id, double v );
+	double YP_get_joint_vel( int id, double *v );
+	double YP_get_joint_vref( int id, double *v );
+	double YP_get_joint_ang( int id, double *a );
+
 #ifdef __cplusplus
 }
 #endif

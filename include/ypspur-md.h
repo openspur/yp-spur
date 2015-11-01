@@ -171,6 +171,15 @@ int YP_md_wheel_ang( YPSpur *dev, double r, double l );
 double YP_md_get_vref( YPSpur *dev, double *vref, double *wref );
 double YP_md_get_wheel_vref( YPSpur *dev, double *wrref, double *wlref );
 
+int YP_md_joint_torque( YPSpur *spur, int id, double t );
+int YP_md_joint_vel( YPSpur *spur, int id, double v );
+int YP_md_joint_ang( YPSpur *spur, int id, double a );
+int YP_md_set_joint_accel( YPSpur *spur, int id, double a );
+int YP_md_set_joint_vel( YPSpur *spur, int id, double v );
+double YP_md_get_joint_vel( YPSpur *spur, int id, double *v );
+double YP_md_get_joint_vref( YPSpur *spur, int id, double *v );
+double YP_md_get_joint_ang( YPSpur *spur, int id, double *a );
+
 #ifdef __cplusplus
 }
 #endif

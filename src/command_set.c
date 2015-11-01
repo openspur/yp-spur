@@ -121,8 +121,8 @@ void set_vel_com( double *data, SpurUserParamsPtr spur )
 
 void set_torque_com( double *data, SpurUserParamsPtr spur )
 {
-	spur->torque_l = data[1];
-	spur->torque_r = data[0];
+	spur->torque[1] = data[1];
+	spur->torque[0] = data[0];
 	spur->run_mode = RUN_WHEEL_TORQUE;
 }
 
@@ -169,13 +169,13 @@ void set_tilt_com( int cs, double *data, SpurUserParamsPtr spur )
 
 void set_wheel_accel_com( double *data, SpurUserParamsPtr spur )
 {
-	spur->wheel_accel_l = data[1];
-	spur->wheel_accel_r = data[0];
+	spur->wheel_accel[1] = data[1];
+	spur->wheel_accel[0] = data[0];
 }
 
 void set_wheel_vel_com( double *data, SpurUserParamsPtr spur )
 {
-	spur->wheel_vel_l = data[1];
-	spur->wheel_vel_r = data[0];
+	spur->wheel_vel[1] = data[1];
+	spur->wheel_vel[0] = data[0];
 }
 

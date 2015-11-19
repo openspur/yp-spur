@@ -125,6 +125,7 @@ void apply_motor_speed( SpurUserParamsPtr spur )
 		{
 		case MOTOR_CONTROL_OPENFREE:
 		case MOTOR_CONTROL_FREE:
+			parameter_set( PARAM_w_ref, i, 0 );
 			break;
 		case MOTOR_CONTROL_ANGLE:
 		case MOTOR_CONTROL_VEL:
@@ -526,8 +527,6 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 			update_ref_speed( spur );
 			break;
 		case RUN_VEL:							// 速度角速度指定
-			if( state( YP_STATE_BODY ) == ENABLE )
-				robot_speed_smooth( spur );
 			break;
 		case RUN_LINEFOLLOW:					// 直線追従
 			if( state( YP_STATE_BODY ) == ENABLE && state( YP_STATE_TRACKING ) == ENABLE )
@@ -552,6 +551,19 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		case RUN_WHEEL_ANGLE:						// 回転
 			if( state( YP_STATE_BODY ) == ENABLE )
 				wheel_angle( &odometry, spur );
+			break;
+		}
+		switch ( spur->run_mode )
+		{
+		case RUN_VEL:							// 速度角速度指定
+		case RUN_STOP:							// ストップする（スピードを0にする）
+		case RUN_LINEFOLLOW:					// 直線追従
+		case RUN_STOP_LINE:					// 短辺への移動
+		case RUN_CIRCLEFOLLOW:					// 円弧追従
+		case RUN_SPIN:							// 回転
+		case RUN_ORIENT:						// 方位
+			if( state( YP_STATE_BODY ) == ENABLE )
+				robot_speed_smooth( spur );
 			break;
 		}
 		apply_motor_torque( spur );

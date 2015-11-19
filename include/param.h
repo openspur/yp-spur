@@ -68,6 +68,8 @@ typedef struct _parameters
 	int ssm_id;
 	int motor_enable[YP_PARAM_MAX_MOTOR_NUM];
 	int num_motor_enable;
+	int device_version;
+	int device_version_age;
 } Parameters;
 
 int arg_analyze( int argc, char *argv[] );

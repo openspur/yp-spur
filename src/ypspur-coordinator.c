@@ -231,6 +231,8 @@ int main( int argc, char *argv[] )
 						continue;
 					}
 					sscanf( version.protocol, "YPP:%d:%d", &device_current, &device_age );
+					param->device_version = device_current;
+					param->device_version_age = device_age;
 					if( device_current - device_age > current || 
 							device_current < current - age )
 					{

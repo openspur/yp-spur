@@ -1009,6 +1009,12 @@ void set_param_motor( void )
 		{
 			parameter_set( PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j] );
 		}
+		if( ischanged_p(YP_PARAM_PHASE_OFFSET,j) ||
+				ischanged_p(YP_PARAM_COUNT_REV,j))
+		{
+			parameter_set( PARAM_phase_offset, j, 
+					g_P[YP_PARAM_PHASE_OFFSET][j] * g_P[YP_PARAM_COUNT_REV][j] / (2.0*M_PI) );
+		}
 		if( ischanged_p(YP_PARAM_PWM_MAX,j) ||
 				ischanged_p(YP_PARAM_MOTOR_R,j) ||
 				ischanged_p(YP_PARAM_TORQUE_UNIT,j) ||

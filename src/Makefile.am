@@ -19,7 +19,7 @@ libypspur_md_la_CXXFLAGS = $(libypspur_la_CFLAGS)
 # 1. Bugfix                          C   : R++ : A
 # 2. Add Interface                   C++ : R=0 : A++
 # 3. Delete or Change Interface      C++ : R=0 : A=0
-libypspur_md_la_LDFLAGS = -version-info 15:4:1
+libypspur_md_la_LDFLAGS = -version-info 16:0:2
 
 ## libypspur
 libypspur_la_SOURCES = libypspur.c $(libypspur_md_la_SOURCES)

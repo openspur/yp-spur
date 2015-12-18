@@ -60,10 +60,11 @@ void init_coordinate_systems( void )
 
 void init_odometry( void )
 {
+	int i;
 	g_odometry.x = 0;
 	g_odometry.y = 0;
 	g_odometry.theta = 0;
-	for(int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+	for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
 	{
 		g_odometry.wang[0] = 0;
 		g_odometry.wtorque[0] = 0;

@@ -478,9 +478,9 @@ int set_paramptr( FILE * paramfile )
 	variables[i++].pointer = &odm->theta;
 	variables[i++].pointer = &odm->v;
 	variables[i++].pointer = &odm->w;
-	for(int j = 0; j < 16; j ++)
+	for(j = 0; j < 16; j ++)
 		variables[i++].pointer = &odm->wvel[j];
-	for(int j = 0; j < 16; j ++)
+	for(j = 0; j < 16; j ++)
 		variables[i++].pointer = &odm->wang[j];
 	variables[i].name = NULL;
 	variables[i].pointer = NULL;

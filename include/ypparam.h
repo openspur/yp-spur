@@ -165,6 +165,7 @@ extern "C"
 		YP_PARAM_MAX_WHEEL_ANGLE,
 
 		YP_PARAM_VEHICLE_CONTROL,
+		YP_PARAM_CONTROL_MODE_RESEND,
 
 		// イナーシャパラメータ
 		YP_PARAM_INERTIA_SELF,
@@ -191,6 +192,7 @@ extern "C"
 		"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
 		"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
 		"VEHICLE_CONTROL",\
+		"CONTROL_MODE_RESEND",\
 		"_INERTIA_SELF", "_INERTIA_CROSS",\
 	}
 
@@ -209,6 +211,7 @@ extern "C"
 		0, 0, 0, 0, 0, 0,\
 		0, 0, 0,\
 		0, 0,\
+		0,\
 		0,\
 		0, 0,\
 	}
@@ -235,6 +238,7 @@ extern "C"
 		"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command",\
 		"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)",\
 		"Used for vehicle control (0: false, 1: true)",\
+		"[s] Time-span to resend control mode (0: don't resend)",\
 		"Motor load inertia", "Motor load cross inertia",\
 	}
 

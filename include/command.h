@@ -60,6 +60,7 @@ typedef struct _spur_user_params
 	int freeze;
 	int before_freeze;
 	SpurRunMode run_mode;
+	int run_mode_cnt;
 	SpurRunMode before_run_mode;
 	pthread_mutex_t mutex;
 } SpurUserParams;

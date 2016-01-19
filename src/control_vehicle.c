@@ -96,13 +96,22 @@ void apply_motor_speed( SpurUserParamsPtr spur )
 	int i;
 	ParametersPtr param;
 	param = get_param_ptr();
+	spur->run_mode_cnt ++;
 
 	for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++ )
 	{
 		int v;
 		if( !param->motor_enable[i] ) continue;
 
-		if( spur->wheel_mode[i] != spur->wheel_mode_prev[i] )
+		int force_send_control_mode = 0;
+		if( p(YP_PARAM_CONTROL_MODE_RESEND, i) != 0.0 )
+		{
+			int cnt_max = p(YP_PARAM_CONTROL_MODE_RESEND, i) / p(YP_PARAM_CONTROL_CYCLE, i);
+			if( spur->run_mode_cnt % cnt_max == i % cnt_max )
+				force_send_control_mode = 1;
+		}
+
+		if( spur->wheel_mode[i] != spur->wheel_mode_prev[i] || force_send_control_mode )
 		{
 			switch( spur->wheel_mode[i] )
 			{
@@ -564,6 +573,8 @@ void run_control( Odometry odometry, SpurUserParamsPtr spur )
 		case RUN_ORIENT:						// 方位
 			if( state( YP_STATE_BODY ) == ENABLE )
 				robot_speed_smooth( spur );
+			break;
+		default:
 			break;
 		}
 		apply_motor_torque( spur );

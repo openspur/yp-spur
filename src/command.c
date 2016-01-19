@@ -63,6 +63,7 @@ void init_spur_command( void )
 	g_spur.before_run_mode = -10000;
 	g_spur.freeze = 0;
 	g_spur.before_freeze = 0;
+	g_spur.run_mode_cnt = 0;
 	pthread_mutex_init( &g_spur.mutex, NULL );
 }
 

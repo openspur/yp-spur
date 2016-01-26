@@ -1048,8 +1048,8 @@ void calc_param_inertia2ff( void )
 	{
 		if( !g_param.motor_enable[i] ) continue;
 
-		yprintf( OUTPUT_LV_PARAM, " LOAD_INERTIA_SELF[%d]  %f\n", i, g_P[YP_PARAM_INERTIA_SELF][i] );
-		yprintf( OUTPUT_LV_PARAM, " LOAD_INERTIA_CROSS[%d] %f\n", i, g_P[YP_PARAM_INERTIA_CROSS][i] );
+		yprintf( OUTPUT_LV_DEBUG, " LOAD_INERTIA_SELF[%d]  %f\n", i, g_P[YP_PARAM_INERTIA_SELF][i] );
+		yprintf( OUTPUT_LV_DEBUG, " LOAD_INERTIA_CROSS[%d] %f\n", i, g_P[YP_PARAM_INERTIA_CROSS][i] );
 	}
 }
 

@@ -332,7 +332,7 @@ void command( void )
 
 		case YPSPUR_SET_JOINT_VEL:
 			set_joint_vel_com( msg.cs, msg.data, &g_spur );
-			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d vel %f\n", msg.cs, msg.data[0] );
+			yprintf( OUTPUT_LV_COMMAND, "Command: set joint %d vel %f\n", msg.cs, msg.data[0] );
 			break;
 
 		case YPSPUR_GET_JOINT_VEL:

@@ -208,7 +208,16 @@ struct rpf_t *rpf_push( struct rpf_t *rpf, struct stack_t *obj )
 {
 	rpf->next = malloc( sizeof( struct rpf_t ) );
 	rpf->next->type = obj->type;
-	rpf->next->value = obj->value;
+	if( obj->type == TYPE_VALUE )
+	{
+		rpf->next->value = malloc( sizeof(double) );
+		*((double*)rpf->next->value) = *((double*)obj->value);
+	}
+	else
+	{
+		rpf->next->value = obj->value;
+	}
+	//rpf->next->value = obj->value;
 	rpf->next->next = NULL;
 	
 	return rpf->next;
@@ -255,78 +264,62 @@ int rpf_count_num( struct rpf_t *rpf )
 
 struct rpf_t *formula_output( struct stack_t *num, int *sp_num, struct stack_t *op, int *sp_op, int rank )
 {
-	if( *sp_op == 0 && *sp_num == 1 && num[*sp_num-1].type != TYPE_RPF )
+	/*{
+		int i;
+		printf("  op ");
+		for(i = 0; i < *sp_op; i++)
+			printf("%s ", ((struct operation_t*)op[i].value)->op);
+		printf("\n  num ");
+		for(i = 0; i < *sp_num; i++)
+		{
+			if(num[i].type == TYPE_RPF)
+				printf("rpf ");
+			else
+				printf("%f ", *((double*)num[i].value));
+		}
+		printf("\n");
+	}*/
+	
+	int sp_op2;
+	for( sp_op2 = *sp_op - 1; sp_op2 >= 0; sp_op2 --)
 	{
-		struct rpf_t rpf2;
-		
+		struct rpf_t rpf2, *rpf2_tmp;
+		int sp_num2;
+
+		rpf2_tmp = &rpf2;
 		rpf2.type = TYPE_START;
-		rpf_push( &rpf2, &num[*sp_num-1] );
-		(*sp_num) --;
-		
+
+		int num_cnt;
+		num_cnt = ((struct operation_t*)op[sp_op2].value)->narg;
+		if( num_cnt > *sp_num ) return NULL;
+		for( sp_num2 = *sp_num - num_cnt; sp_num2 < *sp_num; sp_num2 ++)
+		{
+			switch( num[sp_num2].type )
+			{
+			case TYPE_RPF:
+				rpf2_tmp = rpf_join( rpf2_tmp, num[sp_num2].value );
+				//printf(" rpf");
+				break;
+			default:
+				rpf2_tmp = rpf_push( rpf2_tmp, &num[sp_num2] );
+				//printf("%f ", *((double*)num[sp_num2].value));
+				break;
+			}
+		}
+		//printf("\n");
+		(*sp_num) -= num_cnt;
+		rpf2_tmp = rpf_push( rpf2_tmp, &op[sp_op2] );
+		(*sp_op) --;
+
 		num[*sp_num].rank = 0;
 		num[*sp_num].type = TYPE_RPF;
 		num[*sp_num].value = rpf2.next;
 		(*sp_num) ++;
-		
-		return NULL;
-	}
-	if( *sp_op <= 0 ) return NULL;
-	
-	if( op[*sp_op-1].rank >= rank )
-	{
-		int j;
-		struct rpf_t rpf2, *rpf2_tmp;
-		int narg;
-		struct rpf_t zero;
-		double _zero;
-		
-		_zero = 0;
-		zero.type = TYPE_VALUE;
-		zero.value = &_zero;
-		
-		rpf2_tmp = &rpf2;
-		rpf2.type = TYPE_START;
-		
-		narg = ((struct operation_t*)op[*sp_op-1].value)->narg;
-		if( narg > 0 )
-		{
-			int narg2;
 
-			if( op[*sp_op-1].type == TYPE_MATH )
-			{
-				narg = 1;
-			}
-			narg2 = 0;
-			for( j = -narg; j < 0; j ++ )
-			{
-				if( *sp_num + j < 0 )
-				{
-					rpf2_tmp = rpf_pushrpf( rpf2_tmp, &zero );
-				}
-				else
-				{
-					switch( num[*sp_num+j].type )
-					{
-					case TYPE_RPF:
-						rpf2_tmp = rpf_join( rpf2_tmp, num[*sp_num+j].value );
-						narg2 ++;
-						break;
-					default:
-						rpf2_tmp = rpf_push( rpf2_tmp, &num[*sp_num+j] );
-						narg2 ++;
-						break;
-					}
-				}
-			}
-			(*sp_num) -= narg2;
-		}
-		
-		rpf2_tmp = rpf_push( rpf2_tmp, &op[*sp_op-1] );
-		(*sp_op) --;
-		
-		return rpf2.next;
+		//formula_print(stdout, &rpf2);
+		//printf("\n");
 	}
-	return NULL;
+	return num[*sp_num - 1].value;
 }
 
 int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
@@ -381,17 +374,8 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 		}
 		else if( *expr == ',' )
 		{
-			while( 1 )
-			{
-				struct rpf_t *rpf2;
-				rpf2 = formula_output( num, &sp_num, op, &sp_op, 0 );
-				if( !rpf2 ) break;
-				
-				num[sp_num].rank = 0;
-				num[sp_num].type = TYPE_RPF;
-				num[sp_num].value = rpf2;
-				sp_num ++;
-			}
+			if( formula_output( num, &sp_num, op, &sp_op, 0 ) == NULL )
+				return 0;
 			op_cont = 0;
 			continue;
 		}
@@ -402,9 +386,21 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 		}
 		for( i = 0; operation[i].type != TYPE_MAX; i ++ )
 		{
-			if( strstr( expr, operation[i].op ) == expr && 
-				( operation[i].type != TYPE_MATH || !isalnum( *( expr + strlen( operation[i].op ) ) ) ) )
+			if( strstr( expr, operation[i].op ) == expr)
 			{
+				if( op[sp_op-1].rank == operation[i].rank )
+				{
+					int sp_op2;
+					sp_op2 = 1;
+					if( formula_output( num, &sp_num, op + sp_op - 1, &sp_op2, operation[i].rank ) == NULL )
+						return 0;
+					sp_op --;
+				}
+				else if( op[sp_op-1].rank > operation[i].rank )
+				{
+					if( formula_output( num, &sp_num, op, &sp_op, operation[i].rank ) == NULL )
+						return 0;
+				}
 				expr += strlen( operation[i].op );
 				for( ; isspace( *expr ); expr ++ );
 				
@@ -487,18 +483,6 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 						expr = end + 1;
 					}
 				}
-				if( sp_num > 0 )
-				{
-					struct rpf_t *rpf3;
-					rpf3 = formula_output( num, &sp_num, op, &sp_op, operation[i].rank );
-					if( rpf3 )
-					{
-						num[sp_num].rank = 0;
-						num[sp_num].type = TYPE_RPF;
-						num[sp_num].value = rpf3;
-						sp_num ++;
-					}
-				}
 				if( operation[i].type != TYPE_MATH )
 				{
 					op[sp_op].rank = operation[i].rank;
@@ -559,17 +543,8 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 			expr = end - 1;
 		}
 	}
-	while( 1 )
-	{
-		struct rpf_t *rpf2;
-		rpf2 = formula_output( num, &sp_num, op, &sp_op, 0 );
-		if( !rpf2 ) break;
-		
-		num[sp_num].rank = 0;
-		num[sp_num].type = TYPE_RPF;
-		num[sp_num].value = rpf2;
-		sp_num ++;
-	}
+	if( formula_output( num, &sp_num, op, &sp_op, 0 ) == NULL )
+		return 0;
 	if( sp_num < 0 || sp_op != 0 ) return 0;
 	
 	rpf_start.type = TYPE_START;

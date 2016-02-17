@@ -27,6 +27,11 @@
 #ifndef __FORMULA_CALC_H__
 #define __FORMULA_CALC_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdio.h>
 
 struct rpf_t
@@ -57,4 +62,7 @@ double formula_eval( struct rpf_t *rpf );
 struct rpf_t *formula_optimize( struct rpf_t *rpf );
 void formula_print( FILE *stream, struct rpf_t *rpf );
 
+#ifdef __cplusplus
+}
+#endif
 #endif

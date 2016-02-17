@@ -34,6 +34,51 @@
 #include "formula-calc.h"
 #include "formula.h"
 
+double math_b_and( double **val )
+{
+	return (*val[0] > 0) && (*val[1] > 0);
+}
+
+double math_b_or( double **val )
+{
+	return (*val[0] > 0) || (*val[1] > 0);
+}
+
+double math_b_not( double **val )
+{
+	return !(*val[0] > 0);
+}
+
+double math_eq( double **val )
+{
+	return *val[0] == *val[1];
+}
+
+double math_neq( double **val )
+{
+	return *val[0] != *val[1];
+}
+
+double math_gtr( double **val )
+{
+	return *val[0] > *val[1];
+}
+
+double math_geq( double **val )
+{
+	return *val[0] >= *val[1];
+}
+
+double math_lss( double **val )
+{
+	return *val[0] < *val[1];
+}
+
+double math_leq( double **val )
+{
+	return *val[0] <= *val[1];
+}
+
 double math_add( double **val )
 {
 	return *val[0] + *val[1];
@@ -165,35 +210,44 @@ double math_round( double **val )
 	return round( *val[0] );
 }
 
-#define OPERATION_MUL 2
+#define OPERATION_MUL 11
 struct operation_t operation[] =
 {
-	{ "+",     4, TYPE_OP,   math_add,   2 },
-	{ "-",     4, TYPE_OP,   math_sub,   2 },
-	{ "*",     5, TYPE_OP,   math_mul,   2 },
-	{ "/",     5, TYPE_OP,   math_div,   2 },
-	{ "^",     7, TYPE_OP,   math_pow,   2 },
-	{ "=",     2, TYPE_OP,   math_let,   2 },
-	{ "pi",    8, TYPE_MATH, math_pi,    0 },
-	{ "e",     8, TYPE_MATH, math_e,     0 },
-	{ "log10", 8, TYPE_MATH, math_log10, 1 },
-	{ "ln",    8, TYPE_MATH, math_ln,    1 },
-	{ "sin",   8, TYPE_MATH, math_sin,   1 },
-	{ "cos",   8, TYPE_MATH, math_cos,   1 },
-	{ "tan",   8, TYPE_MATH, math_tan,   1 },
-	{ "sinh",  8, TYPE_MATH, math_sinh,  1 },
-	{ "cosh",  8, TYPE_MATH, math_cosh,  1 },
-	{ "tanh",  8, TYPE_MATH, math_tanh,  1 },
-	{ "asin",  8, TYPE_MATH, math_asin,  1 },
-	{ "acos",  8, TYPE_MATH, math_acos,  1 },
-	{ "atan2", 8, TYPE_MATH, math_atan2, 2 },
-	{ "atan",  8, TYPE_MATH, math_atan,  1 },
-	{ "exp",   8, TYPE_MATH, math_exp,   1 },
-	{ "sqrt",  8, TYPE_MATH, math_sqrt,  1 },
-	{ "abs",   8, TYPE_MATH, math_fabs,  1 },
-	{ "sign",  8, TYPE_MATH, math_sign,  1 },
-	{ "round", 8, TYPE_MATH, math_round, 1 },
-	{ "mod",   8, TYPE_MATH, math_mod,   2 },
+	{ "==",     4, TYPE_OP,   math_eq,    2 },
+	{ "=",      1, TYPE_OP,   math_let,   2 },
+	{ "||",     2, TYPE_OP,   math_b_or,  2 },
+	{ "&&",     3, TYPE_OP,   math_b_and, 2 },
+	{ "!=",     4, TYPE_OP,   math_neq,   2 },
+	{ "<=",     5, TYPE_OP,   math_leq,   2 },
+	{ ">=",     5, TYPE_OP,   math_geq,   2 },
+	{ "<",      5, TYPE_OP,   math_lss,   2 },
+	{ ">",      5, TYPE_OP,   math_gtr,   2 },
+	{ "+",      7, TYPE_OP,   math_add,   2 },
+	{ "-",      7, TYPE_OP,   math_sub,   2 },
+	{ "*",      8, TYPE_OP,   math_mul,   2 },
+	{ "/",      8, TYPE_OP,   math_div,   2 },
+	{ "!",     11, TYPE_OP,   math_b_not, 1 },
+	{ "pi",    17, TYPE_MATH, math_pi,    0 },
+	{ "e",     17, TYPE_MATH, math_e,     0 },
+	{ "log10", 17, TYPE_MATH, math_log10, 1 },
+	{ "ln",    17, TYPE_MATH, math_ln,    1 },
+	{ "sin",   17, TYPE_MATH, math_sin,   1 },
+	{ "cos",   17, TYPE_MATH, math_cos,   1 },
+	{ "tan",   17, TYPE_MATH, math_tan,   1 },
+	{ "sinh",  17, TYPE_MATH, math_sinh,  1 },
+	{ "cosh",  17, TYPE_MATH, math_cosh,  1 },
+	{ "tanh",  17, TYPE_MATH, math_tanh,  1 },
+	{ "asin",  17, TYPE_MATH, math_asin,  1 },
+	{ "acos",  17, TYPE_MATH, math_acos,  1 },
+	{ "atan2", 17, TYPE_MATH, math_atan2, 2 },
+	{ "atan",  17, TYPE_MATH, math_atan,  1 },
+	{ "exp",   17, TYPE_MATH, math_exp,   1 },
+	{ "sqrt",  17, TYPE_MATH, math_sqrt,  1 },
+	{ "abs",   17, TYPE_MATH, math_fabs,  1 },
+	{ "sign",  17, TYPE_MATH, math_sign,  1 },
+	{ "round", 17, TYPE_MATH, math_round, 1 },
+	{ "mod",   17, TYPE_MATH, math_mod,   2 },
+	{ "pow",   17, TYPE_MATH, math_pow,   2 },
 	{ "",     -1, TYPE_MAX , NULL,       0 }
 };
 

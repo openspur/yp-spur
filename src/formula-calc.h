@@ -51,7 +51,7 @@ struct variables_t
 	double *pointer;
 };
 
-int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable );
+int formula( const char * expr, struct rpf_t **rpf, struct variables_t *variable );
 void formula_free( struct rpf_t *rpf );
 double formula_eval( struct rpf_t *rpf );
 struct rpf_t *formula_optimize( struct rpf_t *rpf );

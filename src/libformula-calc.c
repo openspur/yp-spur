@@ -376,7 +376,7 @@ struct rpf_t *formula_output( struct stack_t *num, int *sp_num, struct stack_t *
 	return num[*sp_num - 1].value;
 }
 
-int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
+int formula( const char *expr, struct rpf_t **rpf, struct variables_t *variable )
 {
 	int i;
 	struct stack_t op[ 256 ];
@@ -395,7 +395,7 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 		//printf( "[o%d/n%d] %s\n", sp_op, sp_num, expr );
 		if( *expr == '(' )
 		{
-			char *end;
+			const char *end;
 			int rank2;
 			struct rpf_t *rpf2;
 			
@@ -512,7 +512,7 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 					op_cont = 0;
 					if( operation[i].narg > 0 )
 					{
-						char *end;
+						const char *end;
 						int rank2;
 						struct rpf_t *rpf2;
 						
@@ -553,7 +553,7 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 		op_cont = 0;
 		if( isalpha( *expr ) )
 		{
-			char *end;
+			const char *end;
 			char variable_name[256];
 			int i;
 			
@@ -583,7 +583,7 @@ int formula( char *expr, struct rpf_t **rpf, struct variables_t *variable )
 		}
 		else
 		{
-			char *end;
+			const char *end;
 			
 			for( end = expr; *end; end ++ )
 			{

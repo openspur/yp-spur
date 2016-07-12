@@ -231,7 +231,10 @@ int main( int argc, char *argv[] )
 						continue;
 					}
 					sscanf( version.protocol, "YPP:%d:%d", &device_current, &device_age );
-					if( device_current - device_age > current || device_current < current )
+					param->device_version = device_current;
+					param->device_version_age = device_age;
+					if( device_current - device_age > current || 
+							device_current < current - age )
 					{
 						continue;
 					}
@@ -245,7 +248,8 @@ int main( int argc, char *argv[] )
 				yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				if( i == 3 )
 				{
-					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n" );
+					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n(Device: %s, coordinator: %s)\n",
+						  version.protocol, YP_PROTOCOL_NAME );
 					if( option( OPTION_RECONNECT ) && g_emergency == 0 )
 					{
 						yp_usleep( 500000 );
@@ -332,7 +336,7 @@ int main( int argc, char *argv[] )
 		}
 		{
 			int i;
-			for ( i = 0; i < YP_PARAM_MOTOR_NUM; i++ )
+			for ( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
 			{
 				*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
 			}
@@ -392,9 +396,12 @@ int main( int argc, char *argv[] )
 			}
 
 			/* サーボをかける */
-			if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) )
+			SpurUserParamsPtr spur;
+			spur = get_spur_user_param_ptr();
+			for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
 			{
-				motor_servo(  );
+				spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
+				spur->wheel_mode_prev[i] = -1;
 			}
 		}
 

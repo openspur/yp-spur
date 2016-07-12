@@ -4,14 +4,13 @@
 #include <command.h>
 #include <odometry.h>
 
-int robot_speed_smooth( double v, double w, SpurUserParamsPtr spur );
-int motor_speed_smooth( double r, double l, SpurUserParamsPtr spur );
-void robot_speed( double v, double w );
-void motor_speed( double r, double l );
+int robot_speed_smooth( SpurUserParamsPtr spur );
+void robot_speed( SpurUserParamsPtr spur );
+int motor_control( SpurUserParamsPtr spur );
+void apply_motor_torque( SpurUserParamsPtr spur );
+void apply_motor_speed( SpurUserParamsPtr spur );
 
-int reference_speed( double *v, double *w );
-void update_ref_speed( );
-int reference_motor_speed( double *wr, double *wl );
+void update_ref_speed( SpurUserParamsPtr spur );
 
 double timeoptimal_servo( double err, double vel_max, double vel, double acc );
 
@@ -23,7 +22,9 @@ double line_follow( OdometryPtr odm, SpurUserParamsPtr spur );
 int stop_line( OdometryPtr odm, SpurUserParamsPtr spur );
 double spin( OdometryPtr odm, SpurUserParamsPtr spur );
 double orient( OdometryPtr odm, SpurUserParamsPtr spur );
-double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur );
+void wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur );
+void wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur );
+void wheel_torque( OdometryPtr odm, SpurUserParamsPtr spur, double *torque );
 
 double regurator( double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur );
 

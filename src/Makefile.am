@@ -19,7 +19,7 @@ libypspur_md_la_CXXFLAGS = $(libypspur_la_CFLAGS)
 # 1. Bugfix                          C   : R++ : A
 # 2. Add Interface                   C++ : R=0 : A++
 # 3. Delete or Change Interface      C++ : R=0 : A=0
-libypspur_md_la_LDFLAGS = -version-info 15:4:1
+libypspur_md_la_LDFLAGS = -version-info 16:0:2
 
 ## libypspur
 libypspur_la_SOURCES = libypspur.c $(libypspur_md_la_SOURCES)
@@ -80,7 +80,7 @@ endif
 ## ypspur-coordinator
 ypspur_coordinator_SOURCES = ypspur-coordinator.c control_vehicle.c \
   control_motion.c param.c ipcommunication.c msq.win32.c command_ad.c yprintf.c \
-  command.c command_param.c command_set.c command_run.c command_get.c serial.c \
+  command.c command_param.c command_set.c command_run.c command_get.c command_joint.c serial.c \
   ypprotocol.c odometry.c utility.c ssm_spur_handler.c communication.c adinput.c
 
 ypspur_coordinator_CFLAGS = $(AM_CFLAGS) -I$(top_srcdir)/auxlib/formula-calc/src

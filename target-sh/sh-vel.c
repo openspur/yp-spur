@@ -271,7 +271,7 @@ int extended_command_analyze( int channel, char *data )
 		sci_send_txt( channel, "; \nFIRM:" );
 		sci_send_txt( channel, YP_FIRMWARE_NAME );
 		sci_send_txt( channel, "; \nPROT:" );
-		sci_send_txt( channel, YP_PROTOCOL_NAME );
+		sci_send_txt( channel, YP_PROTOCOL_NAME_DEVICE );
 		sci_send_txt( channel, "; \nSERI:Reserved; \n\n" );
 		// set long timeout
 		watch_dog = -1000;

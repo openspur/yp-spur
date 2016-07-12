@@ -53,6 +53,8 @@ typedef enum
 	PARAM_enc_rev,
 	PARAM_motor_phase,
 	PARAM_vsrc,
+	PARAM_p_inertia_self,
+	PARAM_p_inertia_cross,
 	PARAM_enc_type,
 	PARAM_control_cycle,
 	PARAM_servo = 64,
@@ -60,7 +62,7 @@ typedef enum
 	PARAM_io_dir = 96,
 	PARAM_io_data,
 	PARAM_ad_mask,
-	PARAM_phase_offset
+	PARAM_phase_offset,
 } YPSpur_shvel_param;
 
 #endif

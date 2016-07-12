@@ -36,10 +36,10 @@
 #include <pthread.h>
 
 
-double g_P[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-int g_P_changed[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-double g_P_set[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
-struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MOTOR_NUM];
+double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+double g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
 int g_param_init = 1;
@@ -401,8 +401,9 @@ void param_calc(  )
 	int i, j;
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 		{
+			if( !g_param.motor_enable[j] ) continue;
 			if( g_Pf[i][j] )
 			{
 				double d;
@@ -420,11 +421,26 @@ int set_paramptr( FILE * paramfile )
 	char param_names0[YP_PARAM_NUM][24] = YP_PARAM_NAME;
 	char param_names1[YP_PARAM_NUM][24] = YP_PARAM_NAME;
 	int param_necessary[YP_PARAM_NUM] = YP_PARAM_NECESSARY;
-#define VARIABLE_NUM 9
+#define VARIABLE_NUM 37
 	char variable_names[VARIABLE_NUM][20] = 
 	{
 		"X", "Y", "THETA", "V", "W",
-		"WHEEL_VEL[0]", "WHEEL_VEL[1]", "WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]"
+		"WHEEL_VEL[0]", "WHEEL_VEL[1]", 
+		"WHEEL_VEL[2]", "WHEEL_VEL[3]", 
+		"WHEEL_VEL[4]", "WHEEL_VEL[5]", 
+		"WHEEL_VEL[6]", "WHEEL_VEL[7]", 
+		"WHEEL_VEL[8]", "WHEEL_VEL[9]", 
+		"WHEEL_VEL[10]", "WHEEL_VEL[11]", 
+		"WHEEL_VEL[12]", "WHEEL_VEL[13]", 
+		"WHEEL_VEL[14]", "WHEEL_VEL[15]", 
+		"WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]",
+		"WHEEL_ANGLE[2]", "WHEEL_ANGLE[3]",
+		"WHEEL_ANGLE[4]", "WHEEL_ANGLE[5]",
+		"WHEEL_ANGLE[6]", "WHEEL_ANGLE[7]",
+		"WHEEL_ANGLE[8]", "WHEEL_ANGLE[9]",
+		"WHEEL_ANGLE[10]", "WHEEL_ANGLE[11]",
+		"WHEEL_ANGLE[12]", "WHEEL_ANGLE[13]",
+		"WHEEL_ANGLE[14]", "WHEEL_ANGLE[15]",
 	};
 	struct variables_t variables[YP_PARAM_NUM * 3 + 1 + VARIABLE_NUM];
 	struct
@@ -462,17 +478,17 @@ int set_paramptr( FILE * paramfile )
 	variables[i++].pointer = &odm->theta;
 	variables[i++].pointer = &odm->v;
 	variables[i++].pointer = &odm->w;
-	variables[i++].pointer = &odm->wr;
-	variables[i++].pointer = &odm->wl;
-	variables[i++].pointer = &odm->theta_r;
-	variables[i++].pointer = &odm->theta_l;
+	for(j = 0; j < 16; j ++)
+		variables[i++].pointer = &odm->wvel[j];
+	for(j = 0; j < 16; j ++)
+		variables[i++].pointer = &odm->wang[j];
 	variables[i].name = NULL;
 	variables[i].pointer = NULL;
 
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 		{
 			g_P_changed[i][j] = 0;
 		}
@@ -480,12 +496,15 @@ int set_paramptr( FILE * paramfile )
 	if( g_param_init )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+		{
 			g_P_changed[YP_PARAM_PWM_MAX][j] = 1;
+			g_param.motor_enable[j] = 0;
+		}
 		// パラメータの初期化
 		for ( i = 0; i < YP_PARAM_NUM; i++ )
 		{
-			for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+			for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 			{
 				g_P[i][j] = 0;
 				g_P_set[i][j] = 0;
@@ -614,7 +633,7 @@ int set_paramptr( FILE * paramfile )
 				else if( motor_num == -1 )
 				{
 					int j;
-					for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+					for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 					{
 						g_P[param_num][j] = strtod( value_str, 0 );
 						g_P_set[param_num][j] = 1;
@@ -632,6 +651,7 @@ int set_paramptr( FILE * paramfile )
 					g_P[param_num][motor_num] = strtod( value_str, 0 );
 					g_P_set[param_num][motor_num] = 1;
 					g_P_changed[param_num][motor_num] = 1;
+					g_param.motor_enable[motor_num] = 1;
 					if( g_Pf[param_num][motor_num] )
 					{
 						formula_free( g_Pf[param_num][motor_num] );
@@ -664,7 +684,7 @@ int set_paramptr( FILE * paramfile )
 				else if( motor_num == -1 )
 				{
 					int j;
-					for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+					for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 					{
 						g_P[param_num][j] = 0;
 						g_P_set[param_num][j] = 1;
@@ -678,7 +698,7 @@ int set_paramptr( FILE * paramfile )
 					}
 					else
 					{
-						for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+						for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 						{
 							g_Pf[param_num][j] = formula_optimize( g_Pf[param_num][j] );
 						}
@@ -741,8 +761,9 @@ int set_paramptr( FILE * paramfile )
 	param_error = 0;
 	for ( i = 0; i < YP_PARAM_NUM; i++ )
 	{
-		for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+		for( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j ++ )
 		{
+			if( !g_param.motor_enable[j] ) continue;
 			if( param_necessary[i] && !g_P_set[i][j] )
 			{
 				yprintf( OUTPUT_LV_ERROR, "Error: %s[%d] undefined!\n", param_names[i], j );
@@ -755,8 +776,14 @@ int set_paramptr( FILE * paramfile )
 		return 0;
 	}
 
-	for( j = 0; j < YP_PARAM_MOTOR_NUM; j ++ )
+	g_param.num_motor_enable = 0;
+	for( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j ++ )
 	{
+		// Count motor number
+		if( !g_param.motor_enable[j] ) continue;
+		g_param.num_motor_enable ++;
+
+		// Check undefined parameters
 		if( !g_P_set[YP_PARAM_TORQUE_LIMIT][j] )
 		{
 			yprintf( OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undefined. TORQUE_MAX[%d] will be used.\n", j, j );
@@ -765,6 +792,12 @@ int set_paramptr( FILE * paramfile )
 		}
 		g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
 		g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS,j);
+
+		if( !g_P_set[YP_PARAM_VEHICLE_CONTROL][j] )
+		{
+			if( j < 2 ) g_P[YP_PARAM_VEHICLE_CONTROL][j] = 1.0;
+			else g_P[YP_PARAM_VEHICLE_CONTROL][j] = 0.0;
+		}
 	}
 
 	// パラメータの指定によって自動的に求まるパラメータの計算
@@ -775,6 +808,8 @@ int set_paramptr( FILE * paramfile )
 	enable_state( YP_STATE_VELOCITY );
 	enable_state( YP_STATE_BODY );
 	enable_state( YP_STATE_TRACKING );
+
+	yprintf( OUTPUT_LV_PARAM, "Info: %d motors defined\n", g_param.num_motor_enable );
 
 	return 1;
 }
@@ -908,8 +943,11 @@ int apply_robot_params(  )
 	if( g_param_init )
 	{
 		int j;
-		for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+		{
+			if( !g_param.motor_enable[j] ) continue;
 			parameter_set( PARAM_w_ref, j, 0 );
+		}
 		g_param_init = 0;
 	}
 	/* モータのパラメータ */
@@ -928,14 +966,13 @@ int apply_robot_params(  )
 void calc_param_inertia2ff( void )
 {
 	int i;
-	double A, B, C, D, E, F;					// 制御パラメータ
+	double A, B, C, D;							// 制御パラメータ
 	double M, J;								// ロボットの質量、慣性モーメント
 	double Gr, Gl;								// ギア比
 	double Jmr, Jml;							// モータの慣性モーメント
 	double Jtr, Jtl;							// タイヤの慣性モーメント
 	double Rr, Rl;								// タイヤ半径
 	double T;									// トレッド
-	double fr, fl;								// 動摩擦係数
 
 	// パラメータの代入
 	M = g_P[YP_PARAM_MASS][0];
@@ -949,23 +986,23 @@ void calc_param_inertia2ff( void )
 	Rr = g_P[YP_PARAM_RADIUS][0];
 	Rl = g_P[YP_PARAM_RADIUS][1];
 	T = g_P[YP_PARAM_TREAD][0];
-	fl = fr = 0.0;	// モータ制御器の中に摩擦補償が入っているのでいらない？
 
 	// パラメータの計算
 	A = ( Gr * Gr * Jmr + Jtr + Rr * Rr / 2.0 * ( M / 2.0 + J / ( T * T ) ) ) / Gr;
 	B = ( Gl * Gl * Jml + Jtl + Rl * Rl / 2.0 * ( M / 2.0 + J / ( T * T ) ) ) / Gl;
 	C = ( Rr * Rl / 2.0 * ( M / 2.0 - J / ( T * T ) ) ) / Gr;
 	D = ( Rr * Rl / 2.0 * ( M / 2.0 - J / ( T * T ) ) ) / Gl;
-	E = fr / Gr;
-	F = fl / Gl;
 
 	// パラメータの設定
 	g_P[YP_PARAM_GAIN_A][0] = A;
 	g_P[YP_PARAM_GAIN_B][0] = B;
 	g_P[YP_PARAM_GAIN_C][0] = C;
 	g_P[YP_PARAM_GAIN_D][0] = D;
-	g_P[YP_PARAM_GAIN_E][0] = E;
-	g_P[YP_PARAM_GAIN_F][0] = F;
+
+	g_P[YP_PARAM_INERTIA_SELF][0] = A;
+	g_P[YP_PARAM_INERTIA_SELF][1] = B;
+	g_P[YP_PARAM_INERTIA_CROSS][0] = C;
+	g_P[YP_PARAM_INERTIA_CROSS][1] = D;
 
 	if( ischanged_p(YP_PARAM_MASS,0) ||
 			ischanged_p(YP_PARAM_MOMENT_INERTIA,0) ||
@@ -983,13 +1020,36 @@ void calc_param_inertia2ff( void )
 		g_P_changed[YP_PARAM_GAIN_B][0] = 1;
 		g_P_changed[YP_PARAM_GAIN_C][0] = 1;
 		g_P_changed[YP_PARAM_GAIN_D][0] = 1;
-		g_P_changed[YP_PARAM_GAIN_E][0] = 1;
-		g_P_changed[YP_PARAM_GAIN_F][0] = 1;
+		g_P_changed[YP_PARAM_INERTIA_SELF][0] = 1;
+		g_P_changed[YP_PARAM_INERTIA_CROSS][0] = 1;
+		g_P_changed[YP_PARAM_INERTIA_SELF][1] = 1;
+		g_P_changed[YP_PARAM_INERTIA_CROSS][1] = 1;
+	}
+	for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++ )
+	{
+		if( !g_param.motor_enable[i] ) continue;
+		if( p(YP_PARAM_VEHICLE_CONTROL, i) > 0 ) continue;
+
+		g_P[YP_PARAM_INERTIA_SELF][i] = 
+			g_P[YP_PARAM_GEAR][i] * g_P[YP_PARAM_MOTOR_M_INERTIA][i]
+		   	+ g_P[YP_PARAM_TIRE_M_INERTIA][i] / g_P[YP_PARAM_GEAR][i];
+		g_P[YP_PARAM_INERTIA_CROSS][i] = 0;
+
+		if( ischanged_p(YP_PARAM_GEAR, i) ||
+				ischanged_p(YP_PARAM_MOTOR_M_INERTIA, i) ||
+				ischanged_p(YP_PARAM_TIRE_M_INERTIA, i) )
+		{
+			g_P_changed[YP_PARAM_INERTIA_SELF][i] = 1;
+			g_P_changed[YP_PARAM_INERTIA_CROSS][i] = 1;
+		}
 	}
 	// 出力（デバッグ）
-	for ( i = 0; i < 6; i++ )
+	for ( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
 	{
-		yprintf( OUTPUT_LV_PARAM, " %c %f\n", 'A' + i, g_P[YP_PARAM_GAIN_A + i][0] );
+		if( !g_param.motor_enable[i] ) continue;
+
+		yprintf( OUTPUT_LV_DEBUG, " LOAD_INERTIA_SELF[%d]  %f\n", i, g_P[YP_PARAM_INERTIA_SELF][i] );
+		yprintf( OUTPUT_LV_DEBUG, " LOAD_INERTIA_CROSS[%d] %f\n", i, g_P[YP_PARAM_INERTIA_CROSS][i] );
 	}
 }
 
@@ -999,8 +1059,9 @@ void set_param_motor( void )
 	double tvc;									// 変換用定数
 	int j;
 	// モータのパラメータ
-	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 	{
+		if( !g_param.motor_enable[j] ) continue;
 		if( ischanged_p(YP_PARAM_VOLT,j) )
 		{
 			parameter_set( PARAM_vsrc, j, g_P[YP_PARAM_VOLT][j] * 256 );
@@ -1124,45 +1185,78 @@ void set_param_motor( void )
 
 void set_param_velocity( void )
 {
-	double ffr, ffl;
 	int j;
 	// ウォッチドックタイマの設定
-	parameter_set( PARAM_watch_dog_limit, 0, 300 );
-
-	// FF制御パラメータ
-	// A-F単位 [kgf・m・m] * wheel_acc[rad/ss]
-	//				wheel_acc[rad/ss] = 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
-	//  = [kgf・m・m] * 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
-
-	if( ischanged_p(YP_PARAM_TORQUE_UNIT,0) ||
-			ischanged_p(YP_PARAM_COUNT_REV,0) ||
-			ischanged_p(YP_PARAM_GEAR,0) )
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 	{
-		ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * g_P[YP_PARAM_GEAR][0] );
-		if( ischanged_p(YP_PARAM_GAIN_A,0) )
-			parameter_set( PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr );
-		if( ischanged_p(YP_PARAM_GAIN_C,0) )
-			parameter_set( PARAM_p_C, 0, g_P[YP_PARAM_GAIN_C][0] * ffr );
-		if( ischanged_p(YP_PARAM_GAIN_E,0) )
-			parameter_set( PARAM_p_E, 0, g_P[YP_PARAM_GAIN_E][0] * ffr );
+		if( !g_param.motor_enable[j] ) continue;
+		parameter_set( PARAM_watch_dog_limit, j, 300 );
 	}
 
-	if( ischanged_p(YP_PARAM_TORQUE_UNIT,1) ||
-			ischanged_p(YP_PARAM_COUNT_REV,1) ||
-			ischanged_p(YP_PARAM_GEAR,1) )
+	if( g_param.device_version <= 6 )
 	{
+		double ffr, ffl;
+		int ffr_changed = 0, ffl_changed = 0;
+
+		// FF制御パラメータ
+		// A-F単位 [kgf・m・m] * wheel_acc[rad/ss]
+		//				wheel_acc[rad/ss] = 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+		//  = [kgf・m・m] * 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+
+		if( ischanged_p(YP_PARAM_TORQUE_UNIT,0) ||
+				ischanged_p(YP_PARAM_COUNT_REV,0) ||
+				ischanged_p(YP_PARAM_GEAR,0) )
+		{
+			ffr_changed = 1;
+		}
+		ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * g_P[YP_PARAM_GEAR][0] );
+		if( ischanged_p(YP_PARAM_GAIN_A,0) || ffr_changed )
+			parameter_set( PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr );
+		if( ischanged_p(YP_PARAM_GAIN_C,0) || ffr_changed )
+			parameter_set( PARAM_p_C, 0, g_P[YP_PARAM_GAIN_C][0] * ffr );
+		if( ischanged_p(YP_PARAM_GAIN_E,0) || ffr_changed )
+			parameter_set( PARAM_p_E, 0, g_P[YP_PARAM_GAIN_E][0] * ffr );
+
+		if( ischanged_p(YP_PARAM_TORQUE_UNIT,1) ||
+				ischanged_p(YP_PARAM_COUNT_REV,1) ||
+				ischanged_p(YP_PARAM_GEAR,1) )
+		{
+			ffl_changed = 1;
+		}
 		ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / ( g_P[YP_PARAM_COUNT_REV][1] * g_P[YP_PARAM_GEAR][1] );
-		if( ischanged_p(YP_PARAM_GAIN_B,0) )
+		if( ischanged_p(YP_PARAM_GAIN_B,0) || ffl_changed )
 			parameter_set( PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl );
-		if( ischanged_p(YP_PARAM_GAIN_D,0) )
+		if( ischanged_p(YP_PARAM_GAIN_D,0) || ffl_changed )
 			parameter_set( PARAM_p_D, 0, g_P[YP_PARAM_GAIN_D][0] * ffl );
-		if( ischanged_p(YP_PARAM_GAIN_F,0) )
+		if( ischanged_p(YP_PARAM_GAIN_F,0) || ffl_changed )
 			parameter_set( PARAM_p_F, 0, g_P[YP_PARAM_GAIN_F][0] * ffl );
 	}
-
 	// PI制御のパラメータ
-	for ( j = 0; j < YP_PARAM_MOTOR_NUM; j++ )
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 	{
+		if( !g_param.motor_enable[j] ) continue;
+
+		if( g_param.device_version > 6 )
+		{
+			int ff_changed = 0;
+			double ff = 256.0 * 2.0 * M_PI
+				* g_P[YP_PARAM_TORQUE_UNIT][j] / ( g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
+			if( ischanged_p(YP_PARAM_TORQUE_UNIT,j) ||
+					ischanged_p(YP_PARAM_COUNT_REV,j) ||
+					ischanged_p(YP_PARAM_GEAR,j) )
+			{
+				ff_changed = 1;
+			}
+			if( ischanged_p(YP_PARAM_INERTIA_SELF, j) || ff_changed )
+			{	parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
+				printf("SELF%d  %d\n", j, (int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff));
+			}
+			if( ischanged_p(YP_PARAM_INERTIA_CROSS, j) || ff_changed )
+			{	parameter_set( PARAM_p_inertia_cross, j, g_P[YP_PARAM_INERTIA_CROSS][j] * ff );
+				printf("CROSS%d %d\n", j, (int)(g_P[YP_PARAM_INERTIA_CROSS][j] * ff));
+			}
+		}
+
 		// [1/s]
 		if( ischanged_p(YP_PARAM_GAIN_KP,j) )
 			parameter_set( PARAM_p_pi_kp, j, g_P[YP_PARAM_GAIN_KP][j] );
@@ -1182,30 +1276,4 @@ void set_param_velocity( void )
 	}
 }
 
-void motor_stop( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_COUNTER );
-}
-
-void motor_free( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
-}
-
-void motor_openfree( void )
-{
-	parameter_set( PARAM_servo, 0, SERVO_LEVEL_OPENFREE );
-}
-
-void motor_servo( void )
-{
-	if( option( OPTION_PASSIVE ) )
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_TORQUE );
-	}
-	else
-	{
-		parameter_set( PARAM_servo, 0, SERVO_LEVEL_VELOCITY );
-	}
-}
 

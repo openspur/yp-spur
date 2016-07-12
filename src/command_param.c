@@ -106,7 +106,9 @@ void param_state_com( int cs, double *data, SpurUserParamsPtr spur )
 	}
 	if( cs == YP_STATE_BODY && data[0] == ENABLE )
 	{
-		robot_speed( 0, 0 );
+		spur->vref_smooth = 0;
+		spur->wref_smooth = 0;
+		robot_speed( spur );
 		odometry->x = 0;
 		odometry->y = 0;
 		odometry->theta = 0;

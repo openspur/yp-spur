@@ -2,6 +2,7 @@
 #define __COMMAND__
 #include <ypspur.h>
 #include <ipcommunication.h>
+#include <ypparam.h>
 
 typedef enum
 {
@@ -19,6 +20,15 @@ typedef enum
 	RUN_WHEEL_ANGLE
 } SpurRunMode;
 
+typedef enum
+{
+	MOTOR_CONTROL_OPENFREE,
+	MOTOR_CONTROL_FREE,
+	MOTOR_CONTROL_VEHICLE,
+	MOTOR_CONTROL_VEL,
+	MOTOR_CONTROL_ANGLE
+} MotorControlMode;
+
 typedef struct _spur_user_params *SpurUserParamsPtr;
 typedef struct _spur_user_params
 {
@@ -28,20 +38,20 @@ typedef struct _spur_user_params
 	double w;
 	double vref;
 	double wref;
-	double wrref;
-	double wlref;
+	double vref_smooth;
+	double wref_smooth;
+	double wvelref[YP_PARAM_MAX_MOTOR_NUM];
 	double x;
 	double y;
-	double torque_r;
-	double torque_l;
-	double grav_torque_r;
-	double grav_torque_l;
-	double wheel_accel_r;
-	double wheel_accel_l;
-	double wheel_vel_r;
-	double wheel_vel_l;
-	double wheel_angle_r;
-	double wheel_angle_l;
+	double torque[YP_PARAM_MAX_MOTOR_NUM];
+	double torque_prev[YP_PARAM_MAX_MOTOR_NUM];
+	double grav_torque[YP_PARAM_MAX_MOTOR_NUM];
+	double wheel_accel[YP_PARAM_MAX_MOTOR_NUM];
+	double wheel_vel[YP_PARAM_MAX_MOTOR_NUM];
+	double wheel_vel_smooth[YP_PARAM_MAX_MOTOR_NUM];
+	double wheel_angle[YP_PARAM_MAX_MOTOR_NUM];
+	MotorControlMode wheel_mode[YP_PARAM_MAX_MOTOR_NUM];
+	MotorControlMode wheel_mode_prev[YP_PARAM_MAX_MOTOR_NUM];
 	double theta;
 	double radius;
 	double tilt;
@@ -50,6 +60,7 @@ typedef struct _spur_user_params
 	int freeze;
 	int before_freeze;
 	SpurRunMode run_mode;
+	int run_mode_cnt;
 	SpurRunMode before_run_mode;
 	pthread_mutex_t mutex;
 } SpurUserParams;
@@ -113,5 +124,14 @@ void param_state_com( int cs, double *data, SpurUserParamsPtr spur );
 void get_ad_com( double *data, double *resdata );
 void set_io_dir_com( double *data, double *resdata );
 void set_io_data_com( double *data, double *resdata );
+
+void joint_torque_com( int id, double *data, SpurUserParamsPtr spur );
+void joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
+void joint_ang_com( int id, double *data, SpurUserParamsPtr spur );
+void set_joint_accel_com( int id, double *data, SpurUserParamsPtr spur );
+void set_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
+void get_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
+void get_joint_vref_com( int id, double *data, SpurUserParamsPtr spur );
+void get_joint_ang_com( int id, double *data, SpurUserParamsPtr spur );
 
 #endif

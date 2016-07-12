@@ -83,6 +83,7 @@ extern "C"
 
 		// モータパラメータ
 		YP_PARAM_COUNT_REV,
+		YP_PARAM_ENCODER_TYPE,
 		YP_PARAM_VOLT,
 		YP_PARAM_CYCLE,
 		YP_PARAM_GEAR,
@@ -162,7 +163,7 @@ extern "C"
 #define YP_PARAM_NAME \
 	{\
 		"VERSION", "_TORQUE_UNIT", "TORQUE_FINENESS",\
-		"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
+		"_PWM_RESOLUTION", "COUNT_REV", "ENCODER_TYPE", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
 		"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 		"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 		"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
@@ -179,7 +180,7 @@ extern "C"
 #define YP_PARAM_NECESSARY \
 	{\
 		1, 0, 1,\
-		0, 1, 1, 1, 1, 1, 1, 1, 0,\
+		0, 1, 0, 1, 1, 1, 1, 1, 1, 0,\
 		1, 0, 0, 1, 1,\
 		1, 1, 1, 1, 1,\
 		1, 1, 1, 1, 1, 1, 1,\
@@ -196,7 +197,7 @@ extern "C"
 #define YP_PARAM_COMMENT \
 	{\
 		"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication","[Nm] Calculation fineness of torque control",\
-		"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
+		"[Counts] PWM cycle","[Counts/rev] Encoder specification","Encoder type (2:2-phase incremental, 3:3-phase incremental)","[V] Power source voltage","[s] Velocity control cycle", \
 		"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
 		"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
 		"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\

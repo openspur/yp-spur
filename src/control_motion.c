@@ -183,21 +183,9 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 			spur->dv );
 	over = 0;
 
-	if( fabs( spur->v ) <= fabs( vel ) )
-	{
-		SpurUserParams spur_line;
-
-		spur_line = *spur;
-		spur_line.v = -SIGN( a ) * fabs( spur->v );
-
-		line_follow( odm, &spur_line );
-	}
-	else
-	{
-		q = odm->theta - spur->theta;
-		q = trans_q( q );
-		regurator( 0, q, 1000, vel, spur->w, spur );
-	}
+	q = odm->theta - spur->theta;
+	q = trans_q( q );
+	regurator( 0, q, 1000, vel, spur->w, spur );
 
 	if( a > 0.05 )
 	{

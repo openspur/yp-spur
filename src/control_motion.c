@@ -92,7 +92,9 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 
 
 	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( spur->wref_smooth );
-	wref = v_max / r;
+	if( v * v_max < 0 ) v = 0;
+
+	wref = v / r;
 	if( wref > fabs( w_max ) )
 		wref = fabs( w_max );
 	else if( wref < -fabs( w_max ) )
@@ -106,8 +108,6 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 	w = spur->wref_smooth -
 		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1, 0 ) * cd +
 							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( spur->wref_smooth - wref ) );
-
-	v = v_max;
 
 	spur->vref_smooth = v;
 	spur->wref_smooth = w;

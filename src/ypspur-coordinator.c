@@ -238,6 +238,19 @@ int main( int argc, char *argv[] )
 					{
 						continue;
 					}
+					if( device_current != current )
+					{
+						if( device_current < current )
+						{
+							yprintf( OUTPUT_LV_WARNING, "Recommendation: Device protocol version is not latest.\n" );
+							yprintf( OUTPUT_LV_WARNING, "Recommendation: Firmware update is recommended.\n" );
+						}
+						else
+						{
+							yprintf( OUTPUT_LV_WARNING, "Recommendation: ypspur-coordinator protocol version is not latest.\n" );
+							yprintf( OUTPUT_LV_WARNING, "Recommendation: Software update is recommended.\n" );
+						}
+					}
 					break;
 				}
 				yprintf( OUTPUT_LV_PARAM, " Vender  : %s\033[K\n", version.vender );
@@ -370,7 +383,7 @@ int main( int argc, char *argv[] )
 			if (ret == 4)
 			{
 				// ボーレートの設定未対応
-				yprintf( OUTPUT_LV_WARNING, "Warn: Baudrate setting is not supported on this device.\n" );
+				yprintf( OUTPUT_LV_WARNING, "Info: Baudrate setting is not supported on this device.\n" );
 			}
 			else 
 			{

@@ -3036,7 +3036,7 @@ $as_echo "#define YP_PRODUCT_NAME \"Yamabico Project - Spur\"" >>confdefs.h
 $as_echo "#define YP_FIRMWARE_NAME \"2015.11.15\"" >>confdefs.h
 
 
-$as_echo "#define YP_PROTOCOL_NAME \"YPP:07:01\"" >>confdefs.h
+$as_echo "#define YP_PROTOCOL_NAME \"YPP:08:02\"" >>confdefs.h
 
 
 $as_echo "#define YP_PROTOCOL_NAME_DEVICE \"YPP:06:00\"" >>confdefs.h

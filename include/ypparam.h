@@ -8,7 +8,9 @@ extern "C"
 #endif											// __cplusplus
 
 #if defined(_WIN32)
-	typedef int pid_t;
+#   if !defined(_WIN64) 
+	        typedef int pid_t;
+#   endif
 #else
 #	include <unistd.h>
 #endif

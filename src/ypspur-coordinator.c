@@ -215,13 +215,13 @@ int main( int argc, char *argv[] )
 			if( !( option( OPTION_DO_NOT_USE_YP ) ) )
 			{
 				int current, age;
+				int device_current, device_age;
 				sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
 
 				yprintf( OUTPUT_LV_PROCESS, " Checking device information...\r" );
 				for ( i = 0; i < 3; i++ )
 				{
-					int device_current, device_age;
-					// プロトコルがYPであることを確認
+					// Check protocol version
 					if( get_version( &version ) == -1 )
 					{
 						continue;
@@ -237,19 +237,6 @@ int main( int argc, char *argv[] )
 							device_current < current - age )
 					{
 						continue;
-					}
-					if( device_current != current )
-					{
-						if( device_current < current )
-						{
-							yprintf( OUTPUT_LV_WARNING, "Recommendation: Device protocol version is not latest.\n" );
-							yprintf( OUTPUT_LV_WARNING, "Recommendation: Firmware update is recommended.\n" );
-						}
-						else
-						{
-							yprintf( OUTPUT_LV_WARNING, "Recommendation: ypspur-coordinator protocol version is not latest.\n" );
-							yprintf( OUTPUT_LV_WARNING, "Recommendation: Software update is recommended.\n" );
-						}
 					}
 					break;
 				}
@@ -269,6 +256,20 @@ int main( int argc, char *argv[] )
 						continue;
 					}
 					break;						// quit=0でbreakしたら異常終了と判断
+				}
+				if( device_current != current )
+				{
+					if( device_current < current )
+					{
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Device protocol version is not latest.\n" );
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Firmware update is recommended.\n" );
+					}
+					else
+					{
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: ypspur-coordinator protocol version is not latest.\n" );
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Software update is recommended.\n" );
+					}
+					yprintf( OUTPUT_LV_WARNING, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				}
 			}
 			fflush( stderr );

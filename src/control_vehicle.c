@@ -195,9 +195,12 @@ void update_ref_speed( SpurUserParamsPtr spur )
 void robot_speed( SpurUserParamsPtr spur )
 {
 	int i;
+	int vc_i;
+
 	ParametersPtr param;
 	param = get_param_ptr();
 
+	vc_i = 0;
 	for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++ )
 	{
 		if( !param->motor_enable[i] ) continue;
@@ -206,13 +209,23 @@ void robot_speed( SpurUserParamsPtr spur )
 		{
 			spur->wheel_vel_smooth[i] = 0;
 			spur->wheel_mode[i] = MOTOR_CONTROL_VEHICLE;
+
+			switch(vc_i)
+			{
+			case 0:
+				spur->wheel_vel_smooth[i] =  ( 0.5 * spur->wref_smooth * p( YP_PARAM_TREAD, 0 )
+						+ spur->vref_smooth ) / p( YP_PARAM_RADIUS, i );
+				break;
+			case 1:
+				spur->wheel_vel_smooth[i] = -( 0.5 * spur->wref_smooth * p( YP_PARAM_TREAD, 0 )
+						- spur->vref_smooth ) / p( YP_PARAM_RADIUS, i );
+				break;
+			default:
+				break;
+			}
+			vc_i ++;
 		}
 	}
-
-	spur->wheel_vel_smooth[0] =  ( 0.5 * spur->wref_smooth * p( YP_PARAM_TREAD, 0 ) + spur->vref_smooth )
-		/ p( YP_PARAM_RADIUS, MOTOR_RIGHT );
-	spur->wheel_vel_smooth[1] = -( 0.5 * spur->wref_smooth * p( YP_PARAM_TREAD, 0 ) - spur->vref_smooth )
-		/ p( YP_PARAM_RADIUS, MOTOR_LEFT );
 }
 
 void wheel_vel( OdometryPtr odm, SpurUserParamsPtr spur )

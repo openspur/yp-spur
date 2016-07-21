@@ -1187,6 +1187,9 @@ void set_param_motor( void )
 		{
 			parameter_set( PARAM_enc_rev, j, g_P[YP_PARAM_COUNT_REV][j] );
 		}
+
+		// Sleep to keep bandwidth margin
+		yp_usleep( 20000 );
 	}
 }
 

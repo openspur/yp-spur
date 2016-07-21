@@ -797,6 +797,13 @@ int set_paramptr( FILE * paramfile )
 		{
 			if( j < 2 ) g_P[YP_PARAM_VEHICLE_CONTROL][j] = 1.0;
 			else g_P[YP_PARAM_VEHICLE_CONTROL][j] = 0.0;
+			g_P_changed[YP_PARAM_VEHICLE_CONTROL][j] = 1;
+		}
+
+		if( !g_P_set[YP_PARAM_ENCODER_TYPE][j] )
+		{
+			g_P[YP_PARAM_ENCODER_TYPE][j] = 2.0;
+			g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
 		}
 	}
 

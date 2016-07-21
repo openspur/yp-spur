@@ -1255,12 +1255,12 @@ void set_param_velocity( void )
 				ff_changed = 1;
 			}
 			if( ischanged_p(YP_PARAM_INERTIA_SELF, j) || ff_changed )
-			{	parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
-				printf("SELF%d  %d\n", j, (int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff));
+			{
+				parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
 			}
 			if( ischanged_p(YP_PARAM_INERTIA_CROSS, j) || ff_changed )
-			{	parameter_set( PARAM_p_inertia_cross, j, g_P[YP_PARAM_INERTIA_CROSS][j] * ff );
-				printf("CROSS%d %d\n", j, (int)(g_P[YP_PARAM_INERTIA_CROSS][j] * ff));
+			{
+				parameter_set( PARAM_p_inertia_cross, j, g_P[YP_PARAM_INERTIA_CROSS][j] * ff );
 			}
 		}
 

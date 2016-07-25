@@ -91,7 +91,7 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 	double wref;
 
 
-	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( spur->wref_smooth );
+	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( spur->wref );
 	if( v * v_max < 0 ) v = 0;
 
 	wref = v / r;
@@ -109,8 +109,8 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1, 0 ) * cd +
 							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( spur->wref_smooth - wref ) );
 
-	spur->vref_smooth = v;
-	spur->wref_smooth = w;
+	spur->vref = v;
+	spur->wref = w;
 	return d;
 }
 
@@ -128,8 +128,8 @@ double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 			0,
 			spur->dw );
 
-	spur->wref_smooth = w;
-	spur->vref_smooth = 0;
+	spur->wref = w;
+	spur->vref = 0;
 	return fabs( odm->theta - spur->theta );
 }
 
@@ -147,8 +147,8 @@ double orient( OdometryPtr odm, SpurUserParamsPtr spur )
 			0,
 			spur->dw );
 
-	spur->wref_smooth = w;
-	spur->vref_smooth = spur->v;
+	spur->wref = w;
+	spur->vref = spur->v;
 	return fabs( odm->theta - spur->theta );
 }
 

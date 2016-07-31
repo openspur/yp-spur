@@ -81,7 +81,7 @@ int set_paramptr( FILE * paramfile );
 void calc_param_inertia2ff( void );
 void set_param_motor( void );
 void set_param_velocity( void );
-int parameter_set( char param, char id, int value );
+int parameter_set( char param, char id, long long int value64 );
 int apply_robot_params( void );
 
 int does_option_set( ParamOptions option );

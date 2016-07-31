@@ -359,9 +359,17 @@ int arg_analyze( int argc, char *argv[] )
 }
 
 /* parameter set command */
-int parameter_set( char param, char id, int value )
+int parameter_set( char param, char id, long long int value64 )
 {
 	char buf[7];
+	int value;
+
+	if( value64 > 0x7FFFFFFF || value64 < -0x7FFFFFFE )
+	{
+		yprintf( OUTPUT_LV_ERROR, "ERROR: parameter out of range (id: %d)\n", param );
+		return -1;
+	}
+	value = value64;
 
 	buf[0] = param;
 	buf[1] = id;
@@ -1097,10 +1105,15 @@ void set_param_motor( void )
 				ischanged_p(YP_PARAM_MOTOR_TC,j) ||
 				ischanged_p(YP_PARAM_VOLT,j) )
 		{
-			parameter_set( PARAM_p_ki, j,
-					( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
+			int64_t ki;
+			ki = ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
 						( g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
-						  g_P[YP_PARAM_VOLT][j] ) ) );
+						  g_P[YP_PARAM_VOLT][j] ) );
+			if( ki == 0 )
+			{
+				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_FINENESS too small\n" );
+			}
+			parameter_set( PARAM_p_ki, j, ki );
 		}
 
 		if( ischanged_p(YP_PARAM_PWM_MAX,j) ||
@@ -1259,6 +1272,13 @@ void set_param_velocity( void )
 			}
 			if( ischanged_p(YP_PARAM_INERTIA_SELF, j) || ff_changed )
 			{
+				yprintf( OUTPUT_LV_PARAM, "Info: INERTIA_SELF[%d]: %d\n", j,
+						(int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff) );
+				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 5 )
+				{
+					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] too small\n", j );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_UNIT\n" );
+				}
 				parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
 			}
 			if( ischanged_p(YP_PARAM_INERTIA_CROSS, j) || ff_changed )

@@ -433,7 +433,22 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 int odometry_receive_loop( void )
 {
+	int ret;
+	Parameters *param;
+	param = get_param_ptr();
+
 	g_interval = SER_INTERVAL;
-	return serial_recieve( odometry_receive, NULL );
+	while( 1 )
+	{
+		ret = serial_recieve( odometry_receive, NULL );
+		if( param->parameter_applying )
+		{
+			yprintf( OUTPUT_LV_MODULE, "Restarting odometry receive loop.\n" );
+			continue;
+		}
+		break;
+	}
+
+	return ret;
 }
 

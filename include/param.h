@@ -70,6 +70,7 @@ typedef struct _parameters
 	int num_motor_enable;
 	int device_version;
 	int device_version_age;
+	int parameter_applying;
 } Parameters;
 
 int arg_analyze( int argc, char *argv[] );

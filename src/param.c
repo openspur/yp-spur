@@ -902,6 +902,7 @@ int set_param( char *filename, char *concrete_path )
 
 void init_param_update_thread( pthread_t * thread, char *filename )
 {
+	g_param.parameter_applying = 0;
 	if( pthread_create( thread, NULL, ( void * )param_update, filename ) != 0 )
 	{
 		yprintf( OUTPUT_LV_ERROR, "Can't create command thread\n" );
@@ -933,6 +934,7 @@ void param_update( void *filename )
 			yp_usleep( 100000 );
 			pthread_testcancel(  );
 		}
+		g_param.parameter_applying = 0;
 		stat( filename, &status );
 
 		if( difftime( status.st_mtime, prev_status.st_mtime ) != 0.0 )
@@ -941,6 +943,7 @@ void param_update( void *filename )
 			set_param( filename, NULL );
 			if( !( option( OPTION_PARAM_CONTROL ) ) )
 			{
+				g_param.parameter_applying = 1;
 				apply_robot_params(  );
 			}
 		}
@@ -955,9 +958,16 @@ int apply_robot_params(  )
 {
 	yprintf( OUTPUT_LV_MODULE, "Applying parameters.\n" );
 
+	int j;
+	// ウォッチドックタイマの設定
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+	{
+		if( !g_param.motor_enable[j] ) continue;
+		parameter_set( PARAM_watch_dog_limit, j, 1200 );
+	}
+
 	if( g_param_init )
 	{
-		int j;
 		for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
 		{
 			if( !g_param.motor_enable[j] ) continue;
@@ -967,7 +977,7 @@ int apply_robot_params(  )
 	}
 	/* モータのパラメータ */
 	set_param_motor(  );
-	yp_usleep( 50000 );
+	yp_usleep( 30000 );
 
 	/* 速度制御パラメータ */
 	set_param_velocity(  );
@@ -1209,12 +1219,6 @@ void set_param_motor( void )
 void set_param_velocity( void )
 {
 	int j;
-	// ウォッチドックタイマの設定
-	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
-	{
-		if( !g_param.motor_enable[j] ) continue;
-		parameter_set( PARAM_watch_dog_limit, j, 300 );
-	}
 
 	if( g_param.device_version <= 6 )
 	{
@@ -1303,6 +1307,13 @@ void set_param_velocity( void )
 			parameter_set( PARAM_int_min, j,
 					-g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
 		}
+	}
+
+	// ウォッチドックタイマの設定
+	for ( j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++ )
+	{
+		if( !g_param.motor_enable[j] ) continue;
+		parameter_set( PARAM_watch_dog_limit, j, 300 );
 	}
 }
 

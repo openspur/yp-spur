@@ -173,6 +173,9 @@ extern "C"
 		// イナーシャパラメータ
 		YP_PARAM_INERTIA_SELF,
 		YP_PARAM_INERTIA_CROSS,
+		
+		// 通信制御
+		YP_PARAM_ENCODER_DIV,
 
 		YP_PARAM_NUM							///< パラメータの最大値
 	} YPSpur_param;
@@ -197,6 +200,7 @@ extern "C"
 		"VEHICLE_CONTROL",\
 		"CONTROL_MODE_RESEND",\
 		"_INERTIA_SELF", "_INERTIA_CROSS",\
+		"ENCODER_DIV",\
 	}
 
 #define YP_PARAM_NECESSARY \
@@ -217,6 +221,7 @@ extern "C"
 		0,\
 		0,\
 		0, 0,\
+		0,\
 	}
 
 #define YP_PARAM_COMMENT \
@@ -243,6 +248,7 @@ extern "C"
 		"Used for vehicle control (0: false, 1: true)",\
 		"[s] Time-span to resend control mode (0: don't resend)",\
 		"Motor load inertia", "Motor load cross inertia",\
+		"Encoder count divider 2^x (e.g. 4 means divide by 16)",\
 	}
 
 	enum motor_id

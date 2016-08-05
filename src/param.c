@@ -1109,6 +1109,10 @@ void set_param_motor( void )
 		{
 			parameter_set( PARAM_enc_type, j, g_P[YP_PARAM_ENCODER_TYPE][j] );
 		}
+		if( ischanged_p(YP_PARAM_ENCODER_DIV,j) )
+		{
+			parameter_set( PARAM_enc_div, j, g_P[YP_PARAM_ENCODER_DIV][j] );
+		}
 		if( ischanged_p(YP_PARAM_PWM_MAX,j) ||
 				ischanged_p(YP_PARAM_MOTOR_R,j) ||
 				ischanged_p(YP_PARAM_TORQUE_UNIT,j) ||

@@ -134,7 +134,7 @@ void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 		if(!param->motor_enable[i]) continue;
 
 		/* 角速度計算 */
-		mvel[i] = 2.0 * M_PI * ( ( double )cnt[i] ) 
+		mvel[i] = 2.0 * M_PI * ( ( double )cnt[i] ) * pow(2, p( YP_PARAM_ENCODER_DIV, i ))
 			/ ( p( YP_PARAM_COUNT_REV, i ) * dt );
 		wvel[i] = mvel[i] / p( YP_PARAM_GEAR, i );
 

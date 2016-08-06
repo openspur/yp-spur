@@ -1119,7 +1119,7 @@ void set_param_motor( void )
 				ischanged_p(YP_PARAM_MOTOR_TC,j) ||
 				ischanged_p(YP_PARAM_VOLT,j) )
 		{
-			int64_t ki;
+			long long int ki;
 			ki = ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
 						( g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
 						  g_P[YP_PARAM_VOLT][j] ) );

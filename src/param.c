@@ -1002,8 +1002,8 @@ void calc_param_inertia2ff( void )
 	// パラメータの代入
 	M = g_P[YP_PARAM_MASS][0];
 	J = g_P[YP_PARAM_MOMENT_INERTIA][0];
-	Gr = g_P[YP_PARAM_GEAR][0];
-	Gl = g_P[YP_PARAM_GEAR][1];
+	Gr = fabs(g_P[YP_PARAM_GEAR][0]);
+	Gl = fabs(g_P[YP_PARAM_GEAR][1]);
 	Jmr = g_P[YP_PARAM_MOTOR_M_INERTIA][0];
 	Jml = g_P[YP_PARAM_MOTOR_M_INERTIA][1];
 	Jtr = g_P[YP_PARAM_TIRE_M_INERTIA][0];
@@ -1056,8 +1056,8 @@ void calc_param_inertia2ff( void )
 		if( p(YP_PARAM_VEHICLE_CONTROL, i) > 0 ) continue;
 
 		g_P[YP_PARAM_INERTIA_SELF][i] = 
-			g_P[YP_PARAM_GEAR][i] * g_P[YP_PARAM_MOTOR_M_INERTIA][i]
-		   	+ g_P[YP_PARAM_TIRE_M_INERTIA][i] / g_P[YP_PARAM_GEAR][i];
+			fabs(g_P[YP_PARAM_GEAR][i]) * g_P[YP_PARAM_MOTOR_M_INERTIA][i]
+		   	+ g_P[YP_PARAM_TIRE_M_INERTIA][i] / fabs(g_P[YP_PARAM_GEAR][i]);
 		g_P[YP_PARAM_INERTIA_CROSS][i] = 0;
 
 		if( ischanged_p(YP_PARAM_GEAR, i) ||
@@ -1240,7 +1240,7 @@ void set_param_velocity( void )
 		{
 			ffr_changed = 1;
 		}
-		ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * g_P[YP_PARAM_GEAR][0] );
+		ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * fabs(g_P[YP_PARAM_GEAR][0]) );
 		if( ischanged_p(YP_PARAM_GAIN_A,0) || ffr_changed )
 			parameter_set( PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr );
 		if( ischanged_p(YP_PARAM_GAIN_C,0) || ffr_changed )
@@ -1254,7 +1254,7 @@ void set_param_velocity( void )
 		{
 			ffl_changed = 1;
 		}
-		ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / ( g_P[YP_PARAM_COUNT_REV][1] * g_P[YP_PARAM_GEAR][1] );
+		ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / ( g_P[YP_PARAM_COUNT_REV][1] * fabs(g_P[YP_PARAM_GEAR][1]) );
 		if( ischanged_p(YP_PARAM_GAIN_B,0) || ffl_changed )
 			parameter_set( PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl );
 		if( ischanged_p(YP_PARAM_GAIN_D,0) || ffl_changed )
@@ -1271,7 +1271,7 @@ void set_param_velocity( void )
 		{
 			int ff_changed = 0;
 			double ff = 256.0 * 2.0 * M_PI
-				* g_P[YP_PARAM_TORQUE_UNIT][j] / ( g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
+				* g_P[YP_PARAM_TORQUE_UNIT][j] / ( g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]) );
 			if( ischanged_p(YP_PARAM_TORQUE_UNIT,j) ||
 					ischanged_p(YP_PARAM_COUNT_REV,j) ||
 					ischanged_p(YP_PARAM_GEAR,j) )
@@ -1307,9 +1307,9 @@ void set_param_velocity( void )
 				ischanged_p(YP_PARAM_GEAR,j) )
 		{
 			parameter_set( PARAM_int_max, j,
-					g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
+					g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]) );
 			parameter_set( PARAM_int_min, j,
-					-g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * g_P[YP_PARAM_GEAR][j] );
+					-g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]) );
 		}
 	}
 

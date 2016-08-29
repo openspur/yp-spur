@@ -235,22 +235,34 @@ double timeoptimal_servo( double err, double vel_max, double vel, double acc )
 
 double timeoptimal_servo2( double err, double vel_max, double vel, double acc, double vel_end )
 {
-	double vel_ref_next;
 	double v;
-	double v_sq;
+	double _err;
+	double _vel_max;
 
-	v_sq = vel_end * fabs(vel_end) - 2 * acc * err;
-	v = sqrt( fabs(v_sq) );
-	if( vel_max < v )
+	_err = err + vel * p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
+
+	v = sqrt( vel_end * vel_end + 2 * acc * fabs( _err ) );
+
+	if( fabs(vel_max) < fabs(vel_end) )
 	{
-		vel_ref_next = SIGN( v_sq ) * fabs( vel_max );
+		if( fabs( err ) < (vel_end * vel_end - vel_max * vel_max) / (2.0 * acc) )
+			_vel_max = fabs(vel_end);
+		else
+			_vel_max = vel_max;
 	}
 	else
+		_vel_max = vel_max;
+
+	if( _vel_max < v )
 	{
-		vel_ref_next = SIGN( v_sq ) * v;
+		v = _vel_max;
+	}
+	if( _err > 0 )
+	{
+		v = -v;
 	}
 
-	return vel_ref_next;
+	return v;
 }
 								
 								

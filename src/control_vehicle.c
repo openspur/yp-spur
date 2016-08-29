@@ -82,20 +82,11 @@ int motor_control( SpurUserParamsPtr spur )
 						podm->wvel[i],
 						spur->wheel_accel[i],
 						spur->wheel_vel_end[i]);
-				if( spur->wvelref[i] * spur->wheel_vel_end[i] > 0.0 &&
-						( (spur->wheel_vel_end[i] > 0 && spur->wheel_angle[i] < podm->wang[i] ) ||
-						  (spur->wheel_vel_end[i] < 0 && spur->wheel_angle[i] > podm->wang[i] ) ))
-				{
-					spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
-					spur->wvelref[i] = spur->wheel_vel_end[i];
-				}
 				break;
 			default:
 				break;
 			}
 			ref = spur->wvelref[i];
-			if( ref > spur->wheel_vel[i] ) ref = spur->wheel_vel[i];
-			else if( ref < -spur->wheel_vel[i] ) ref = -spur->wheel_vel[i];
 
 			if( ref > spur->wheel_vel_smooth[i] + spur->wheel_accel[i] * p( YP_PARAM_CONTROL_CYCLE, i ) )
 			{
@@ -106,6 +97,21 @@ int motor_control( SpurUserParamsPtr spur )
 				ref = spur->wheel_vel_smooth[i] - spur->wheel_accel[i] * p( YP_PARAM_CONTROL_CYCLE, i );
 			}
 			spur->wheel_vel_smooth[i] = ref;
+			if( spur->wheel_mode[i] == MOTOR_CONTROL_ANGLE_VEL )
+			{
+				if( (spur->wheel_vel_end[i] > 0.0 && 
+							spur->wheel_angle[i] > podm->wang[i] &&
+							spur->wheel_angle[i] < podm->wang[i]
+							+ ref * p( YP_PARAM_CONTROL_CYCLE, i ) ) ||
+						(spur->wheel_vel_end[i] < 0.0 && 
+						 spur->wheel_angle[i] < podm->wang[i] &&
+						 spur->wheel_angle[i] > podm->wang[i]
+						 + ref * p( YP_PARAM_CONTROL_CYCLE, i ) ) )
+				{
+					spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
+					spur->wvelref[i] = spur->wheel_vel_end[i];
+				}
+			}
 			break;
 		}
 	}

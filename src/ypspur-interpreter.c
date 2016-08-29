@@ -66,6 +66,7 @@ typedef struct SPUR_COMMAND
 		SPUR_JOINT_TORQUE,
 		SPUR_JOINT_VEL,
 		SPUR_JOINT_ANG,
+		SPUR_JOINT_ANG_VEL,
 		SPUR_SET_JOINT_ACCEL,
 		SPUR_SET_JOINT_VEL,
 		SPUR_GET_JOINT_VEL,
@@ -124,6 +125,7 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_JOINT_TORQUE, {"joint_torque"}, 2},
 	{SPUR_JOINT_VEL, {"joint_vel"}, 2},
 	{SPUR_JOINT_ANG, {"joint_ang"}, 2},
+	{SPUR_JOINT_ANG_VEL, {"joint_ang_vel"}, 3},
 	{SPUR_SET_JOINT_ACCEL, {"set_joint_accel"}, 2},
 	{SPUR_SET_JOINT_VEL, {"set_joint_vel"}, 2},
 	{SPUR_GET_JOINT_VEL, {"get_joint_vel"}, 1},
@@ -357,6 +359,9 @@ int proc_spur_cmd( char *line, int *coordinate )
 		break;
 	case SPUR_JOINT_ANG:
 		YP_joint_ang( (int)spur.arg[0], spur.arg[1] );
+		break;
+	case SPUR_JOINT_ANG_VEL:
+		YP_joint_ang_vel( (int)spur.arg[0], spur.arg[1], spur.arg[2] );
 		break;
 	case SPUR_SET_JOINT_ACCEL:
 		YP_set_joint_accel( (int)spur.arg[0], spur.arg[1] );

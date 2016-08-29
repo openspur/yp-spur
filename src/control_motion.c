@@ -233,6 +233,28 @@ double timeoptimal_servo( double err, double vel_max, double vel, double acc )
 	return vel_ref_next;
 }
 
+double timeoptimal_servo2( double err, double vel_max, double vel, double acc, double vel_end )
+{
+	double vel_ref_next;
+	double v;
+	double v_sq;
+
+	v_sq = vel_end * fabs(vel_end) - 2 * acc * err;
+	v = sqrt( fabs(v_sq) );
+	if( vel_max < v )
+	{
+		vel_ref_next = SIGN( v_sq ) * fabs( vel_max );
+	}
+	else
+	{
+		vel_ref_next = SIGN( v_sq ) * v;
+	}
+
+	return vel_ref_next;
+}
+								
+								
+							
 
 
 

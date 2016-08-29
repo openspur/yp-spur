@@ -169,6 +169,7 @@ extern "C"
 	int YP_joint_torque( int id, double t );
 	int YP_joint_vel( int id, double v );
 	int YP_joint_ang( int id, double a );
+	int YP_joint_ang_vel( int id, double a, double v );
 	int YP_set_joint_accel( int id, double a );
 	int YP_set_joint_vel( int id, double v );
 	double YP_get_joint_vel( int id, double *v );

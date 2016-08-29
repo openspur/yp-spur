@@ -324,6 +324,11 @@ void command( void )
 			joint_ang_com( msg.cs, msg.data, &g_spur );
 			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d ang %f\n", msg.cs, msg.data[0] );
 			break;
+		
+		case YPSPUR_JOINT_ANG_VEL:
+			joint_ang_vel_com( msg.cs, msg.data, &g_spur );
+			yprintf( OUTPUT_LV_COMMAND, "Command: joint %d ang %f vel %f\n", msg.cs, msg.data[0], msg.data[1] );
+			break;
 
 		case YPSPUR_SET_JOINT_ACCEL:
 			set_joint_accel_com( msg.cs, msg.data, &g_spur );

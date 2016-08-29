@@ -13,6 +13,7 @@ void apply_motor_speed( SpurUserParamsPtr spur );
 void update_ref_speed( SpurUserParamsPtr spur );
 
 double timeoptimal_servo( double err, double vel_max, double vel, double acc );
+double timeoptimal_servo2( double err, double vel_max, double vel, double acc, double vel_end );
 
 double dist_pos( OdometryPtr odm, SpurUserParamsPtr spur );
 double trans_q( double theta );

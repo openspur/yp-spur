@@ -59,6 +59,18 @@ void joint_ang_com( int id, double *data, SpurUserParamsPtr spur )
 	spur->wheel_mode[id] = MOTOR_CONTROL_ANGLE;
 }
 
+void joint_ang_vel_com( int id, double *data, SpurUserParamsPtr spur )
+{
+	if( id > YP_PARAM_MAX_MOTOR_NUM )
+	{
+		yprintf(OUTPUT_LV_ERROR, "Motor id out of range (%d)\n", id);
+		return;
+	}
+	spur->wheel_angle[id] = data[0];
+	spur->wheel_vel_end[id] = data[1];
+	spur->wheel_mode[id] = MOTOR_CONTROL_ANGLE_VEL;
+}
+
 void set_joint_accel_com( int id, double *data, SpurUserParamsPtr spur )
 {
 	if( id > YP_PARAM_MAX_MOTOR_NUM )

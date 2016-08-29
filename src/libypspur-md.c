@@ -1177,6 +1177,27 @@ int YP_md_joint_ang( YPSpur *spur, int id, double a )
 	return 1;
 }
 
+int YP_md_joint_ang_vel( YPSpur *spur, int id, double a, double v )
+{
+	YPSpur_msg msg;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_JOINT_ANG_VEL;
+	msg.cs = id;
+	msg.data[0] = a;
+	msg.data[1] = v;
+
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	return 1;
+}
+
 int YP_md_set_joint_accel( YPSpur *spur, int id, double a )
 {
 	YPSpur_msg msg;

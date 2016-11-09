@@ -133,6 +133,9 @@
 /* protocol */
 #undef YP_PROTOCOL_NAME
 
+/* protocol */
+#undef YP_PROTOCOL_NAME_DEVICE
+
 /* vendor */
 #undef YP_VENDOR_NAME
 

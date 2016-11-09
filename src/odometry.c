@@ -60,11 +60,16 @@ void init_coordinate_systems( void )
 
 void init_odometry( void )
 {
+	int i;
 	g_odometry.x = 0;
 	g_odometry.y = 0;
 	g_odometry.theta = 0;
-	g_odometry.theta_r = 0;
-	g_odometry.theta_l = 0;
+	for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+	{
+		g_odometry.wang[0] = 0;
+		g_odometry.wtorque[0] = 0;
+		g_odometry.wvel[0] = 0;
+	}
 	g_odometry.v = 0;
 	g_odometry.w = 0;
 	g_odometry.time = 0;
@@ -113,64 +118,57 @@ void set_cs( YPSpur_cs cs, double x, double y, double theta )
 }
 
 /* オドメトリ計算 */
-void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, double dt )
+void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 {
-	double v, w, wr, wl, mwr, mwl;
-	double mtorque_l, mtorque_r, torque_l, torque_r, volt_l, volt_r, vc_l, vc_r;
+	double v, w;
+	double wvel[YP_PARAM_MAX_MOTOR_NUM], mvel[YP_PARAM_MAX_MOTOR_NUM];
+	double mtorque[YP_PARAM_MAX_MOTOR_NUM], wtorque[YP_PARAM_MAX_MOTOR_NUM];
+	double volt[YP_PARAM_MAX_MOTOR_NUM], vc[YP_PARAM_MAX_MOTOR_NUM];
 	double torque_trans, torque_angular;
+	Parameters *param;
+	param = get_param_ptr();
 
-	/* 角速度計算 */
-	mwr = 2.0 * M_PI * ( ( double )cnt1 ) / ( p( YP_PARAM_COUNT_REV, MOTOR_RIGHT ) * dt );
-	mwl = 2.0 * M_PI * ( ( double )cnt2 ) / ( p( YP_PARAM_COUNT_REV, MOTOR_LEFT ) * dt );
-	wr = mwr / p( YP_PARAM_GEAR, MOTOR_RIGHT );
-	wl = mwl / p( YP_PARAM_GEAR, MOTOR_LEFT );
+	int i;
+	for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+	{
+		if(!param->motor_enable[i]) continue;
+
+		/* 角速度計算 */
+		mvel[i] = 2.0 * M_PI * ( ( double )cnt[i] ) * pow(2, p( YP_PARAM_ENCODER_DIV, i ))
+			/ ( p( YP_PARAM_COUNT_REV, i ) * dt );
+		wvel[i] = mvel[i] / p( YP_PARAM_GEAR, i );
+
+		/* トルク推定 */
+		volt[i] = ( double )pwm[i] * p( YP_PARAM_VOLT, i )
+			 / ( p( YP_PARAM_PWM_MAX, i ) * ( dt / p( YP_PARAM_CYCLE, i ) ) );
+		vc[i] = ( p( YP_PARAM_MOTOR_VC, i ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
+		// TC [Nm/A]
+		mtorque[i] = p( YP_PARAM_MOTOR_TC, i ) 
+			* ( ( volt[i] - mvel[i] / vc[i] ) / p( YP_PARAM_MOTOR_R, i ) );
+		/* 摩擦補償の補償 */
+		if( wvel[i] > 0 )
+		{
+			mtorque[i] -= p( YP_PARAM_TORQUE_NEWTON, i )
+					   + p( YP_PARAM_TORQUE_VISCOS, i ) * fabs( mvel[i] );
+		}
+		else if( wvel[i] < 0 )
+		{
+			mtorque[i] += p( YP_PARAM_TORQUE_NEWTON_NEG, i )
+					   + p( YP_PARAM_TORQUE_VISCOS_NEG, i ) * fabs( mvel[i] );
+		}
+		wtorque[i] = mtorque[i] * p( YP_PARAM_GEAR, i );
+	}
+
 	/* キネマティクス計算 */
-	v = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / 2.0 + p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / 2.0;
-	w = +p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wr / p( YP_PARAM_TREAD, 0 )
-	    -p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wl / p( YP_PARAM_TREAD, 0 );
+	v = p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wvel[MOTOR_RIGHT] / 2.0
+	   	+ p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wvel[MOTOR_LEFT] / 2.0;
+	w = +p( YP_PARAM_RADIUS, MOTOR_RIGHT ) * wvel[MOTOR_RIGHT] / p( YP_PARAM_TREAD, 0 )
+	    -p( YP_PARAM_RADIUS, MOTOR_LEFT ) * wvel[MOTOR_LEFT] / p( YP_PARAM_TREAD, 0 );
 
-	volt_r = ( double )pwm1 * p( YP_PARAM_VOLT, MOTOR_RIGHT )
-			 / ( p( YP_PARAM_PWM_MAX, MOTOR_RIGHT ) * ( dt / p( YP_PARAM_CYCLE, MOTOR_RIGHT ) ) );
-	volt_l = ( double )pwm2 * p( YP_PARAM_VOLT, MOTOR_LEFT )
-			 / ( p( YP_PARAM_PWM_MAX, MOTOR_LEFT ) * ( dt / p( YP_PARAM_CYCLE, MOTOR_LEFT ) ) );
-
-	/* トルク推定 */
-	vc_r = ( p( YP_PARAM_MOTOR_VC, MOTOR_RIGHT ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
-	vc_l = ( p( YP_PARAM_MOTOR_VC, MOTOR_LEFT ) / 60 ) * 2 * M_PI; // [rpm/V] => [(rad/s)/V]
-	// TC [Nm/A]
-	mtorque_r = p( YP_PARAM_MOTOR_TC, MOTOR_RIGHT ) * ( ( volt_r - mwr / vc_r ) / p( YP_PARAM_MOTOR_R, MOTOR_RIGHT ) );
-	mtorque_l = p( YP_PARAM_MOTOR_TC, MOTOR_LEFT ) * ( ( volt_l - mwl / vc_l ) / p( YP_PARAM_MOTOR_R, MOTOR_LEFT ) );
-	/* 摩擦補償の補償 */
-	if( wr > 0 )
-	{
-		mtorque_r -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_RIGHT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_RIGHT ) * fabs( mwr );
-	}
-	else if( wr < 0 )
-	{
-		mtorque_r += p( YP_PARAM_TORQUE_NEWTON_NEG, MOTOR_RIGHT )
-		           + p( YP_PARAM_TORQUE_VISCOS_NEG, MOTOR_RIGHT ) * fabs( mwr );
-	}
-	if( wl > 0 )
-	{
-		mtorque_l -= p( YP_PARAM_TORQUE_NEWTON, MOTOR_LEFT )
-		           + p( YP_PARAM_TORQUE_VISCOS, MOTOR_LEFT ) * fabs( mwl );
-	}
-	else if( wl < 0 )
-	{
-		mtorque_l += p( YP_PARAM_TORQUE_NEWTON_NEG, MOTOR_LEFT )
-		           + p( YP_PARAM_TORQUE_VISCOS_NEG, MOTOR_LEFT ) * fabs( mwl );
-	}
-	
-	//printf("%+f %+f     %+f %+f   %+f %+f\n",wr,wl,mtorque_r,mtorque_l,volt_r,volt_l);
-
-	torque_r = mtorque_r * p( YP_PARAM_GEAR, MOTOR_RIGHT );
-	torque_l = mtorque_l * p( YP_PARAM_GEAR, MOTOR_LEFT );
-
-	torque_trans = torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT )
-	               + torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT );
-	torque_angular = ( + torque_r / p( YP_PARAM_RADIUS, MOTOR_RIGHT )
-					   - torque_l / p( YP_PARAM_RADIUS, MOTOR_LEFT ) )
+	torque_trans = wtorque[MOTOR_RIGHT] / p( YP_PARAM_RADIUS, MOTOR_RIGHT )
+	               + wtorque[MOTOR_LEFT] / p( YP_PARAM_RADIUS, MOTOR_LEFT );
+	torque_angular = ( + wtorque[MOTOR_RIGHT] / p( YP_PARAM_RADIUS, MOTOR_RIGHT )
+					   - wtorque[MOTOR_LEFT] / p( YP_PARAM_RADIUS, MOTOR_LEFT ) )
 	                   * p( YP_PARAM_TREAD, 0 ) / 2;
 
 	/* オドメトリ計算 */
@@ -180,12 +178,13 @@ void odometry( OdometryPtr xp, short cnt1, short cnt2, short pwm1, short pwm2, d
 	xp->time = get_time(  );
 	xp->v = v;
 	xp->w = w;
-	xp->wr = wr;
-	xp->wl = wl;
-	xp->theta_r = xp->theta_r + xp->wr * dt;
-	xp->theta_l = xp->theta_l + xp->wl * dt;
-	xp->torque_r = torque_r;
-	xp->torque_l = torque_l;
+	for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+	{
+		if(!param->motor_enable[i]) continue;
+		xp->wvel[i] = wvel[i];
+		xp->wang[i] = xp->wang[i] + xp->wvel[i] * dt;
+		xp->wtorque[i] = wtorque[i];
+	}
 	xp->torque_trans = torque_trans;
 	xp->torque_angular = torque_angular;
 
@@ -327,7 +326,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 	int odometry_updated;
 	int readdata_num;
 	int decoded_len = 0;
-	int decoded_len_success; // デコードした際の、正しいバイト数
+	int decoded_len_req; // Expected length of the data
 	int readdata_len = 0;
 
 	// Odometry *odm;
@@ -337,12 +336,15 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 	Short_2Char pwm1_log[100];
 	Short_2Char pwm2_log[100];
 	int ad_log[100][8];
+	Parameters *param;
 
-	decoded_len_success =
+	param = get_param_ptr();
+
+	decoded_len_req =
 	 (
-		4 /* encorder cnt + pwm */
 		+ get_ad_num(  ) /* ad */
 		+ get_dio_num(  ) /* dio */
+		+ param->num_motor_enable * 2 /* cnt + pwm */
 	 ) * 2 /* data cnt -> byte */;
 	readdata_num = 0;
 	odometry_updated = 0;
@@ -356,38 +358,46 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 		else if( buf[i] == COMMUNICATION_END_BYTE )
 		{
 			unsigned char data[48];
-			Short_2Char cnt1, cnt2, pwm1, pwm2 /* , ad[8] */ ;
-			// int j, ad_num;
+			short cnt[YP_PARAM_MAX_MOTOR_NUM], pwm[YP_PARAM_MAX_MOTOR_NUM];
 
 			/* デコード処理 */
 			decoded_len = decord( ( unsigned char * )com_buf, com_wp, ( unsigned char * )data, 48 );
-			if( decoded_len != decoded_len_success )
+			if( decoded_len != decoded_len_req )
 			{
 				com_buf[com_wp] = '\0';
-				yprintf( OUTPUT_LV_WARNING, "Warn: Illegal packet '%s' received.\n", com_buf );
+				yprintf( OUTPUT_LV_WARNING, "Warn: Broken packet '%s' (%d bytes) received. (%d bytes expected)\n", com_buf, decoded_len, decoded_len_req );
 				com_wp = 0;
 				continue;
 			}
-			cnt1.byte[1] = data[0];
-			cnt1.byte[0] = data[1];
-			cnt2.byte[1] = data[2];
-			cnt2.byte[0] = data[3];
-			pwm1.byte[1] = data[4];
-			pwm1.byte[0] = data[5];
-			pwm2.byte[1] = data[6];
-			pwm2.byte[0] = data[7];
+			int i, p = 0;
+			for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+			{
+				if(!param->motor_enable[i]) continue;
+				Short_2Char val;
+				val.byte[1] = data[p++];
+				val.byte[0] = data[p++];
+				cnt[i] = val.integer;
+			}
+			for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+			{
+				if(!param->motor_enable[i]) continue;
+				Short_2Char val;
+				val.byte[1] = data[p++];
+				val.byte[0] = data[p++];
+				pwm[i] = val.integer;
+			}
 
-			process_addata( &data[8], decoded_len - 8 );
+			process_addata( &data[p], decoded_len - p );
 
-			cnt1_log[readdata_num] = cnt1;
-			cnt2_log[readdata_num] = cnt2;
-			pwm1_log[readdata_num] = pwm1;
-			pwm2_log[readdata_num] = pwm2;
+			cnt1_log[readdata_num].integer = cnt[0];
+			cnt2_log[readdata_num].integer = cnt[1];
+			pwm1_log[readdata_num].integer = pwm[0];
+			pwm2_log[readdata_num].integer = pwm[1];
 			memcpy( ad_log[readdata_num], get_addataptr(  ), sizeof ( int ) * 8 );
 
 			if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) && state( YP_STATE_BODY ) )
 			{
-				odometry( &g_odometry, cnt1.integer, cnt2.integer, pwm1.integer, pwm2.integer, g_interval );
+				odometry( &g_odometry, cnt, pwm, g_interval );
 				odm_log[odometry_updated] = g_odometry;
 				odometry_updated++;
 			}
@@ -406,7 +416,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 			if( com_wp >= 128 )
 			{
 				com_wp = 128 - 1;
-				yprintf( OUTPUT_LV_WARNING, "Warn: Illegal data received.\n" );
+				yprintf( OUTPUT_LV_WARNING, "Warn: Read buffer overrun.\n" );
 			}
 		}
 	}
@@ -423,7 +433,22 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 int odometry_receive_loop( void )
 {
+	int ret;
+	Parameters *param;
+	param = get_param_ptr();
+
 	g_interval = SER_INTERVAL;
-	return serial_recieve( odometry_receive, NULL );
+	while( 1 )
+	{
+		ret = serial_recieve( odometry_receive, NULL );
+		if( param->parameter_applying )
+		{
+			yprintf( OUTPUT_LV_MODULE, "Restarting odometry receive loop.\n" );
+			continue;
+		}
+		break;
+	}
+
+	return ret;
 }
 

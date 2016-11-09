@@ -131,8 +131,8 @@ void vel_com( double *data, SpurUserParamsPtr spur )
 
 void wheel_vel_com( double *data, SpurUserParamsPtr spur )
 {
-	spur->wrref = data[0];
-	spur->wlref = data[1];
+	spur->wvelref[0] = data[0];
+	spur->wvelref[1] = data[1];
 	spur->run_mode = RUN_WHEEL_VEL;
 }
 
@@ -160,8 +160,8 @@ void wheel_angle_com( double *data, SpurUserParamsPtr spur )
 		if( l > p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_LEFT ) ) l = p( YP_PARAM_MAX_WHEEL_ANGLE, MOTOR_LEFT );
 	}
 	
-	spur->wheel_angle_l = l;
-	spur->wheel_angle_r = r;
+	spur->wheel_angle[1] = l;
+	spur->wheel_angle[0] = r;
 	spur->run_mode = RUN_WHEEL_ANGLE;
 }
 

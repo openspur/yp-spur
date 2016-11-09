@@ -296,3 +296,47 @@ int YP_wheel_ang( double r, double l )
 }
 
 
+
+int YP_joint_torque( int id, double t )
+{
+	return YP_md_joint_torque( &spur, id, t );
+}
+
+int YP_joint_vel( int id, double v )
+{
+	return YP_md_joint_vel( &spur, id, v );
+}
+
+int YP_joint_ang( int id, double a )
+{
+	return YP_md_joint_ang( &spur, id, a );
+}
+
+int YP_set_joint_accel( int id, double a )
+{
+	return YP_md_set_joint_accel( &spur, id, a );
+}
+
+int YP_set_joint_vel( int id, double v )
+{
+	return YP_md_set_joint_vel( &spur, id, v );
+}
+
+
+double YP_get_joint_vel( int id, double *v )
+{
+	return YP_md_get_joint_vel( &spur, id, v );
+}
+
+double YP_get_joint_vref( int id, double *v )
+{
+	return YP_md_get_joint_vref( &spur, id, v );
+}
+
+double YP_get_joint_ang( int id, double *a )
+{
+	return YP_md_get_joint_ang( &spur, id, a );
+}
+
+
+

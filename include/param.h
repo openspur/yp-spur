@@ -66,6 +66,11 @@ typedef struct _parameters
 	ParamOutputLv output_lv;
 	unsigned char admask;
 	int ssm_id;
+	int motor_enable[YP_PARAM_MAX_MOTOR_NUM];
+	int num_motor_enable;
+	int device_version;
+	int device_version_age;
+	int parameter_applying;
 } Parameters;
 
 int arg_analyze( int argc, char *argv[] );
@@ -77,11 +82,7 @@ int set_paramptr( FILE * paramfile );
 void calc_param_inertia2ff( void );
 void set_param_motor( void );
 void set_param_velocity( void );
-int parameter_set( char param, char id, int value );
-void motor_stop( void );
-void motor_free( void );
-void motor_openfree( void );
-void motor_servo( void );
+int parameter_set( char param, char id, long long int value64 );
 int apply_robot_params( void );
 
 int does_option_set( ParamOptions option );

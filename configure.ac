@@ -11,7 +11,7 @@
 #*********************************************
 
 AC_PREREQ(2.61)
-AC_INIT([yp-spur], [1.14.0], [platform@roboken.esys.tsukuba.ac.jp])
+AC_INIT([yp-spur], [1.14.0], [atsushi.w@openspur.org])
 AM_INIT_AUTOMAKE
 
 AM_MAINTAINER_MODE([disable])
@@ -23,10 +23,11 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SUBDIRS(auxlib/formula-calc)
 
 # Define Vendor
-AC_DEFINE(YP_VENDOR_NAME, "Univ. of Tsukuba - Intelligent Robot Lab.", vendor)
+AC_DEFINE(YP_VENDOR_NAME, "OpenSpur.org", vendor)
 AC_DEFINE(YP_PRODUCT_NAME, "Yamabico Project - Spur", product)
-AC_DEFINE(YP_FIRMWARE_NAME, "2013.10.18", firmware)
-AC_DEFINE(YP_PROTOCOL_NAME, "YPP:06:00", protocol)
+AC_DEFINE(YP_FIRMWARE_NAME, "2015.11.15", firmware)
+AC_DEFINE(YP_PROTOCOL_NAME, "YPP:08:02", protocol)
+AC_DEFINE(YP_PROTOCOL_NAME_DEVICE, "YPP:06:00", protocol)
 
 # etc.
 AC_DEFINE(YP_PARAMS_DIR, "robot-params", parametor files dir)

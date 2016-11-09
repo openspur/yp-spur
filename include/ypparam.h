@@ -8,7 +8,9 @@ extern "C"
 #endif											// __cplusplus
 
 #if defined(_WIN32)
-	typedef int pid_t;
+#   if !defined(_WIN64) 
+	        typedef int pid_t;
+#   endif
 #else
 #	include <unistd.h>
 #endif
@@ -67,6 +69,17 @@ extern "C"
 		YPSPUR_GETAD = 0x500,
 		YPSPUR_SETIODIR,
 		YPSPUR_SETIODATA,
+
+		YPSPUR_JOINT_TORQUE = 0x800,
+		YPSPUR_JOINT_VEL,
+		YPSPUR_JOINT_ANG,
+
+		YPSPUR_SET_JOINT_ACCEL = 0x810,
+		YPSPUR_SET_JOINT_VEL,
+
+		YPSPUR_GET_JOINT_VEL = 0x820,
+		YPSPUR_GET_JOINT_VREF,
+		YPSPUR_GET_JOINT_ANG,
 	};
 
 	/* パラメータナンバー */
@@ -83,6 +96,7 @@ extern "C"
 
 		// モータパラメータ
 		YP_PARAM_COUNT_REV,
+		YP_PARAM_ENCODER_TYPE,
 		YP_PARAM_VOLT,
 		YP_PARAM_CYCLE,
 		YP_PARAM_GEAR,
@@ -90,6 +104,7 @@ extern "C"
 		YP_PARAM_MOTOR_TC,
 		YP_PARAM_MOTOR_VC,
 		YP_PARAM_MOTOR_PHASE,
+		YP_PARAM_PHASE_OFFSET,
 
 		// キネマティクス
 		YP_PARAM_RADIUS,
@@ -152,7 +167,15 @@ extern "C"
 		YP_PARAM_MIN_WHEEL_ANGLE,
 		YP_PARAM_MAX_WHEEL_ANGLE,
 
-		YP_PARAM_PHASE_OFFSET,
+		YP_PARAM_VEHICLE_CONTROL,
+		YP_PARAM_CONTROL_MODE_RESEND,
+
+		// イナーシャパラメータ
+		YP_PARAM_INERTIA_SELF,
+		YP_PARAM_INERTIA_CROSS,
+		
+		// 通信制御
+		YP_PARAM_ENCODER_DIV,
 
 		YP_PARAM_NUM							///< パラメータの最大値
 	} YPSpur_param;
@@ -162,7 +185,8 @@ extern "C"
 #define YP_PARAM_NAME \
 	{\
 		"VERSION", "_TORQUE_UNIT", "TORQUE_FINENESS",\
-		"_PWM_RESOLUTION", "COUNT_REV", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
+		"_PWM_RESOLUTION", "COUNT_REV", "ENCODER_TYPE", "VOLT", "CYCLE", "GEAR", "MOTOR_R", "MOTOR_TC", "MOTOR_VC", "MOTOR_PHASE",\
+		"PHASE_OFFSET",\
 		"RADIUS", "RADIUS_R", "RADIUS_L", "TREAD", "CONTROL_CYCLE",\
 		"MAX_VEL", "MAX_W", "MAX_ACC_V", "MAX_ACC_W", "MAX_CENTRI_ACC",\
 		"L_C1", "L_K1", "L_K2", "L_K3", "L_DIST", "GAIN_KP", "GAIN_KI",\
@@ -173,13 +197,17 @@ extern "C"
 		"_GAIN_A","_GAIN_B","_GAIN_C","_GAIN_D","_GAIN_E","_GAIN_F",\
 		"STOP_LINEAR","SPIN_LINEAR","WHEEL_ANG_LINEAR",\
 		"MIN_WHEEL_ANGLE","MAX_WHEEL_ANGLE",\
-		"PHASE_OFFSET",\
+		"VEHICLE_CONTROL",\
+		"CONTROL_MODE_RESEND",\
+		"_INERTIA_SELF", "_INERTIA_CROSS",\
+		"ENCODER_DIV",\
 	}
 
 #define YP_PARAM_NECESSARY \
 	{\
 		1, 0, 1,\
-		0, 1, 1, 1, 1, 1, 1, 1, 0,\
+		0, 1, 0, 1, 1, 1, 1, 1, 1, 0,\
+		0,\
 		1, 0, 0, 1, 1,\
 		1, 1, 1, 1, 1,\
 		1, 1, 1, 1, 1, 1, 1,\
@@ -191,13 +219,17 @@ extern "C"
 		0, 0, 0,\
 		0, 0,\
 		0,\
+		0,\
+		0, 0,\
+		0,\
 	}
 
 #define YP_PARAM_COMMENT \
 	{\
 		"Parameter file version","[Integer Nm/Nm] Fixed-point position of PC-MCU communication","[Nm] Calculation fineness of torque control",\
-		"[Counts] PWM cycle","[Counts/rev] Encoder specification","[V] Power source voltage","[s] Velocity control cycle", \
+		"[Counts] PWM cycle","[Counts/rev] Encoder specification","Encoder type (2:2-phase incremental, 3:3-phase incremental)","[V] Power source voltage","[s] Velocity control cycle", \
 		"[in/out] Gear ratio","[ohm] Motor internal resistance","[Nm/A] Motor torque constant","[rpm/V] Motor speed constant","Motor type (0:DC, 3:3phase-AC)",\
+		"[rad] Offset angle of AC motor phase",\
 		"[m] Wheel radius","[m] Right wheel radius","[m] Left wheel radius","[m] Tread","[s] Trajectory control cycle",\
 		"[m/s] Maximum velocity", "[rad/s] Maximum angular velocity","[m/ss] Maximum acceleration",\
 		"[rad/ss] Maximum angular acceleration","[m/ss] Centrifugal acceleration limit",\
@@ -213,15 +245,18 @@ extern "C"
 		"PWS parameter A","PWS parameter B","PWS parameter C","PWS parameter D","PWS parameter E","PWS parameter F",\
 		"[m] Linear feedback area of stop command", "[rad] Linear feedback area of spin command", "[rad] Linear feedback area of wheel_ang command",\
 		"[rad] Minimum wheel angle (for wheel_angle command)","[rad] Maximum wheel angle (for wheel_angle command)",\
-		"[rad] Offset angle of AC motor phase"\
+		"Used for vehicle control (0: false, 1: true)",\
+		"[s] Time-span to resend control mode (0: don't resend)",\
+		"Motor load inertia", "Motor load cross inertia",\
+		"Encoder count divider 2^x (e.g. 4 means divide by 16)",\
 	}
 
 	enum motor_id
 	{
 		MOTOR_RIGHT = 0,
 		MOTOR_LEFT,
-		YP_PARAM_MOTOR_NUM
 	};
+#define YP_PARAM_MAX_MOTOR_NUM 16
 
 #define YP_PARAM_ALIAS_NUM 2
 #define YP_PARAM_ALIAS \

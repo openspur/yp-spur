@@ -215,13 +215,13 @@ int main( int argc, char *argv[] )
 			if( !( option( OPTION_DO_NOT_USE_YP ) ) )
 			{
 				int current, age;
+				int device_current, device_age;
 				sscanf( YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age );
 
 				yprintf( OUTPUT_LV_PROCESS, " Checking device information...\r" );
 				for ( i = 0; i < 3; i++ )
 				{
-					int device_current, device_age;
-					// プロトコルがYPであることを確認
+					// Check protocol version
 					if( get_version( &version ) == -1 )
 					{
 						continue;
@@ -231,7 +231,10 @@ int main( int argc, char *argv[] )
 						continue;
 					}
 					sscanf( version.protocol, "YPP:%d:%d", &device_current, &device_age );
-					if( device_current - device_age > current || device_current < current )
+					param->device_version = device_current;
+					param->device_version_age = device_age;
+					if( device_current - device_age > current || 
+							device_current < current - age )
 					{
 						continue;
 					}
@@ -245,13 +248,28 @@ int main( int argc, char *argv[] )
 				yprintf( OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				if( i == 3 )
 				{
-					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n" );
+					yprintf( OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n(Device: %s, coordinator: %s)\n",
+						  version.protocol, YP_PROTOCOL_NAME );
 					if( option( OPTION_RECONNECT ) && g_emergency == 0 )
 					{
 						yp_usleep( 500000 );
 						continue;
 					}
 					break;						// quit=0でbreakしたら異常終了と判断
+				}
+				if( device_current != current )
+				{
+					if( device_current < current )
+					{
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Device protocol version is not latest.\n" );
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Firmware update is recommended.\n" );
+					}
+					else
+					{
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: ypspur-coordinator protocol version is not latest.\n" );
+						yprintf( OUTPUT_LV_WARNING, "Recommendation: Software update is recommended.\n" );
+					}
+					yprintf( OUTPUT_LV_WARNING, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 				}
 			}
 			fflush( stderr );
@@ -332,7 +350,7 @@ int main( int argc, char *argv[] )
 		}
 		{
 			int i;
-			for ( i = 0; i < YP_PARAM_MOTOR_NUM; i++ )
+			for ( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
 			{
 				*pp( YP_PARAM_PWM_MAX, i ) = atoi( driver_param.pwm_resolution );
 			}
@@ -366,7 +384,7 @@ int main( int argc, char *argv[] )
 			if (ret == 4)
 			{
 				// ボーレートの設定未対応
-				yprintf( OUTPUT_LV_WARNING, "Warn: Baudrate setting is not supported on this device.\n" );
+				yprintf( OUTPUT_LV_WARNING, "Info: Baudrate setting is not supported on this device.\n" );
 			}
 			else 
 			{
@@ -392,9 +410,12 @@ int main( int argc, char *argv[] )
 			}
 
 			/* サーボをかける */
-			if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) )
+			SpurUserParamsPtr spur;
+			spur = get_spur_user_param_ptr();
+			for( i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++ )
 			{
-				motor_servo(  );
+				spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
+				spur->wheel_mode_prev[i] = -1;
 			}
 		}
 

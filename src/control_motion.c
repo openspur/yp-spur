@@ -86,15 +86,15 @@ double line_follow( OdometryPtr odm, SpurUserParamsPtr spur )
 /* 軌跡追従レギュレータ */
 double regurator( double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur )
 {
-	double nv, nw;
 	double v, w;
 	double cd;
 	double wref;
 
-	reference_speed( &nv, &nw );
 
-	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( nw );
-	wref = v_max / r;
+	v = v_max - SIGN( v_max ) * p( YP_PARAM_L_C1, 0 ) * fabs( spur->wref );
+	if( v * v_max < 0 ) v = 0;
+
+	wref = v / r;
 	if( wref > fabs( w_max ) )
 		wref = fabs( w_max );
 	else if( wref < -fabs( w_max ) )
@@ -105,13 +105,12 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 		cd = p( YP_PARAM_L_DIST, 0 );
 	if( cd < -p( YP_PARAM_L_DIST, 0 ) )
 		cd = -p( YP_PARAM_L_DIST, 0 );
-	w = nw -
+	w = spur->wref_smooth -
 		spur->control_dt * ( SIGN( r ) * SIGN( v_max ) * p( YP_PARAM_L_K1, 0 ) * cd +
-							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( nw - wref ) );
+							 p( YP_PARAM_L_K2, 0 ) * q + p( YP_PARAM_L_K3, 0 ) * ( spur->wref_smooth - wref ) );
 
-	v = v_max;
-
-	robot_speed_smooth( v, w, spur );
+	spur->vref = v;
+	spur->wref = w;
 	return d;
 }
 
@@ -119,19 +118,18 @@ double regurator( double d, double q, double r, double v_max, double w_max, Spur
 double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 {
 	double w, theta;
-	double nw, nv, dt;
-
-	reference_speed( &nv, &nw );
+	double dt;
 
 	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
-	theta = odm->theta + nw * dt;
+	theta = odm->theta + spur->wref_smooth * dt;
 	w = timeoptimal_servo( 
 			trans_q( theta - spur->theta ),
 			spur->w,
 			0,
 			spur->dw );
 
-	robot_speed_smooth( 0, w, spur );
+	spur->wref = w;
+	spur->vref = 0;
 	return fabs( odm->theta - spur->theta );
 }
 
@@ -139,19 +137,18 @@ double spin( OdometryPtr odm, SpurUserParamsPtr spur )
 double orient( OdometryPtr odm, SpurUserParamsPtr spur )
 {
 	double w, theta;
-	double nw, nv, dt;
-
-	reference_speed( &nv, &nw );
+	double dt;
 
 	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
-	theta = odm->theta + nw * dt;
+	theta = odm->theta + spur->wref_smooth * dt;
 	w = timeoptimal_servo( 
 			trans_q( theta - spur->theta ),
 			spur->w,
 			0,
 			spur->dw );
 
-	robot_speed_smooth( spur->v, w, spur );
+	spur->wref = w;
+	spur->vref = spur->v;
 	return fabs( odm->theta - spur->theta );
 }
 
@@ -172,14 +169,11 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 	double vel;
 	int over;
 	double x, y;
-	double nv, nw;
 	double dt;
 
-	reference_speed( &nv, &nw );
-
 	dt = p( YP_PARAM_CONTROL_CYCLE, 0 ) * 1.5;
-	x = odm->x + nv * cos( odm->theta ) * dt;
-	y = odm->y + nv * sin( odm->theta ) * dt;
+	x = odm->x + spur->vref_smooth * cos( odm->theta ) * dt;
+	y = odm->y + spur->vref_smooth * sin( odm->theta ) * dt;
 
 	a = ( x - spur->x ) * cos( spur->theta ) + ( y - spur->y ) * sin( spur->theta );
 	vel = timeoptimal_servo( 
@@ -189,21 +183,9 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 			spur->dv );
 	over = 0;
 
-	if( fabs( spur->v ) <= fabs( vel ) )
-	{
-		SpurUserParams spur_line;
-
-		spur_line = *spur;
-		spur_line.v = -SIGN( a ) * fabs( spur->v );
-
-		line_follow( odm, &spur_line );
-	}
-	else
-	{
-		q = odm->theta - spur->theta;
-		q = trans_q( q );
-		regurator( 0, q, 1000, vel, spur->w, spur );
-	}
+	q = odm->theta - spur->theta;
+	q = trans_q( q );
+	regurator( 0, q, 1000, vel, spur->w, spur );
 
 	if( a > 0.05 )
 	{
@@ -221,30 +203,6 @@ int stop_line( OdometryPtr odm, SpurUserParamsPtr spur )
 		over = 2;
 	}
 	return over;
-}
-
-
-/* ホイール角度指令 */
-double wheel_angle( OdometryPtr odm, SpurUserParamsPtr spur )
-{
-	double wr, wl;
-
-	wl = timeoptimal_servo( 
-			odm->theta_l - spur->wheel_angle_l, 
-			spur->wheel_vel_l,
-			odm->wl,
-			spur->wheel_accel_l );
-	wr = timeoptimal_servo( 
-			odm->theta_r - spur->wheel_angle_r, 
-			spur->wheel_vel_r,
-			odm->wr,
-			spur->wheel_accel_r );
-
-	//printf("%f %f %f\n",odm->theta_r - spur->wheel_angle_r,
-	//		wr,odm->wr);
-
-	motor_speed_smooth( wr, wl, spur );
-	return 0;
 }
 
 double timeoptimal_servo( double err, double vel_max, double vel, double acc )
@@ -274,7 +232,6 @@ double timeoptimal_servo( double err, double vel_max, double vel, double acc )
 	}
 	return vel_ref_next;
 }
-
 
 
 

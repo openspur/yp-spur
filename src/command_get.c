@@ -46,7 +46,8 @@ void get_wheel_vref_com( int cs, double *data, double *resdata, SpurUserParamsPt
 	
 	odometry = get_odometry_ptr(  );
 
-	reference_motor_speed( &resdata[0], &resdata[1] );
+	resdata[0] = spur->wvelref[0];
+	resdata[1] = spur->wvelref[1];
 	resdata[2] = odometry->time;
 }
 
@@ -56,7 +57,8 @@ void get_vref_com( int cs, double *data, double *resdata, SpurUserParamsPtr spur
 	
 	odometry = get_odometry_ptr(  );
 
-	reference_speed( &resdata[0], &resdata[1] );
+	resdata[0] = spur->vref_smooth;
+	resdata[1] = spur->wref_smooth;
 	resdata[2] = odometry->time;
 }
 
@@ -92,8 +94,8 @@ void get_wheel_torque_com( int cs, double *data, double *resdata, SpurUserParams
 
 	odometry = get_odometry_ptr(  );
 
-	resdata[0] = odometry->torque_r;
-	resdata[1] = odometry->torque_l;
+	resdata[0] = odometry->wtorque[0];
+	resdata[1] = odometry->wtorque[1];
 	resdata[2] = odometry->time;
 
 	// printf("getvel %f %f %f\n",);
@@ -105,8 +107,8 @@ void get_wheel_vel_com( double *data, double *resdata, SpurUserParamsPtr spur )
 
 	odometry = get_odometry_ptr(  );
 
-	resdata[0] = odometry->wr;
-	resdata[1] = odometry->wl;
+	resdata[0] = odometry->wvel[0];
+	resdata[1] = odometry->wvel[1];
 	resdata[2] = odometry->time;
 
 	// printf("getvel %f %f %f\n",);
@@ -118,8 +120,8 @@ void get_wheel_ang_com( double *data, double *resdata, SpurUserParamsPtr spur )
 
 	odometry = get_odometry_ptr(  );
 
-	resdata[0] = odometry->theta_r;
-	resdata[1] = odometry->theta_l;
+	resdata[0] = odometry->wang[0];
+	resdata[1] = odometry->wang[1];
 	resdata[2] = odometry->time;
 
 	// printf("getvel %f %f %f\n",);

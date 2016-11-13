@@ -2,18 +2,18 @@ YP-Spur対応のモータドライバには、パラメータファイルの情�
 
 # パラメータ名の指定
 
-モータドライバのデバイスに、ターミナルソフト(Unix系の場合 cat /dev/ttyACM? & cat - > /dev/ttyACM? コマンド、Windowsの場合 TeraTermなど)で下記のコマンドを送ります。
+モータドライバのデバイスに、ターミナルソフト(Unix系の場合 `cat /dev/ttyACM? & cat - > /dev/ttyACM?` コマンド、Windowsの場合 TeraTermなど)で下記のコマンドを送ります。
 ```
 $SETNAME[name_of_the_parameter_file]
 $EEPROMSAVE
 ```
 
-ypspur-coordinatorは、パラメータファイルが指定されていない場合、[name_of_the_parameter_file].param を読み込もうとします。
-[name_of_the_parameter_file] が embedded の場合、ドライバに埋め込まれたパラメータファイルを読み込みます。
+ypspur-coordinatorは、パラメータファイルが指定されていない場合、`[name_of_the_parameter_file].param` を読み込もうとします。
+`[name_of_the_parameter_file]` が `embedded` の場合、ドライバに埋め込まれたパラメータファイルを読み込みます。
 
 # パラメータファイルの埋め込み
 
-まず、パラメータ名を embedded に指定します。
+まず、パラメータ名を `embedded` に指定します。
 ```
 $SETNAMEembedded
 $EEPROMSAVE

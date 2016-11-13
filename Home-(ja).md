@@ -1,6 +1,4 @@
-# YP-Spur
-
-## YP-Spurとは?
+# YP-Spurとは?
 
 YP-Spurは、移動ロボットの走行制御と座標系ベースのコマンドシステムを提供するソフトウェアです。詳細な制御のアーキテクチャについては、[Control Architecture](Control Architecture)を参照して下さい。
 

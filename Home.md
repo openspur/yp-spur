@@ -1,6 +1,4 @@
-# YP-Spur
-
-## What is YP-Spur?
+# What is YP-Spur?
 
 YP-Spur is a mobile robot motion control software with coordinate frame based commands.
 See [Control Architecture](Control Architecture) to learn the detail of the control system.

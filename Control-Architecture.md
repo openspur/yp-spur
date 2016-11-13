@@ -1,5 +1,3 @@
-# Control Architecture
-
 The following figure shows a control diagram of YP-Spur.
 
 ![Spur control system](https://github.com/at-wat/yp-spur/wiki/images/spur_system_en.png)

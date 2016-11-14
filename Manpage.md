@@ -56,8 +56,6 @@ On success, zero is returned. On error, -1 is returned.
 
 ## Line following
 
-![Parameters for line following control](https://github.com/at-wat/yp-spur/wiki/images/line.png)
-
 ### Name
 
 Spur_line_GL, Spur_line_LC, Spur_line_FS - Line following
@@ -75,6 +73,8 @@ int Spur_line_FS( double x, double y, double yaw )
 * **x** x-coordinate of a point where the desired line passing through _[m]_
 * **y** y-coordinate of the point _[m]_
 * **yaw** orientation of the line _[rad]_
+
+![Parameters for line following control](https://github.com/at-wat/yp-spur/wiki/images/commands/line.png)
 
 ### Return value
 

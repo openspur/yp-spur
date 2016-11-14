@@ -7,3 +7,6 @@
 ## Japanese pages
 * [Home](Home (ja))
 * [Embedding Parameters](Embedding Parameters (ja))
+
+## Resources
+* [Auxiliary Files](Auxiliary Files)

@@ -1126,6 +1126,7 @@ void set_param_motor( void )
 			if( ki == 0 )
 			{
 				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_FINENESS too small\n" );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: Increase TORQUE_FINENESS\n" );
 			}
 			parameter_set( PARAM_p_ki, j, ki );
 		}
@@ -1282,10 +1283,10 @@ void set_param_velocity( void )
 			{
 				yprintf( OUTPUT_LV_PARAM, "Info: INERTIA_SELF[%d]: %d\n", j,
 						(int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff) );
-				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 5 )
+				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 2 )
 				{
 					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] too small\n", j );
-					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_UNIT\n" );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS\n" );
 				}
 				parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
 			}

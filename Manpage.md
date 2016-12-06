@@ -74,7 +74,7 @@ int Spur_line_FS( double x, double y, double yaw )
 * **y** y-coordinate of the point _[m]_
 * **yaw** orientation of the line _[rad]_
 
-![Parameters for line following control](https://github.com/at-wat/yp-spur/wiki/images/commands/line.png)
+![Parameters for line following control](https://github.com/openspur/yp-spur/wiki/images/commands/line.png)
 
 ### Return value
 

@@ -133,5 +133,6 @@ void set_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
 void get_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
 void get_joint_vref_com( int id, double *data, SpurUserParamsPtr spur );
 void get_joint_ang_com( int id, double *data, SpurUserParamsPtr spur );
+void get_joint_torque_com( int id, double *data, SpurUserParamsPtr spur );
 
 #endif

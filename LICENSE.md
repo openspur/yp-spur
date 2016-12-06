@@ -1,20 +1,7 @@
-YamabicoProject-Spur (YP-Spur) is A is developed with Intelligent Robot Laboratory based on SH-Spur.
+# LICENSE
 
-ACCESS to
-URL:    http://www.roboken.esys.tsukuba.ac.jp/
-E-mail: platform2010@roboken.esys.tsukuba.ac.jp
-
-----------------------------------------------------------------------------
-The SH-Spur source code is available under the MIT License, see
-http://www.opensource.org/licenses/mit-license.html
-
-ACCESS to
-URL:    http://sourceforge.jp/projects/pc-ymbc/
-E-mail: etake@users.sourceforge.jp
-
-
-----------------------------------------------------------------------------
-Copyright (c) 2008 Eijiro Takeuchi and Intelligent Robot Laboratory Univ. of  Tsukuba, All rights reserved.
+```
+Copyright (c) 2008-2016 The YP-Spur Authors, All rights reserved.
   
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -33,3 +20,11 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+# HISTORY
+
+YP-Spur (YamabicoProject-Spur) has been forked from SH-Spur.
+The original SH-Spur source code is available under the MIT License at: http://sourceforge.jp/projects/pc-ymbc/
+
+

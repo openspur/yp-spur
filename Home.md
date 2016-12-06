@@ -12,6 +12,7 @@ See [Control Architecture](Control Architecture) to learn the detail of the cont
 ```
 $ git clone https://github.com/at-wat/yp-spur
 $ cd yp-spur
+$ git checkout -b release origin/release
 $ mkdir build
 $ cd build
 $ ../configure
@@ -20,8 +21,20 @@ $ sudo make install
 $ sudo ldconfig
 ```
 
+## Update
+
+```
+$ cd yp-spur
+$ git pull origin release
+$ cd build
+$ make
+$ sudo make install
+$ sudo ldconfig
+```
+
 ## Try development version
 
+* **First of all, learn Git!**
 * Find a branch or tag name at https://github.com/at-wat/yp-spur/branches or https://github.com/at-wat/yp-spur/releases.
 * Go to yp-spur directory where you have cloned.
 * Checkout the desired version.

@@ -1123,10 +1123,11 @@ void set_param_motor( void )
 			ki = ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
 						( g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
 						  g_P[YP_PARAM_VOLT][j] ) );
+			yprintf( OUTPUT_LV_PARAM, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki );
 			if( ki == 0 )
 			{
-				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_FINENESS too small\n" );
-				yprintf( OUTPUT_LV_ERROR, "ERROR: Increase TORQUE_FINENESS\n" );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_CONSTANT[%d] fixed point value underflow\n", j );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: Increase TORQUE_FINENESS[%d]\n", j );
 			}
 			parameter_set( PARAM_p_ki, j, ki );
 		}
@@ -1285,8 +1286,8 @@ void set_param_velocity( void )
 						(int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff) );
 				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 2 )
 				{
-					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] too small\n", j );
-					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS\n" );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] fixed point value underflow\n", j );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", j );
 				}
 				parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
 			}

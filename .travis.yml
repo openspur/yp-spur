@@ -1,13 +1,15 @@
 dist: trusty
-sudo: false
+sudo: required
 language: c
 compiler: gcc
-addons:
-  apt:
-    packages:
-    - gcc-mingw-w64-x86-64
+before_install:
+  - sudo apt-get update -y
+  - sudo apt-get install -y gcc-mingw-w64-x86-64
 script:
-  - mkdir build && cd build && ../configure && make && cd ../
-  - mkdir build-win32 && cd build-win32 && ../configure CC='x86_64-w64-mingw32-gcc -m64 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make && cd ../
-  - mkdir build-win64 && cd build-win64 && ../configure CC='x86_64-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make && cd ../
+  - mkdir build && cd build && ../configure && make
+  - cd ../
+  - mkdir build-win32 && cd build-win32 && ../configure CC='x86_64-w64-mingw32-gcc -m64 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make
+  - cd ../
+  - mkdir build-win64 && cd build-win64 && ../configure CC='x86_64-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make
+  - cd ../
 

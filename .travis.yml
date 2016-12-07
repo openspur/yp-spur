@@ -1,5 +1,13 @@
+dist: trusty
+sudo: false
 language: c
 compiler: gcc
+addons:
+  apt:
+    packages:
+    - gcc-mingw-w64-x86-64
 script:
-    ./configure && make && sudo make install
+  - mkdir build && cd build && ../configure && make && cd ../
+  - mkdir build-win32 && cd build-win32 && ../configure CC='x86_64-w64-mingw32-gcc -m64 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make && cd ../
+  - mkdir build-win64 && cd build-win64 && ../configure CC='x86_64-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 && make && cd ../
 

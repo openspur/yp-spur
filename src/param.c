@@ -1123,9 +1123,11 @@ void set_param_motor( void )
 			ki = ( double )( 65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
 						( g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
 						  g_P[YP_PARAM_VOLT][j] ) );
+			yprintf( OUTPUT_LV_PARAM, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki );
 			if( ki == 0 )
 			{
-				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_FINENESS too small\n" );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: TORQUE_CONSTANT[%d] fixed point value underflow\n", j );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: Increase TORQUE_FINENESS[%d]\n", j );
 			}
 			parameter_set( PARAM_p_ki, j, ki );
 		}
@@ -1242,7 +1244,16 @@ void set_param_velocity( void )
 		}
 		ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / ( g_P[YP_PARAM_COUNT_REV][0] * fabs(g_P[YP_PARAM_GEAR][0]) );
 		if( ischanged_p(YP_PARAM_GAIN_A,0) || ffr_changed )
+		{
+			yprintf( OUTPUT_LV_PARAM, "Info: GAIN_A: %d\n", 
+					(int)(g_P[YP_PARAM_GAIN_A][0] * ffr) );
+			if( abs(g_P[YP_PARAM_GAIN_A][0] * ffr) < 2 )
+			{
+				yprintf( OUTPUT_LV_ERROR, "ERROR: GAIN_A fixed point value underflow\n" );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 0 );
+			}
 			parameter_set( PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr );
+		}
 		if( ischanged_p(YP_PARAM_GAIN_C,0) || ffr_changed )
 			parameter_set( PARAM_p_C, 0, g_P[YP_PARAM_GAIN_C][0] * ffr );
 		if( ischanged_p(YP_PARAM_GAIN_E,0) || ffr_changed )
@@ -1256,7 +1267,16 @@ void set_param_velocity( void )
 		}
 		ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / ( g_P[YP_PARAM_COUNT_REV][1] * fabs(g_P[YP_PARAM_GEAR][1]) );
 		if( ischanged_p(YP_PARAM_GAIN_B,0) || ffl_changed )
+		{
+			yprintf( OUTPUT_LV_PARAM, "Info: GAIN_B: %d\n", 
+					(int)(g_P[YP_PARAM_GAIN_A][0] * ffl) );
+			if( abs(g_P[YP_PARAM_GAIN_B][0] * ffl) < 2 )
+			{
+				yprintf( OUTPUT_LV_ERROR, "ERROR: GAIN_B fixed point value underflow\n" );
+				yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 1 );
+			}
 			parameter_set( PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl );
+		}
 		if( ischanged_p(YP_PARAM_GAIN_D,0) || ffl_changed )
 			parameter_set( PARAM_p_D, 0, g_P[YP_PARAM_GAIN_D][0] * ffl );
 		if( ischanged_p(YP_PARAM_GAIN_F,0) || ffl_changed )
@@ -1282,10 +1302,10 @@ void set_param_velocity( void )
 			{
 				yprintf( OUTPUT_LV_PARAM, "Info: INERTIA_SELF[%d]: %d\n", j,
 						(int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff) );
-				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 5 )
+				if( abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 2 )
 				{
-					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] too small\n", j );
-					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_UNIT\n" );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] fixed point value underflow\n", j );
+					yprintf( OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", j );
 				}
 				parameter_set( PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff );
 			}

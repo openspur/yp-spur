@@ -10,9 +10,10 @@ Learn to use YP-Spur at our [wiki pages](https://github.com/openspur/yp-spur/wik
 
 ## License
 
-* YP-Spur is available under the MIT License.
-Copyright (c) 2008-2016 The YP-Spur Authors, All rights reserved.
-* The original SH-Spur source code is available under the MIT License at: http://sourceforge.jp/projects/pc-ymbc/
+* YP-Spur is available under the [MIT License](http://www.opensource.org/licenses/mit-license.html).
+    * Copyright (c) 2010-2016 The YP-Spur Authors, All rights reserved.
+* YP-Spur has been forked from SH-Spur. The original [SH-Spur source code](http://sourceforge.jp/projects/pc-ymbc/) is available under the [MIT License](http://www.opensource.org/licenses/mit-license.html).
+    * Copyright (c) 2008 Eijiro Takeuchi and Intelligent Robot Laboratory Univ. of  Tsukuba, All rights reserved.
 
 ## Contributing
 

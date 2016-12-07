@@ -1,5 +1,5 @@
 language: c
 compiler: gcc
 script:
-    ./configure && make && make install
+    ./configure && make && sudo make install
 

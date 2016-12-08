@@ -12,3 +12,6 @@
 
 ## Resources
 * [Auxiliary Files](Auxiliary Files)
+
+***
+[![Build Status](https://travis-ci.org/openspur/yp-spur.svg?branch=master)](https://travis-ci.org/openspur/yp-spur)

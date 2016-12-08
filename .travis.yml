@@ -6,9 +6,7 @@ compiler: gcc
 
 before_install:
   - sudo apt-get update -y
-  - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 npm
-  - sudo npm install -g json
-  - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
+  - sudo apt-get install -y gcc-mingw-w64-x86-64
 script:
   - mkdir build && cd build && ../configure && make
   - cd ../
@@ -17,10 +15,13 @@ script:
   - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && ../configure CC='i686-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=i686-w64-mingw32 --prefix=`pwd`/install && make && make install
   - cd ../
 before_deploy:
+  - sudo apt-get install -y npm
+  - sudo npm install -g json
+  - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
   - wget $YPSPUR_GUI_URI
-  - cd build-win64/install/ && unzip ../$(basename $YPSPUR_GUI_URI)
+  - cd build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
   - cd ../../
-  - cd build-win32/install/ && unzip ../$(basename $YPSPUR_GUI_URI)
+  - cd build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
   - cd ../../
   - export GIT_TAG=`git describe --abbrev=0 --tags`
   - mkdir packages

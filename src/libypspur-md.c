@@ -1311,6 +1311,37 @@ double YP_md_get_joint_ang( YPSpur *spur, int id, double *a )
 	return time;
 }
 
+double YP_md_get_joint_torque( YPSpur *spur, int id, double *t )
+{
+	YPSpur_msg msg;
+	int len;
+	double time;
+
+	msg.msg_type = YPSPUR_MSG_CMD;
+	msg.pid = spur->pid;
+	msg.type = YPSPUR_GET_JOINT_TORQUE;
+	msg.cs = id;
+	if( spur->dev.send( &spur->dev, &msg ) < 0 )
+	{
+		/* error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	/* 指定のコマンド受け取り */
+	len = spur->dev.recv( &spur->dev, &msg );
+	if( len < 0 )
+	{
+		/* receive error */
+		spur->connection_error = 1;
+		return -1;
+	}
+
+	*t = msg.data[0];
+	time = msg.data[1];
+	return time;
+}
+
 
 
 ParamOutputLv output_lv( void )

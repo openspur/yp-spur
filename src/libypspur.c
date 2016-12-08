@@ -338,5 +338,10 @@ double YP_get_joint_ang( int id, double *a )
 	return YP_md_get_joint_ang( &spur, id, a );
 }
 
+double YP_get_joint_torque( int id, double *w )
+{
+	return YP_md_get_joint_torque( &spur, id, w );
+}
+
 
 

@@ -353,6 +353,12 @@ void command( void )
 			yprintf( OUTPUT_LV_COMMAND, "Command: get joint %d ang %f\n", msg.cs, res_msg.data[0] );
 			break;
 
+		case YPSPUR_GET_JOINT_TORQUE:
+			get_joint_torque_com( msg.cs, res_msg.data, &g_spur );
+			message_return( &ipcmd, msg.pid, &res_msg );
+			yprintf( OUTPUT_LV_COMMAND, "Command: get joint %d torque %f\n", msg.cs, res_msg.data[0] );
+			break;
+
 
 		default:
 			yprintf( OUTPUT_LV_WARNING, "Command: unknown\n" );

@@ -174,6 +174,7 @@ extern "C"
 	double YP_get_joint_vel( int id, double *v );
 	double YP_get_joint_vref( int id, double *v );
 	double YP_get_joint_ang( int id, double *a );
+	double YP_get_joint_torque( int id, double *t );
 
 
 #define YPSPUR_JOINT_SUPPORT 1

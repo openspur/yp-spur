@@ -80,6 +80,7 @@ extern "C"
 		YPSPUR_GET_JOINT_VEL = 0x820,
 		YPSPUR_GET_JOINT_VREF,
 		YPSPUR_GET_JOINT_ANG,
+		YPSPUR_GET_JOINT_TORQUE,
 	};
 
 	/* パラメータナンバー */

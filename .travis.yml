@@ -7,7 +7,7 @@ compiler: gcc
 before_install:
   - sudo apt-get update -y
   - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686
-  - sodo npm install -g jsontool
+  - sudo npm install -g jsontool
   - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
 script:
   - mkdir build && cd build && ../configure && make

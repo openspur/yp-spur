@@ -179,6 +179,7 @@ extern "C"
 
 
 #define YPSPUR_JOINT_SUPPORT 1
+#define YPSPUR_JOINT_ANG_VEL_SUPPORT 1
 
 #ifdef __cplusplus
 }

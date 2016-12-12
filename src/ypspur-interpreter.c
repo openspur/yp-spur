@@ -72,6 +72,7 @@ typedef struct SPUR_COMMAND
 		SPUR_GET_JOINT_VEL,
 		SPUR_GET_JOINT_VREF,
 		SPUR_GET_JOINT_ANG,
+		SPUR_GET_JOINT_TORQUE,
 		SPUR_SLEEP,
 		EXIT,
 		HELP,
@@ -131,6 +132,7 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
 	{SPUR_GET_JOINT_VEL, {"get_joint_vel"}, 1},
 	{SPUR_GET_JOINT_VREF, {"get_joint_vref"}, 1},
 	{SPUR_GET_JOINT_ANG, {"get_joint_ang"}, 1},
+	{SPUR_GET_JOINT_TORQUE, {"get_joint_torque"}, 1},
 	{SPUR_SLEEP, {"sleep"}, 1},
 	{HELP, {"help"}, 0},
 	{EXIT, {"exit"}, 0}
@@ -379,6 +381,10 @@ int proc_spur_cmd( char *line, int *coordinate )
 		break;
 	case SPUR_GET_JOINT_ANG:
 		YP_get_joint_ang( (int)spur.arg[0], &spur.arg[1] );
+		printf( "%f\n", spur.arg[1] );
+		break;
+	case SPUR_GET_JOINT_TORQUE:
+		YP_get_joint_torque( (int)spur.arg[0], &spur.arg[1] );
 		printf( "%f\n", spur.arg[1] );
 		break;
 	case SPUR_SLEEP:

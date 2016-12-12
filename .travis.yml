@@ -1,0 +1,43 @@
+dist: trusty
+sudo: required
+
+language: c
+compiler: gcc
+
+before_install:
+  - sudo apt-get update -y
+  - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686
+script:
+  - mkdir build && cd build && ../configure && make
+  - cd ../
+  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && ../configure CC='x86_64-w64-mingw32-gcc -m64 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 --prefix=`pwd`/install && make && make install
+  - cd ../
+  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && ../configure CC='i686-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=i686-w64-mingw32 --prefix=`pwd`/install && make && make install
+  - cd ../
+before_deploy:
+  - sudo apt-get install -y npm
+  - sudo npm install -g json
+  - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
+  - wget $YPSPUR_GUI_URI
+  - cd build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
+  - cd ../../
+  - cd build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
+  - cd ../../
+  - export GIT_TAG=`git describe --abbrev=0 --tags`
+  - mkdir packages
+  - cd build-win64/install/ && zip -q ../../packages/yp-spur.win64.$GIT_TAG.zip -r $(ls)
+  - cd ../../
+  - cd build-win32/install/ && zip -q ../../packages/yp-spur.win32.$GIT_TAG.zip -r $(ls)
+  - cd ../../
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: "kX1HXsq/hkmBxEX7k2LQyjDJh0XWdVW3L6WTRgDryIG0d6RVIfiPK9MMsqWaV7h87I/UATySChF0lHYnjv+29xQ1iUC3Pj+/wEnOGwFBOhsJC4QV1d8WLLmvy4tenasK0unfABj7ntd1EP81lyCLQHYI966fmCPlTl5sH8bSkJgA5PWcpQFfeCGloRCC5vvH6jyZuOVDga7+Lky4HowFj5ZlokK4/4Fe1XimzgorF3cHN2h6XtVT3+Kwr6G71V6A6pv/KMfn/RNoma0wdKVSckuK9tSFh7gjoTC6yQfvOH+Q26h7Cp5Z8V2f2pfGqxVZq8RiHHuN7aYtRzsSWVTVqTi5OjCAcehrUZm0Z1op8kP25UL2szRNk6OXe3bR9qruRAYSiuXb6Bl8mqVheEFJLymGyGie6Nj8oMb0Rok5z5Dqx7M/upa4OUh1a5W/I+Nu49K8pANWzfAk8gAFFk08LcKI1ImYLXufBvrBPv8tYYLQR3aRey0BcWvb7RpboCdrAMZQcRhDMSpIW9yVmBvjWqyFoX3+/oilsybD/WBdsPivrt4J0ZdgkEA49WozScRNWMm55J3V4fES6UfaYEFDk9hCkpYsS8rRvWpvTnRR/tvCTnaUIvxSpSgZWeQbfrK9nHfOeFZMna7peAkCbIgJqkRxNeLuADwx+ZOH0V0m7/M="
+  file:
+    - packages/yp-spur.win64.$GIT_TAG.zip
+    - packages/yp-spur.win32.$GIT_TAG.zip
+  on:
+    tags: true
+

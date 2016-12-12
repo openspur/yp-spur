@@ -136,4 +136,19 @@ void get_joint_ang_com( int id, double *data, SpurUserParamsPtr spur )
 	data[1] = odometry->time;
 }
 
+void get_joint_torque_com( int id, double *data, SpurUserParamsPtr spur )
+{
+	OdometryPtr odometry;
+	
+	if( id > YP_PARAM_MAX_MOTOR_NUM )
+	{
+		yprintf(OUTPUT_LV_ERROR, "Motor id out of range (%d)\n", id);
+		return;
+	}
+	odometry = get_odometry_ptr(  );
+
+	data[0] = odometry->wtorque[id];
+	data[1] = odometry->time;
+}
+
 

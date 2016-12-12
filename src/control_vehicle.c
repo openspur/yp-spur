@@ -64,15 +64,29 @@ int motor_control( SpurUserParamsPtr spur )
 		case MOTOR_CONTROL_VEHICLE:
 			break;
 		case MOTOR_CONTROL_ANGLE:
-			spur->wvelref[i] = timeoptimal_servo( 
-					podm->wang[i] - spur->wheel_angle[i], 
-					spur->wheel_vel[i],
-					podm->wvel[i],
-					spur->wheel_accel[i] );
+		case MOTOR_CONTROL_ANGLE_VEL:
 		case MOTOR_CONTROL_VEL:
+			switch( spur->wheel_mode[i] )
+			{
+			case MOTOR_CONTROL_ANGLE:
+				spur->wvelref[i] = timeoptimal_servo( 
+						podm->wang[i] - spur->wheel_angle[i], 
+						spur->wheel_vel[i],
+						podm->wvel[i],
+						spur->wheel_accel[i] );
+				break;
+			case MOTOR_CONTROL_ANGLE_VEL:
+				spur->wvelref[i] = timeoptimal_servo2( 
+						podm->wang[i] - spur->wheel_angle[i], 
+						spur->wheel_vel[i],
+						podm->wvel[i],
+						spur->wheel_accel[i],
+						spur->wheel_vel_end[i]);
+				break;
+			default:
+				break;
+			}
 			ref = spur->wvelref[i];
-			if( ref > spur->wheel_vel[i] ) ref = spur->wheel_vel[i];
-			else if( ref < -spur->wheel_vel[i] ) ref = -spur->wheel_vel[i];
 
 			if( ref > spur->wheel_vel_smooth[i] + spur->wheel_accel[i] * p( YP_PARAM_CONTROL_CYCLE, i ) )
 			{
@@ -83,6 +97,21 @@ int motor_control( SpurUserParamsPtr spur )
 				ref = spur->wheel_vel_smooth[i] - spur->wheel_accel[i] * p( YP_PARAM_CONTROL_CYCLE, i );
 			}
 			spur->wheel_vel_smooth[i] = ref;
+			if( spur->wheel_mode[i] == MOTOR_CONTROL_ANGLE_VEL )
+			{
+				if( (spur->wheel_vel_end[i] > 0.0 && 
+							spur->wheel_angle[i] > podm->wang[i] &&
+							spur->wheel_angle[i] < podm->wang[i]
+							+ ref * p( YP_PARAM_CONTROL_CYCLE, i ) ) ||
+						(spur->wheel_vel_end[i] < 0.0 && 
+						 spur->wheel_angle[i] < podm->wang[i] &&
+						 spur->wheel_angle[i] > podm->wang[i]
+						 + ref * p( YP_PARAM_CONTROL_CYCLE, i ) ) )
+				{
+					spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
+					spur->wvelref[i] = spur->wheel_vel_end[i];
+				}
+			}
 			break;
 		}
 	}
@@ -122,6 +151,7 @@ void apply_motor_speed( SpurUserParamsPtr spur )
 				parameter_set( PARAM_servo, i, SERVO_LEVEL_TORQUE );
 				break;
 			case MOTOR_CONTROL_ANGLE:
+			case MOTOR_CONTROL_ANGLE_VEL:
 			case MOTOR_CONTROL_VEL:
 			case MOTOR_CONTROL_VEHICLE:
 				parameter_set( PARAM_servo, i, SERVO_LEVEL_VELOCITY );
@@ -137,6 +167,7 @@ void apply_motor_speed( SpurUserParamsPtr spur )
 			parameter_set( PARAM_w_ref, i, 0 );
 			break;
 		case MOTOR_CONTROL_ANGLE:
+		case MOTOR_CONTROL_ANGLE_VEL:
 		case MOTOR_CONTROL_VEL:
 		case MOTOR_CONTROL_VEHICLE:
 			if( option( OPTION_HIGH_PREC ) )

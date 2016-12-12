@@ -312,6 +312,11 @@ int YP_joint_ang( int id, double a )
 	return YP_md_joint_ang( &spur, id, a );
 }
 
+int YP_joint_ang_vel( int id, double a, double v )
+{
+	return YP_md_joint_ang_vel( &spur, id, a, v );
+}
+
 int YP_set_joint_accel( int id, double a )
 {
 	return YP_md_set_joint_accel( &spur, id, a );

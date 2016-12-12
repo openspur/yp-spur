@@ -26,7 +26,8 @@ typedef enum
 	MOTOR_CONTROL_FREE,
 	MOTOR_CONTROL_VEHICLE,
 	MOTOR_CONTROL_VEL,
-	MOTOR_CONTROL_ANGLE
+	MOTOR_CONTROL_ANGLE,
+	MOTOR_CONTROL_ANGLE_VEL
 } MotorControlMode;
 
 typedef struct _spur_user_params *SpurUserParamsPtr;
@@ -50,6 +51,7 @@ typedef struct _spur_user_params
 	double wheel_vel[YP_PARAM_MAX_MOTOR_NUM];
 	double wheel_vel_smooth[YP_PARAM_MAX_MOTOR_NUM];
 	double wheel_angle[YP_PARAM_MAX_MOTOR_NUM];
+	double wheel_vel_end[YP_PARAM_MAX_MOTOR_NUM];
 	MotorControlMode wheel_mode[YP_PARAM_MAX_MOTOR_NUM];
 	MotorControlMode wheel_mode_prev[YP_PARAM_MAX_MOTOR_NUM];
 	double theta;
@@ -128,6 +130,7 @@ void set_io_data_com( double *data, double *resdata );
 void joint_torque_com( int id, double *data, SpurUserParamsPtr spur );
 void joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
 void joint_ang_com( int id, double *data, SpurUserParamsPtr spur );
+void joint_ang_vel_com( int id, double *data, SpurUserParamsPtr spur );
 void set_joint_accel_com( int id, double *data, SpurUserParamsPtr spur );
 void set_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );
 void get_joint_vel_com( int id, double *data, SpurUserParamsPtr spur );

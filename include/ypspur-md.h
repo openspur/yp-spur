@@ -182,6 +182,8 @@ double YP_md_get_joint_vref( YPSpur *spur, int id, double *v );
 double YP_md_get_joint_ang( YPSpur *spur, int id, double *a );
 double YP_md_get_joint_torque( YPSpur *spur, int id, double *t );
 
+
+#define YPSPUR_JOINT_SUPPORT 1
 #define YPSPUR_JOINT_ANG_VEL_SUPPORT 1
 
 #ifdef __cplusplus

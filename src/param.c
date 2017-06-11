@@ -813,6 +813,11 @@ int set_paramptr( FILE * paramfile )
 			g_P[YP_PARAM_ENCODER_TYPE][j] = 2.0;
 			g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
 		}
+		if( !g_P_set[YP_PARAM_INDEX_GEAR][j] )
+		{
+			g_P[YP_PARAM_INDEX_GEAR][j] = 1.0;
+			g_P_changed[YP_PARAM_INDEX_GEAR][j] = 1;
+		}
 	}
 
 	// パラメータの指定によって自動的に求まるパラメータの計算

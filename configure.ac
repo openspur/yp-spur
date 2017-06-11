@@ -26,7 +26,7 @@ AC_CONFIG_SUBDIRS(auxlib/formula-calc)
 AC_DEFINE(YP_VENDOR_NAME, "OpenSpur.org", vendor)
 AC_DEFINE(YP_PRODUCT_NAME, "Yamabico Project - Spur", product)
 AC_DEFINE(YP_FIRMWARE_NAME, "2015.11.15", firmware)
-AC_DEFINE(YP_PROTOCOL_NAME, "YPP:08:02", protocol)
+AC_DEFINE(YP_PROTOCOL_NAME, "YPP:09:03", protocol)
 AC_DEFINE(YP_PROTOCOL_NAME_DEVICE, "YPP:06:00", protocol)
 
 # etc.

@@ -66,4 +66,10 @@ typedef enum
 	PARAM_phase_offset,
 } YPSpur_shvel_param;
 
+typedef enum
+{
+	INT_enc_index_rise = 0,
+	INT_enc_index_fall,
+} YPSpur_shvel_interrupt;
+
 #endif

@@ -133,8 +133,20 @@ void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 	{
 		if(!param->motor_enable[i]) continue;
 
+		double cnt_diff;
+		if(param->device_version > 8)
+		{
+			cnt_diff = cnt[i] - xp->enc[i];
+			xp->enc[i] = cnt[i];
+		}
+		else
+		{
+			cnt_diff = cnt[i];
+			xp->enc[i] += cnt_diff;
+		}
+
 		/* 角速度計算 */
-		mvel[i] = 2.0 * M_PI * ( ( double )cnt[i] ) * pow(2, p( YP_PARAM_ENCODER_DIV, i ))
+		mvel[i] = 2.0 * M_PI * ( ( double )cnt_diff ) * pow(2, p( YP_PARAM_ENCODER_DIV, i ))
 			/ ( p( YP_PARAM_COUNT_REV, i ) * dt );
 		wvel[i] = mvel[i] / p( YP_PARAM_GEAR, i );
 
@@ -198,6 +210,43 @@ void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 	
 	// 数式指定のパラメータを評価
 	param_calc( );
+}
+
+/* 割り込み型データの処理 */
+void process_int( OdometryPtr xp, int param_id, int id, int value )
+{
+	Parameters *param;
+	param = get_param_ptr();
+
+	if(!param->motor_enable[id]) return;
+
+	switch( param_id )
+	{
+	case INT_enc_index_rise:
+	case INT_enc_index_fall:
+		{
+			// enc == value のときに INDEX_RISE/FALL_ANGLE [rad] だった
+			const short enc_diff = (short)xp->enc[id] - (short)value;
+			const double ang_diff = enc_diff * 2.0 * M_PI / 
+				( p( YP_PARAM_COUNT_REV, id ) * p( YP_PARAM_GEAR, id ) );
+
+			const double index_ratio = p( YP_PARAM_INDEX_GEAR, id ) / p( YP_PARAM_GEAR, id );
+			double ref_ang;
+			if( param_id == INT_enc_index_rise )
+				ref_ang = p( YP_PARAM_INDEX_RISE_ANGLE, id );
+			else
+				ref_ang = p( YP_PARAM_INDEX_FALL_ANGLE, id );
+
+			ref_ang *= index_ratio;
+
+			xp->wang[id] = floor( xp->wang[id] / ( 2.0 * M_PI * index_ratio ) ) * 
+				2.0 * M_PI * index_ratio + ref_ang + ang_diff;
+		}
+		break;
+	default:
+		yprintf( OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param, id, value );
+		break;
+	}
 }
 
 /* Odometry型データの座標系を変換 */
@@ -321,6 +370,10 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 	static int com_wp = 0;
 	static int receive_count = 0;
 	static char com_buf[128];
+	static enum {
+		ISOCHRONOUS = 0,
+		INTERRUPT
+	} mode = 0;
 
 	int i;
 	int odometry_updated;
@@ -354,11 +407,16 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 		if( buf[i] == COMMUNICATION_START_BYTE )
 		{
 			com_wp = 0;
+			mode = ISOCHRONOUS;
+		}
+		else if( buf[i] == COMMUNICATION_INT_BYTE )
+		{
+			com_wp = 0;
+			mode = INTERRUPT;
 		}
 		else if( buf[i] == COMMUNICATION_END_BYTE )
 		{
 			unsigned char data[48];
-			short cnt[YP_PARAM_MAX_MOTOR_NUM], pwm[YP_PARAM_MAX_MOTOR_NUM];
 
 			/* デコード処理 */
 			decoded_len = decord( ( unsigned char * )com_buf, com_wp, ( unsigned char * )data, 48 );
@@ -369,41 +427,65 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 				com_wp = 0;
 				continue;
 			}
-			int i, p = 0;
-			for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+
+			switch(mode)
 			{
-				if(!param->motor_enable[i]) continue;
-				Short_2Char val;
-				val.byte[1] = data[p++];
-				val.byte[0] = data[p++];
-				cnt[i] = val.integer;
+			case ISOCHRONOUS:
+				{
+					short cnt[YP_PARAM_MAX_MOTOR_NUM], pwm[YP_PARAM_MAX_MOTOR_NUM];
+					int i, p = 0;
+					for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+					{
+						if(!param->motor_enable[i]) continue;
+						Short_2Char val;
+						val.byte[1] = data[p++];
+						val.byte[0] = data[p++];
+						cnt[i] = val.integer;
+					}
+					for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
+					{
+						if(!param->motor_enable[i]) continue;
+						Short_2Char val;
+						val.byte[1] = data[p++];
+						val.byte[0] = data[p++];
+						pwm[i] = val.integer;
+					}
+
+					process_addata( &data[p], decoded_len - p );
+
+					cnt1_log[readdata_num].integer = cnt[0];
+					cnt2_log[readdata_num].integer = cnt[1];
+					pwm1_log[readdata_num].integer = pwm[0];
+					pwm2_log[readdata_num].integer = pwm[1];
+					memcpy( ad_log[readdata_num], get_addataptr(  ), sizeof ( int ) * 8 );
+
+					if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) && state( YP_STATE_BODY ) )
+					{
+						odometry( &g_odometry, cnt, pwm, g_interval );
+						odm_log[odometry_updated] = g_odometry;
+						odometry_updated++;
+					}
+
+					if( option( OPTION_SHOW_ODOMETRY ) )
+						printf( "%f %f %f\n", g_odometry.x, g_odometry.y, g_odometry.theta );
+				}
+				break;
+			case INTERRUPT:
+				{
+					char param, id;
+					Int_4Char value;
+
+					param = data[0];
+					id = data[1];
+					value.byte[3] = data[2];
+					value.byte[2] = data[3];
+					value.byte[1] = data[4];
+					value.byte[0] = data[5];
+
+					process_int( &g_odometry, param, id, value.integer );
+				}
+				break;
 			}
-			for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
-			{
-				if(!param->motor_enable[i]) continue;
-				Short_2Char val;
-				val.byte[1] = data[p++];
-				val.byte[0] = data[p++];
-				pwm[i] = val.integer;
-			}
-
-			process_addata( &data[p], decoded_len - p );
-
-			cnt1_log[readdata_num].integer = cnt[0];
-			cnt2_log[readdata_num].integer = cnt[1];
-			pwm1_log[readdata_num].integer = pwm[0];
-			pwm2_log[readdata_num].integer = pwm[1];
-			memcpy( ad_log[readdata_num], get_addataptr(  ), sizeof ( int ) * 8 );
-
-			if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) && state( YP_STATE_BODY ) )
-			{
-				odometry( &g_odometry, cnt, pwm, g_interval );
-				odm_log[odometry_updated] = g_odometry;
-				odometry_updated++;
-			}
-
-			if( option( OPTION_SHOW_ODOMETRY ) )
-				printf( "%f %f %f\n", g_odometry.x, g_odometry.y, g_odometry.theta );
 		
 			readdata_num++;
 			readdata_len = com_wp;

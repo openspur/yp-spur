@@ -233,9 +233,15 @@ void process_int( OdometryPtr xp, int param_id, int id, int value )
 			const double index_ratio = p( YP_PARAM_INDEX_GEAR, id ) / p( YP_PARAM_GEAR, id );
 			double ref_ang;
 			if( param_id == INT_enc_index_rise )
+			{
+				if( !isset_p( YP_PARAM_INDEX_RISE_ANGLE, id ) ) break;
 				ref_ang = p( YP_PARAM_INDEX_RISE_ANGLE, id );
+			}
 			else
+			{
+				if( !isset_p( YP_PARAM_INDEX_FALL_ANGLE, id ) ) break;
 				ref_ang = p( YP_PARAM_INDEX_FALL_ANGLE, id );
+			}
 
 			ref_ang *= index_ratio;
 

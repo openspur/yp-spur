@@ -245,7 +245,7 @@ void process_int( OdometryPtr xp, int param_id, int id, int value )
 
 			ref_ang *= index_ratio;
 
-			xp->wang[id] = floor( xp->wang[id] / ( 2.0 * M_PI * index_ratio ) ) * 
+			xp->wang[id] = round( (xp->wang[id] - ref_ang - ang_diff) / ( 2.0 * M_PI * index_ratio ) ) * 
 				2.0 * M_PI * index_ratio + ref_ang + ang_diff;
 		}
 		break;
@@ -426,7 +426,8 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 			/* デコード処理 */
 			decoded_len = decord( ( unsigned char * )com_buf, com_wp, ( unsigned char * )data, 48 );
-			if( decoded_len != decoded_len_req )
+			if( (mode == ISOCHRONOUS && decoded_len != decoded_len_req) ||
+					(mode == INTERRUPT && decoded_len != 6) )
 			{
 				com_buf[com_wp] = '\0';
 				yprintf( OUTPUT_LV_WARNING, "Warn: Broken packet '%s' (%d bytes) received. (%d bytes expected)\n", com_buf, decoded_len, decoded_len_req );

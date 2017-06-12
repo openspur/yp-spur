@@ -231,7 +231,7 @@ int serial_change_baudrate( int baud )
 	}
 	SER_BAUDRATE = ( double )baud;		
 	newtio.c_iflag = IGNPAR;					// パリティエラーのデータは無視する
-	newtio.c_oflag = 1;							// Raw モードでの出力
+	newtio.c_oflag = 0;							// Disable implementation dependent processing
 
 	newtio.c_cc[VTIME] = 0;						/* キャラクタ間タイマを使わない */
 	newtio.c_cc[VMIN] = 1;						/* 1文字来るまで，読み込みをブロックする */

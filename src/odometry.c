@@ -133,10 +133,10 @@ void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 	{
 		if(!param->motor_enable[i]) continue;
 
-		double cnt_diff;
+		short cnt_diff;
 		if(param->device_version > 8)
 		{
-			cnt_diff = cnt[i] - xp->enc[i];
+			cnt_diff = (short)cnt[i] - (short)xp->enc[i];
 			xp->enc[i] = cnt[i];
 		}
 		else
@@ -226,7 +226,9 @@ void process_int( OdometryPtr xp, int param_id, int id, int value )
 	case INT_enc_index_fall:
 		{
 			// enc == value のときに INDEX_RISE/FALL_ANGLE [rad] だった
-			const short enc_diff = (short)xp->enc[id] - (short)value;
+			const unsigned short enc_div = 
+				((unsigned int)xp->enc[id] << ((int)p( YP_PARAM_ENCODER_DIV, id ))) & 0xFFFF;
+			const short enc_diff = (short)enc_div - (short)value;
 			const double ang_diff = enc_diff * 2.0 * M_PI / 
 				( p( YP_PARAM_COUNT_REV, id ) * p( YP_PARAM_GEAR, id ) );
 

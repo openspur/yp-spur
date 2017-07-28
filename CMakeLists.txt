@@ -77,7 +77,7 @@ add_executable(ypspur-free
 	src/ypspur-free.c
 )
 target_link_libraries(ypspur-free
-	ypspur
+	ypspur-static
 )
 
 add_executable(ypspur-interpreter
@@ -85,7 +85,7 @@ add_executable(ypspur-interpreter
 )
 
 target_link_libraries(ypspur-interpreter
-	ypspur
+	ypspur-static
 )
 
 

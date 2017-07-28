@@ -159,9 +159,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in COPYING ChangeLog INSTALL \
-	README compile config.guess config.sub depcomp install-sh \
-	ltmain.sh missing
+am__DIST_COMMON = $(srcdir)/Makefile.in ChangeLog INSTALL compile \
+	config.guess config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -253,6 +252,7 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LT_LDFLAGS = @LT_LDFLAGS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -278,12 +278,6 @@ RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-SH_CROSS_AR = @SH_CROSS_AR@
-SH_CROSS_CC = @SH_CROSS_CC@
-SH_CROSS_ELF_AR = @SH_CROSS_ELF_AR@
-SH_CROSS_ELF_CC = @SH_CROSS_ELF_CC@
-SH_CROSS_ELF_OBJCOPY = @SH_CROSS_ELF_OBJCOPY@
-SH_CROSS_OBJCOPY = @SH_CROSS_OBJCOPY@
 SSM_COORDINATOR = @SSM_COORDINATOR@
 STRIP = @STRIP@
 VERSION = @VERSION@
@@ -345,7 +339,7 @@ AUTOMAKE_OPTIONS = foreign dist-bzip2 no-dist-gzip 1.10
 ACLOCAL_AMFLAGS = -I m4
 
 #SUBDIRS = include auxlib src utilities target-sh samples robot-params
-SUBDIRS = include auxlib src target-sh samples
+SUBDIRS = include auxlib src samples
 all: all-recursive
 
 .SUFFIXES:

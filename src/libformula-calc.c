@@ -376,7 +376,7 @@ struct rpf_t *formula_output( struct stack_t *num, int *sp_num, struct stack_t *
 	return num[*sp_num - 1].value;
 }
 
-int formula( const char *expr, struct rpf_t **rpf, struct variables_t *variable )
+int formula( const char *expr, struct rpf_t **rpf, const struct variables_t *variable )
 {
 	int i;
 	struct stack_t op[ 256 ];

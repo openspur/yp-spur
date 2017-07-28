@@ -179,6 +179,11 @@ extern "C"
 		// 通信制御
 		YP_PARAM_ENCODER_DIV,
 
+		// 絶対角
+		YP_PARAM_INDEX_RISE_ANGLE,
+		YP_PARAM_INDEX_FALL_ANGLE,
+		YP_PARAM_INDEX_GEAR,
+
 		YP_PARAM_NUM							///< パラメータの最大値
 	} YPSpur_param;
 
@@ -203,6 +208,7 @@ extern "C"
 		"CONTROL_MODE_RESEND",\
 		"_INERTIA_SELF", "_INERTIA_CROSS",\
 		"ENCODER_DIV",\
+		"INDEX_RISE_ANGLE", "INDEX_FALL_ANGLE", "INDEX_GEAR",\
 	}
 
 #define YP_PARAM_NECESSARY \
@@ -224,6 +230,7 @@ extern "C"
 		0,\
 		0, 0,\
 		0,\
+		0, 0, 0,\
 	}
 
 #define YP_PARAM_COMMENT \
@@ -251,6 +258,9 @@ extern "C"
 		"[s] Time-span to resend control mode (0: don't resend)",\
 		"Motor load inertia", "Motor load cross inertia",\
 		"Encoder count divider 2^x (e.g. 4 means divide by 16)",\
+		"[rad] Index signal rising edge angle at CW rotation",\
+		"[rad] Index signal falling edge angle at CW rotation",\
+		"[in/out] Index signal gear ratio",\
 	}
 
 	enum motor_id

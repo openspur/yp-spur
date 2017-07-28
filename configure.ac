@@ -25,9 +25,7 @@ AC_CONFIG_SUBDIRS(auxlib/formula-calc)
 # Define Vendor
 AC_DEFINE(YP_VENDOR_NAME, "OpenSpur.org", vendor)
 AC_DEFINE(YP_PRODUCT_NAME, "Yamabico Project - Spur", product)
-AC_DEFINE(YP_FIRMWARE_NAME, "2015.11.15", firmware)
 AC_DEFINE(YP_PROTOCOL_NAME, "YPP:09:03", protocol)
-AC_DEFINE(YP_PROTOCOL_NAME_DEVICE, "YPP:06:00", protocol)
 
 # etc.
 AC_DEFINE(YP_PARAMS_DIR, "robot-params", parametor files dir)
@@ -54,18 +52,6 @@ AC_ARG_ENABLE([ssm],
 AM_CONDITIONAL(HAVE_SSM, test -n "$SSM_COORDINATOR" -a -n "$HAVE_SSM_H" -a "x$enable_ssm" == xyes )
 AM_COND_IF(HAVE_SSM, [AC_MSG_WARN([********** with SSM **********])], [AC_MSG_WARN([********** w/o SSM **********])])
 AM_COND_IF(HAVE_SSM, [AC_DEFINE(HAVE_SSM, 1, [Define if you want to compile with SSM])])
-
-# Checks for SH_CROSS
-AC_CHECK_PROGS(SH_CROSS_CC, sh-coff-gcc sh-hitachi-coff-gcc,, $PATH)
-AC_CHECK_PROGS(SH_CROSS_AR, sh-coff-ar sh-hitachi-coff-ar,, $PATH)
-AC_CHECK_PROGS(SH_CROSS_OBJCOPY, sh-coff-objcopy sh-hitachi-coff-objcopy,, $PATH)
-AM_CONDITIONAL(HAVE_SH_CROSS, test -n "$SH_CROSS_CC")
-
-AC_CHECK_PROGS(SH_CROSS_ELF_CC, sh-elf-gcc sh-hitachi-elf-gcc,, $PATH)
-AC_CHECK_PROGS(SH_CROSS_ELF_AR, sh-elf-ar sh-hitachi-elf-ar,, $PATH)
-AC_CHECK_PROGS(SH_CROSS_ELF_OBJCOPY, sh-elf-objcopy sh-hitachi-elf-objcopy,, $PATH)
-AM_CONDITIONAL(HAVE_SH_ELF_CROSS, test -n "$SH_CROSS_ELF_CC")
-
 
 # Checks for libraries.
 AC_LIBTOOL_WIN32_DLL
@@ -111,7 +97,6 @@ AC_CONFIG_FILES([
  include/Makefile
  auxlib/Makefile
  src/Makefile
- target-sh/Makefile
  samples/Makefile
 ])
 

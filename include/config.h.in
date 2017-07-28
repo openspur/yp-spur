@@ -87,8 +87,7 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Name of package */
@@ -121,9 +120,6 @@
 /* Version number of package */
 #undef VERSION
 
-/* firmware */
-#undef YP_FIRMWARE_NAME
-
 /* parametor files dir */
 #undef YP_PARAMS_DIR
 
@@ -132,9 +128,6 @@
 
 /* protocol */
 #undef YP_PROTOCOL_NAME
-
-/* protocol */
-#undef YP_PROTOCOL_NAME_DEVICE
 
 /* vendor */
 #undef YP_VENDOR_NAME

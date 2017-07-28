@@ -8,11 +8,11 @@ before_install:
   - sudo apt-get update -y
   - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686
 script:
-  - mkdir build && cd build && ../configure && make
+  - mkdir build && cd build && cmake ../ && make
   - cd ../
-  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && ../configure CC='x86_64-w64-mingw32-gcc -m64 -static-libgcc' --enable-all-static --enable-shared --host=x86_64-w64-mingw32 --prefix=`pwd`/install && make && make install
+  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install .. && make && make install
   - cd ../
-  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && ../configure CC='i686-w64-mingw32-gcc -m32 -static-libgcc' --enable-all-static --enable-shared --host=i686-w64-mingw32 --prefix=`pwd`/install && make && make install
+  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install .. && make && make install
   - cd ../
 before_deploy:
   - sudo apt-get install -y npm

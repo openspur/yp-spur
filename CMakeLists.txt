@@ -28,8 +28,15 @@ add_definitions(-DHAVE_CONFIG_H=1)
 
 
 add_subdirectory(auxlib)
-include_directories(include ${CMAKE_CURRENT_BINARY_DIR}/include)
+include_directories(
+	include
+	${CMAKE_CURRENT_BINARY_DIR}/include
+	auxlib
+	auxlib/formula-calc/include
+)
 
+
+# Build coordinator and utilities
 
 add_executable(ypspur-coordinator
 	src/adinput.c
@@ -62,22 +69,9 @@ if(SSM_FOUND)
 		odomssm
 	)
 endif(SSM_FOUND)
-
-add_library(ypspur
-	src/libypspur.c
-	src/libypspur-md.c
-	src/ipcommunication.c
-	src/msq.win32.c
-	src/yprintf.c
-	src/utility.c
-)
-add_library(ypspur-md
-	src/libypspur-md.c
-	src/ipcommunication.c
-	src/msq.win32.c
-	src/yprintf.c
-	src/utility.c
-)
+if(WIN32)
+	target_link_libraries(ypspur-coordinator wsock32 ws2_32)
+endif(WIN32)
 
 add_executable(ypspur-free
 	src/ypspur-free.c
@@ -89,7 +83,87 @@ target_link_libraries(ypspur-free
 add_executable(ypspur-interpreter
 	src/ypspur-interpreter.c
 )
+
 target_link_libraries(ypspur-interpreter
 	ypspur
 )
+
+
+# Build libraries
+
+add_library(ypspur SHARED
+	src/libypspur.c
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+if(WIN32)
+	target_link_libraries(ypspur wsock32 ws2_32)
+endif(WIN32)
+SET_TARGET_PROPERTIES(ypspur PROPERTIES IMPORT_SUFFIX "_import.lib")
+
+add_library(ypspur-static STATIC
+	src/libypspur.c
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+if(WIN32)
+	target_link_libraries(ypspur-static wsock32 ws2_32)
+endif(WIN32)
+SET_TARGET_PROPERTIES(ypspur-static PROPERTIES OUTPUT_NAME "ypspur")
+
+add_library(ypspur-md SHARED
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+if(WIN32)
+	target_link_libraries(ypspur-md wsock32 ws2_32)
+endif(WIN32)
+SET_TARGET_PROPERTIES(ypspur-md PROPERTIES IMPORT_SUFFIX "_import.lib")
+
+add_library(ypspur-md-static STATIC
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+if(WIN32)
+	target_link_libraries(ypspur-md-static wsock32 ws2_32)
+endif(WIN32)
+SET_TARGET_PROPERTIES(ypspur-md-static PROPERTIES OUTPUT_NAME "ypspur-md")
+
+
+# Install
+
+install(TARGETS
+		ypspur-coordinator
+		ypspur
+		ypspur-md
+		ypspur-free
+		ypspur-interpreter
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+	RUNTIME DESTINATION bin
+)
+install(FILES
+		include/ypspur.h
+		include/ypspur-md.h
+		include/ypparam.h
+	DESTINATION include
+)
+if(SSM_FOUND)
+	install(DIRECTORY
+			include/ssmtype
+		DESTINATION include
+	)
+endif(SSM_FOUND)
 

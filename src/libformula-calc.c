@@ -177,7 +177,7 @@ double math_sign( double **val )
 
 double math_fabs( double **val )
 {
-	return 1;
+	return fabs( *val[0] );
 }
 
 double math_log10( double **val )

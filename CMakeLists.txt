@@ -1,0 +1,95 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(yp-spur
+	VERSION 1.14.0
+)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
+message(${CMAKE_MODULE_PATH})
+
+set(YP_VENDOR_NAME "OpenSpur.org")
+set(YP_PRODUCT_NAME "Yamabico Project - Spur")
+set(YP_PROTOCOL_NAME "YPP:09:03")
+set(YP_PARAMS_DIR "robot-params")
+
+option(USE_SSM "Compile with SSM if available." ON)
+
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+include(FindPkgConfig)
+if(USE_SSM)
+	find_package(SSM)
+endif(USE_SSM)
+
+configure_file(${CMAKE_SOURCE_DIR}/cmake/config.h.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/include/config.h
+)
+add_definitions(-DHAVE_CONFIG_H=1)
+
+
+add_subdirectory(auxlib)
+include_directories(include ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+
+add_executable(ypspur-coordinator
+	src/adinput.c
+	src/command_ad.c
+	src/command.c
+	src/command_get.c
+	src/command_joint.c
+	src/command_param.c
+	src/command_run.c
+	src/command_set.c
+	src/communication.c
+	src/control_motion.c
+	src/control_vehicle.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/odometry.c
+	src/param.c
+	src/serial.c
+	src/ssm_spur_handler.c
+	src/utility.c
+	src/ypprotocol.c
+	src/yprintf.c
+	src/ypspur-coordinator.c
+)
+target_link_libraries(ypspur-coordinator
+	carte2d m formula-calc Threads::Threads
+)
+if(SSM_FOUND)
+	target_link_libraries(ypspur-coordinator
+		odomssm
+	)
+endif(SSM_FOUND)
+
+add_library(ypspur
+	src/libypspur.c
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+add_library(ypspur-md
+	src/libypspur-md.c
+	src/ipcommunication.c
+	src/msq.win32.c
+	src/yprintf.c
+	src/utility.c
+)
+
+add_executable(ypspur-free
+	src/ypspur-free.c
+)
+target_link_libraries(ypspur-free
+	ypspur
+)
+
+add_executable(ypspur-interpreter
+	src/ypspur-interpreter.c
+)
+target_link_libraries(ypspur-interpreter
+	ypspur
+)
+

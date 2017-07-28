@@ -6,7 +6,7 @@ compiler: gcc
 
 before_install:
   - sudo apt-get update -y
-  - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686
+  - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 g++-mingw-w64-x86-64 g++-mingw-w64-i686
 script:
   - mkdir build && cd build && cmake ../ && make
   - cd ../

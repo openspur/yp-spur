@@ -29,6 +29,10 @@ before_deploy:
   - cd ../../
   - cd build-win32/install/ && zip -q ../../packages/yp-spur.win32.$GIT_TAG.zip -r $(ls)
   - cd ../../
+  - cd build-win64/ && zip -q ../packages/yp-spur-samples.win64.$GIT_TAG.zip -r samples
+  - cd ../
+  - cd build-win32/ && zip -q ../packages/yp-spur-samples.win32.$GIT_TAG.zip -r samples
+  - cd ../
 
 deploy:
   provider: releases
@@ -38,6 +42,8 @@ deploy:
   file:
     - packages/yp-spur.win64.$GIT_TAG.zip
     - packages/yp-spur.win32.$GIT_TAG.zip
+    - packages/yp-spur-samples.win64.$GIT_TAG.zip
+    - packages/yp-spur-samples.win32.$GIT_TAG.zip
   on:
     tags: true
 

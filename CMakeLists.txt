@@ -18,11 +18,22 @@ if(GTEST_FOUND)
 	set(THREADS_PREFER_PTHREAD_FLAG ON)
 	find_package(Threads REQUIRED)
 
+	find_program(VALGRIND
+		NAMES valgrind
+	)
+
 	include_directories(${INCLUDE_DIRECTORIES} ${GTEST_INCLUDE_DIRS})
 	add_executable(libformula-calc-test test/libformula-calc-test.cpp)
 	target_link_libraries(libformula-calc-test formula-calc ${GTEST_LIBRARIES} Threads::Threads)
 
-	add_test(AllTests libformula-calc-test)
+	add_test(UnitTests libformula-calc-test)
+
+	if(VALGRIND)
+		add_test(MemoryLeakTest
+			${VALGRIND} --error-exitcode=1 --leak-check=full
+			${CMAKE_CURRENT_BINARY_DIR}/libformula-calc-test
+		)
+	endif(VALGRIND)
 endif(GTEST_FOUND)
 
 

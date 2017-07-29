@@ -46,7 +46,6 @@ struct operation_t
 };
 
 struct rpf_t *rpf_push( struct rpf_t *rpf, struct stack_t *obj );
-struct rpf_t *rpf_pushrpf( struct rpf_t *rpf, struct rpf_t *obj );
 struct rpf_t *rpf_join( struct rpf_t *rpf, struct rpf_t *rpf2 );
 int rpf_count_num( struct rpf_t *rpf );
 struct rpf_t *rpf_last( struct rpf_t *rpf );

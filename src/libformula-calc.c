@@ -262,34 +262,7 @@ struct rpf_t *rpf_push( struct rpf_t *rpf, struct stack_t *obj )
 {
 	rpf->next = malloc( sizeof( struct rpf_t ) );
 	rpf->next->type = obj->type;
-	if( obj->type == TYPE_VALUE )
-	{
-		rpf->next->value = malloc( sizeof(double) );
-		*((double*)rpf->next->value) = *((double*)obj->value);
-	}
-	else
-	{
-		rpf->next->value = obj->value;
-	}
-	//rpf->next->value = obj->value;
-	rpf->next->next = NULL;
-	
-	return rpf->next;
-}
-
-struct rpf_t *rpf_pushrpf( struct rpf_t *rpf, struct rpf_t *obj )
-{
-	rpf->next = malloc( sizeof( struct rpf_t ) );
-	*rpf->next = *obj;
-	if( obj->type == TYPE_VALUE )
-	{
-		rpf->next->value = malloc( sizeof(double) );
-		*((double*)rpf->next->value) = *((double*)obj->value);
-	}
-	else
-	{
-		rpf->next->value = obj->value;
-	}
+	rpf->next->value = obj->value;
 	rpf->next->next = NULL;
 	
 	return rpf->next;
@@ -442,7 +415,7 @@ int formula( const char *expr, struct rpf_t **rpf, const struct variables_t *var
 		{
 			if( strstr( expr, operation[i].op ) == expr)
 			{
-				if( op[sp_op-1].rank == operation[i].rank )
+				if( sp_op > 0 && op[sp_op-1].rank == operation[i].rank )
 				{
 					int sp_op2;
 					sp_op2 = 1;
@@ -450,7 +423,7 @@ int formula( const char *expr, struct rpf_t **rpf, const struct variables_t *var
 						return 0;
 					sp_op --;
 				}
-				else if( op[sp_op-1].rank > operation[i].rank )
+				else if( sp_op > 0 && op[sp_op-1].rank > operation[i].rank )
 				{
 					if( formula_output( num, &sp_num, op, &sp_op, operation[i].rank ) == NULL )
 						return 0;
@@ -671,17 +644,16 @@ double formula_eval( struct rpf_t *rpf )
 	return *stack[0];
 }
 
-struct rpf_t *formula_optimize( struct rpf_t *rpf )
+struct rpf_t *formula_optimize( struct rpf_t *rpf_orig )
 {
-	double _stack[512];
 	double *stack[512];
-	struct rpf_t _rpf_st[512];
 	struct rpf_t *rpf_st[512];
 	int fixed[512];
 	int sp;
 	struct rpf_t *rpf_new;
 	struct rpf_t rpf_new_st;
 	int i;
+	struct rpf_t *rpf = rpf_orig;
 	
 	sp = 0;
 	for( ; rpf; rpf = rpf->next )
@@ -691,15 +663,22 @@ struct rpf_t *formula_optimize( struct rpf_t *rpf )
 		switch( rpf->type )
 		{
 		case TYPE_VALUE:
-			stack[sp] = ( (double*)rpf->value );
-			fixed[sp] = 1;
-			rpf_st[sp] = rpf;
-			sp ++;
-			break;
 		case TYPE_VARIABLE:
-			stack[sp] = ( (double*)rpf->value );
 			fixed[sp] = 0;
-			rpf_st[sp] = rpf;
+			rpf_st[sp] = malloc(sizeof(struct rpf_t));
+			*(rpf_st[sp]) = *rpf;
+			if( rpf->type == TYPE_VALUE )
+			{
+				stack[sp] = malloc(sizeof(double));
+				*(stack[sp]) =  *( (double*)rpf->value );
+				rpf_st[sp]->value = stack[sp];
+				fixed[sp] = 1;
+			}
+			else
+			{
+				stack[sp] = NULL;
+				fixed[sp] = 0;
+			}
 			sp ++;
 			break;
 		default:
@@ -711,19 +690,26 @@ struct rpf_t *formula_optimize( struct rpf_t *rpf )
 			if( i == op->narg )
 			{
 				tmp = (op->func)( &stack[ sp - op->narg ] );
+				for( i = 0; i < op->narg; i ++ )
+				{
+					if( stack[sp-1-i] )
+						free(stack[sp-1-i]);
+					free(rpf_st[sp-1-i]);
+				}
 				sp -= op->narg;
-				stack[sp] = &_stack[sp];
-				_stack[sp] = tmp;
+				stack[sp] = malloc(sizeof(double));
+				*(stack[sp]) = tmp;
 				fixed[sp] = 1;
 				
-				rpf_st[sp] = &_rpf_st[sp];
+				rpf_st[sp] = malloc(sizeof(struct rpf_t));
 				rpf_st[sp]->type = TYPE_VALUE;
-				rpf_st[sp]->value = &_stack[sp];
+				rpf_st[sp]->value = stack[sp];
 				sp ++;
 			}
 			else
 			{
-				rpf_st[sp] = rpf;
+				rpf_st[sp] = malloc(sizeof(struct rpf_t));
+				*(rpf_st[sp]) = *rpf;
 				fixed[sp] = 0;
 				sp ++;
 			}
@@ -735,9 +721,10 @@ struct rpf_t *formula_optimize( struct rpf_t *rpf )
 	rpf_new->type = TYPE_START;
 	for( i = 0; i < sp; i ++ )
 	{
-		rpf_new = rpf_pushrpf( rpf_new, rpf_st[i] );
+		rpf_new->next = rpf_st[i];
+		rpf_new->next->next = NULL;
+		rpf_new = rpf_new->next;
 	}
-	formula_free( rpf );
 	return rpf_new_st.next;
 }
 

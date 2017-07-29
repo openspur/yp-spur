@@ -58,8 +58,10 @@ add_subdirectory(samples)
 # Static link options
 
 option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
+set(TARGET_STATIC_POSTFIX "")
 if(ENABLE_ALL_STATIC)
 	set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
+	set(TARGET_STATIC_POSTFIX "-static")
 endif(ENABLE_ALL_STATIC)
 
 
@@ -89,11 +91,11 @@ add_executable(ypspur-coordinator
 	src/ypspur-coordinator.c
 )
 target_link_libraries(ypspur-coordinator
-	carte2d m formula-calc Threads::Threads
+	carte2d${TARGET_STATIC_POSTFIX} formula-calc${TARGET_STATIC_POSTFIX} m Threads::Threads
 )
 if(SSM_FOUND)
 	target_link_libraries(ypspur-coordinator
-		odomssm
+		odomssm${TARGET_STATIC_POSTFIX}
 		${SSM_LIBRARIES}
 	)
 endif(SSM_FOUND)
@@ -105,7 +107,7 @@ add_executable(ypspur-free
 	src/ypspur-free.c
 )
 target_link_libraries(ypspur-free
-	ypspur-static
+	ypspur${TARGET_STATIC_POSTFIX}
 )
 
 add_executable(ypspur-interpreter
@@ -113,7 +115,7 @@ add_executable(ypspur-interpreter
 )
 
 target_link_libraries(ypspur-interpreter
-	ypspur-static
+	ypspur${TARGET_STATIC_POSTFIX}
 )
 
 

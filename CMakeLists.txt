@@ -39,6 +39,7 @@ add_definitions(-DHAVE_CONFIG_H=1)
 # Add subdirectories
 
 add_subdirectory(auxlib)
+add_subdirectory(samples)
 include_directories(
 	${SSM_INCLUDE_DIRS}
 	include

@@ -8,6 +8,7 @@ include_directories(
 set(CARTE2D_LIBRARY_VERSION 0.0.0)
 set(CARTE2D_LIBRARY_SOVERSION 0)
 add_library(carte2d SHARED libcarte2d.c)
+target_link_libraries(carte2d m)
 set_target_properties(carte2d PROPERTIES
 	IMPORT_SUFFIX "_import.lib"
 	VERSION ${CARTE2D_LIBRARY_VERSION}
@@ -16,6 +17,7 @@ set_target_properties(carte2d PROPERTIES
 )
 
 add_library(carte2d-static STATIC libcarte2d.c)
+target_link_libraries(carte2d-static m)
 set_target_properties(carte2d-static PROPERTIES
 	OUTPUT_NAME "carte2d"
 	PUBLIC_HEADER cartesian2d.h

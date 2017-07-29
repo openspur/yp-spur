@@ -32,7 +32,8 @@
 int main( int argc, char *argv[] )
 {
 	struct rpf_t *rpf;
-	double test;
+	struct rpf_t *rpf2;
+	double test = 0;
 	struct variables_t variable[8] =
 	{
 		{ "TEST", &test },
@@ -59,15 +60,16 @@ int main( int argc, char *argv[] )
 		formula_print( stdout, rpf );
 		printf( "\n" );
 		
-		rpf = formula_optimize( rpf );
+		rpf2 = formula_optimize( rpf );
 		printf( "Optimized reverse polish: " );
-		formula_print( stdout, rpf );
+		formula_print( stdout, rpf2 );
 		printf( "\n" );
 
-		d = formula_eval( rpf );
-		printf( "Result: %f %f\n", d,test );
+		d = formula_eval( rpf2 );
+		printf( "Result: %f %f\n", d, test );
 		
 		formula_free( rpf );
+		formula_free( rpf2 );
 	}
 	
 	return 1;

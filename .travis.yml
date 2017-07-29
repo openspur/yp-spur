@@ -10,9 +10,9 @@ before_install:
 script:
   - mkdir build && cd build && cmake ../ && make
   - cd ../
-  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install .. && make && make install
+  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
   - cd ../
-  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install .. && make && make install
+  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
   - cd ../
 before_deploy:
   - sudo apt-get install -y npm

@@ -35,6 +35,11 @@ include_directories(
 	auxlib/formula-calc/include
 )
 
+option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
+if(ENABLE_ALL_STATIC)
+	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif(ENABLE_ALL_STATIC)
+
 
 # Build coordinator and utilities
 

@@ -39,19 +39,20 @@ add_definitions(-DHAVE_CONFIG_H=1)
 
 # Add subdirectories
 
-add_subdirectory(auxlib)
-add_subdirectory(samples)
 include_directories(
-	include
+	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR}/include
-	auxlib
-	auxlib/formula-calc/include
+	${CMAKE_SOURCE_DIR}/auxlib
+	${CMAKE_SOURCE_DIR}/auxlib/formula-calc/include
 )
 if(SSM_FOUND)
 	include_directories(
 		${SSM_INCLUDE_DIRS}
 	)
 endif(SSM_FOUND)
+
+add_subdirectory(auxlib)
+add_subdirectory(samples)
 
 
 # Static link options

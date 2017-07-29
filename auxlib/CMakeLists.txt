@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-include_directories(
-	./
-)
-
 set(CARTE2D_LIBRARY_VERSION 0.0.0)
 set(CARTE2D_LIBRARY_SOVERSION 0)
 add_library(carte2d SHARED libcarte2d.c)

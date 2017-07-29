@@ -4,7 +4,6 @@ project(yp-spur
 )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
-message(${CMAKE_MODULE_PATH})
 
 set(YP_VENDOR_NAME "OpenSpur.org")
 set(YP_PRODUCT_NAME "Yamabico Project - Spur")
@@ -38,6 +37,7 @@ add_definitions(-DHAVE_CONFIG_H=1)
 
 add_subdirectory(auxlib)
 include_directories(
+	${SSM_INCLUDE_DIRS}
 	include
 	${CMAKE_CURRENT_BINARY_DIR}/include
 	auxlib
@@ -84,6 +84,7 @@ target_link_libraries(ypspur-coordinator
 if(SSM_FOUND)
 	target_link_libraries(ypspur-coordinator
 		odomssm
+		${SSM_LIBRARIES}
 	)
 endif(SSM_FOUND)
 if(WIN32)
@@ -108,6 +109,16 @@ target_link_libraries(ypspur-interpreter
 
 # Build libraries
 
+set(YPSPUR_LIBRARY_VERSION 14.2.0)
+set(YPSPUR_LIBRARY_SOVERSION 14)
+set(YPSPUR_PUBLIC_HEADERS
+	include/ypspur.h
+	include/ypparam.h
+)
+set(YPSPUR_MD_PUBLIC_HEADERS
+	include/ypspur-md.h
+	include/ypparam.h
+)
 add_library(ypspur SHARED
 	src/libypspur.c
 	src/libypspur-md.c
@@ -119,7 +130,12 @@ add_library(ypspur SHARED
 if(WIN32)
 	target_link_libraries(ypspur wsock32 ws2_32)
 endif(WIN32)
-SET_TARGET_PROPERTIES(ypspur PROPERTIES IMPORT_SUFFIX "_import.lib")
+set_target_properties(ypspur PROPERTIES
+	IMPORT_SUFFIX "_import.lib"
+	VERSION ${YPSPUR_LIBRARY_VERSION}
+	SOVERSION ${YPSPUR_LIBRARY_SOVERSION}
+	PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
+)
 
 add_library(ypspur-static STATIC
 	src/libypspur.c
@@ -132,7 +148,10 @@ add_library(ypspur-static STATIC
 if(WIN32)
 	target_link_libraries(ypspur-static wsock32 ws2_32)
 endif(WIN32)
-SET_TARGET_PROPERTIES(ypspur-static PROPERTIES OUTPUT_NAME "ypspur")
+set_target_properties(ypspur-static PROPERTIES
+	OUTPUT_NAME "ypspur"
+	PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
+)
 
 add_library(ypspur-md SHARED
 	src/libypspur-md.c
@@ -144,7 +163,12 @@ add_library(ypspur-md SHARED
 if(WIN32)
 	target_link_libraries(ypspur-md wsock32 ws2_32)
 endif(WIN32)
-SET_TARGET_PROPERTIES(ypspur-md PROPERTIES IMPORT_SUFFIX "_import.lib")
+set_target_properties(ypspur-md PROPERTIES
+	IMPORT_SUFFIX "_import.lib"
+	VERSION ${YPSPUR_LIBRARY_VERSION}
+	SOVERSION ${YPSPUR_LIBRARY_SOVERSION}
+	PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
+)
 
 add_library(ypspur-md-static STATIC
 	src/libypspur-md.c
@@ -156,7 +180,10 @@ add_library(ypspur-md-static STATIC
 if(WIN32)
 	target_link_libraries(ypspur-md-static wsock32 ws2_32)
 endif(WIN32)
-SET_TARGET_PROPERTIES(ypspur-md-static PROPERTIES OUTPUT_NAME "ypspur-md")
+set_target_properties(ypspur-md-static PROPERTIES
+	OUTPUT_NAME "ypspur-md"
+	PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
+)
 
 
 # Install
@@ -164,17 +191,17 @@ SET_TARGET_PROPERTIES(ypspur-md-static PROPERTIES OUTPUT_NAME "ypspur-md")
 install(TARGETS
 		ypspur-coordinator
 		ypspur
+		ypspur-static
 		ypspur-md
+		ypspur-md-static
 		ypspur-free
 		ypspur-interpreter
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
+	PUBLIC_HEADER DESTINATION include
 )
-install(FILES
-		include/ypspur.h
-		include/ypspur-md.h
-		include/ypparam.h
+install(FILES include/yp-spur.h
 	DESTINATION include
 )
 if(SSM_FOUND)

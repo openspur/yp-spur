@@ -16,6 +16,7 @@ include(GetGitRevision)
 get_git_revision()
 set(PROJECT_VERSION_REV "${PROJECT_VERSION} (${GIT_REVISION_SHORT})")
 
+
 # Find dependencies
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

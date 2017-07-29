@@ -23,6 +23,15 @@ set_target_properties(carte2d-static PROPERTIES
 	PUBLIC_HEADER cartesian2d.h
 )
 
+install(TARGETS
+		carte2d
+		carte2d-static
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+	RUNTIME DESTINATION bin
+	PUBLIC_HEADER DESTINATION include
+)
+
 if(SSM_FOUND)
 	set(ODOMSSM_LIBRARY_VERSION 0.0.1)
 	set(ODOMSSM_LIBRARY_SOVERSION 0)
@@ -41,17 +50,16 @@ if(SSM_FOUND)
 		OUTPUT_NAME "odomssm"
 		PUBLIC_HEADER odometry-ssm.h
 	)
+
+	install(TARGETS
+			odomssm
+			odomssm-static
+		ARCHIVE DESTINATION lib
+		LIBRARY DESTINATION lib
+		RUNTIME DESTINATION bin
+		PUBLIC_HEADER DESTINATION include
+	)
 endif(SSM_FOUND)
 
 add_subdirectory(formula-calc)
 
-install(TARGETS
-		carte2d
-		carte2d-static
-		odomssm
-		odomssm-static
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
-	PUBLIC_HEADER DESTINATION include
-)

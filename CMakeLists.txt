@@ -14,9 +14,16 @@ set(YP_PARAMS_DIR "robot-params")
 option(USE_SSM "Compile with SSM if available." ON)
 
 
+# Find dependencies
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-include(FindPkgConfig)
+
+find_package(PkgConfig)
+if(PKGCONFIG_FOUND)
+	set(HAVE_PKG_CONFIG 1)
+endif(PKGCONFIG_FOUND)
+
 if(USE_SSM)
 	find_package(SSM)
 endif(USE_SSM)
@@ -27,6 +34,8 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/config.h.cmake
 add_definitions(-DHAVE_CONFIG_H=1)
 
 
+# Add subdirectories
+
 add_subdirectory(auxlib)
 include_directories(
 	include
@@ -35,9 +44,12 @@ include_directories(
 	auxlib/formula-calc/include
 )
 
+
+# Static link options
+
 option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
 if(ENABLE_ALL_STATIC)
-	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+	set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 endif(ENABLE_ALL_STATIC)
 
 

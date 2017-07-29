@@ -1,0 +1,29 @@
+#!/bin/bash
+
+echo -e "\e[31m***************************************************\e[m"
+echo -e "\e[31m****** Configure script has been deprecated. ******\e[m"
+echo -e "\e[31m****** Use cmake instead.                    ******\e[m"
+echo -e "\e[31m***************************************************\e[m"
+echo
+
+if [ ! $# -eq 0 ];
+then
+	echo -e "\e[31mThe configure script for cmake migration don't support options and args.\e[m"
+	echo -e "\e[31m($# given)\e[m"
+	exit 1
+fi
+
+which cmake > /dev/null 2> /dev/null
+if [ ! $? -eq 0 ];
+then
+	echo -e "\e[31mCMake not found.\e[m"
+	echo -e "\e[31mInstall cmake and try again.\e[m"
+	echo -e "\e[31m e.g. on Ubuntu: sudo apt-get install cmake\e[m"
+	exit 1
+fi
+
+cwd=`dirname "$0"`
+
+echo "$ cmake $cwd"
+cmake $cwd
+

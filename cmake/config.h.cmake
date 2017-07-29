@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#cmakedefine PROJECT_VERSION "@PROJECT_VERSION@"
+#cmakedefine PROJECT_VERSION "@PROJECT_VERSION_REV@"
 
 #cmakedefine YP_VENDOR_NAME "@YP_VENDOR_NAME@"
 

@@ -12,6 +12,9 @@ set(YP_PARAMS_DIR "robot-params")
 
 option(USE_SSM "Compile with SSM if available." ON)
 
+include(GetGitRevision)
+get_git_revision()
+set(PROJECT_VERSION_REV "${PROJECT_VERSION} (${GIT_REVISION_SHORT})")
 
 # Find dependencies
 

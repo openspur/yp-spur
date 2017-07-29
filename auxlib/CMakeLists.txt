@@ -21,6 +21,7 @@ set_target_properties(carte2d-static PROPERTIES
 install(TARGETS
 		carte2d
 		carte2d-static
+	EXPORT YPSpurExport
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
@@ -49,6 +50,7 @@ if(SSM_FOUND)
 	install(TARGETS
 			odomssm
 			odomssm-static
+		EXPORT YPSpurExport
 		ARCHIVE DESTINATION lib
 		LIBRARY DESTINATION lib
 		RUNTIME DESTINATION bin

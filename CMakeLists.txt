@@ -206,6 +206,7 @@ install(TARGETS
 		ypspur-md-static
 		ypspur-free
 		ypspur-interpreter
+	EXPORT YPSpurExport
 	ARCHIVE DESTINATION lib
 	LIBRARY DESTINATION lib
 	RUNTIME DESTINATION bin
@@ -220,4 +221,34 @@ if(SSM_FOUND)
 		DESTINATION include
 	)
 endif(SSM_FOUND)
+
+
+# Generate package config and install
+
+
+install(EXPORT YPSpurExport
+	DESTINATION share/ypspur/cmake/
+	FILE YPSpurTargets.cmake
+)
+
+set(YPSPUR_CMAKE_DIR share/ypspur/cmake)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/YPSpurConfig.cmake.in
+	${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ypspur
+	PATH_VARS YPSPUR_CMAKE_DIR
+)
+write_basic_package_version_file(
+	${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig-version.cmake
+	VERSION ${PACKAGE_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+
+install(
+	FILES
+		${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig.cmake
+		${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig-version.cmake
+	DESTINATION share/ypspur/
+)
 

@@ -4,10 +4,14 @@ find_path(SSM_INCLUDE_DIRS ssm.h
 	HINTS ENV SSM_DIR
 	PATH_SUFFIXES include
 )
-find_library(SSM_LIBRARIES
+find_library(SSM_LIBRARIES_FOUND
 	NAMES ssm
 	HINTS ENV SSM_DIR
 )
+if(SSM_LIBRARIES_FOUND)
+	set(SSM_LIBRARIES ssm)
+endif(SSM_LIBRARIES_FOUND)
+
 find_program(SSM_EXECUTABLE
 	NAMES ssm-coordinator
 )

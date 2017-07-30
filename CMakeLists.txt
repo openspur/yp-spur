@@ -37,7 +37,7 @@ configure_file(${CMAKE_SOURCE_DIR}/cmake/config.h.cmake
 add_definitions(-DHAVE_CONFIG_H=1)
 
 
-# Add subdirectories
+# Set include dirs
 
 include_directories(
 	${CMAKE_SOURCE_DIR}/include
@@ -51,18 +51,22 @@ if(SSM_FOUND)
 	)
 endif(SSM_FOUND)
 
-add_subdirectory(auxlib)
-add_subdirectory(samples)
-
 
 # Static link options
 
 option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
 set(TARGET_STATIC_POSTFIX "")
 if(ENABLE_ALL_STATIC)
-	set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
+	set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc")
+	set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc")
 	set(TARGET_STATIC_POSTFIX "-static")
 endif(ENABLE_ALL_STATIC)
+
+
+# Add subdirectories
+
+add_subdirectory(auxlib)
+add_subdirectory(samples)
 
 
 # Build coordinator and utilities

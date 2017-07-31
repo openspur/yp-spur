@@ -24,54 +24,31 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef __FORMULA_H__
+#define __FORMULA_H__
 
-#include <formula-calc.h>
+#include "formula-calc.h"
 
-int main( int argc, char *argv[] )
+struct stack_t
 {
-	struct rpf_t *rpf;
-	struct rpf_t *rpf2;
-	double test = 0;
-	struct variables_t variable[8] =
-	{
-		{ "TEST", &test },
-		{ NULL, NULL }
-	};
-	
-	if( argc < 2 )
-	{
-		printf( "Usage: %s <formula>\n", argv[0] );
-		return 0;
-	}
-	
-	if( !formula( argv[1], &rpf, variable ) )
-	{
-		printf( "Invalid formula\n" );
-	}
-	else
-	{
-		float d;
-		
-		printf( "Given formula: %s\n", argv[1] );
+	int rank;
+	enum type_t type;
+	void *value;
+};
 
-		printf( "Reverse polish: " );
-		formula_print( stdout, rpf );
-		printf( "\n" );
-		
-		rpf2 = formula_optimize( rpf );
-		printf( "Optimized reverse polish: " );
-		formula_print( stdout, rpf2 );
-		printf( "\n" );
+struct operation_t
+{
+	char op[8];
+	int rank;
+	enum type_t type;
+	double (*func)(double**);
+	int narg;
+};
 
-		d = formula_eval( rpf2 );
-		printf( "Result: %f %f\n", d, test );
-		
-		formula_free( rpf );
-		formula_free( rpf2 );
-	}
-	
-	return 1;
-}
+struct rpf_t *rpf_push( struct rpf_t *rpf, struct stack_t *obj );
+struct rpf_t *rpf_join( struct rpf_t *rpf, struct rpf_t *rpf2 );
+int rpf_count_num( struct rpf_t *rpf );
+struct rpf_t *rpf_last( struct rpf_t *rpf );
+struct rpf_t *formula_output( struct stack_t *num, int *sp_num, struct stack_t *op, int *sp_op, int rank );
 
+#endif

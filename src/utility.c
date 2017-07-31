@@ -3,6 +3,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <strings.h>
+#include <string.h>
 #include <stdarg.h>
 
 /* low level I/O */

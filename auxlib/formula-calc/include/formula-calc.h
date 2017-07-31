@@ -24,54 +24,45 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef __FORMULA_CALC_H__
+#define __FORMULA_CALC_H__
 
-#include <formula-calc.h>
-
-int main( int argc, char *argv[] )
+#ifdef __cplusplus
+extern "C"
 {
-	struct rpf_t *rpf;
-	struct rpf_t *rpf2;
-	double test = 0;
-	struct variables_t variable[8] =
-	{
-		{ "TEST", &test },
-		{ NULL, NULL }
-	};
-	
-	if( argc < 2 )
-	{
-		printf( "Usage: %s <formula>\n", argv[0] );
-		return 0;
-	}
-	
-	if( !formula( argv[1], &rpf, variable ) )
-	{
-		printf( "Invalid formula\n" );
-	}
-	else
-	{
-		float d;
-		
-		printf( "Given formula: %s\n", argv[1] );
+#endif
 
-		printf( "Reverse polish: " );
-		formula_print( stdout, rpf );
-		printf( "\n" );
-		
-		rpf2 = formula_optimize( rpf );
-		printf( "Optimized reverse polish: " );
-		formula_print( stdout, rpf2 );
-		printf( "\n" );
+#include <stdio.h>
 
-		d = formula_eval( rpf2 );
-		printf( "Result: %f %f\n", d, test );
-		
-		formula_free( rpf );
-		formula_free( rpf2 );
-	}
-	
-	return 1;
+struct rpf_t
+{
+	enum type_t
+	{
+		TYPE_VALUE,
+		TYPE_MATH,
+		TYPE_VARIABLE,
+		TYPE_OP,
+		TYPE_MAX,
+		TYPE_RPF,
+		TYPE_START
+	} type;
+	void *value;
+	struct rpf_t *next;
+};
+
+struct variables_t
+{
+	const char *name;
+	double *pointer;
+};
+
+int formula( const char * expr, struct rpf_t **rpf, const struct variables_t *variable );
+void formula_free( struct rpf_t *rpf );
+double formula_eval( struct rpf_t *rpf );
+struct rpf_t *formula_optimize( struct rpf_t *rpf );
+void formula_print( FILE *stream, struct rpf_t *rpf );
+
+#ifdef __cplusplus
 }
-
+#endif
+#endif

@@ -8,6 +8,15 @@ YP-Spur is a mobile robot motion control software with coordinate frame based co
 
 Learn to use YP-Spur at our [wiki pages](https://github.com/openspur/yp-spur/wiki).
 
+## Install
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ sudo make install
+```
+
 ## License
 
 * YP-Spur is available under the [MIT License](http://www.opensource.org/licenses/mit-license.html).

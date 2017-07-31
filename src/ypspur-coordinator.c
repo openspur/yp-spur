@@ -164,7 +164,7 @@ int main( int argc, char *argv[] )
 	if( option( OPTION_VERSION ) )
 	{
 		fprintf( stderr, "YamabicoProject-Spur\n" );
-		fprintf( stderr, " Ver. %s\n", PACKAGE_VERSION );
+		fprintf( stderr, " Ver. %s\n", PROJECT_VERSION );
 		return EXIT_SUCCESS;
 	}
 	if( !ret )									/* オプション解析に失敗したとき */
@@ -172,7 +172,7 @@ int main( int argc, char *argv[] )
 
 	yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 	yprintf( OUTPUT_LV_PROCESS, "YamabicoProject-Spur\n" );
-	yprintf( OUTPUT_LV_PROCESS, " Ver. %s\n", PACKAGE_VERSION );
+	yprintf( OUTPUT_LV_PROCESS, " Ver. %s\n", PROJECT_VERSION );
 	yprintf( OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n" );
 
 	/* Ctrl-C割り込みハンドラーの登録 */

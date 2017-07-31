@@ -231,19 +231,19 @@ endif(SSM_FOUND)
 
 # Generate package config and install
 
-
 install(EXPORT YPSpurExport
 	DESTINATION share/ypspur/cmake/
 	FILE YPSpurTargets.cmake
 )
 
+set(YPSPUR_INCLUDE_DIRS include)
 set(YPSPUR_CMAKE_DIR share/ypspur/cmake)
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(cmake/ypspur-config.cmake.in
 	${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config.cmake
 	INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ypspur
-	PATH_VARS YPSPUR_CMAKE_DIR
+	PATH_VARS YPSPUR_CMAKE_DIR YPSPUR_INCLUDE_DIRS
 )
 write_basic_package_version_file(
 	${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config-version.cmake

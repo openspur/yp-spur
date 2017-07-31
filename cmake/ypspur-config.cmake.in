@@ -21,6 +21,9 @@
 @PACKAGE_INIT@
 
 set_and_check(YPSPUR_CMAKE_DIR "@PACKAGE_YPSPUR_CMAKE_DIR@")
+set_and_check(YPSPUR_INCLUDE_DIRS "@PACKAGE_YPSPUR_INCLUDE_DIRS@")
+set_and_check(ypspur_INCLUDE_DIRS "@PACKAGE_YPSPUR_INCLUDE_DIRS@")
+
 
 include("${YPSPUR_CMAKE_DIR}/YPSpurTargets.cmake")
 

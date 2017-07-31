@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(yp-spur
+project(ypspur
 	VERSION 1.14.0
 )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 set(YP_VENDOR_NAME "OpenSpur.org")
 set(YP_PRODUCT_NAME "Yamabico Project - Spur")
@@ -31,7 +31,7 @@ if(USE_SSM)
 	find_package(SSM)
 endif(USE_SSM)
 
-configure_file(${CMAKE_SOURCE_DIR}/cmake/config.h.cmake
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
 	${CMAKE_CURRENT_BINARY_DIR}/include/config.h
 )
 add_definitions(-DHAVE_CONFIG_H=1)
@@ -40,10 +40,10 @@ add_definitions(-DHAVE_CONFIG_H=1)
 # Set include dirs
 
 include_directories(
-	${CMAKE_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR}/include
-	${CMAKE_SOURCE_DIR}/auxlib
-	${CMAKE_SOURCE_DIR}/auxlib/formula-calc/include
+	${CMAKE_CURRENT_SOURCE_DIR}/auxlib
+	${CMAKE_CURRENT_SOURCE_DIR}/auxlib/formula-calc/include
 )
 if(SSM_FOUND)
 	include_directories(
@@ -240,21 +240,21 @@ install(EXPORT YPSpurExport
 set(YPSPUR_CMAKE_DIR share/ypspur/cmake)
 
 include(CMakePackageConfigHelpers)
-configure_package_config_file(cmake/YPSpurConfig.cmake.in
-	${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig.cmake
+configure_package_config_file(cmake/ypspur-config.cmake.in
+	${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config.cmake
 	INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ypspur
 	PATH_VARS YPSPUR_CMAKE_DIR
 )
 write_basic_package_version_file(
-	${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig-version.cmake
+	${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config-version.cmake
 	VERSION ${PACKAGE_VERSION}
 	COMPATIBILITY SameMajorVersion
 )
 
 install(
 	FILES
-		${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig.cmake
-		${PROJECT_BINARY_DIR}/cmake/ypspur/YPSpurConfig-version.cmake
+		${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config.cmake
+		${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config-version.cmake
 	DESTINATION share/ypspur/
 )
 

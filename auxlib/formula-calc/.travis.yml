@@ -1,0 +1,26 @@
+sudo: required
+service: docker
+language: c
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - DOCKER_CACHE_FILE=$HOME/docker/cache.tar.gz
+    - DOCKER_CACHE_TARGETS="formula-calc:latest formula-calc:trusty"
+
+cache:
+  directories:
+    - $HOME/docker
+
+before_install:
+  - if [ -f ${DOCKER_CACHE_FILE} ]; then gunzip -c ${DOCKER_CACHE_FILE} | docker load; fi
+
+install:
+  - docker build -t formula-calc:latest --pull=true ${TRAVIS_BUILD_DIR}
+  - docker build -t formula-calc:trusty -f Dockerfile.trusty --pull=true ${TRAVIS_BUILD_DIR}
+
+script:
+  - if [[ ${TRAVIS_BRANCH} == "master" ]] && [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then mkdir -p $(dirname ${DOCKER_CACHE_FILE}); docker save $(echo ${DOCKER_CACHE_TARGETS} | xargs -n1 docker history -q | grep -v '<missing>' | sort | uniq) | gzip > ${DOCKER_CACHE_FILE}; fi

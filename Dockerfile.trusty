@@ -1,0 +1,11 @@
+FROM ubuntu:trusty
+
+RUN apt-get -qq update && \
+	apt-get install -y --no-install-recommends build-essential cmake sudo && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
+COPY ./ /yp-spur
+RUN mkdir -p /yp-spur/build
+WORKDIR /yp-spur/build
+RUN cmake .. && make && sudo make install

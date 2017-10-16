@@ -4,35 +4,30 @@ sudo: required
 language: c
 compiler: gcc
 
+service: docker
+
 before_install:
   - sudo apt-get update -y
   - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 g++-mingw-w64-x86-64 g++-mingw-w64-i686
 script:
-  - mkdir build && cd build && cmake ../ && make
-  - cd ../
-  - mkdir build-win64 && mkdir build-win64/install && cd build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
-  - cd ../
-  - mkdir build-win32 && mkdir build-win32/install && cd build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
-  - cd ../
+  - docker build -t yp-spur:latest -f Dockerfile.xenial --pull=true ${TRAVIS_BUILD_DIR}
+  - docker build -t yp-spur:trusty -f Dockerfile.trusty --pull=true ${TRAVIS_BUILD_DIR}
+  - mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
+  - mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
+
 before_deploy:
   - sudo apt-get install -y npm
   - sudo npm install -g json
   - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
-  - wget $YPSPUR_GUI_URI
-  - cd build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
-  - cd ../../
-  - cd build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
-  - cd ../../
+  - cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI
+  - cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
+  - cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
   - export GIT_TAG=`git describe --abbrev=0 --tags`
-  - mkdir packages
-  - cd build-win64/install/ && zip -q ../../packages/yp-spur.win64.$GIT_TAG.zip -r $(ls)
-  - cd ../../
-  - cd build-win32/install/ && zip -q ../../packages/yp-spur.win32.$GIT_TAG.zip -r $(ls)
-  - cd ../../
-  - cd build-win64/ && zip -q ../packages/yp-spur-samples.win64.$GIT_TAG.zip -r samples/run-test.exe
-  - cd ../
-  - cd build-win32/ && zip -q ../packages/yp-spur-samples.win32.$GIT_TAG.zip -r samples/run-test.exe
-  - cd ../
+  - cd ${TRAVIS_BUILD_DIR} && mkdir packages
+  - cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && zip -q ../../packages/yp-spur.win64.$GIT_TAG.zip -r $(ls)
+  - cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && zip -q ../../packages/yp-spur.win32.$GIT_TAG.zip -r $(ls)
+  - cd ${TRAVIS_BUILD_DIR}/build-win64/ && zip -q ../packages/yp-spur-samples.win64.$GIT_TAG.zip -r samples/run-test.exe
+  - cd ${TRAVIS_BUILD_DIR}/build-win32/ && zip -q ../packages/yp-spur-samples.win32.$GIT_TAG.zip -r samples/run-test.exe
 
 deploy:
   provider: releases

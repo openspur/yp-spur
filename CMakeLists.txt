@@ -269,6 +269,6 @@ install(
   FILES
     ${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config.cmake
     ${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config-version.cmake
+    package.xml
   DESTINATION share/ypspur/
 )
-

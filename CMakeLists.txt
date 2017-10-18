@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
+cmake_policy(VERSION 2.8.3)
 project(ypspur)
 
 set(YPSPUR_MAJOR_VERSION 1)

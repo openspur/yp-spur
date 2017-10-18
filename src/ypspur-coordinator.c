@@ -61,7 +61,10 @@ BOOL WINAPI win32_ctrlc_handler( DWORD type )
 	if( !option( OPTION_WITHOUT_SSM ) )
 		end_ypspurSSM(  );
 #endif
-	serial_close(  );
+	if( !( option( OPTION_WITHOUT_DEVICE ) ) )
+	{
+		serial_close(  );
+	}
 	
 	return TRUE;
 }
@@ -80,7 +83,10 @@ void emergency( int sig )
 	if( !option( OPTION_WITHOUT_SSM ) )
 		end_ypspurSSM(  );
 #endif
-	serial_close(  );
+	if( !( option( OPTION_WITHOUT_DEVICE ) ) )
+	{
+		serial_close(  );
+	}
 
 	exit( 0 );
 #endif

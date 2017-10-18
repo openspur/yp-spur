@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
+cmake_policy(VERSION 2.8.3)
 project(ypspur)
 
 set(YPSPUR_MAJOR_VERSION 1)
@@ -44,6 +45,10 @@ endif(PKGCONFIG_FOUND)
 if(USE_SSM)
   find_package(SSM)
 endif(USE_SSM)
+
+include(CheckFunctionExists)
+check_function_exists(longjmp HAVE_LONGJMP)
+check_function_exists(siglongjmp HAVE_SIGLONGJMP)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/config.h

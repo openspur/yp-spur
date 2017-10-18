@@ -371,6 +371,11 @@ int parameter_set( char param, char id, long long int value64 )
 	}
 	value = value64;
 
+	if( option( OPTION_WITHOUT_DEVICE ) )
+	{
+		return ( 0 );
+	}
+
 	buf[0] = param;
 	buf[1] = id;
 	buf[2] = ( ( Int_4Char ) value ).byte[3];

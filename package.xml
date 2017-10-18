@@ -5,4 +5,8 @@
   <description>YP-Spur is a mobile robot motion control software with coordinate frame based commands. </description>
   <maintainer email="atsushi.w@ieee.org">Atsushi Watanabe</maintainer>
   <license>MIT</license>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
 </package>

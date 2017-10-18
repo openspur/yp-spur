@@ -46,6 +46,10 @@ if(USE_SSM)
   find_package(SSM)
 endif(USE_SSM)
 
+include(CheckFunctionExists)
+check_function_exists(longjmp HAVE_LONGJMP)
+check_function_exists(siglongjmp HAVE_SIGLONGJMP)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/config.h
 )

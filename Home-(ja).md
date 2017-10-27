@@ -22,7 +22,7 @@ $ sudo ldconfig
 ## 開発中バージョンを試す
 
 * 下記ページから、試したいブランチ名またはタグ名を探す
-https://github.com/at-wat/yp-spur/branches, https://github.com/at-wat/yp-spur/releases.
+https://github.com/openspur/yp-spur/branches, https://github.com/openspur/yp-spur/releases.
 * インストール手順で git clone した、yp-spurディレクトリに移動
 * 所望のブランチまたはタグをチェックアウト
 ```

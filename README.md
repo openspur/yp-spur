@@ -6,7 +6,7 @@ YP-Spur is a mobile robot motion control software with coordinate frame based co
 
 ## Getting Started
 
-Learn to use YP-Spur at our [wiki pages](https://github.com/openspur/yp-spur/wiki).
+Learn to use YP-Spur at the [documentation pages](./doc/README.md).
 
 ## Install
 ```

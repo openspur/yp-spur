@@ -1,7 +1,22 @@
 # What is YP-Spur?
 
 YP-Spur is a mobile robot motion control software with coordinate frame based commands.
-See [Control Architecture](Control Architecture) to learn the detail of the control system.
+See [Control Architecture](./Control-Architecture.md) to learn the detail of the control system.
+
+[![Build Status](https://travis-ci.org/openspur/yp-spur.svg?branch=master)](https://travis-ci.org/openspur/yp-spur)
+
+
+# Index
+
+[Japanese version is here.](README.ja.md)
+
+* [Home](README.md)
+* [Parameter File (ja)](Parameter-File.ja.md)
+* [Control Architecture](Control-Architecture.md)
+* [Manpage](Manpage.md)
+* [Embedding Parameters](Embedding-Parameters.md)
+* [Auxiliary Files (ja)](Auxiliary-Files.md)
+
 
 # Quick Start Guide
 
@@ -10,9 +25,8 @@ See [Control Architecture](Control Architecture) to learn the detail of the cont
 * Install gcc and C standard libraries
 * Build and install YP-Spur
 ```
-$ git clone https://github.com/at-wat/yp-spur
+$ git clone https://github.com/openspur/yp-spur
 $ cd yp-spur
-$ git checkout -b release origin/release
 $ mkdir build
 $ cd build
 $ ../configure
@@ -21,21 +35,10 @@ $ sudo make install
 $ sudo ldconfig
 ```
 
-## Update
-
-```
-$ cd yp-spur
-$ git pull origin release
-$ cd build
-$ make
-$ sudo make install
-$ sudo ldconfig
-```
-
-## Try development version
+## Try branched version
 
 * **First of all, learn Git!**
-* Find a branch or tag name at https://github.com/at-wat/yp-spur/branches or https://github.com/at-wat/yp-spur/releases.
+* Find a branch or tag name at https://github.com/openspur/yp-spur/branches or https://github.com/openspur/yp-spur/releases.
 * Go to yp-spur directory where you have cloned.
 * Checkout the desired version.
 ```

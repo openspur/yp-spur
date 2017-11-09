@@ -1,6 +1,21 @@
 # YP-Spurとは?
 
-YP-Spurは、移動ロボットの走行制御と座標系ベースのコマンドシステムを提供するソフトウェアです。詳細な制御のアーキテクチャについては、[Control Architecture](Control Architecture)を参照して下さい。
+YP-Spurは、移動ロボットの走行制御と座標系ベースのコマンドシステムを提供するソフトウェアです。詳細な制御のアーキテクチャについては、[Control Architecture](./Control-Architecture.md)を参照して下さい。
+
+[![Build Status](https://travis-ci.org/openspur/yp-spur.svg?branch=master)](https://travis-ci.org/openspur/yp-spur)
+
+
+# Index
+
+[English version is here.](README.md)
+
+* [Home](README.ja.md)
+* [Parameter File](Parameter-File.ja.md)
+* [Control Architecture (en)](Control-Architecture.md)
+* [Manpage (en)](Manpage.md)
+* [Embedding Parameters](Embedding-Parameters.ja.md)
+* [Auxiliary Files](Auxiliary-Files.md)
+
 
 # Quick Start Guide
 
@@ -9,7 +24,7 @@ YP-Spurは、移動ロボットの走行制御と座標系ベースのコマン�
 * gcc, 標準Cライブラリをインストール
 * 下記のコマンドでYP-Spurをビルド、インストール
 ```
-$ git clone https://openspur.org/repos/yp-spur.git
+$ git clone https://github.com/openspur/yp-spur
 $ cd yp-spur
 $ mkdir build
 $ cd build
@@ -19,7 +34,9 @@ $ sudo make install
 $ sudo ldconfig
 ```
 
-## 開発中バージョンを試す
+## ブランチしているバージョンを試す
+
+(Gitの使い方を理解している前提です)
 
 * 下記ページから、試したいブランチ名またはタグ名を探す
 https://github.com/openspur/yp-spur/branches, https://github.com/openspur/yp-spur/releases.
@@ -34,7 +51,7 @@ $ git checkout -b [ブランチ名] origin/[ブランチ名]
 ## 使い方
 
 * 端末(Terminal)を2つ起動
-* ypspur-coordinatorを、端末1で実行し、そのまま実行したままに
+* ypspur-coordinatorを、端末1で実行
 ```
 $ ypspur-coordinator -p PARAMETER_FILE.param -d /path/to/device
 ```

@@ -21,14 +21,14 @@ YP-Spurは、移動ロボットの走行制御と座標系ベースのコマン�
 
 ## インストール
 
-* gcc, 標準Cライブラリをインストール
+* gcc, 標準Cライブラリ, cmakeをインストール
 * 下記のコマンドでYP-Spurをビルド、インストール
 ```
 $ git clone https://github.com/openspur/yp-spur
 $ cd yp-spur
 $ mkdir build
 $ cd build
-$ ../configure
+$ cmake ..
 $ make
 $ sudo make install
 $ sudo ldconfig

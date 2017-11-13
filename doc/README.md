@@ -22,14 +22,14 @@ See [Control Architecture](./Control-Architecture.md) to learn the detail of the
 
 ## Install
 
-* Install gcc and C standard libraries
+* Install gcc, C standard libraries and cmake
 * Build and install YP-Spur
 ```
 $ git clone https://github.com/openspur/yp-spur
 $ cd yp-spur
 $ mkdir build
 $ cd build
-$ ../configure
+$ cmake ..
 $ make
 $ sudo make install
 $ sudo ldconfig

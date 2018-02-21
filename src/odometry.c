@@ -36,6 +36,7 @@
 double g_interval;
 double g_offset;
 int g_offset_point;
+double g_estimated_delay = 0;
 
 CSptr g_GL;
 CSptr g_SP;
@@ -118,7 +119,7 @@ void set_cs( YPSpur_cs cs, double x, double y, double theta )
 }
 
 /* オドメトリ計算 */
-void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
+void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt, double time )
 {
 	double v, w;
 	double wvel[YP_PARAM_MAX_MOTOR_NUM], mvel[YP_PARAM_MAX_MOTOR_NUM];
@@ -187,7 +188,12 @@ void odometry( OdometryPtr xp, short *cnt, short *pwm, double dt )
 	xp->x = xp->x + v * cos( xp->theta ) * dt;
 	xp->y = xp->y + v * sin( xp->theta ) * dt;
 	xp->theta = xp->theta + w * dt;
-	xp->time = get_time(  );
+	xp->time = time;
+	if( option( OPTION_SHOW_TIMESTAMP ) ) {
+		static int cnt = 0;
+		if(++cnt % 100 == 0)
+			printf("now - stamp: %0.3f ms\n", (get_time() - time) * 1000.0);
+	}
 	xp->v = v;
 	xp->w = w;
 	for(i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i ++)
@@ -285,7 +291,7 @@ OdometryPtr get_odometry_ptr(  )
  */
 double time_estimate( int readnum )
 {
-	return g_offset + g_interval * ( double )( readnum - g_offset_point );
+	return g_offset + g_interval * ( double )( readnum - g_offset_point ) + g_estimated_delay;
 }
 
 /**
@@ -297,79 +303,70 @@ double time_estimate( int readnum )
 double time_synchronize( double receive_time, int readnum, int wp )
 {
 	static double prev_time = 0.0;
-	static double minsub = 0;
-	static double minsub_time = 0;
-	static int minsub_readnum = 0;
 	static int prev_readnum = 0;
-	double estimated_time;
 	double measured_time;
-	double sub;
 
 	// 受信開始時刻を計算
 	if ( SER_BAUDRATE != 0 ) {
-		measured_time = receive_time;
-	}
-	else {
 		measured_time = receive_time - ( wp / ( SER_BAUDRATE / 8.0 ) );
 	}
-	
-	// 初回の場合 
-	if( g_offset_point <= 0 ) {
-		// 初回のデータを基準として保存
+	else {
+		measured_time = receive_time;
+	}
+	// Add half USB FS frame delay
+	// (Currently all YP-Spur compatible devices uses USB as a communication interface.)
+	measured_time -= 0.0005;
+
+	if( g_offset_point <= 0 || fabs(g_offset - measured_time) > 0.5 ) {
+		// Reset if measured_time has too large error (500ms).
 		g_offset = measured_time;
 		g_interval = SER_INTERVAL;
 		g_offset_point = readnum;
-
-		// 更新時のデータを保存
 		prev_time = measured_time;
-		prev_readnum = readnum;
-
-		// 推定値に対して最も早い受信時刻のデータを初期化
-		minsub_time = measured_time;
-		minsub_readnum = readnum;
-		// 適当な大きな値(インターバル以上遅れると異常)
-		minsub = g_interval;
-		
-		// オドメトリの更新回数からの推定値を計算
-		return measured_time;
 	}
-	else {
-		// オドメトリの更新回数からの推定値を計算
-		estimated_time = time_estimate(readnum);
 
-		// オドメトリの更新回数からの推定値より早いデータほど計測時刻に近いと期待
-		sub = measured_time - estimated_time;
-		if( minsub > sub) {
-			// 最も早い受信時刻を保存
-			minsub = sub;
-			minsub_time = measured_time;
-			minsub_readnum = readnum;
-		}
+	// predict
+	g_offset += g_interval * (readnum - g_offset_point);
+	g_offset_point = readnum;
 
-		// 十分に時間が経過している場合
-		if( receive_time - prev_time > 0.5 ) {
-			// 基準のデータを更新			
-			g_offset = minsub_time;
-			g_offset_point = minsub_readnum;
+	const double dt = measured_time - prev_time;
+	double error = measured_time - g_offset;
 
-			// オドメトリの更新間隔を推定
-			g_interval = (measured_time - prev_time) / (double)( readnum - prev_readnum );
-
-			if( option( OPTION_SHOW_TIMESTAMP ) )
-				printf( "%f %f \n", g_offset, g_interval * 1000.0 );
-
-			// 更新時のデータを保存
-			prev_time = measured_time;
-			prev_readnum = readnum;
-
-			// 推定値に対して最も早い受信時刻のデータを初期化
-			minsub_time = measured_time;
-			minsub_readnum = readnum;
-			minsub = sub;
-		}
-
-		return estimated_time;
+	const int lost = lround(error / g_interval);
+	if( lost != 0 ) {
+		if( option( OPTION_SHOW_TIMESTAMP ) )
+			printf("%d packet(s) might be lost!\n", lost);
+		error -= lost * g_interval;
+		g_offset_point -= lost;
 	}
+
+	static double error_integ = 0;
+	error_integ += error * dt;
+
+	if( error < g_estimated_delay && lost == 0 ) {
+		if( option( OPTION_SHOW_TIMESTAMP ) )
+			printf("[update min_delay] delay: %0.3f\n",
+					error * 1000.0);
+		g_estimated_delay = g_estimated_delay * 0.5 + error * 0.5;
+	}
+	g_estimated_delay *= (1.0 - dt / 120.0);
+
+	g_offset += error * 0.2 + error_integ * 0.1;
+
+	// aprox. 0.5 sec exp filter
+	g_interval =
+		0.99 * g_interval +
+		0.01 * (( measured_time - prev_time ) / (double)( readnum - prev_readnum ));
+
+	static int cnt_show_timestamp = 0;
+	if( option( OPTION_SHOW_TIMESTAMP ) && ++cnt_show_timestamp % 100 == 0 )
+		printf( "epoch: %0.8f, interval: %0.3f, delay: %0.3f, min_delay: %0.3f\n",
+				g_offset, g_interval * 1000.0, error * 1000.0, g_estimated_delay * 1000.0 );
+
+	prev_time = measured_time;
+	prev_readnum = readnum;
+
+	return g_offset;
 }
 
 /* シリアル受信処理 */
@@ -467,10 +464,11 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 					pwm1_log[readdata_num].integer = pwm[0];
 					pwm2_log[readdata_num].integer = pwm[1];
 					memcpy( ad_log[readdata_num], get_addataptr(  ), sizeof ( int ) * 8 );
+					readdata_num++;
 
 					if( state( YP_STATE_MOTOR ) && state( YP_STATE_VELOCITY ) && state( YP_STATE_BODY ) )
 					{
-						odometry( &g_odometry, cnt, pwm, g_interval );
+						odometry( &g_odometry, cnt, pwm, g_interval, time_estimate(receive_count + readdata_num) );
 						odm_log[odometry_updated] = g_odometry;
 						odometry_updated++;
 					}
@@ -495,8 +493,6 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 				}
 				break;
 			}
-		
-			readdata_num++;
 			readdata_len = com_wp;
 			com_wp = 0;
 		}
@@ -514,7 +510,7 @@ int odometry_receive( char *buf, int len, double receive_time, void *data )
 
 	if ( readdata_num > 0 ) {
 		receive_count += readdata_num;
-		time_synchronize( receive_time, receive_count, readdata_len + com_wp );
+		if( com_wp == 0 ) time_synchronize( receive_time, receive_count, com_wp );
 	}
 
 	write_ypspurSSM( odometry_updated, receive_count, odm_log, readdata_num, cnt1_log, cnt2_log, pwm1_log, pwm2_log,

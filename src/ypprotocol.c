@@ -52,8 +52,7 @@ int set_baudrate( int baud )
 	}
 	// RS-232cインターフェース未搭載
 	else if( strstr( buf, "\n04T\n" ) != NULL ) {
-		// 12MBps(USB)
-		SER_BAUDRATE = (double)12 * 1024 * 1024 * 8;
+		SER_BAUDRATE = 0;
 		yp_usleep( 100000 );
 		return 4;
 	}

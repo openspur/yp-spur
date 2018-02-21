@@ -433,6 +433,7 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 			yprintf( OUTPUT_LV_VERBOSE, "Error: Select timed out\n" );
 			return -1;
 		}
+		receive_time = get_time(  );
 
 		len = read( g_device_port, buf, 4000 );
 		if( len < 0 )
@@ -468,13 +469,13 @@ int serial_recieve( int ( *serial_event ) ( char *, int, double, void * ), void 
 			timeout_count ++;
 			if( timeout_count > 500 / 5 ) return -1;
 		}
+		receive_time = get_time(  );
 		if( !ReadFile( g_hdevices, buf, len, &len, NULL ) )
 		{
 			return -1;
 		}
 		buf[len] = 0;
 #endif
-		receive_time = get_time(  );
 		buf[len] = 0;
 
 		if( len > 0 )

@@ -24,7 +24,6 @@ endif()
 set(CVF_VERSION ${PROJECT_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-message("yp-spur ${PROJECT_VERSION}")
 
 set(YP_VENDOR_NAME "OpenSpur.org")
 set(YP_PRODUCT_NAME "Yamabico Project - Spur")

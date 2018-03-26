@@ -1,12 +1,26 @@
 cmake_minimum_required(VERSION 2.8.3)
-cmake_policy(VERSION 2.8.3)
-project(ypspur)
 
-set(YPSPUR_MAJOR_VERSION 1)
-set(YPSPUR_MINOR_VERSION 14)
-set(YPSPUR_PATCH_VERSION 0)
-set(PROJECT_VERSION ${YPSPUR_MAJOR_VERSION}.${YPSPUR_MINOR_VERSION}.${YPSPUR_PATCH_VERSION})
-set(PACKAGE_VERSION ${PROJECT_VERSION})
+set(_YPSPUR_MAJOR_VERSION 1)
+set(_YPSPUR_MINOR_VERSION 14)
+set(_YPSPUR_PATCH_VERSION 0)
+
+if(${CMAKE_MAJOR_VERSION} LESS 3)
+# DARN_IT: CMake 2 should be supported until April, 2019 (Ubuntu Trusty EOL)
+  cmake_policy(VERSION 2.8.3)
+  project(ypspur)
+
+  set(YPSPUR_MAJOR_VERSION ${_YPSPUR_MAJOR_VERSION})
+  set(YPSPUR_MINOR_VERSION ${_YPSPUR_MINOR_VERSION})
+  set(YPSPUR_PATCH_VERSION ${_YPSPUR_PATCH_VERSION})
+
+  set(PROJECT_VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
+
+  message(WARNING "[deprecated] CMake 2 will be obsoleted in yp-spur build at April, 2019")
+else()
+  cmake_policy(VERSION 3.0)
+  project(ypspur VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
+endif()
+
 set(CVF_VERSION ${PROJECT_VERSION})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
@@ -273,7 +287,7 @@ configure_package_config_file(cmake/ypspur-config.cmake.in
 )
 write_basic_package_version_file(
   ${PROJECT_BINARY_DIR}/cmake/ypspur/ypspur-config-version.cmake
-  VERSION ${PACKAGE_VERSION}
+  VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion
 )
 

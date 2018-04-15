@@ -12,23 +12,22 @@ before_install:
 script:
   - docker build -t yp-spur:latest -f Dockerfile.xenial --pull=true ${TRAVIS_BUILD_DIR}
   - docker build -t yp-spur:trusty -f Dockerfile.trusty --pull=true ${TRAVIS_BUILD_DIR}
-  - mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
-  - mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install
+  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
+  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
 
 before_deploy:
   - sudo apt-get install -y npm
   - sudo npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
   - sudo npm install -g json
   - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
-  - cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI
-  - cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
-  - cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI)
-  - export GIT_TAG=`git describe --abbrev=0 --tags`
-  - cd ${TRAVIS_BUILD_DIR} && mkdir packages
-  - cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && zip -q ../../packages/yp-spur.win64.$GIT_TAG.zip -r $(ls)
-  - cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && zip -q ../../packages/yp-spur.win32.$GIT_TAG.zip -r $(ls)
-  - cd ${TRAVIS_BUILD_DIR}/build-win64/ && zip -q ../packages/yp-spur-samples.win64.$GIT_TAG.zip -r samples/run-test.exe
-  - cd ${TRAVIS_BUILD_DIR}/build-win32/ && zip -q ../packages/yp-spur-samples.win32.$GIT_TAG.zip -r samples/run-test.exe
+  - (cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI)
+  - (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI))
+  - (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI))
+  - (cd ${TRAVIS_BUILD_DIR} && mkdir packages)
+  - (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && zip -q ../../packages/yp-spur.win64.${TRAVIS_TAG}.zip -r $(ls))
+  - (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && zip -q ../../packages/yp-spur.win32.${TRAVIS_TAG}.zip -r $(ls))
+  - (cd ${TRAVIS_BUILD_DIR}/build-win64/ && zip -q ../packages/yp-spur-samples.win64.${TRAVIS_TAG}.zip -r samples/run-test.exe)
+  - (cd ${TRAVIS_BUILD_DIR}/build-win32/ && zip -q ../packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip -r samples/run-test.exe)
 
 deploy:
   provider: releases
@@ -36,10 +35,9 @@ deploy:
   api_key:
     secure: "kX1HXsq/hkmBxEX7k2LQyjDJh0XWdVW3L6WTRgDryIG0d6RVIfiPK9MMsqWaV7h87I/UATySChF0lHYnjv+29xQ1iUC3Pj+/wEnOGwFBOhsJC4QV1d8WLLmvy4tenasK0unfABj7ntd1EP81lyCLQHYI966fmCPlTl5sH8bSkJgA5PWcpQFfeCGloRCC5vvH6jyZuOVDga7+Lky4HowFj5ZlokK4/4Fe1XimzgorF3cHN2h6XtVT3+Kwr6G71V6A6pv/KMfn/RNoma0wdKVSckuK9tSFh7gjoTC6yQfvOH+Q26h7Cp5Z8V2f2pfGqxVZq8RiHHuN7aYtRzsSWVTVqTi5OjCAcehrUZm0Z1op8kP25UL2szRNk6OXe3bR9qruRAYSiuXb6Bl8mqVheEFJLymGyGie6Nj8oMb0Rok5z5Dqx7M/upa4OUh1a5W/I+Nu49K8pANWzfAk8gAFFk08LcKI1ImYLXufBvrBPv8tYYLQR3aRey0BcWvb7RpboCdrAMZQcRhDMSpIW9yVmBvjWqyFoX3+/oilsybD/WBdsPivrt4J0ZdgkEA49WozScRNWMm55J3V4fES6UfaYEFDk9hCkpYsS8rRvWpvTnRR/tvCTnaUIvxSpSgZWeQbfrK9nHfOeFZMna7peAkCbIgJqkRxNeLuADwx+ZOH0V0m7/M="
   file:
-    - packages/yp-spur.win64.$GIT_TAG.zip
-    - packages/yp-spur.win32.$GIT_TAG.zip
-    - packages/yp-spur-samples.win64.$GIT_TAG.zip
-    - packages/yp-spur-samples.win32.$GIT_TAG.zip
+    - packages/yp-spur.win64.${TRAVIS_TAG}.zip
+    - packages/yp-spur.win32.${TRAVIS_TAG}.zip
+    - packages/yp-spur-samples.win64.${TRAVIS_TAG}.zip
+    - packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip
   on:
     tags: true
-

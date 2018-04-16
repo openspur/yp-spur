@@ -6,8 +6,7 @@
   <maintainer email="atsushi.w@ieee.org">Atsushi Watanabe</maintainer>
   <license>MIT</license>
 
-  <run_depend>catkin</run_depend>
-  <buildtool_depend>cmake</buildtool_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <export>
     <build_type>cmake</build_type>

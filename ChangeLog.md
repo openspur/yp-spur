@@ -1,5 +1,13 @@
 # ChangeLog for YP-Spur
 
+## 1.15.1
+- Fix buildtool_depend in ROS manifest (#62)
+- Fix ROS package manifest (#61)
+- Add run_depend to catkin in ROS package manifest (#60)
+- Fix deployment (#59)
+- Workaround for CERT_UNTRUSTED error in npm (#58)
+
+
 ## 1.15.0
 - Fix project version handling both on cmake 2 and 3 (#55)
 - Fix odometry timestamp (#54)

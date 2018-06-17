@@ -283,8 +283,8 @@ Spur_get_pos_GL, Spur_get_pos_LC
 ### Synopsis
 
 ```c
-int Spur_get_pos_GL(double *x, double *y, double *th);
-int Spur_get_pos_LC(double *x, double *y, double *th);
+double Spur_get_pos_GL(double *x, double *y, double *th);
+double  Spur_get_pos_LC(double *x, double *y, double *th);
 ```
 
 ### Description
@@ -297,7 +297,7 @@ Get vehicle position and orientation on desired coordinate system.
 
 ### Return value
 
-On success, 0 is returned. On error, -1 is returned.
+On success, timestamp (unix time) of the data is returned. On error, -1 is returned.
 
 ***
 
@@ -310,7 +310,7 @@ Spur_get_vel
 ### Synopsis
 
 ```c
-int Spur_get_vel(double *v, double *w);
+double Spur_get_vel(double *v, double *w);
 ```
 
 ### Description
@@ -322,7 +322,7 @@ Get vehicle velocity and angular velocity.
 
 ### Return value
 
-On success, 0 is returned. On error, -1 is returned.
+On success, timestamp (unix time) of the data is returned. On error, -1 is returned.
 
 ***
 

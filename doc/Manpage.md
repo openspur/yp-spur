@@ -91,16 +91,16 @@ Spur_circle_GL, Spur_circle_LC, Spur_circle_FS - Circle following
 ### Synopsis
 
 ```
-int Spur_circle_GL(double x, double y, double r)
-int Spur_circle_LC(double x, double y, double r)
-int Spur_circle_FS(double x, double y, double r)
+int Spur_circle_GL(double x, double y, double d)
+int Spur_circle_LC(double x, double y, double d)
+int Spur_circle_FS(double x, double y, double d)
 ```
 
 ### Description
 
 * **x** x-coordinate of the center of the desired circle _[m]_
 * **y** y-coordinate of the center of the desired circle _[m]_
-* **r** radius of the circle _[m]_ (positive: CCW, negative: CW)
+* **d** radius of the circle _[m]_ (positive: CCW, negative: CW)
 
 ![Parameters for circle following control](https://github.com/openspur/yp-spur/raw/master/doc/images/commands/circle.png)
 

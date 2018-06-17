@@ -8,10 +8,10 @@ Spur_init, Spur_initex, Spur_init_socket - Initialization of YP-Spur library
 
 ### Synopsis
 
-```
-int Spur_init(void)
-int Spur_initex(int msq_id)
-int Spur_init_socket(const char *ip, int port)
+```c
+int Spur_init(void);
+int Spur_initex(int msq_id);
+int Spur_init_socket(const char *ip, int port);
 ```
 
 ### Description
@@ -34,11 +34,11 @@ Spur_set_vel, Spur_set_angvel, Spur_set_accel, Spur_set_angaccel - parameter set
 
 ### Synopsis
 
-```
-int Spur_set_vel(double vel)
-int Spur_set_angvel(double angvel)
-int Spur_set_accel(double accel)
-int Spur_set_angaccel(double angaccel)
+```c
+int Spur_set_vel(double vel);
+int Spur_set_angvel(double angvel);
+int Spur_set_accel(double accel);
+int Spur_set_angaccel(double angaccel);
 ```
 
 ### Description
@@ -62,10 +62,10 @@ Spur_line_GL, Spur_line_LC, Spur_line_FS - Line following
 
 ### Synopsis
 
-```
-int Spur_line_GL(double x, double y, double yaw)
-int Spur_line_LC(double x, double y, double yaw)
-int Spur_line_FS(double x, double y, double yaw)
+```c
+int Spur_line_GL(double x, double y, double yaw);
+int Spur_line_LC(double x, double y, double yaw);
+int Spur_line_FS(double x, double y, double yaw);
 ```
 
 ### Description
@@ -90,10 +90,10 @@ Spur_circle_GL, Spur_circle_LC, Spur_circle_FS - Circle following
 
 ### Synopsis
 
-```
-int Spur_circle_GL(double x, double y, double d)
-int Spur_circle_LC(double x, double y, double d)
-int Spur_circle_FS(double x, double y, double d)
+```c
+int Spur_circle_GL(double x, double y, double d);
+int Spur_circle_LC(double x, double y, double d);
+int Spur_circle_FS(double x, double y, double d);
 ```
 
 ### Description
@@ -118,10 +118,10 @@ Spur_spin_GL, Spur_spin_LC, Spur_spin_FS - Angle control
 
 ### Synopsis
 
-```
-int Spur_spin_GL(double th)
-int Spur_spin_LC(double th)
-int Spur_spin_FS(double th)
+```c
+int Spur_spin_GL(double th);
+int Spur_spin_LC(double th);
+int Spur_spin_FS(double th);
 ```
 
 ### Description

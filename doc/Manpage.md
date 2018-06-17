@@ -621,8 +621,8 @@ int Spur_set_joint_accel(int id, double a);
 Set maximum angular velocity and acceleration of the joint.
 
 * **id**: joint (motor) id
-* **\*a**: acceleration of the joint _[rad/ss]_
-* **\*v**: angular velocity of the joint _[rad/s]_
+* **a**: angular acceleration of the joint _[rad/ss]_
+* **v**: angular velocity of the joint _[rad/s]_
 
 ### Return value
 

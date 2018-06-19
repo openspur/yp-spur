@@ -109,7 +109,7 @@ Check whether the vehicle gets over the desired line.
 
 ### Return value
 
-On success, 1 is returned if the vehicle gets over the line, and 0 is retured elsewise.
+On success, 1 is returned if the vehicle gets over the line, and 0 is returned elsewise.
 On error, -1 is returned.
 
 ***
@@ -139,7 +139,7 @@ Check whether the vehicle gets near the desired position.
 
 ### Return value
 
-On success, 1 is returned if the vehicle gets near the position and 0 is retured elsewise.
+On success, 1 is returned if the vehicle gets near the position and 0 is returned elsewise.
 On error, -1 is returned.
 
 ***
@@ -168,5 +168,5 @@ Check whether the vehicle gets near the desired orientation.
 
 ### Return value
 
-On success, 1 is returned if the vehicle gets near the orientation, and 0 is retured elsewise.
+On success, 1 is returned if the vehicle gets near the orientation, and 0 is returned elsewise.
 On error, -1 is returned.

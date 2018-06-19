@@ -26,7 +26,8 @@ Set maximum velocity and acceleration used in motion control.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -56,7 +57,8 @@ Control vehicle velocity and angular velocity to follow desired straight line.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -86,7 +88,8 @@ Control vehicle velocity and angular velocity to follow desired circle.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -114,7 +117,8 @@ Control angular velocity to face desired direction.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -142,7 +146,8 @@ Control velocity and angular velocity to run facing desired direction.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -172,7 +177,8 @@ Control vehicle velocity and angular velocity to follow desired straight line an
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -197,7 +203,8 @@ Control vehicle velocity and angular velocity.
 
 ### Return value
 
-On success, 0 is returned.  On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -219,7 +226,8 @@ Stop with set acceleration and angular acceleration.
 
 ### Return value
 
-On success, 0 is returned.  On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -244,4 +252,5 @@ Stop velocity control and make wheels free.
 
 ### Return value
 
-On success, 0 is returned.  On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.

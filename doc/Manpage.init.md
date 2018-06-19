@@ -24,4 +24,5 @@ Initialize the library and establish a connection to ypspur-coordinator.
 
 ### Return value
 
-On success, zero is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.

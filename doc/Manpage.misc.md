@@ -23,7 +23,7 @@ Set floor tilt angle and its direction used for gravity compensation.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.
 
 ***
@@ -48,7 +48,7 @@ Unfreeze to resume normal behavior.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.
 
 ***
@@ -125,5 +125,5 @@ Results are device dependent.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.

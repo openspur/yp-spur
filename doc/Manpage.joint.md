@@ -25,7 +25,7 @@ Get current joint state.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.
 
 ***
@@ -53,7 +53,7 @@ Set maximum angular velocity and acceleration of the joint.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.
 
 ***
@@ -85,5 +85,5 @@ Control joint angle, velocity, and torque.
 
 ### Return value
 
-On success, 0 is returned.
+On success, 1 is returned.
 On error, -1 is returned.

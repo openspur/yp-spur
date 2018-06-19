@@ -21,7 +21,8 @@ Get vehicle velocity and angular velocity.
 
 ### Return value
 
-On success, timestamp (unix time) of the data is returned. On error, -1 is returned.
+On success, timestamp (unix time) of the data is returned.
+On error, -1 is returned.
 
 ## Get vehicle force
 
@@ -44,4 +45,5 @@ Get estimated vehicle force and torque.
 
 ### Return value
 
-On success, 0 is returned.  On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.

@@ -23,7 +23,8 @@ Get vehicle position and orientation on desired coordinate system.
 
 ### Return value
 
-On success, timestamp (unix time) of the data is returned. On error, -1 is returned.
+On success, timestamp (unix time) of the data is returned.
+On error, -1 is returned.
 
 ***
 
@@ -50,7 +51,8 @@ Set relation between the desired coordinate system and its parent coordinate sys
 
 ### Return value
 
-On success, 0 is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 
@@ -79,7 +81,8 @@ Running vehicle control command is updated according to the adjusted coordinate 
 
 ### Return value
 
-On success, 0 is returned. On error, -1 is returned.
+On success, 1 is returned.
+On error, -1 is returned.
 
 ***
 

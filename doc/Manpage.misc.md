@@ -43,7 +43,7 @@ int Spur_unfreeze(void);
 
 ### Description
 
-Ignore any other control command and stop vehicle.
+Ignore any other control command and stop the vehicle.
 Unfreeze to resume normal behavior.
 
 ### Return value
@@ -90,7 +90,7 @@ int YP_get_ad_value(int num);
 
 ### Description
 
-Get current value of analog/digital converter.
+Get the current value of analog/digital converter.
 Note that `num=15` is reserved for digital IO value.
 
 * **num**: port id of the a/d port
@@ -117,7 +117,7 @@ int YP_set_io_data(unsigned char data);
 
 ### Description
 
-Set digital IO port directions and output state.
+Set digital IO port directions and the output state.
 Results are device dependent.
 
 * **dir**: 8-bit mask of output direction

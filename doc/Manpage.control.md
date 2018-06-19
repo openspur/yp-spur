@@ -17,6 +17,8 @@ int Spur_set_angaccel(double angaccel);
 
 ### Description
 
+Set maximum velocity and acceleration used in motion control.
+
 * **vel**: Maximum linear velocity of the robot _[m/s]_
 * **angvel**: Maximum angular velocity _[rad/s]_
 * **accel**: Maximum linear acceleration _[m/ss]_

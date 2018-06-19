@@ -25,7 +25,7 @@ Get current joint state.
 
 ### Return value
 
-On success, 1 is returned.
+On success, timestamp (unix time) of the data is returned.
 On error, -1 is returned.
 
 ***

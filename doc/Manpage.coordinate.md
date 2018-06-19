@@ -37,8 +37,8 @@ Spur_set_pos_GL, Spur_set_pos_LC
 ### Synopsis
 
 ```c
-double Spur_set_pos_GL(double x, double y, double th);
-double Spur_set_pos_LC(double x, double y, double th);
+int Spur_set_pos_GL(double x, double y, double th);
+int Spur_set_pos_LC(double x, double y, double th);
 ```
 
 ### Description
@@ -65,9 +65,9 @@ Spur_adjust_pos_GL, Spur_adjust_pos_LC, Spur_adjust_pos_FS
 ### Synopsis
 
 ```c
-double Spur_adjust_pos_GL(double x, double y, double th);
-double Spur_adjust_pos_LC(double x, double y, double th);
-double Spur_adjust_pos_FS(double x, double y, double th);
+int Spur_adjust_pos_GL(double x, double y, double th);
+int Spur_adjust_pos_LC(double x, double y, double th);
+int Spur_adjust_pos_FS(double x, double y, double th);
 ```
 
 ### Description

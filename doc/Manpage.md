@@ -1,83 +1,36 @@
 # libypspur
 
-## Initialization
-
-### Name
-
-Spur_init, Spur_initex, Spur_init_socket - Initialization of YP-Spur library
-
-### Synopsis
-
-```
-int Spur_init( void )
-int Spur_initex( int msq_id )
-int Spur_init_socket( const char *ip, int port )
-```
-
-### Description
-
-* **msq_id** Message queue id
-* **ip** IP address
-* **port** TCP/IP port number
-
-### Return value
-
-On success, zero is returned. On error, -1 is returned.
-
-***
-
-## Basic parameter settings
-
-### Name
-
-Spur_set_vel, Spur_set_angvel, Spur_set_accel, Spur_set_angaccel - parameter settings
-
-### Synopsis
-
-```
-int Spur_set_vel( double vel )
-int Spur_set_angvel( double angvel )
-int Spur_set_accel( double accel )
-int Spur_set_angaccel( double angaccel )
-```
-
-### Description
-
-* **vel** Maximum linear velocity of the robot _[m/s]_
-* **angvel** Maximum angular velocity _[rad/s]_
-* **accel** Maximum linear acceleration _[m/ss]_
-* **angaccel** Maximum angular acceleration _[rad/ss]_
-
-### Return value
-
-On success, zero is returned. On error, -1 is returned.
-
-***
-
-## Line following
-
-### Name
-
-Spur_line_GL, Spur_line_LC, Spur_line_FS - Line following
-
-### Synopsis
-
-```
-int Spur_line_GL( double x, double y, double yaw )
-int Spur_line_LC( double x, double y, double yaw )
-int Spur_line_FS( double x, double y, double yaw )
-```
-
-### Description
-
-* **x** x-coordinate of a point where the desired line passing through _[m]_
-* **y** y-coordinate of the point _[m]_
-* **yaw** orientation of the line _[rad]_
-
-![Parameters for line following control](https://github.com/openspur/yp-spur/wiki/images/commands/line.png)
-
-### Return value
-
-On success, zero is returned. On error, -1 is returned.
-
-***
+- [Initialization](Manpage.init.md)
+  - Spur_init, Spur_initex, Spur_init_socket
+- [Motion control](Manpage.control.md)
+  - Spur_set_vel, Spur_set_angvel, Spur_set_accel, Spur_set_angaccel
+  - Spur_line_GL, Spur_line_LC, Spur_line_FS
+  - Spur_circle_GL, Spur_circle_LC, Spur_circle_FS - Circle following
+  - Spur_spin_GL, Spur_spin_LC, Spur_spin_FS
+  - Spur_orient_GL, Spur_orient_LC, Spur_orient_FS
+  - Spur_stop_line_GL, Spur_stop_line_LC, Spur_stop_line_FS
+  - Spur_vel
+  - Spur_stop
+  - Spur_free, Spur_openfree
+- [Coordinate system](Manpage.coordinate.md)
+  - Spur_get_pos_GL, Spur_get_pos_LC
+  - Spur_set_pos_GL, Spur_set_pos_LC
+  - Spur_adjust_pos_GL, Spur_adjust_pos_LC, Spur_adjust_pos_FS
+  - Spur_over_line_GL, Spur_over_line_LC, Spur_over_line_FS
+  - Spur_near_pos_GL, Spur_near_pos_LC
+  - Spur_near_angle_GL, Spur_near_angle_LC
+- [Vehicle state](Manpage.state.md)
+  - Spur_get_vel
+  - Spur_get_force
+  - Spur_get_vel
+  - Spur_get_force
+- [Joint control](Manpage.joint.md)
+  - Spur_get_joint_ang, Spur_get_joint_vel, Spur_get_joint_torque
+  - Spur_set_joint_vel, Spur_set_joint_accel
+  - Spur_joint_ang, Spur_joint_vel, Spur_joint_torque, Spur_joint_ang_vel
+- [Miscellaneous](Manpage.misc.md)
+  - Spur_tilt_GL, Spur_tilt_LC, Spur_tilt_FS
+  - Spur_freeze, Spur_unfreeze
+  - Spur_isfreeze
+  - YP_get_ad_value
+  - YP_set_io_dir, YP_set_io_data

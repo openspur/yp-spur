@@ -76,7 +76,7 @@ int YP_joint_ang_vel(int id, double a, double v);
 ### Description
 
 Control joint angle, velocity, and torque.
-`YP_joint_ang_vel` controls both angle and velocity to make velocity at the desired angle desired.
+`YP_joint_ang_vel` controls both angle and velocity simultaneously to make velocity desired at the desired angle.
 
 * **id**: joint (motor) id
 * **a**: angular position of the joint _[rad]_

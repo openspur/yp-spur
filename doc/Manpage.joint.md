@@ -4,14 +4,14 @@
 
 ### Name
 
-Spur_get_joint_ang, Spur_get_joint_vel, Spur_get_joint_torque
+YP_get_joint_ang, YP_get_joint_vel, YP_get_joint_torque
 
 ### Synopsis
 
 ```c
-double Spur_get_joint_ang(int id, double *a);
-double Spur_get_joint_vel(int id, double *v);
-double Spur_get_joint_torque(int id, double *t);
+double YP_get_joint_ang(int id, double *a);
+double YP_get_joint_vel(int id, double *v);
+double YP_get_joint_torque(int id, double *t);
 ```
 
 ### Description
@@ -34,13 +34,13 @@ On error, -1 is returned.
 
 ### Name
 
-Spur_set_joint_vel, Spur_set_joint_accel
+YP_set_joint_vel, YP_set_joint_accel
 
 ### Synopsis
 
 ```c
-int Spur_set_joint_vel(int id, double v);
-int Spur_set_joint_accel(int id, double a);
+int YP_set_joint_vel(int id, double v);
+int YP_set_joint_accel(int id, double a);
 ```
 
 ### Description
@@ -62,7 +62,7 @@ On error, -1 is returned.
 
 ### Name
 
-Spur_joint_ang, Spur_joint_vel, Spur_joint_torque, Spur_joint_ang_vel
+YP_joint_ang, YP_joint_vel, YP_joint_torque, YP_joint_ang_vel
 
 ### Synopsis
 

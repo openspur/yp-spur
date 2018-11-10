@@ -14,6 +14,8 @@ RUN mkdir -p /tmp/gtest \
   && cp *.a /usr/lib/ \
   && rm -rf /tmp/gtest
 
+ENV CTEST_OUTPUT_ON_FAILURE=1
+
 COPY ./ /yp-spur
 RUN mkdir -p /yp-spur/build
 WORKDIR /yp-spur/build

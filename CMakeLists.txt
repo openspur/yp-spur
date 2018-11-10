@@ -60,7 +60,6 @@ if(USE_SSM)
 endif(USE_SSM)
 
 find_package(Readline)
-
 if(READLINE_FOUND)
   add_definitions(-DHAVE_LIBREADLINE=1)
 endif(READLINE_FOUND)

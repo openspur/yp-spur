@@ -27,10 +27,6 @@ protected:
     if (fp == NULL)
       throw std::runtime_error("Failed to create tmpfile");
   }
-  virtual void TearDown()
-  {
-    fclose(fp);
-  }
 };
 
 bool skipKeys(const int key)

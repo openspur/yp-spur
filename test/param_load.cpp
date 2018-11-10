@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <stdexcept>
+
 #include <gtest/gtest.h>
 
 #ifdef __cplusplus

@@ -1,11 +1,20 @@
 FROM ubuntu:xenial
 
-RUN apt-get -qq update && \
-	apt-get install -y --no-install-recommends build-essential cmake sudo && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+RUN apt-get -qq update \
+  && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev sudo \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV CTEST_OUTPUT_ON_FAILURE=1
+
+RUN mkdir -p /tmp/gtest \
+  && cd /tmp/gtest \
+  && cmake /usr/src/gtest \
+  && make \
+  && cp *.a /usr/lib/ \
+  && rm -rf /tmp/gtest
 
 COPY ./ /yp-spur
 RUN mkdir -p /yp-spur/build
 WORKDIR /yp-spur/build
-RUN cmake .. && make && sudo make install
+RUN cmake .. && make && make test && sudo make install

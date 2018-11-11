@@ -531,8 +531,17 @@ int set_paramptr( FILE * paramfile )
 	str_wp = 0;
 	motor_num = 0;
 	param_num = YP_PARAM_NUM;
-	while( ( c = getc( paramfile ) ) != EOF )
+	while( 1 )
 	{
+		int eof = 0;
+
+		c = getc( paramfile );
+		if( c == EOF )
+		{
+			eof = 1;
+			c = '\n';
+		}
+
 		switch ( read_state )
 		{
 		case 0:
@@ -753,7 +762,10 @@ int set_paramptr( FILE * paramfile )
 			}
 			break;
 		}
+		if( eof )
+			break;
 	}
+
 	fclose( paramfile );
 	if( g_P[YP_PARAM_VERSION][0] < YP_PARAM_REQUIRED_VERSION )
 	{

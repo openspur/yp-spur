@@ -73,6 +73,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
 )
 add_definitions(-DHAVE_CONFIG_H=1)
 
+find_package(GTest)
+
 
 # Set include dirs
 
@@ -104,6 +106,33 @@ endif(ENABLE_ALL_STATIC)
 
 add_subdirectory(auxlib)
 add_subdirectory(samples)
+
+
+# Enable gtest
+
+if(GTEST_FOUND)
+  enable_testing()
+
+  add_executable(param_load_test
+    test/param_load.cpp
+    src/adinput.c
+    src/communication.c
+    src/odometry.c
+    src/param.c
+    src/serial.c
+    src/ssm_spur_handler.c
+    src/utility.c
+    src/yprintf.c
+  )
+  target_link_libraries(param_load_test
+    ${GTEST_LIBRARIES}
+    ${THREAD_LIBRARIES}
+    carte2d${TARGET_STATIC_POSTFIX}
+    formula-calc${TARGET_STATIC_POSTFIX}
+  )
+
+  add_test(YPSpurParamTest param_load_test)
+endif(GTEST_FOUND)
 
 
 # Build coordinator and utilities

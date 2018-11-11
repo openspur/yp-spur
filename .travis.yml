@@ -10,8 +10,9 @@ before_install:
   - sudo apt-get update -y
   - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 g++-mingw-w64-x86-64 g++-mingw-w64-i686
 script:
-  - docker build -t yp-spur:latest -f Dockerfile.xenial --pull=true ${TRAVIS_BUILD_DIR}
+  - docker build -t yp-spur:xenial -f Dockerfile.xenial --pull=true ${TRAVIS_BUILD_DIR}
   - docker build -t yp-spur:trusty -f Dockerfile.trusty --pull=true ${TRAVIS_BUILD_DIR}
+  - docker build -t yp-spur:bionic -f Dockerfile.bionic --pull=true ${TRAVIS_BUILD_DIR}
   - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
   - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
 

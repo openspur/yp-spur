@@ -133,7 +133,7 @@ if(GTEST_FOUND)
     formula-calc${TARGET_STATIC_POSTFIX}
   )
 
-  add_test(UnitTests param_load_test)
+  add_test(YPSpurParamTest param_load_test)
 endif(GTEST_FOUND)
 
 

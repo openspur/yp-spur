@@ -13,8 +13,8 @@ script:
   - docker build -t yp-spur:xenial -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION=xenial ${TRAVIS_BUILD_DIR}
   - docker build -t yp-spur:trusty -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION=trusty ${TRAVIS_BUILD_DIR}
   - docker build -t yp-spur:bionic -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION=bionic ${TRAVIS_BUILD_DIR}
-  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
-  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
+  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make -j && make install)
+  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make -j && make install)
 
 before_deploy:
   - sudo apt-get install -y npm

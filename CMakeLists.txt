@@ -50,6 +50,7 @@ if(CMAKE_THREAD_LIBS_INIT)
   set(THREAD_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} ${THREAD_LIBRARIES})
 endif(CMAKE_THREAD_LIBS_INIT)
 
+
 find_package(PkgConfig)
 if(PKGCONFIG_FOUND)
   set(HAVE_PKG_CONFIG 1)
@@ -59,10 +60,11 @@ if(USE_SSM)
   find_package(SSM)
 endif(USE_SSM)
 
-find_package(Readline)
-if(READLINE_FOUND)
+set(READLINE_LIBRARIES "")
+find_library(READLINE_LIBRARIES readline)
+if(READLINE_LIBRARIES )
   add_definitions(-DHAVE_LIBREADLINE=1)
-endif(READLINE_FOUND)
+endif(READLINE_LIBRARIES )
 
 include(CheckFunctionExists)
 check_function_exists(longjmp HAVE_LONGJMP)

@@ -40,12 +40,12 @@ script:
       (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install \
         && cd ${TRAVIS_BUILD_DIR}/build-win64 \
         && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. \
-        && make \
+        && make -j \
         && make install)
       (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install \
         && cd ${TRAVIS_BUILD_DIR}/build-win32 \
         && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. \
-        && make \
+        && make -j \
         && make install)
     fi
 

@@ -24,4 +24,3 @@ function(get_git_revision)
 	set(GIT_REVISION ${REVISION} PARENT_SCOPE)
 
 endfunction(get_git_revision)
-

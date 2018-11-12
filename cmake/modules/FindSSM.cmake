@@ -22,4 +22,3 @@ find_package_handle_standard_args(SSM
 	SSM_INCLUDE_DIRS
 	SSM_EXECUTABLE
 )
-

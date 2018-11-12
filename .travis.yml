@@ -18,7 +18,7 @@ env:
 
 before_install:
   - |
-    if [ ${USE_MINGW} == true ]; then
+    if [ x${USE_MINGW} == xtrue ]; then
       sudo apt-get update -y -qq
       sudo apt-get install -y --no-install-recommends \
         gcc-mingw-w64-x86-64 \
@@ -32,11 +32,11 @@ before_install:
 
 script:
   - |
-    if [ ${USE_DOCKER} == true ]; then
+    if [ x${USE_DOCKER} == xtrue ]; then
       docker build -t yp-spur:${UBUNTU_VERSION} -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION .
     fi
   - |
-    if [ ${USE_MINGW} == true ]; then
+    if [ x${USE_MINGW} == xtrue ]; then
       (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install \
         && cd ${TRAVIS_BUILD_DIR}/build-win64 \
         && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. \
@@ -51,7 +51,7 @@ script:
 
 before_deploy:
   - |
-    if [ ${USE_MINGW} == true ]; then
+    if [ x${USE_MINGW} == xtrue ]; then
       export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
       (cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI)
       (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
@@ -81,4 +81,4 @@ deploy:
     - packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip
   on:
     tags: true
-    condition: ${USE_MINGW} == true
+    condition: x${USE_MINGW} == xtrue

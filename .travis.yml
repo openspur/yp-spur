@@ -5,6 +5,10 @@ sudo: required
 language: c
 compiler: gcc
 
+branches:
+  only:
+    - master
+
 cache:
   - apt
   - npm

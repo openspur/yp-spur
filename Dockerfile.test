@@ -1,16 +1,16 @@
-FROM ubuntu:xenial
+ARG UBUNTU_VERSION=bionic
+FROM ubuntu:${UBUNTU_VERSION}
 
 RUN apt-get -qq update \
-  && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev sudo \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev
+# don't clean apt-cache to reuse later
 
 ENV CTEST_OUTPUT_ON_FAILURE=1
 
 RUN mkdir -p /tmp/gtest \
   && cd /tmp/gtest \
   && cmake /usr/src/gtest \
-  && make \
+  && make -j \
   && cp *.a /usr/lib/ \
   && rm -rf /tmp/gtest
 
@@ -19,4 +19,4 @@ ENV CTEST_OUTPUT_ON_FAILURE=1
 COPY ./ /yp-spur
 RUN mkdir -p /yp-spur/build
 WORKDIR /yp-spur/build
-RUN cmake .. && make && make test && sudo make install
+RUN cmake .. && make -j && make test && make install

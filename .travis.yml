@@ -1,34 +1,77 @@
-dist: trusty
+dist: xenial
+service: docker
 sudo: required
 
 language: c
 compiler: gcc
 
-service: docker
+branches:
+  only:
+    - master
+
+cache:
+  - apt
+  - npm
+
+env:
+  matrix:
+    - USE_DOCKER=true UBUNTU_VERSION=trusty
+    - USE_DOCKER=true UBUNTU_VERSION=xenial
+    - USE_DOCKER=true UBUNTU_VERSION=bionic
+    - USE_MINGW=true
 
 before_install:
-  - sudo apt-get update -y
-  - sudo apt-get install -y gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 g++-mingw-w64-x86-64 g++-mingw-w64-i686
+  - |
+    if [ x${USE_MINGW} == xtrue ]; then
+      sudo apt-get update -y -qq
+      sudo apt-get install -y --no-install-recommends \
+        gcc-mingw-w64-x86-64 \
+        gcc-mingw-w64-i686 \
+        g++-mingw-w64-x86-64 \
+        g++-mingw-w64-i686 \
+        npm
+      npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
+      npm install json
+    fi
+
 script:
-  - docker build -t yp-spur:xenial -f Dockerfile.xenial --pull=true ${TRAVIS_BUILD_DIR}
-  - docker build -t yp-spur:trusty -f Dockerfile.trusty --pull=true ${TRAVIS_BUILD_DIR}
-  - docker build -t yp-spur:bionic -f Dockerfile.bionic --pull=true ${TRAVIS_BUILD_DIR}
-  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install && cd ${TRAVIS_BUILD_DIR}/build-win64 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
-  - (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install && cd ${TRAVIS_BUILD_DIR}/build-win32 && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. && make && make install)
+  - |
+    if [ x${USE_DOCKER} == xtrue ]; then
+      docker build -t yp-spur:${UBUNTU_VERSION} -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION .
+    fi
+  - |
+    if [ x${USE_MINGW} == xtrue ]; then
+      (mkdir -p ${TRAVIS_BUILD_DIR}/build-win64/install \
+        && cd ${TRAVIS_BUILD_DIR}/build-win64 \
+        && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. \
+        && make -j \
+        && make install)
+      (mkdir -p ${TRAVIS_BUILD_DIR}/build-win32/install \
+        && cd ${TRAVIS_BUILD_DIR}/build-win32 \
+        && cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake -DCMAKE_INSTALL_PREFIX=`pwd`/install -DENABLE_ALL_STATIC=ON .. \
+        && make -j \
+        && make install)
+    fi
 
 before_deploy:
-  - sudo apt-get install -y npm
-  - sudo npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
-  - sudo npm install -g json
-  - export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
-  - (cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI)
-  - (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && unzip ../../$(basename $YPSPUR_GUI_URI))
-  - (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && unzip ../../$(basename $YPSPUR_GUI_URI))
-  - (cd ${TRAVIS_BUILD_DIR} && mkdir packages)
-  - (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ && zip -q ../../packages/yp-spur.win64.${TRAVIS_TAG}.zip -r $(ls))
-  - (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ && zip -q ../../packages/yp-spur.win32.${TRAVIS_TAG}.zip -r $(ls))
-  - (cd ${TRAVIS_BUILD_DIR}/build-win64/ && zip -q ../packages/yp-spur-samples.win64.${TRAVIS_TAG}.zip -r samples/run-test.exe)
-  - (cd ${TRAVIS_BUILD_DIR}/build-win32/ && zip -q ../packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip -r samples/run-test.exe)
+  - |
+    if [ x${USE_MINGW} == xtrue ]; then
+      export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
+      (cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI)
+      (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
+        && unzip ../../$(basename $YPSPUR_GUI_URI))
+      (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ \
+        && unzip ../../$(basename $YPSPUR_GUI_URI))
+      (cd ${TRAVIS_BUILD_DIR} && mkdir packages)
+      (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
+        && zip -q ../../packages/yp-spur.win64.${TRAVIS_TAG}.zip -r $(ls))
+      (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ \
+        && zip -q ../../packages/yp-spur.win32.${TRAVIS_TAG}.zip -r $(ls))
+      (cd ${TRAVIS_BUILD_DIR}/build-win64/ \
+        && zip -q ../packages/yp-spur-samples.win64.${TRAVIS_TAG}.zip -r samples/run-test.exe)
+      (cd ${TRAVIS_BUILD_DIR}/build-win32/ \
+        && zip -q ../packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip -r samples/run-test.exe)
+    fi
 
 deploy:
   provider: releases
@@ -42,3 +85,4 @@ deploy:
     - packages/yp-spur-samples.win32.${TRAVIS_TAG}.zip
   on:
     tags: true
+    condition: x${USE_MINGW} == xtrue

@@ -7,11 +7,7 @@
   <license>MIT</license>
 
   <buildtool_depend>cmake</buildtool_depend>
-
-  <build_depend>libreadline-dev</build_depend>
-
   <exec_depend>catkin</exec_depend>
-  <exec_depend>libreadline</exec_depend>
 
   <export>
     <build_type>cmake</build_type>

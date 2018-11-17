@@ -92,6 +92,18 @@ TEST(FormulaCalcTest, testFormulaCalculation)
     }
     formula_free(rpf);
     formula_free(rpf2);
+
+    ASSERT_EQ(formula("(TEST=5)*0.1+10.0", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_NEAR(ret, 10.5, 1e-6);
+    EXPECT_NEAR(test, 5.0, 1e-6);
+    formula_free(rpf);
+
+    ASSERT_EQ(formula("TEST=(10.0+5*0.1)", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_NEAR(ret, 10.5, 1e-6);
+    EXPECT_NEAR(test, 10.5, 1e-6);
+    formula_free(rpf);
   }
 }
 

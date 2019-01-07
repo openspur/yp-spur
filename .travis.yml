@@ -31,8 +31,8 @@ before_install:
         g++-mingw-w64-x86-64 \
         g++-mingw-w64-i686 \
         npm
-      npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
-      npm install json
+      sudo npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
+      sudo npm install -g json
     fi
 
 script:

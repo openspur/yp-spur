@@ -8,6 +8,7 @@ compiler: gcc
 branches:
   only:
     - master
+    - "/^[0-9]+\\.[0-9]+\\.[0-9]+/"
 
 cache:
   - apt

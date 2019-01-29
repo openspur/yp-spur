@@ -55,7 +55,7 @@
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 double g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
-struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+struct rpf_t* g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
 int g_param_init = 1;
@@ -90,7 +90,7 @@ double ischanged_p(YPSpur_param id, enum motor_id motor)
   return g_P_changed[id][motor];
 }
 
-double *pp(YPSpur_param id, enum motor_id motor)
+double* pp(YPSpur_param id, enum motor_id motor)
 {
   return &g_P[id][motor];
 }
@@ -116,7 +116,7 @@ int is_character(int c);
 int is_number(int c);
 
 /* 引数の説明 */
-void arg_help(int argc, char *argv[])
+void arg_help(int argc, char* argv[])
 {
   fprintf(stderr, "USAGE: %s [OPTION]...\n\n", argv[0]);
   fprintf(stderr, "  -v, --version            Display version info and exit.\n");
@@ -130,7 +130,7 @@ void arg_help(int argc, char *argv[])
 }
 
 /* 隠しコマンドの説明 */
-void arg_longhelp(int argc, char *argv[])
+void arg_longhelp(int argc, char* argv[])
 {
   arg_help(argc, argv);
   fprintf(stderr, "  -o, --show-odometry      Display estimated robot position.\n");
@@ -170,7 +170,7 @@ void param_help(void)
 }
 
 /* 引数の解析 */
-int arg_analyze(int argc, char *argv[])
+int arg_analyze(int argc, char* argv[])
 {
   int i;
 
@@ -235,7 +235,7 @@ int arg_analyze(int argc, char *argv[])
     {
       if (i + 1 < argc)
       {
-        char *pos;
+        char* pos;
 
         i++;
         g_param.admask = 0;
@@ -445,7 +445,7 @@ void param_calc()
 }
 
 /* パラメータファイルからの読み込み */
-int set_paramptr(FILE *paramfile)
+int set_paramptr(FILE* paramfile)
 {
   char param_names[YP_PARAM_NUM][20] = YP_PARAM_NAME;
   char param_names0[YP_PARAM_NUM][24] = YP_PARAM_NAME;
@@ -610,8 +610,8 @@ int set_paramptr(FILE *paramfile)
         }
         if (read_state != 3)
         {
-          char *num_start;
-          char *num_end = NULL;
+          char* num_start;
+          char* num_end = NULL;
           int num;
 
           param_num = YP_PARAM_NUM;
@@ -873,9 +873,9 @@ int set_paramptr(FILE *paramfile)
 }
 
 /* パラメータファイルからの読み込み */
-int set_param(char *filename, char *concrete_path)
+int set_param(char* filename, char* concrete_path)
 {
-  FILE *paramfile;
+  FILE* paramfile;
   paramfile = fopen(filename, "r");
 
   if (!paramfile)
@@ -883,8 +883,8 @@ int set_param(char *filename, char *concrete_path)
 #if HAVE_PKG_CONFIG
     char dir_name[256];
     char file_name[256];
-    char *pret;
-    FILE *fd;
+    char* pret;
+    FILE* fd;
 #endif  // HAVE_PKG_CONFIG
 
     yprintf(OUTPUT_LV_PARAM, "Warn: File [%s] is not exist.\n", filename);
@@ -943,21 +943,21 @@ int set_param(char *filename, char *concrete_path)
   return set_paramptr(paramfile);
 }
 
-void init_param_update_thread(pthread_t *thread, char *filename)
+void init_param_update_thread(pthread_t* thread, char* filename)
 {
   g_param.parameter_applying = 0;
-  if (pthread_create(thread, NULL, (void *)param_update, filename) != 0)
+  if (pthread_create(thread, NULL, (void*)param_update, filename) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create command thread\n");
   }
 }
 
-void param_update_loop_cleanup(void *data)
+void param_update_loop_cleanup(void* data)
 {
   yprintf(OUTPUT_LV_MODULE, "Parameter updater stopped.\n");
 }
 
-void param_update(void *filename)
+void param_update(void* filename)
 {
   struct stat prev_status;
 
@@ -1128,11 +1128,21 @@ void calc_param_inertia2ff(void)
 // モータパラメータの送信
 void set_param_motor(void)
 {
-  double tvc;  // 変換用定数
   int j;
   // モータのパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
+    double tvc;  // 変換用定数
+    int enc_changed = 0;
+    double enc_rev;
+
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
+    {
+      enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+      enc_changed = 1;
+    }
+
     if (!g_param.motor_enable[j])
       continue;
     if (ischanged_p(YP_PARAM_VOLT, j))
@@ -1148,10 +1158,10 @@ void set_param_motor(void)
       parameter_set(PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j]);
     }
     if (ischanged_p(YP_PARAM_PHASE_OFFSET, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
+        enc_changed)
     {
       parameter_set(PARAM_phase_offset, j,
-                    g_P[YP_PARAM_PHASE_OFFSET][j] * g_P[YP_PARAM_COUNT_REV][j] / (2.0 * M_PI));
+                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev / (2.0 * M_PI));
     }
     if (ischanged_p(YP_PARAM_ENCODER_TYPE, j))
     {
@@ -1182,13 +1192,13 @@ void set_param_motor(void)
 
     if (ischanged_p(YP_PARAM_PWM_MAX, j) ||
         ischanged_p(YP_PARAM_MOTOR_VC, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        enc_changed ||
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
-                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * g_P[YP_PARAM_COUNT_REV][j] *
+                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * enc_rev *
                               g_P[YP_PARAM_CYCLE][j])));
     }
 
@@ -1214,9 +1224,9 @@ void set_param_motor(void)
     }
 
     // cnt/ms -> rad/s = cnt/ms * ms/s * rad/cnt = cnt/ms * 2pi/COUNT_REV / CYCLE
-    if (ischanged_p(YP_PARAM_COUNT_REV, j) || ischanged_p(YP_PARAM_CYCLE, j))
+    if (enc_changed || ischanged_p(YP_PARAM_CYCLE, j))
     {
-      tvc = (2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j]) / g_P[YP_PARAM_CYCLE][j];
+      tvc = (2.0 * M_PI / enc_rev) / g_P[YP_PARAM_CYCLE][j];
       if (ischanged_p(YP_PARAM_TORQUE_VISCOS, j) || ischanged_p(YP_PARAM_TORQUE_UNIT, j))
       {
         parameter_set(PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc);
@@ -1262,6 +1272,10 @@ void set_param_motor(void)
     if (ischanged_p(YP_PARAM_COUNT_REV, j))
     {
       parameter_set(PARAM_enc_rev, j, g_P[YP_PARAM_COUNT_REV][j]);
+    }
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j))
+    {
+      parameter_set(PARAM_enc_denominator, j, g_P[YP_PARAM_ENCODER_DENOMINATOR][j]);
     }
 
     // Sleep to keep bandwidth margin
@@ -1332,15 +1346,25 @@ void set_param_velocity(void)
   // PI制御のパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
+    int enc_changed = 0;
+    double enc_rev;
+
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
+    {
+      enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+      enc_changed = 1;
+    }
+
     if (!g_param.motor_enable[j])
       continue;
 
     if (g_param.device_version > 6)
     {
       int ff_changed = 0;
-      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
       if (ischanged_p(YP_PARAM_TORQUE_UNIT, j) ||
-          ischanged_p(YP_PARAM_COUNT_REV, j) ||
+          enc_changed ||
           ischanged_p(YP_PARAM_GEAR, j))
       {
         ff_changed = 1;
@@ -1370,13 +1394,13 @@ void set_param_velocity(void)
       parameter_set(PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j]);
     // 各種制限
     if (ischanged_p(YP_PARAM_INTEGRAL_MAX, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        enc_changed ||
         ischanged_p(YP_PARAM_GEAR, j))
     {
       parameter_set(PARAM_int_max, j,
-                    g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+                    g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
       parameter_set(PARAM_int_min, j,
-                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
     }
   }
 

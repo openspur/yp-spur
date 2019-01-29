@@ -187,12 +187,16 @@ void apply_motor_speed(SpurUserParamsPtr spur)
       case MOTOR_CONTROL_VEHICLE:
         if (option(OPTION_HIGH_PREC))
         {
-          v = (double)(16 * spur->wheel_vel_smooth[i] * p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) / (2 * M_PI));
+          v = (double)(16 * spur->wheel_vel_smooth[i] *
+                       p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) /
+                       (2 * M_PI * p(YP_PARAM_ENCODER_DENOMINATOR, i)));
           parameter_set(PARAM_w_ref_highprec, i, v);
         }
         else
         {
-          v = (double)(spur->wheel_vel_smooth[i] * p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) / (2 * M_PI));
+          v = (double)(spur->wheel_vel_smooth[i] *
+                       p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) /
+                       (2 * M_PI * p(YP_PARAM_ENCODER_DENOMINATOR, i)));
           parameter_set(PARAM_w_ref, i, v);
         }
         break;
@@ -308,7 +312,7 @@ void wheel_angle(OdometryPtr odm, SpurUserParamsPtr spur)
   }
 }
 
-void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double *torque)
+void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque)
 {
   int i;
   ParametersPtr param;
@@ -448,7 +452,7 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
   return tilt;
 }
 
-void control_loop_cleanup(void *data)
+void control_loop_cleanup(void* data)
 {
   yprintf(OUTPUT_LV_MODULE, "Trajectory control loop stopped.\n");
 }
@@ -647,9 +651,9 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
 }
 
 /* すれっどの初期化 */
-void init_control_thread(pthread_t *thread)
+void init_control_thread(pthread_t* thread)
 {
-  if (pthread_create(thread, NULL, (void *)control_loop, NULL) != 0)
+  if (pthread_create(thread, NULL, (void*)control_loop, NULL) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create control_loop thread\n");
   }

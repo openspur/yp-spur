@@ -1021,11 +1021,13 @@ int apply_robot_params()
     g_param_init = 0;
   }
   /* モータのパラメータ */
-  set_param_motor();
+  if (set_param_motor() < 1)
+    return 0;
   yp_usleep(30000);
 
   /* 速度制御パラメータ */
-  set_param_velocity();
+  if (set_param_velocity() < 1)
+    return 0;
   yp_usleep(100000);
 
   return 1;
@@ -1126,7 +1128,7 @@ void calc_param_inertia2ff(void)
 }
 
 // モータパラメータの送信
-void set_param_motor(void)
+int set_param_motor(void)
 {
   int j;
   // モータのパラメータ
@@ -1275,15 +1277,21 @@ void set_param_motor(void)
     }
     if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j))
     {
+      if (g_param.device_version <= 9)
+      {
+        yprintf(OUTPUT_LV_ERROR, "ERROR: the device doesn't support ENCODER_DENOMINATOR\n");
+        return 0;
+      }
       parameter_set(PARAM_enc_denominator, j, g_P[YP_PARAM_ENCODER_DENOMINATOR][j]);
     }
 
     // Sleep to keep bandwidth margin
     yp_usleep(20000);
   }
+  return 1;
 }
 
-void set_param_velocity(void)
+int set_param_velocity(void)
 {
   int j;
 
@@ -1312,6 +1320,7 @@ void set_param_velocity(void)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_A fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 0);
+        return 0;
       }
       parameter_set(PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr);
     }
@@ -1335,6 +1344,7 @@ void set_param_velocity(void)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_B fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 1);
+        return 0;
       }
       parameter_set(PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl);
     }
@@ -1377,6 +1387,7 @@ void set_param_velocity(void)
         {
           yprintf(OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] fixed point value underflow\n", j);
           yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", j);
+          return 0;
         }
         parameter_set(PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff);
       }
@@ -1411,4 +1422,5 @@ void set_param_velocity(void)
       continue;
     parameter_set(PARAM_watch_dog_limit, j, 300);
   }
+  return 1;
 }

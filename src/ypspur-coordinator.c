@@ -122,7 +122,7 @@ void escape_road(void)
 }
 
 /* main */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   pthread_t command_thread;
   pthread_t control_thread;
@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
   command_thread_en = 0;
   do
   {
-    FILE *temp_paramfile = NULL;
+    FILE* temp_paramfile = NULL;
     quit = 0;
 
     yprintf(OUTPUT_LV_PROCESS, "Device Information\n");
@@ -428,7 +428,11 @@ int main(int argc, char *argv[])
 
       if (!(option(OPTION_PARAM_CONTROL)))
       {
-        apply_robot_params();
+        if (apply_robot_params() < 1)
+        {
+          serial_close();
+          break;
+        }
       }
 
       /* サーボをかける */

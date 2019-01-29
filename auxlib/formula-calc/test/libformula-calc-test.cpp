@@ -30,74 +30,86 @@
 
 #include <formula-calc.h>
 
-TEST( FormulaCalcTest, testFormulaCalculation )
+TEST(FormulaCalcTest, testFormulaCalculation)
 {
-	int i;
+  int i;
 
-	for(i = 0; i < 5; i ++)
-	{
-		struct rpf_t *rpf;
-		struct rpf_t *rpf2;
-		double test = 0;
-		struct variables_t variable[ 2 ] =
-		{
-			{ "TEST", &test },
-			{ NULL, NULL }
-		};
-		float ret;
+  for (i = 0; i < 5; i++)
+  {
+    struct rpf_t *rpf;
+    struct rpf_t *rpf2;
+    double test = 0;
+    struct variables_t variable[2] =
+        {
+          { "TEST", &test },
+          { NULL, NULL }
+        };
+    float ret;
 
-		ASSERT_EQ( formula( "1+1", &rpf, variable ), 1 );
-		ret = formula_eval( rpf );
-		EXPECT_EQ( ret, 2.0 );
-		rpf2 = formula_optimize( rpf );
-		ret = formula_eval( rpf2 );
-		EXPECT_EQ( ret, 2.0 );
-		formula_free( rpf );
-		formula_free( rpf2 );
+    ASSERT_EQ(formula("1+1", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_EQ(ret, 2.0);
+    rpf2 = formula_optimize(rpf);
+    ret = formula_eval(rpf2);
+    EXPECT_EQ(ret, 2.0);
+    formula_free(rpf);
+    formula_free(rpf2);
 
-		ASSERT_EQ( formula( "abc+1", &rpf, variable ), 0 );
+    ASSERT_EQ(formula("abc+1", &rpf, variable), 0);
 
-		ASSERT_EQ( formula( "1+2+3+4/8+2*3", &rpf, variable ), 1 );
-		ret = formula_eval( rpf );
-		EXPECT_EQ( ret, 12.5 );
-		rpf2 = formula_optimize( rpf );
-		ret = formula_eval( rpf2 );
-		EXPECT_EQ( ret, 12.5 );
-		formula_free( rpf );
-		formula_free( rpf2 );
+    ASSERT_EQ(formula("1+2+3+4/8+2*3", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_EQ(ret, 12.5);
+    rpf2 = formula_optimize(rpf);
+    ret = formula_eval(rpf2);
+    EXPECT_EQ(ret, 12.5);
+    formula_free(rpf);
+    formula_free(rpf2);
 
-		ASSERT_EQ( formula( "cos(3.1416)+1", &rpf, variable ), 1 );
-		ret = formula_eval( rpf );
-		EXPECT_LT( fabs(ret), 1e-3 );
-		rpf2 = formula_optimize( rpf );
-		ret = formula_eval( rpf2 );
-		EXPECT_LT( fabs(ret), 1e-3 );
-		formula_free( rpf );
-		formula_free( rpf2 );
+    ASSERT_EQ(formula("cos(3.1416)+1", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_LT(fabs(ret), 1e-3);
+    rpf2 = formula_optimize(rpf);
+    ret = formula_eval(rpf2);
+    EXPECT_LT(fabs(ret), 1e-3);
+    formula_free(rpf);
+    formula_free(rpf2);
 
-		ASSERT_EQ( formula( "(TEST+1)*2-1", &rpf, variable ), 1 );
+    ASSERT_EQ(formula("(TEST+1)*2-1", &rpf, variable), 1);
 
-		for( test = 0; test < 4; test++ )
-		{
-			ret = formula_eval( rpf );
-			EXPECT_EQ( ret, (test + 1) * 2.0 - 1.0 );
-		}
+    for (test = 0; test < 4; test++)
+    {
+      ret = formula_eval(rpf);
+      EXPECT_EQ(ret, (test + 1) * 2.0 - 1.0);
+    }
 
-		rpf2 = formula_optimize( rpf );
+    rpf2 = formula_optimize(rpf);
 
-		for( test = 0; test < 4; test++ )
-		{
-			ret = formula_eval( rpf2 );
-			EXPECT_EQ( ret, (test + 1) * 2.0 - 1.0 );
-		}
-		formula_free( rpf );
-		formula_free( rpf2 );
-	}
+    for (test = 0; test < 4; test++)
+    {
+      ret = formula_eval(rpf2);
+      EXPECT_EQ(ret, (test + 1) * 2.0 - 1.0);
+    }
+    formula_free(rpf);
+    formula_free(rpf2);
+
+    ASSERT_EQ(formula("(TEST=5)*0.1+10.0", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_NEAR(ret, 10.5, 1e-6);
+    EXPECT_NEAR(test, 5.0, 1e-6);
+    formula_free(rpf);
+
+    ASSERT_EQ(formula("TEST=(10.0+5*0.1)", &rpf, variable), 1);
+    ret = formula_eval(rpf);
+    EXPECT_NEAR(ret, 10.5, 1e-6);
+    EXPECT_NEAR(test, 10.5, 1e-6);
+    formula_free(rpf);
+  }
 }
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
-    testing::InitGoogleTest( &argc, argv );
+  testing::InitGoogleTest(&argc, argv);
 
-    return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 }

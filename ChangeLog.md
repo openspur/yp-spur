@@ -1,5 +1,13 @@
 # ChangeLog for YP-Spur
 
+## 1.15.3
+- Fix finding readline in cmake (#75)
+- Enable matrix build on Travis (#77)
+- Run test on Ubuntu Bionic (#76)
+- Fix reading last parameter line without newline (#74)
+- Fix joint command names in manpage (#71)
+- Update manpage of libypspur (#70)
+
 ## 1.15.2
 - Add exec_depend to catkin for ROS build (#64)
 

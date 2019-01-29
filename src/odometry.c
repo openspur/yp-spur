@@ -123,7 +123,7 @@ CSptr get_cs_pointer(YPSpur_cs cs)
   return NULL;
 }
 
-void cstrans_xy(YPSpur_cs src, YPSpur_cs dest, double* x, double* y, double* theta)
+void cstrans_xy(YPSpur_cs src, YPSpur_cs dest, double *x, double *y, double *theta)
 {
   if (src == dest)
     return;
@@ -136,14 +136,14 @@ void set_cs(YPSpur_cs cs, double x, double y, double theta)
 }
 
 /* オドメトリ計算 */
-void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
+void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
 {
   double v, w;
   double wvel[YP_PARAM_MAX_MOTOR_NUM], mvel[YP_PARAM_MAX_MOTOR_NUM];
   double mtorque[YP_PARAM_MAX_MOTOR_NUM], wtorque[YP_PARAM_MAX_MOTOR_NUM];
   double volt[YP_PARAM_MAX_MOTOR_NUM], vc[YP_PARAM_MAX_MOTOR_NUM];
   double torque_trans, torque_angular;
-  Parameters* param;
+  Parameters *param;
   param = get_param_ptr();
 
   int i;
@@ -232,7 +232,7 @@ void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
 /* 割り込み型データの処理 */
 void process_int(OdometryPtr xp, int param_id, int id, int value)
 {
-  Parameters* param;
+  Parameters *param;
   param = get_param_ptr();
 
   if (!param->motor_enable[id])
@@ -391,7 +391,7 @@ double time_synchronize(double receive_time, int readnum, int wp)
 }
 
 /* シリアル受信処理 */
-int odometry_receive(char* buf, int len, double receive_time, void* data)
+int odometry_receive(char *buf, int len, double receive_time, void *data)
 {
   static int com_wp = 0;
   static int receive_count = 0;
@@ -416,7 +416,7 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
   Short_2Char pwm1_log[100];
   Short_2Char pwm2_log[100];
   int ad_log[100][8];
-  Parameters* param;
+  Parameters *param;
 
   param = get_param_ptr();
 
@@ -446,7 +446,7 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
       unsigned char data[48];
 
       /* デコード処理 */
-      decoded_len = decord((unsigned char*)com_buf, com_wp, (unsigned char*)data, 48);
+      decoded_len = decord((unsigned char *)com_buf, com_wp, (unsigned char *)data, 48);
       if ((mode == ISOCHRONOUS && decoded_len != decoded_len_req) ||
           (mode == INTERRUPT && decoded_len != 6))
       {
@@ -547,7 +547,7 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
 int odometry_receive_loop(void)
 {
   int ret;
-  Parameters* param;
+  Parameters *param;
   param = get_param_ptr();
 
   g_interval = SER_INTERVAL;

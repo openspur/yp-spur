@@ -504,9 +504,9 @@ struct ipcmd_t
   int connection_error;
   pid_t pid;
   pid_t pids[YPSPUR_MAX_SOCKET];
-  int (*send)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-  int (*recv)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-  void (*flush)(struct ipcmd_t* ipcmd);
+  int (*send)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
+  int (*recv)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
+  void (*flush)(struct ipcmd_t *ipcmd);
 };
 
 #define YPSPUR_MSQ_KEY 0x7045

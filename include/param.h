@@ -74,7 +74,7 @@ typedef enum
   OUTPUT_LV_DEBUG = 16,
 } ParamOutputLv;
 
-typedef struct _parameters* ParametersPtr;
+typedef struct _parameters *ParametersPtr;
 typedef struct _parameters
 {
   char parameter_filename[132];
@@ -93,12 +93,12 @@ typedef struct _parameters
   int parameter_applying;
 } Parameters;
 
-int arg_analyze(int argc, char* argv[]);
-void arg_help(int argc, char* argv[]);
+int arg_analyze(int argc, char *argv[]);
+void arg_help(int argc, char *argv[]);
 void param_help(void);
-void arg_longhelp(int argc, char* argv[]);
-int set_param(char* filename, char* concrete_path);
-int set_paramptr(FILE* paramfile);
+void arg_longhelp(int argc, char *argv[]);
+int set_param(char *filename, char *concrete_path);
+int set_paramptr(FILE *paramfile);
 void calc_param_inertia2ff(void);
 int set_param_motor(void);
 int set_param_velocity(void);
@@ -111,14 +111,14 @@ void enable_state(YPSpur_state id);
 void disable_state(YPSpur_state id);
 double p(YPSpur_param id, enum motor_id motor);
 double isset_p(YPSpur_param id, enum motor_id motor);
-double* pp(YPSpur_param id, enum motor_id motor);
+double *pp(YPSpur_param id, enum motor_id motor);
 ParametersPtr get_param_ptr();
 int option(ParamOptions option);
 ParamOutputLv output_lv(void);
 void param_calc();
 
-void param_update(void* filename);
-void init_param_update_thread(pthread_t* thread, char* filename);
-void param_update_loop_cleanup(void* data);
+void param_update(void *filename);
+void init_param_update_thread(pthread_t *thread, char *filename);
+void param_update_loop_cleanup(void *data);
 
 #endif  // PARAM_H

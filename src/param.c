@@ -839,22 +839,34 @@ int set_paramptr(FILE *paramfile)
 
     if (!g_P_set[YP_PARAM_VEHICLE_CONTROL][j])
     {
+      double default_value;
       if (j < 2)
-        g_P[YP_PARAM_VEHICLE_CONTROL][j] = 1.0;
+        default_value = 1.0;
       else
-        g_P[YP_PARAM_VEHICLE_CONTROL][j] = 0.0;
-      g_P_changed[YP_PARAM_VEHICLE_CONTROL][j] = 1;
+        default_value = 0.0;
+
+      if (g_P[YP_PARAM_VEHICLE_CONTROL][j] != default_value)
+        g_P_changed[YP_PARAM_VEHICLE_CONTROL][j] = 1;
+      g_P[YP_PARAM_VEHICLE_CONTROL][j] = default_value;
     }
 
     if (!g_P_set[YP_PARAM_ENCODER_TYPE][j])
     {
+      if (g_P[YP_PARAM_ENCODER_TYPE][j] != 2.0)
+        g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
       g_P[YP_PARAM_ENCODER_TYPE][j] = 2.0;
-      g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
     }
     if (!g_P_set[YP_PARAM_INDEX_GEAR][j])
     {
+      if (g_P[YP_PARAM_INDEX_GEAR][j] != 1.0)
+        g_P_changed[YP_PARAM_INDEX_GEAR][j] = 1;
       g_P[YP_PARAM_INDEX_GEAR][j] = 1.0;
-      g_P_changed[YP_PARAM_INDEX_GEAR][j] = 1;
+    }
+    if (!g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])
+    {
+      if (g_P[YP_PARAM_ENCODER_DENOMINATOR][j] != 1.0)
+        g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] = 1;
+      g_P[YP_PARAM_ENCODER_DENOMINATOR][j] = 1.0;
     }
   }
 
@@ -1138,10 +1150,10 @@ int set_param_motor(void)
     int enc_changed = 0;
     double enc_rev;
 
+    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
     if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
         ischanged_p(YP_PARAM_COUNT_REV, j))
     {
-      enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
       enc_changed = 1;
     }
 
@@ -1275,7 +1287,8 @@ int set_param_motor(void)
     {
       parameter_set(PARAM_enc_rev, j, g_P[YP_PARAM_COUNT_REV][j]);
     }
-    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j))
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) &&
+        isset_p(YP_PARAM_ENCODER_DENOMINATOR, j))
     {
       if (g_param.device_version <= 9)
       {
@@ -1359,10 +1372,10 @@ int set_param_velocity(void)
     int enc_changed = 0;
     double enc_rev;
 
+    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
     if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
         ischanged_p(YP_PARAM_COUNT_REV, j))
     {
-      enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
       enc_changed = 1;
     }
 

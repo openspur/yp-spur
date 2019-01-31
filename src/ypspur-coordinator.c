@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
       yprintf(OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename);
       if (!set_param(param->parameter_filename, paramfile))
       {
-        yprintf(OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n");
+        yprintf(OUTPUT_LV_ERROR, "Error: Cannot load parameter file.\n");
         return 0;
       }
     }
@@ -462,6 +462,11 @@ int main(int argc, char *argv[])
     }
     if (option(OPTION_UPDATE_PARAM))
     {
+      yprintf(OUTPUT_LV_WARNING, "==================== Warning! ====================\n");
+      yprintf(OUTPUT_LV_WARNING, "Running in automatic parameter update mode.\n");
+      yprintf(OUTPUT_LV_WARNING, "Keep in mind that the coordinator doesn't stop\n");
+      yprintf(OUTPUT_LV_WARNING, "even if the parameter file gets invalid.\n");
+      yprintf(OUTPUT_LV_WARNING, "==================================================\n");
       init_param_update_thread(&update_thread, paramfile);
       update_thread_en = 1;
     }

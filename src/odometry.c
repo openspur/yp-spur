@@ -271,8 +271,27 @@ void process_int(OdometryPtr xp, int param_id, int id, int value)
       xp->wang[id] = round((xp->wang[id] - ref_ang - ang_diff) / (2.0 * M_PI * index_ratio)) *
                          2.0 * M_PI * index_ratio +
                      ref_ang + ang_diff;
+      break;
     }
-    break;
+    case INT_error_state:
+    {
+      if (value != ERROR_NONE)
+        yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
+      if (value & ERROR_LOW_VOLTAGE)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
+      if (value & ERROR_LOW_VOLTAGE)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
+      if (value & ERROR_HALL1)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL1 ");
+      if (value & ERROR_HALL2)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL2 ");
+      if (value & ERROR_WATCHDOG)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
+
+      if (value != ERROR_NONE)
+        yprintf(OUTPUT_LV_ERROR, "\n");
+      break;
+    }
     default:
       yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param, id, value);
       break;

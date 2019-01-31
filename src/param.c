@@ -1333,7 +1333,6 @@ int set_param_velocity(void)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_A fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 0);
-        return 0;
       }
       parameter_set(PARAM_p_A, 0, g_P[YP_PARAM_GAIN_A][0] * ffr);
     }
@@ -1357,7 +1356,6 @@ int set_param_velocity(void)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_B fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 1);
-        return 0;
       }
       parameter_set(PARAM_p_B, 0, g_P[YP_PARAM_GAIN_B][0] * ffl);
     }
@@ -1400,7 +1398,6 @@ int set_param_velocity(void)
         {
           yprintf(OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] fixed point value underflow\n", j);
           yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", j);
-          return 0;
         }
         parameter_set(PARAM_p_inertia_self, j, g_P[YP_PARAM_INERTIA_SELF][j] * ff);
       }

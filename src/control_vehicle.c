@@ -187,12 +187,16 @@ void apply_motor_speed(SpurUserParamsPtr spur)
       case MOTOR_CONTROL_VEHICLE:
         if (option(OPTION_HIGH_PREC))
         {
-          v = (double)(16 * spur->wheel_vel_smooth[i] * p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) / (2 * M_PI));
+          v = (double)(16 * spur->wheel_vel_smooth[i] *
+                       p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) /
+                       (2 * M_PI * p(YP_PARAM_ENCODER_DENOMINATOR, i)));
           parameter_set(PARAM_w_ref_highprec, i, v);
         }
         else
         {
-          v = (double)(spur->wheel_vel_smooth[i] * p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) / (2 * M_PI));
+          v = (double)(spur->wheel_vel_smooth[i] *
+                       p(YP_PARAM_GEAR, i) * p(YP_PARAM_COUNT_REV, i) * p(YP_PARAM_CYCLE, i) /
+                       (2 * M_PI * p(YP_PARAM_ENCODER_DENOMINATOR, i)));
           parameter_set(PARAM_w_ref, i, v);
         }
         break;

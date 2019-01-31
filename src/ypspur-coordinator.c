@@ -428,7 +428,11 @@ int main(int argc, char *argv[])
 
       if (!(option(OPTION_PARAM_CONTROL)))
       {
-        apply_robot_params();
+        if (apply_robot_params() < 1)
+        {
+          serial_close();
+          break;
+        }
       }
 
       /* サーボをかける */

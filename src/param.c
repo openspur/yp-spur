@@ -839,22 +839,34 @@ int set_paramptr(FILE *paramfile)
 
     if (!g_P_set[YP_PARAM_VEHICLE_CONTROL][j])
     {
+      double default_value;
       if (j < 2)
-        g_P[YP_PARAM_VEHICLE_CONTROL][j] = 1.0;
+        default_value = 1.0;
       else
-        g_P[YP_PARAM_VEHICLE_CONTROL][j] = 0.0;
-      g_P_changed[YP_PARAM_VEHICLE_CONTROL][j] = 1;
+        default_value = 0.0;
+
+      if (g_P[YP_PARAM_VEHICLE_CONTROL][j] != default_value)
+        g_P_changed[YP_PARAM_VEHICLE_CONTROL][j] = 1;
+      g_P[YP_PARAM_VEHICLE_CONTROL][j] = default_value;
     }
 
     if (!g_P_set[YP_PARAM_ENCODER_TYPE][j])
     {
+      if (g_P[YP_PARAM_ENCODER_TYPE][j] != 2.0)
+        g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
       g_P[YP_PARAM_ENCODER_TYPE][j] = 2.0;
-      g_P_changed[YP_PARAM_ENCODER_TYPE][j] = 1;
     }
     if (!g_P_set[YP_PARAM_INDEX_GEAR][j])
     {
+      if (g_P[YP_PARAM_INDEX_GEAR][j] != 1.0)
+        g_P_changed[YP_PARAM_INDEX_GEAR][j] = 1;
       g_P[YP_PARAM_INDEX_GEAR][j] = 1.0;
-      g_P_changed[YP_PARAM_INDEX_GEAR][j] = 1;
+    }
+    if (!g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])
+    {
+      if (g_P[YP_PARAM_ENCODER_DENOMINATOR][j] != 1.0)
+        g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] = 1;
+      g_P[YP_PARAM_ENCODER_DENOMINATOR][j] = 1.0;
     }
   }
 
@@ -1021,11 +1033,13 @@ int apply_robot_params()
     g_param_init = 0;
   }
   /* モータのパラメータ */
-  set_param_motor();
+  if (set_param_motor() < 1)
+    return 0;
   yp_usleep(30000);
 
   /* 速度制御パラメータ */
-  set_param_velocity();
+  if (set_param_velocity() < 1)
+    return 0;
   yp_usleep(100000);
 
   return 1;
@@ -1126,13 +1140,23 @@ void calc_param_inertia2ff(void)
 }
 
 // モータパラメータの送信
-void set_param_motor(void)
+int set_param_motor(void)
 {
-  double tvc;  // 変換用定数
   int j;
   // モータのパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
+    double tvc;  // 変換用定数
+    int enc_changed = 0;
+    double enc_rev;
+
+    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
+    {
+      enc_changed = 1;
+    }
+
     if (!g_param.motor_enable[j])
       continue;
     if (ischanged_p(YP_PARAM_VOLT, j))
@@ -1148,10 +1172,10 @@ void set_param_motor(void)
       parameter_set(PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j]);
     }
     if (ischanged_p(YP_PARAM_PHASE_OFFSET, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
+        enc_changed)
     {
       parameter_set(PARAM_phase_offset, j,
-                    g_P[YP_PARAM_PHASE_OFFSET][j] * g_P[YP_PARAM_COUNT_REV][j] / (2.0 * M_PI));
+                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev / (2.0 * M_PI));
     }
     if (ischanged_p(YP_PARAM_ENCODER_TYPE, j))
     {
@@ -1182,13 +1206,13 @@ void set_param_motor(void)
 
     if (ischanged_p(YP_PARAM_PWM_MAX, j) ||
         ischanged_p(YP_PARAM_MOTOR_VC, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        enc_changed ||
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
-                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * g_P[YP_PARAM_COUNT_REV][j] *
+                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * enc_rev *
                               g_P[YP_PARAM_CYCLE][j])));
     }
 
@@ -1214,9 +1238,9 @@ void set_param_motor(void)
     }
 
     // cnt/ms -> rad/s = cnt/ms * ms/s * rad/cnt = cnt/ms * 2pi/COUNT_REV / CYCLE
-    if (ischanged_p(YP_PARAM_COUNT_REV, j) || ischanged_p(YP_PARAM_CYCLE, j))
+    if (enc_changed || ischanged_p(YP_PARAM_CYCLE, j))
     {
-      tvc = (2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j]) / g_P[YP_PARAM_CYCLE][j];
+      tvc = (2.0 * M_PI / enc_rev) / g_P[YP_PARAM_CYCLE][j];
       if (ischanged_p(YP_PARAM_TORQUE_VISCOS, j) || ischanged_p(YP_PARAM_TORQUE_UNIT, j))
       {
         parameter_set(PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc);
@@ -1263,13 +1287,24 @@ void set_param_motor(void)
     {
       parameter_set(PARAM_enc_rev, j, g_P[YP_PARAM_COUNT_REV][j]);
     }
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) &&
+        isset_p(YP_PARAM_ENCODER_DENOMINATOR, j))
+    {
+      if (g_param.device_version <= 9)
+      {
+        yprintf(OUTPUT_LV_ERROR, "ERROR: the device doesn't support ENCODER_DENOMINATOR\n");
+        return 0;
+      }
+      parameter_set(PARAM_enc_denominator, j, g_P[YP_PARAM_ENCODER_DENOMINATOR][j]);
+    }
 
     // Sleep to keep bandwidth margin
     yp_usleep(20000);
   }
+  return 1;
 }
 
-void set_param_velocity(void)
+int set_param_velocity(void)
 {
   int j;
 
@@ -1294,7 +1329,7 @@ void set_param_velocity(void)
     {
       yprintf(OUTPUT_LV_PARAM, "Info: GAIN_A: %d\n",
               (int)(g_P[YP_PARAM_GAIN_A][0] * ffr));
-      if (abs(g_P[YP_PARAM_GAIN_A][0] * ffr) < 2)
+      if (abs(g_P[YP_PARAM_GAIN_A][0] * ffr) == 0)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_A fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 0);
@@ -1317,7 +1352,7 @@ void set_param_velocity(void)
     {
       yprintf(OUTPUT_LV_PARAM, "Info: GAIN_B: %d\n",
               (int)(g_P[YP_PARAM_GAIN_A][0] * ffl));
-      if (abs(g_P[YP_PARAM_GAIN_B][0] * ffl) < 2)
+      if (abs(g_P[YP_PARAM_GAIN_B][0] * ffl) == 0)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: GAIN_B fixed point value underflow\n");
         yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", 1);
@@ -1332,15 +1367,25 @@ void set_param_velocity(void)
   // PI制御のパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
+    int enc_changed = 0;
+    double enc_rev;
+
+    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
+    {
+      enc_changed = 1;
+    }
+
     if (!g_param.motor_enable[j])
       continue;
 
     if (g_param.device_version > 6)
     {
       int ff_changed = 0;
-      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
       if (ischanged_p(YP_PARAM_TORQUE_UNIT, j) ||
-          ischanged_p(YP_PARAM_COUNT_REV, j) ||
+          enc_changed ||
           ischanged_p(YP_PARAM_GEAR, j))
       {
         ff_changed = 1;
@@ -1349,7 +1394,7 @@ void set_param_velocity(void)
       {
         yprintf(OUTPUT_LV_PARAM, "Info: INERTIA_SELF[%d]: %d\n", j,
                 (int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff));
-        if (abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) < 2)
+        if (abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) == 0)
         {
           yprintf(OUTPUT_LV_ERROR, "ERROR: INERTIA_SELF[%d] fixed point value underflow\n", j);
           yprintf(OUTPUT_LV_ERROR, "ERROR: Decrease TORQUE_FINENESS[%d]\n", j);
@@ -1370,13 +1415,13 @@ void set_param_velocity(void)
       parameter_set(PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j]);
     // 各種制限
     if (ischanged_p(YP_PARAM_INTEGRAL_MAX, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        enc_changed ||
         ischanged_p(YP_PARAM_GEAR, j))
     {
       parameter_set(PARAM_int_max, j,
-                    g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+                    g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
       parameter_set(PARAM_int_min, j,
-                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
+                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
     }
   }
 
@@ -1387,4 +1432,5 @@ void set_param_velocity(void)
       continue;
     parameter_set(PARAM_watch_dog_limit, j, 300);
   }
+  return 1;
 }

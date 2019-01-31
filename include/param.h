@@ -100,8 +100,8 @@ void arg_longhelp(int argc, char *argv[]);
 int set_param(char *filename, char *concrete_path);
 int set_paramptr(FILE *paramfile);
 void calc_param_inertia2ff(void);
-void set_param_motor(void);
-void set_param_velocity(void);
+int set_param_motor(void);
+int set_param_velocity(void);
 int parameter_set(char param, char id, long long int value64);
 int apply_robot_params(void);
 

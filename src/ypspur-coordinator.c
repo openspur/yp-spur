@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
       yprintf(OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename);
       if (!set_param(param->parameter_filename, paramfile))
       {
-        yprintf(OUTPUT_LV_ERROR, "Error: Cannot find parameter file.\n");
+        yprintf(OUTPUT_LV_ERROR, "Error: Cannot load parameter file.\n");
         return 0;
       }
     }

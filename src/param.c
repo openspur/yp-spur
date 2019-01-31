@@ -485,6 +485,7 @@ int set_paramptr(FILE *paramfile)
   int read_state;
   int param_num, motor_num;
   OdometryPtr odm;
+  int param_error = 0;
 
   for (i = 0; i < YP_PARAM_NUM; i++)
   {
@@ -625,7 +626,8 @@ int set_paramptr(FILE *paramfile)
             if (!num_end)
             {
               read_state = 4;
-              yprintf(OUTPUT_LV_WARNING, "Warn: invalid parameter[] -- '%s'.\n", name);
+              yprintf(OUTPUT_LV_ERROR, "Error: Invalid parameter -- '%s'.\n", name);
+              param_error = 1;
               continue;
             }
             *(num_start - 1) = 0;
@@ -667,7 +669,8 @@ int set_paramptr(FILE *paramfile)
           str_wp = 0;
           if (param_num == YP_PARAM_NUM)
           {
-            yprintf(OUTPUT_LV_WARNING, "Warn: invalid parameter -- '%s'.\n", name);
+            yprintf(OUTPUT_LV_ERROR, "Error: Invalid parameter -- '%s'.\n", name);
+            param_error = 1;
           }
           else if (motor_num == -1)
           {
@@ -715,10 +718,10 @@ int set_paramptr(FILE *paramfile)
         {
           value_str[str_wp] = 0;
           str_wp = 0;
-          // yprintf( OUTPUT_LV_ERROR, "Formula: %s\n", value_str );
           if (param_num == YP_PARAM_NUM)
           {
-            yprintf(OUTPUT_LV_WARNING, "Warn: invalid parameter -- '%s'.\n", name);
+            yprintf(OUTPUT_LV_ERROR, "Error: Invalid parameter -- '%s'.\n", name);
+            param_error = 1;
           }
           else if (motor_num == -1)
           {
@@ -733,7 +736,8 @@ int set_paramptr(FILE *paramfile)
             }
             if (g_Pf[param_num][0] == NULL)
             {
-              yprintf(OUTPUT_LV_PARAM, "Warn: invalid formula -- '%s'.\n", value_str);
+              yprintf(OUTPUT_LV_ERROR, "Error: Invalid formula -- '%s'.\n", value_str);
+              param_error = 1;
             }
             else
             {
@@ -756,7 +760,8 @@ int set_paramptr(FILE *paramfile)
             formula(value_str, &g_Pf[param_num][motor_num], variables);
             if (g_Pf[param_num][motor_num] == NULL)
             {
-              yprintf(OUTPUT_LV_PARAM, "Warn: invalid formula -- '%s'.\n", value_str);
+              yprintf(OUTPUT_LV_ERROR, "Error: Invalid formula -- '%s'.\n", value_str);
+              param_error = 1;
             }
             else
             {
@@ -798,9 +803,6 @@ int set_paramptr(FILE *paramfile)
     return 0;
   }
 
-  int param_error;
-
-  param_error = 0;
   for (i = 0; i < YP_PARAM_NUM; i++)
   {
     for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)

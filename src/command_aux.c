@@ -39,6 +39,7 @@
 #include <serial.h>
 #include <adinput.h>
 #include <param.h>
+#include <odometry.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>
@@ -66,4 +67,11 @@ void set_io_data_com(double *data, double *resdata)
 
   num = (int)data[0];
   parameter_set(PARAM_io_data, 0, num);
+}
+
+void get_error_state_com(double *resdata)
+{
+  ErrorStatePtr err = get_error_state_ptr();
+  resdata[0] = err->state;
+  resdata[1] = err->time;
 }

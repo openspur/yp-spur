@@ -63,6 +63,7 @@ CSptr g_FS;
 CSptr g_BL;
 
 Odometry g_odometry;
+ErrorState g_error_state;
 
 /* CS の初期化 */
 void init_coordinate_systems(void)
@@ -92,6 +93,9 @@ void init_odometry(void)
   g_odometry.w = 0;
   g_odometry.time = 0;
   g_offset_point = 0;
+
+  g_error_state.state = 0;
+  g_error_state.time = 0;
 }
 
 CSptr get_cs_pointer(YPSpur_cs cs)
@@ -230,7 +234,8 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
 }
 
 /* 割り込み型データの処理 */
-void process_int(OdometryPtr xp, int param_id, int id, int value)
+void process_int(
+    OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time)
 {
   Parameters *param;
   param = get_param_ptr();
@@ -275,6 +280,8 @@ void process_int(OdometryPtr xp, int param_id, int id, int value)
     }
     case INT_error_state:
     {
+      err->state = value;
+      err->time = receive_time;
       if (value != ERROR_NONE)
         yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
       if (value & ERROR_LOW_VOLTAGE)
@@ -318,6 +325,11 @@ void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm)
 OdometryPtr get_odometry_ptr()
 {
   return &g_odometry;
+}
+
+ErrorStatePtr get_error_state_ptr()
+{
+  return &g_error_state;
 }
 
 /**
@@ -532,7 +544,7 @@ int odometry_receive(char *buf, int len, double receive_time, void *data)
           value.byte[1] = data[4];
           value.byte[0] = data[5];
 
-          process_int(&g_odometry, param, id, value.integer);
+          process_int(&g_odometry, &g_error_state, param, id, value.integer, receive_time);
         }
         break;
       }

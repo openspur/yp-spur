@@ -178,6 +178,7 @@ int YP_md_set_control_state(YPSpur *dev, int control_id, int state);
 int YP_md_get_ad_value(YPSpur *dev, int num);
 int YP_md_set_io_dir(YPSpur *dev, unsigned char dir);
 int YP_md_set_io_data(YPSpur *dev, unsigned char data);
+double YP_md_get_device_error_state(YPSpur *dev, int *err);
 int YP_md_wheel_vel(YPSpur *dev, double r, double l);
 int YP_md_wheel_torque(YPSpur *dev, double r, double l);
 double YP_md_get_wheel_vel(YPSpur *dev, double *wr, double *wl);

@@ -308,7 +308,7 @@ void command(void)
         param_state_com(msg.cs, msg.data, &g_spur);
         break;
 
-      /*-------------command_ad.c---------------*/
+      /*-------------command_aux.c---------------*/
       case YPSPUR_GETAD:
         get_ad_com(msg.data, res_msg.data);
         message_return(&ipcmd, msg.pid, &res_msg);
@@ -325,7 +325,13 @@ void command(void)
         yprintf(OUTPUT_LV_COMMAND, "Command: set IO data %d\n", (int)msg.data[0]);
         break;
 
-      /*-------------command_ad.c---------------*/
+      case YPSPUR_GET_ERROR_STATE:
+        get_error_state_com(res_msg.data);
+        message_return(&ipcmd, msg.pid, &res_msg);
+        yprintf(OUTPUT_LV_COMMAND, "Command: get error state %d\n", (int)msg.data[0]);
+        break;
+
+      /*-------------command_joint.c---------------*/
       case YPSPUR_JOINT_TORQUE:
         joint_torque_com(msg.cs, msg.data, &g_spur);
         yprintf(OUTPUT_LV_COMMAND, "Command: joint %d torque %f\n", msg.cs, msg.data[0]);

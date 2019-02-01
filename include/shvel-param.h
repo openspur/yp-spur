@@ -94,7 +94,7 @@ typedef enum
   INT_error_state,
 } YPSpur_shvel_interrupt;
 
-enum
+typedef enum
 {
   ERROR_NONE = 0,
   ERROR_LOW_VOLTAGE = 0x0001,

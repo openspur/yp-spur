@@ -69,6 +69,7 @@ typedef struct SPUR_COMMAND
     SPUR_GETAD,
     SPUR_SET_IO_DIR,
     SPUR_SET_IO_DATA,
+    SPUR_GET_DEVICE_ERROR_STATE,
     SPUR_VEL,
     SPUR_WHEEL_VEL,
     SPUR_GET_WHEEL_VEL,
@@ -129,6 +130,7 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
   { SPUR_GETAD, { "get_ad_value" }, 1 },
   { SPUR_SET_IO_DIR, { "set_io_dir" }, 1 },
   { SPUR_SET_IO_DATA, { "set_io_data" }, 1 },
+  { SPUR_GET_DEVICE_ERROR_STATE, { "get_device_error_state" }, 0 },
   { SPUR_VEL, { "vel" }, 2 },
   { SPUR_WHEEL_VEL, { "wheel_vel" }, 2 },
   { SPUR_GET_WHEEL_VEL, { "get_wheel_vel" }, 0 },
@@ -176,6 +178,7 @@ int proc_spur_cmd(char *line, int *coordinate)
   char *argv;
   int ret;
   int ad;
+  int error;
   enum
   {
     MODE_COMMAND,
@@ -344,6 +347,10 @@ int proc_spur_cmd(char *line, int *coordinate)
       break;
     case SPUR_SET_IO_DATA:
       YP_set_io_data((int)spur.arg[0]);
+      break;
+    case SPUR_GET_DEVICE_ERROR_STATE:
+      YP_get_device_error_state(&error);
+      printf("%d\n", error);
       break;
     case SPUR_VEL:
       YPSpur_vel(spur.arg[0], spur.arg[1]);

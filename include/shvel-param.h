@@ -85,12 +85,23 @@ typedef enum
   PARAM_io_data,
   PARAM_ad_mask,
   PARAM_phase_offset,
+  PARAM_protocol_version,
 } YPSpur_shvel_param;
 
 typedef enum
 {
   INT_enc_index_rise = 0,
   INT_enc_index_fall,
+  INT_error_state,
 } YPSpur_shvel_interrupt;
+
+typedef enum
+{
+  ERROR_NONE = 0,
+  ERROR_LOW_VOLTAGE = 0x0001,
+  ERROR_HALL1 = 0x0002,
+  ERROR_HALL2 = 0x0004,
+  ERROR_WATCHDOG = 0x0008
+} YPSpur_shvel_error_state;
 
 #endif  // SHVEL_PARAM_H

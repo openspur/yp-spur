@@ -45,6 +45,38 @@ int YP_md_get_error_state(YPSpur *spur)
   return spur->dev.connection_error;
 }
 
+double YP_md_get_device_error_state(YPSpur *spur, int id, int *error_state)
+{
+  YPSpur_msg msg;
+  int len;
+  double time;
+
+  msg.msg_type = YPSPUR_MSG_CMD;
+  msg.pid = spur->pid;
+  msg.type = YPSPUR_GET_ERROR_STATE;
+  msg.data[0] = id;
+  msg.cs = 0;
+  if (spur->dev.send(&spur->dev, &msg) < 0)
+  {
+    /* error */
+    spur->connection_error = 1;
+    return -1;
+  }
+
+  /* 指定のコマンド受け取り */
+  len = spur->dev.recv(&spur->dev, &msg);
+  if (len < 0)
+  {
+    /* receive error */
+    spur->connection_error = 1;
+    return -1;
+  }
+
+  *error_state = (int)msg.data[0];
+  time = msg.data[1];
+  return time;
+}
+
 /* coordinatorとのメッセージ通信を開始する */
 int YPSpur_md_initex(YPSpur *spur, int msq_key)
 {

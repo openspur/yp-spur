@@ -139,7 +139,7 @@ endif(GTEST_FOUND)
 
 add_executable(ypspur-coordinator
   src/adinput.c
-  src/command_ad.c
+  src/command_aux.c
   src/command.c
   src/command_get.c
   src/command_joint.c

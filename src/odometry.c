@@ -63,6 +63,7 @@ CSptr g_FS;
 CSptr g_BL;
 
 Odometry g_odometry;
+ErrorState g_error_state;
 
 /* CS の初期化 */
 void init_coordinate_systems(void)
@@ -87,6 +88,8 @@ void init_odometry(void)
     g_odometry.wang[0] = 0;
     g_odometry.wtorque[0] = 0;
     g_odometry.wvel[0] = 0;
+    g_error_state.state[i] = 0;
+    g_error_state.time[i] = 0;
   }
   g_odometry.v = 0;
   g_odometry.w = 0;
@@ -230,7 +233,8 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
 }
 
 /* 割り込み型データの処理 */
-void process_int(OdometryPtr xp, int param_id, int id, int value)
+void process_int(
+    OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time)
 {
   Parameters *param;
   param = get_param_ptr();
@@ -271,10 +275,29 @@ void process_int(OdometryPtr xp, int param_id, int id, int value)
       xp->wang[id] = round((xp->wang[id] - ref_ang - ang_diff) / (2.0 * M_PI * index_ratio)) *
                          2.0 * M_PI * index_ratio +
                      ref_ang + ang_diff;
+      break;
     }
-    break;
+    case INT_error_state:
+    {
+      err->state[id] = value;
+      err->time[id] = receive_time;
+      if (value != ERROR_NONE)
+        yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
+      if (value & ERROR_LOW_VOLTAGE)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
+      if (value & ERROR_HALL1)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL1 ");
+      if (value & ERROR_HALL2)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL2 ");
+      if (value & ERROR_WATCHDOG)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
+
+      if (value != ERROR_NONE)
+        yprintf(OUTPUT_LV_ERROR, "\n");
+      break;
+    }
     default:
-      yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param, id, value);
+      yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param_id, id, value);
       break;
   }
 }
@@ -299,6 +322,11 @@ void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm)
 OdometryPtr get_odometry_ptr()
 {
   return &g_odometry;
+}
+
+ErrorStatePtr get_error_state_ptr()
+{
+  return &g_error_state;
 }
 
 /**
@@ -513,7 +541,7 @@ int odometry_receive(char *buf, int len, double receive_time, void *data)
           value.byte[1] = data[4];
           value.byte[0] = data[5];
 
-          process_int(&g_odometry, param, id, value.integer);
+          process_int(&g_odometry, &g_error_state, param, id, value.integer, receive_time);
         }
         break;
       }

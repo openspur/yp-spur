@@ -127,3 +127,32 @@ Results are device dependent.
 
 On success, 1 is returned.
 On error, -1 is returned.
+
+***
+
+## Get device error state
+
+### Name
+
+YP_get_device_error_state
+
+### Synopsis
+
+```c
+double YP_get_device_error_state(int id, int *err);
+```
+
+### Description
+
+Get device error status.
+
+* **id**: ID of the device
+* **err**: pointer to store error number
+
+note: **id** and **err** values are device configuration dependent. Error number zero means no-error.
+
+### Return value
+
+On success, timestamp (unix time) of the data is returned.
+If the device doesn't provide error state, zero is returned.
+On error, -1 is returned.

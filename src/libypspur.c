@@ -47,6 +47,11 @@ int YP_get_error_state()
   return YP_md_get_error_state(&spur);
 }
 
+double YP_get_device_error_state(int id, int *err)
+{
+  return YP_md_get_device_error_state(&spur, id, err);
+}
+
 /* coordinatorとのメッセージ通信を開始する */
 int YPSpur_initex(int msq_key)
 {

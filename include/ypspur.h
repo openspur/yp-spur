@@ -172,6 +172,7 @@ int YP_set_control_state(int control_id, int state);
 int YP_get_ad_value(int num);
 int YP_set_io_dir(unsigned char dir);
 int YP_set_io_data(unsigned char data);
+double YP_get_device_error_state(int id, int *err);
 int YP_wheel_vel(double r, double l);
 int YP_wheel_torque(double r, double l);
 double YP_get_wheel_vel(double *wr, double *wl);

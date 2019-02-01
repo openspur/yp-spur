@@ -143,6 +143,7 @@ void param_state_com(int cs, double *data, SpurUserParamsPtr spur);
 void get_ad_com(double *data, double *resdata);
 void set_io_dir_com(double *data, double *resdata);
 void set_io_data_com(double *data, double *resdata);
+void get_error_state_com(double *data, double *resdata);
 
 void joint_torque_com(int id, double *data, SpurUserParamsPtr spur);
 void joint_vel_com(int id, double *data, SpurUserParamsPtr spur);

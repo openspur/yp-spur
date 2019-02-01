@@ -88,14 +88,13 @@ void init_odometry(void)
     g_odometry.wang[0] = 0;
     g_odometry.wtorque[0] = 0;
     g_odometry.wvel[0] = 0;
+    g_error_state.state[i] = 0;
+    g_error_state.time[i] = 0;
   }
   g_odometry.v = 0;
   g_odometry.w = 0;
   g_odometry.time = 0;
   g_offset_point = 0;
-
-  g_error_state.state = 0;
-  g_error_state.time = 0;
 }
 
 CSptr get_cs_pointer(YPSpur_cs cs)
@@ -280,12 +279,10 @@ void process_int(
     }
     case INT_error_state:
     {
-      err->state = value;
-      err->time = receive_time;
+      err->state[id] = value;
+      err->time[id] = receive_time;
       if (value != ERROR_NONE)
         yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
-      if (value & ERROR_LOW_VOLTAGE)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
       if (value & ERROR_LOW_VOLTAGE)
         yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
       if (value & ERROR_HALL1)

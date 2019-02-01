@@ -47,8 +47,8 @@ typedef struct _odometry
 typedef struct _error_state *ErrorStatePtr;
 typedef struct _error_state
 {
-  YPSpur_shvel_error_state state;
-  double time;
+  YPSpur_shvel_error_state state[YP_PARAM_MAX_MOTOR_NUM];
+  double time[YP_PARAM_MAX_MOTOR_NUM];
 } ErrorState;
 
 double time_estimate(int readnum);

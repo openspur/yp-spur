@@ -326,9 +326,9 @@ void command(void)
         break;
 
       case YPSPUR_GET_ERROR_STATE:
-        get_error_state_com(res_msg.data);
+        get_error_state_com(msg.data, res_msg.data);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get error state %d\n", (int)msg.data[0]);
+        yprintf(OUTPUT_LV_COMMAND, "Command: get error state %d (id: %d)\n", (int)msg.data[0], (int)res_msg.data[0]);
         break;
 
       /*-------------command_joint.c---------------*/

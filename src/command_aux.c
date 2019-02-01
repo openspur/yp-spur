@@ -69,9 +69,11 @@ void set_io_data_com(double *data, double *resdata)
   parameter_set(PARAM_io_data, 0, num);
 }
 
-void get_error_state_com(double *resdata)
+void get_error_state_com(double *data, double *resdata)
 {
+  int num = (int)data[0];
   ErrorStatePtr err = get_error_state_ptr();
-  resdata[0] = err->state;
-  resdata[1] = err->time;
+
+  resdata[0] = err->state[num];
+  resdata[1] = err->time[num];
 }

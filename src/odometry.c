@@ -85,9 +85,9 @@ void init_odometry(void)
   g_odometry.theta = 0;
   for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
   {
-    g_odometry.wang[0] = 0;
-    g_odometry.wtorque[0] = 0;
-    g_odometry.wvel[0] = 0;
+    g_odometry.wang[i] = 0;
+    g_odometry.wtorque[i] = 0;
+    g_odometry.wvel[i] = 0;
     g_error_state.state[i] = 0;
     g_error_state.time[i] = 0;
   }

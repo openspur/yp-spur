@@ -1034,6 +1034,14 @@ int apply_robot_params()
     }
     g_param_init = 0;
   }
+
+  if (g_param.device_version >= 10)
+  {
+    int version, age;
+    sscanf(YP_PROTOCOL_NAME, "YPP:%d:%d", &version, &age);
+    parameter_set(PARAM_protocol_version, 0, version);
+  }
+
   /* モータのパラメータ */
   if (set_param_motor() < 1)
     return 0;

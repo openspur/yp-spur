@@ -85,6 +85,7 @@ typedef enum
   PARAM_io_data,
   PARAM_ad_mask,
   PARAM_phase_offset,
+  PARAM_protocol_version,
 } YPSpur_shvel_param;
 
 typedef enum

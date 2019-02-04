@@ -203,6 +203,7 @@ double YP_md_get_joint_torque(YPSpur *spur, int id, double *t);
 
 #define YPSPUR_JOINT_SUPPORT 1
 #define YPSPUR_JOINT_ANG_VEL_SUPPORT 1
+#define YPSPUR_GET_DEVICE_ERROR_STATE_SUPPORT 1
 
 #ifdef __cplusplus
 }

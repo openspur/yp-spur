@@ -99,8 +99,8 @@ typedef enum
 {
   ERROR_NONE = 0,
   ERROR_LOW_VOLTAGE = 0x0001,
-  ERROR_HALL1 = 0x0002,
-  ERROR_HALL2 = 0x0004,
+  ERROR_HALL_SEQ = 0x0002,
+  ERROR_HALL_ENC = 0x0004,
   ERROR_WATCHDOG = 0x0008
 } YPSpur_shvel_error_state;
 

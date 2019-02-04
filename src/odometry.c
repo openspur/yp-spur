@@ -285,10 +285,10 @@ void process_int(
         yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
       if (value & ERROR_LOW_VOLTAGE)
         yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
-      if (value & ERROR_HALL1)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL1 ");
-      if (value & ERROR_HALL2)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL2 ");
+      if (value & ERROR_HALL_SEQ)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_SEQ ");
+      if (value & ERROR_HALL_ENC)
+        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_ENC ");
       if (value & ERROR_WATCHDOG)
         yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
 

@@ -209,9 +209,13 @@ add_library(ypspur SHARED
   src/msq.win32.c
   src/yprintf.c
   src/utility.c
+)
+
+add_library(ypspur-comm SHARED
   src/communication.c
   src/serial.c
 )
+
 if(WIN32)
   target_link_libraries(ypspur wsock32 ws2_32)
 endif(WIN32)
@@ -229,9 +233,9 @@ add_library(ypspur-static STATIC
   src/msq.win32.c
   src/yprintf.c
   src/utility.c
-  src/communication.c
-  src/serial.c
 )
+
+
 if(WIN32)
   target_link_libraries(ypspur-static wsock32 ws2_32)
 endif(WIN32)
@@ -246,8 +250,6 @@ add_library(ypspur-md SHARED
   src/msq.win32.c
   src/yprintf.c
   src/utility.c
-  src/communication.c
-  src/serial.c
 )
 if(WIN32)
   target_link_libraries(ypspur-md wsock32 ws2_32)
@@ -265,8 +267,6 @@ add_library(ypspur-md-static STATIC
   src/msq.win32.c
   src/yprintf.c
   src/utility.c
-  src/communication.c
-  src/serial.c
 )
 if(WIN32)
   target_link_libraries(ypspur-md-static wsock32 ws2_32)
@@ -282,6 +282,7 @@ set_target_properties(ypspur-md-static PROPERTIES
 install(TARGETS
     ypspur-coordinator
     ypspur
+    ypspur-comm
     ypspur-static
     ypspur-md
     ypspur-md-static

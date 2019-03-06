@@ -87,7 +87,7 @@ int encode(unsigned char *src, int len, unsigned char *dst, int buf_max)
  * @param buf_max[in] デコード後のデータバッファのサイズ
  * @return デコード後のバイト数
  */
-int decord(unsigned char *src, int len, unsigned char *dst, int buf_max)
+int decode(unsigned char *src, int len, unsigned char *dst, int buf_max)
 {
   unsigned short dat, b;
   int pos, s_pos, w_pos;

@@ -474,7 +474,7 @@ int odometry_receive(char *buf, int len, double receive_time, void *data)
       unsigned char data[48];
 
       /* デコード処理 */
-      decoded_len = decord((unsigned char *)com_buf, com_wp, (unsigned char *)data, 48);
+      decoded_len = decode((unsigned char *)com_buf, com_wp, (unsigned char *)data, 48);
       if ((mode == ISOCHRONOUS && decoded_len != decoded_len_req) ||
           (mode == INTERRUPT && decoded_len != 6))
       {

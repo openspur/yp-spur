@@ -35,15 +35,11 @@
 
 /* yp-spur用 */
 #include <communication.h>
-#include <serial.h>
-
-/* ライブラリ用 */
-#include <ypspur-coordinator.h>
 
 /**
  * @brief エンコード
  */
-int encode(unsigned char *src, int len, unsigned char *dst, int buf_max)
+int encode(const unsigned char *src, int len, unsigned char *dst, int buf_max)
 {
   int pos, s_pos, w_pos;
   unsigned short b;
@@ -87,7 +83,7 @@ int encode(unsigned char *src, int len, unsigned char *dst, int buf_max)
  * @param buf_max[in] デコード後のデータバッファのサイズ
  * @return デコード後のバイト数
  */
-int decord(unsigned char *src, int len, unsigned char *dst, int buf_max)
+int decode(const unsigned char *src, int len, unsigned char *dst, int buf_max)
 {
   unsigned short dat, b;
   int pos, s_pos, w_pos;
@@ -122,23 +118,4 @@ int decord(unsigned char *src, int len, unsigned char *dst, int buf_max)
   if (rerr)
     return -rerr;
   return w_pos;
-}
-
-int encode_write(char *data, int len)
-{
-  unsigned char buf[128];
-  int encode_len, ret;
-
-  buf[0] = COMMUNICATION_START_BYTE;
-  encode_len = encode((unsigned char *)data, len, buf + 1, 126);
-  buf[encode_len + 1] = COMMUNICATION_END_BYTE;
-
-  ret = serial_write((char *)buf, encode_len + 2);
-  if (ret <= 0)
-  {
-    return -1;
-  }
-  serial_flush_out();
-
-  return 0;
 }

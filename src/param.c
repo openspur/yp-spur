@@ -40,6 +40,7 @@
 
 /* yp-spur用 */
 #include <communication.h>
+#include <serial.h>
 #include <param.h>
 #include <control.h>
 #include <command.h>

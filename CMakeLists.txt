@@ -210,6 +210,11 @@ add_library(ypspur SHARED
   src/yprintf.c
   src/utility.c
 )
+
+add_library(ypspur-comm SHARED
+  src/communication.c
+)
+
 if(WIN32)
   target_link_libraries(ypspur wsock32 ws2_32)
 endif(WIN32)
@@ -274,6 +279,7 @@ set_target_properties(ypspur-md-static PROPERTIES
 install(TARGETS
     ypspur-coordinator
     ypspur
+    ypspur-comm
     ypspur-static
     ypspur-md
     ypspur-md-static
@@ -288,6 +294,10 @@ install(TARGETS
 install(FILES include/yp-spur.h
   DESTINATION include
 )
+install(FILES include/communication.h
+  DESTINATION include/ypspur
+)
+
 if(SSM_FOUND)
   install(DIRECTORY
       include/ssmtype

@@ -42,5 +42,6 @@ int serial_write(char *buf, int len);
 int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data);
 void serial_flush_in(void);
 void serial_flush_out(void);
+int encode_write(char *data, int len);
 
 #endif  // SERIAL_H

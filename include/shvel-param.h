@@ -81,6 +81,7 @@ typedef enum
   PARAM_enc_denominator,
   PARAM_servo = 64,
   PARAM_watch_dog_limit,
+  PARAM_heartbeat,
   PARAM_io_dir = 96,
   PARAM_io_data,
   PARAM_ad_mask,

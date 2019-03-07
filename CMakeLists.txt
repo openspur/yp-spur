@@ -213,12 +213,6 @@ add_library(ypspur SHARED
 
 add_library(ypspur-comm SHARED
   src/communication.c
-  src/serial.c
-  src/utility.c
-)
-
-target_link_libraries(ypspur-comm
- ypspur
 )
 
 if(WIN32)

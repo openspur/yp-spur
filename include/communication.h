@@ -27,6 +27,5 @@
 
 int encode(unsigned char *src, int len, unsigned char *dst, int buf_max);
 int decode(unsigned char *src, int len, unsigned char *dst, int buf_max);
-int encode_write(char *data, int len);
 
 #endif  // COMMUNICATION_H

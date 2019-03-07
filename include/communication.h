@@ -25,7 +25,16 @@
 #define COMMUNICATION_INT_BYTE 0x07
 #define COMMUNICATION_END_BYTE 0x0a
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 int encode(unsigned char *src, int len, unsigned char *dst, int buf_max);
 int decode(unsigned char *src, int len, unsigned char *dst, int buf_max);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // COMMUNICATION_H

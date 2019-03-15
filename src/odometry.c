@@ -310,13 +310,14 @@ void process_int(
         yprintf(OUTPUT_LV_ERROR, "ERROR_HEARTBEAT ");
         unknown_err = 0;
       }
-      if (unknown_err)
-      {
-        yprintf(OUTPUT_LV_ERROR, "ERROR_UNKNOWN ");
-      }
 
       if (value != ERROR_NONE)
+      {
+        if (unknown_err)
+          yprintf(OUTPUT_LV_ERROR, "ERROR_UNKNOWN ");
+
         yprintf(OUTPUT_LV_ERROR, "\n");
+      }
       break;
     }
     default:

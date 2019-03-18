@@ -4,5 +4,5 @@
     * 制御則の解説
     * パラメータファイルの設定方法概要
 
-* [libypspur コマンド一覧](https://github.com/openspur/yp-spur/raw/master/doc/files/libypspur_cheatsheet.pdf)
+* [libypspur コマンド一覧](https://raw.githubusercontent.com/openspur/yp-spur/master/doc/files/libypspur_cheatsheet.pdf)
     * known issue: `Spur_set_pos_FS` が記載されているが実際には存在しない

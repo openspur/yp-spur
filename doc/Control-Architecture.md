@@ -1,10 +1,10 @@
 The following figure shows a control diagram of YP-Spur.
 
-![Spur control system](https://github.com/openspur/yp-spur/wiki/images/spur_system_en.png)
+![Spur control system](images/spur_system_en.png)
 
 Trajectory tracking controller is expressed by:
 
-![Spur line following control](https://github.com/openspur/yp-spur/wiki/images/spurline_en.png)
+![Spur line following control](images/spurline_en.png)
 
 The original idea of the control approach is reported in [1-3].
 

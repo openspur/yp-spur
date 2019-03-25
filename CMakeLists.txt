@@ -335,3 +335,16 @@ install(
     package.xml
   DESTINATION share/ypspur/
 )
+
+
+# Generate pkgconfig file and install
+
+configure_file(ypspur.pc.in
+  ${PROJECT_BINARY_DIR}/ypspur.pc @ONLY
+)
+
+install(
+  FILES
+    ${PROJECT_BINARY_DIR}/ypspur.pc
+  DESTINATION share/pkgconfig
+)

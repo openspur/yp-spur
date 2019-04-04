@@ -39,6 +39,7 @@ typedef struct _odometry
   double wvel[YP_PARAM_MAX_MOTOR_NUM];
   double wang[YP_PARAM_MAX_MOTOR_NUM];
   short enc[YP_PARAM_MAX_MOTOR_NUM];
+  int enc_init[YP_PARAM_MAX_MOTOR_NUM];
   double wtorque[YP_PARAM_MAX_MOTOR_NUM];
   double torque_trans;
   double torque_angular;

@@ -85,6 +85,8 @@ void init_odometry(void)
   g_odometry.theta = 0;
   for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
   {
+    g_odometry.enc[i] = 0;
+    g_odometry.enc_init[i] = 0;
     g_odometry.wang[i] = 0;
     g_odometry.wtorque[i] = 0;
     g_odometry.wvel[i] = 0;
@@ -160,6 +162,14 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
     {
       cnt_diff = (short)cnt[i] - (short)xp->enc[i];
       xp->enc[i] = cnt[i];
+      if (!xp->enc_init[i])
+      {
+        cnt_diff = 0;
+        if (cnt[i] != 0)
+        {
+          xp->enc_init[i] = 1;
+        }
+      }
     }
     else
     {

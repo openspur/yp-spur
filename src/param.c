@@ -1157,17 +1157,6 @@ int set_param_motor(void)
   // モータのパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
-    double tvc;  // 変換用定数
-    int enc_changed = 0;
-    double enc_rev;
-
-    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
-    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
-    {
-      enc_changed = 1;
-    }
-
     if (!g_param.motor_enable[j])
       continue;
     if (ischanged_p(YP_PARAM_VOLT, j))
@@ -1183,10 +1172,12 @@ int set_param_motor(void)
       parameter_set(PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j]);
     }
     if (ischanged_p(YP_PARAM_PHASE_OFFSET, j) ||
-        enc_changed)
+        ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
     {
+      const double enc_rev_phase = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
       parameter_set(PARAM_phase_offset, j,
-                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev / (2.0 * M_PI));
+                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev_phase / (2.0 * M_PI));
     }
     if (ischanged_p(YP_PARAM_ENCODER_TYPE, j))
     {
@@ -1217,13 +1208,13 @@ int set_param_motor(void)
 
     if (ischanged_p(YP_PARAM_PWM_MAX, j) ||
         ischanged_p(YP_PARAM_MOTOR_VC, j) ||
-        enc_changed ||
+        ischanged_p(YP_PARAM_COUNT_REV, j) ||
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
-                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * enc_rev *
+                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * g_P[YP_PARAM_COUNT_REV][j] *
                               g_P[YP_PARAM_CYCLE][j])));
     }
 
@@ -1249,9 +1240,10 @@ int set_param_motor(void)
     }
 
     // cnt/ms -> rad/s = cnt/ms * ms/s * rad/cnt = cnt/ms * 2pi/COUNT_REV / CYCLE
-    if (enc_changed || ischanged_p(YP_PARAM_CYCLE, j))
+    if (ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        ischanged_p(YP_PARAM_CYCLE, j))
     {
-      tvc = (2.0 * M_PI / enc_rev) / g_P[YP_PARAM_CYCLE][j];
+      const double tvc = (2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j]) / g_P[YP_PARAM_CYCLE][j];
       if (ischanged_p(YP_PARAM_TORQUE_VISCOS, j) || ischanged_p(YP_PARAM_TORQUE_UNIT, j))
       {
         parameter_set(PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc);
@@ -1380,25 +1372,16 @@ int set_param_velocity(void)
   // PI制御のパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
-    int enc_changed = 0;
-    double enc_rev;
-
-    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
-    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
-    {
-      enc_changed = 1;
-    }
-
     if (!g_param.motor_enable[j])
       continue;
 
     if (g_param.device_version > 6)
     {
       int ff_changed = 0;
-      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] /
+                  (g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
       if (ischanged_p(YP_PARAM_TORQUE_UNIT, j) ||
-          enc_changed ||
+          ischanged_p(YP_PARAM_COUNT_REV, j) ||
           ischanged_p(YP_PARAM_GEAR, j))
       {
         ff_changed = 1;
@@ -1429,13 +1412,13 @@ int set_param_velocity(void)
       parameter_set(PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j]);
     // 各種制限
     if (ischanged_p(YP_PARAM_INTEGRAL_MAX, j) ||
-        enc_changed ||
+        ischanged_p(YP_PARAM_COUNT_REV, j) ||
         ischanged_p(YP_PARAM_GEAR, j))
     {
       parameter_set(PARAM_int_max, j,
-                    g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+                    g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
       parameter_set(PARAM_int_min, j,
-                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
     }
   }
 

@@ -830,15 +830,13 @@ int set_paramptr(FILE *paramfile)
       continue;
     g_param.num_motor_enable++;
 
-    // Check undefined parameters
+    // Check and fill undefined parameters
     if (!g_P_set[YP_PARAM_TORQUE_LIMIT][j])
     {
       yprintf(OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undefined. TORQUE_MAX[%d] will be used.\n", j, j);
       g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
       g_P_changed[YP_PARAM_TORQUE_LIMIT][j] = ischanged_p(YP_PARAM_TORQUE_MAX, j);
     }
-    g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
-    g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS, j);
 
     if (!g_P_set[YP_PARAM_VEHICLE_CONTROL][j])
     {
@@ -871,6 +869,10 @@ int set_paramptr(FILE *paramfile)
         g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] = 1;
       g_P[YP_PARAM_ENCODER_DENOMINATOR][j] = 1.0;
     }
+
+    // Process internally calculated parameters
+    g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
+    g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS, j);
   }
 
   // パラメータの指定によって自動的に求まるパラメータの計算

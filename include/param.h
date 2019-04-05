@@ -110,7 +110,7 @@ int state(YPSpur_state id);
 void enable_state(YPSpur_state id);
 void disable_state(YPSpur_state id);
 double p(YPSpur_param id, enum motor_id motor);
-double isset_p(YPSpur_param id, enum motor_id motor);
+int isset_p(YPSpur_param id, enum motor_id motor);
 double *pp(YPSpur_param id, enum motor_id motor);
 ParametersPtr get_param_ptr();
 int option(ParamOptions option);

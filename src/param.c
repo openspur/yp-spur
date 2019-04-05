@@ -55,7 +55,7 @@
 
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
-double g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+int g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
@@ -81,12 +81,12 @@ double p(YPSpur_param id, enum motor_id motor)
   return g_P[id][motor];
 }
 
-double isset_p(YPSpur_param id, enum motor_id motor)
+int isset_p(YPSpur_param id, enum motor_id motor)
 {
   return g_P_set[id][motor];
 }
 
-double ischanged_p(YPSpur_param id, enum motor_id motor)
+int ischanged_p(YPSpur_param id, enum motor_id motor)
 {
   return g_P_changed[id][motor];
 }

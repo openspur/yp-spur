@@ -179,8 +179,8 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
 
     /* 角速度計算 */
     mvel[i] = 2.0 * M_PI *
-              ((double)cnt_diff) * pow(2, p(YP_PARAM_ENCODER_DIV, i)) *
-              p(YP_PARAM_ENCODER_DENOMINATOR, i) / (p(YP_PARAM_COUNT_REV, i) * dt);
+              ((double)cnt_diff) * pow(2, p(YP_PARAM_ENCODER_DIV, i)) /
+              (p(YP_PARAM_COUNT_REV, i) * dt);
     wvel[i] = mvel[i] / p(YP_PARAM_GEAR, i);
 
     /* トルク推定 */
@@ -262,8 +262,7 @@ void process_int(
           ((unsigned int)xp->enc[id] << ((int)p(YP_PARAM_ENCODER_DIV, id))) & 0xFFFF;
       const short enc_diff = (short)enc_div - (short)value;
       const double ang_diff =
-          enc_diff * 2.0 * M_PI * p(YP_PARAM_ENCODER_DENOMINATOR, id) /
-          (p(YP_PARAM_COUNT_REV, id) * p(YP_PARAM_GEAR, id));
+          enc_diff * 2.0 * M_PI / (p(YP_PARAM_COUNT_REV, id) * p(YP_PARAM_GEAR, id));
 
       const double index_ratio = p(YP_PARAM_INDEX_GEAR, id) / p(YP_PARAM_GEAR, id);
       double ref_ang;

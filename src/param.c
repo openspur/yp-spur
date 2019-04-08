@@ -1195,6 +1195,12 @@ int set_param_motor(void)
         ischanged_p(YP_PARAM_MOTOR_TC, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
+      // ki [pwmcnt/toqcnt]: (voltage unit [V/toqcnt]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // voltage unit [V/toqcnt]: (current unit [A/toqcnt]) * (MOTOR_R [ohm])
+      // current unit [A/toqcnt]: (1 [toqcnt]) / ((TORQUE_UNIT [1/Nm]) * (MOTOR_TC [Nm/A]))
+
+      // ki [pwmcnt/toqcnt]: ((MOTOR_R [ohm]) * (PWM_MAX [pwmcnt])) / ((TORQUE_UNIT [1/Nm]) * (MOTOR_TC [Nm/A]) * (VOLT [V]))
+
       long long int ki;
       ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
                     (g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
@@ -1214,6 +1220,12 @@ int set_param_motor(void)
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
+      // kv [(pwmcnt)/(cnt/ms)=(1/ms)]: (vc native [V/(cnt/ms)]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // vc native [V/(cnt/ms)]: (((60 [sec/min]) / (MOTOR_VC [(rev/min)/V]])) / (COUNT_REV [cnt/rev])) / (CYCLE [sec/ms])
+
+      // kv [(pwmcnt)/(cnt/ms)=(1/ms)]: ((60 [sec/min]) * (PWM_MAX [pwmcnt]))
+      //                                / ((MOTOR_VC [(rev/min)/V]]) * (COUNT_REV [cnt/rev]) * (CYCLE [sec/ms]) * (VOLT [V]))
+
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
                              (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * g_P[YP_PARAM_COUNT_REV][j] *

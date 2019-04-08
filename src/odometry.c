@@ -187,7 +187,8 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
     volt[i] = (double)pwm[i] * p(YP_PARAM_VOLT, i) / (p(YP_PARAM_PWM_MAX, i) * (dt / p(YP_PARAM_CYCLE, i)));
     vc[i] = (p(YP_PARAM_MOTOR_VC, i) / 60) * 2 * M_PI;  // [rpm/V] => [(rad/s)/V]
     // TC [Nm/A]
-    mtorque[i] = p(YP_PARAM_MOTOR_TC, i) * ((volt[i] - mvel[i] / vc[i]) / p(YP_PARAM_MOTOR_R, i));
+    mtorque[i] = (p(YP_PARAM_MOTOR_TC, i) * (volt[i] - mvel[i] / vc[i])) /
+                 (p(YP_PARAM_MOTOR_R, i) * p(YP_PARAM_ENCODER_DENOMINATOR, i));
     /* 摩擦補償の補償 */
     if (wvel[i] > 0)
     {

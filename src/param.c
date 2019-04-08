@@ -1202,7 +1202,7 @@ int set_param_motor(void)
       // ki [pwmcnt/toqcnt]: ((MOTOR_R [ohm]) * (PWM_MAX [pwmcnt])) / ((TORQUE_UNIT [1/Nm]) * (MOTOR_TC [Nm/A]) * (VOLT [V]))
 
       long long int ki;
-      ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
+      ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] * g_P[YP_PARAM_ENCODER_DENOMINATOR][j] /
                     (g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
                      g_P[YP_PARAM_VOLT][j]));
       yprintf(OUTPUT_LV_PARAM, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki);

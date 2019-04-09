@@ -1195,11 +1195,11 @@ int set_param_motor(void)
         ischanged_p(YP_PARAM_MOTOR_TC, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
-      // ki [pwmcnt/toqcnt]: (voltage unit [V/toqcnt]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
-      // voltage unit [V/toqcnt]: (current unit [A/toqcnt]) * (MOTOR_R [ohm])
-      // current unit [A/toqcnt]: (1 [toqcnt]) / ((TORQUE_UNIT [1/Nm]) * (MOTOR_TC [Nm/A]))
+      // ki [pwmcnt/toqcnt] = (voltage unit [V/toqcnt]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // voltage unit [V/toqcnt] = (current unit [A/toqcnt]) * (MOTOR_R [ohm])
+      // current unit [A/toqcnt] = (1 [toqcnt]) / ((TORQUE_UNIT [toqcnt/Nm]) * (MOTOR_TC [Nm/A]))
 
-      // ki [pwmcnt/toqcnt]: ((MOTOR_R [ohm]) * (PWM_MAX [pwmcnt])) / ((TORQUE_UNIT [1/Nm]) * (MOTOR_TC [Nm/A]) * (VOLT [V]))
+      // ki [pwmcnt/toqcnt] = ((MOTOR_R [ohm]) * (PWM_MAX [pwmcnt])) / ((TORQUE_UNIT [toqcnt/Nm]) * (MOTOR_TC [Nm/A]) * (VOLT [V]))
 
       long long int ki;
       ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] * g_P[YP_PARAM_ENCODER_DENOMINATOR][j] /
@@ -1220,11 +1220,11 @@ int set_param_motor(void)
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
-      // kv [(pwmcnt)/(cnt/ms)=(1/ms)]: (vc native [V/(cnt/ms)]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
-      // vc native [V/(cnt/ms)]: (((60 [sec/min]) / (MOTOR_VC [(rev/min)/V]])) / (COUNT_REV [cnt/rev])) / (CYCLE [sec/ms])
+      // kv [(pwmcnt)/(cnt/ms)] = (vc native [V/(cnt/ms)]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // vc native [V/(cnt/ms)] = (((60 [sec/min]) / (MOTOR_VC [(rev/min)/V]])) / (COUNT_REV [cnt/rev])) / (CYCLE [sec/ms])
 
-      // kv [(pwmcnt)/(cnt/ms)=(1/ms)]: ((60 [sec/min]) * (PWM_MAX [pwmcnt]))
-      //                                / ((MOTOR_VC [(rev/min)/V]]) * (COUNT_REV [cnt/rev]) * (CYCLE [sec/ms]) * (VOLT [V]))
+      // kv [(pwmcnt)/(cnt/ms)] = ((60 [sec/min]) * (PWM_MAX [pwmcnt]))
+      //                          / ((MOTOR_VC [(rev/min)/V]]) * (COUNT_REV [cnt/rev]) * (CYCLE [sec/ms]) * (VOLT [V]))
 
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
@@ -1330,10 +1330,12 @@ int set_param_velocity(void)
     double ffr, ffl;
     int ffr_changed = 0, ffl_changed = 0;
 
-    // FF制御パラメータ
-    // A-F単位 [kgf・m・m] * wheel_acc[rad/ss]
-    //				wheel_acc[rad/ss] = 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
-    //  = [kgf・m・m] * 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+    // Feed-forward dynamics compensation parameter
+    // (torque [Nm]) = (wheel acc [rad/(s*s)]) * (wheel inertia [kgf*m*m])
+    // (torque [toqcnt])
+    //    = (wheel acc [cnt/(s*s)) * (TORQUE_UNIT [toqcnt/Nm] * (wheel inertia [kgf*m*m]) * (2 * pi) / ((COUNT_REV [cnt]) * (GEAR))
+    // (acc-torque factor [toqcnt/(cnt/(s*s))])
+    //    = (TORQUE_UNIT [toqcnt/Nm]) * (wheel inertia [kgf*m*m]) * (2 * pi) / ((COUNT_REV [cnt]) * (GEAR))
 
     if (ischanged_p(YP_PARAM_TORQUE_UNIT, 0) ||
         ischanged_p(YP_PARAM_COUNT_REV, 0) ||

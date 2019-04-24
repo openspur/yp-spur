@@ -793,14 +793,14 @@ int set_paramptr(FILE *paramfile)
   if (g_P[YP_PARAM_VERSION][0] < YP_PARAM_REQUIRED_VERSION)
   {
     yprintf(OUTPUT_LV_ERROR, "Error: Your parameter file format is too old!\n");
-    yprintf(OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION);
+    yprintf(OUTPUT_LV_ERROR, "Error: This program requires %3.1f.\n", YP_PARAM_REQUIRED_VERSION);
     return 0;
   }
-  if (g_P[YP_PARAM_VERSION][0] > YP_PARAM_REQUIRED_VERSION)
+  if (g_P[YP_PARAM_VERSION][0] > YP_PARAM_SUPPORTED_VERSION)
   {
     yprintf(OUTPUT_LV_ERROR, "Error: Your parameter file format is unsupported!\n");
     yprintf(OUTPUT_LV_ERROR, "Error: Please install newer version of YP-Spur.\n");
-    yprintf(OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION);
+    yprintf(OUTPUT_LV_ERROR, "Error: This program supports %3.1f.\n", YP_PARAM_SUPPORTED_VERSION);
     return 0;
   }
 
@@ -829,6 +829,24 @@ int set_paramptr(FILE *paramfile)
     if (!g_param.motor_enable[j])
       continue;
     g_param.num_motor_enable++;
+
+    // Verify parameter version compatibility
+    if (g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] &&
+        g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])
+    {
+      if (g_P[YP_PARAM_VERSION][0] < 5)
+      {
+        yprintf(
+            OUTPUT_LV_ERROR,
+            "ERROR: Using ENCODER_DENOMINATOR requires parameter version >= 5.0.\n"
+            " Please make sure that all other motor parameters are based on mechanical motor revolution instead of electrical.\n");
+        return 0;
+      }
+      yprintf(
+          OUTPUT_LV_WARNING,
+          "Warn: ENCODER_DENOMINATOR parameter support is experimental.\n"
+          " The behavior of this parameter may be changed in the future update.\n");
+    }
 
     // Check and fill undefined parameters
     if (!g_P_set[YP_PARAM_TORQUE_LIMIT][j])

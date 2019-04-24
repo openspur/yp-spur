@@ -350,75 +350,76 @@ typedef enum
         0,                 \
   }
 
-#define YP_PARAM_COMMENT                                                                   \
-  {                                                                                        \
-    "Parameter file version",                                                              \
-        "[Integer Nm/Nm] Fixed-point position of PC-MCU communication",                    \
-        "[Nm] Calculation fineness of torque control",                                     \
-        "[Counts] PWM cycle",                                                              \
-        "[Counts/rev] Encoder specification",                                              \
-        "Encoder type (2:2-phase incremental, 3:3-phase incremental)",                     \
-        "[V] Power source voltage",                                                        \
-        "[s] Velocity control cycle",                                                      \
-        "[in/out] Gear ratio",                                                             \
-        "[ohm] Motor internal resistance",                                                 \
-        "[Nm/A] Motor torque constant",                                                    \
-        "[rpm/V] Motor speed constant",                                                    \
-        "Motor type (0:DC, 3:3phase-AC)",                                                  \
-        "[rad] Offset angle of AC motor phase",                                            \
-        "[m] Wheel radius",                                                                \
-        "[m] Right wheel radius",                                                          \
-        "[m] Left wheel radius",                                                           \
-        "[m] Tread",                                                                       \
-        "[s] Trajectory control cycle",                                                    \
-        "[m/s] Maximum velocity",                                                          \
-        "[rad/s] Maximum angular velocity",                                                \
-        "[m/ss] Maximum acceleration",                                                     \
-        "[rad/ss] Maximum angular acceleration",                                           \
-        "[m/ss] Centrifugal acceleration limit",                                           \
-        "[m/s / rad/s] Deacceleration factor of trajectory control",                       \
-        "[rad/ss / m] Feedback gain for distance error",                                   \
-        "[rad/ss / rad] Feedback gain for angular error",                                  \
-        "[rad/ss / rad/s] Feedback gain for angular velocity",                             \
-        "[m] Clipping value of line following control",                                    \
-        "[1/s] PI control parameter Kp",                                                   \
-        "[1/ss] PI control parameter Ki",                                                  \
-        "[Nm] Motor maximum torque",                                                       \
-        "[Nm] Constant friction",                                                          \
-        "[Nm/(rad/s)] Viscous friction",                                                   \
-        "[Nm] Constant friction (neg-direction)",                                          \
-        "[Nm/(rad/s)] Viscous friction (neg-direction)",                                   \
-        "[Nm] Motor torque limit",                                                         \
-        "[rev] Maximum integrated error of PI control",                                    \
-        "[Nm] Offset value of motor torque",                                               \
-        "[kg] Robot weight",                                                               \
-        "[kgm^2] Robot moment of inertia",                                                 \
-        "[kgm^2] Rotor moment of inertia of motor",                                        \
-        "[kgm^2] Tire moment of inertia",                                                  \
-        "[m] Robot size of front",                                                         \
-        "[m] Robot size of rear",                                                          \
-        "[m] Robot size of left",                                                          \
-        "[m] Robot size of right",                                                         \
-        "PWS parameter A",                                                                 \
-        "PWS parameter B",                                                                 \
-        "PWS parameter C",                                                                 \
-        "PWS parameter D",                                                                 \
-        "PWS parameter E",                                                                 \
-        "PWS parameter F",                                                                 \
-        "[m] Linear feedback area of stop command",                                        \
-        "[rad] Linear feedback area of spin command",                                      \
-        "[rad] Linear feedback area of wheel_ang command",                                 \
-        "[rad] Minimum wheel angle (for wheel_angle command)",                             \
-        "[rad] Maximum wheel angle (for wheel_angle command)",                             \
-        "Used for vehicle control (0: false, 1: true)",                                    \
-        "[s] Time-span to resend control mode (0: don't resend)",                          \
-        "Motor load inertia",                                                              \
-        "Motor load cross inertia",                                                        \
-        "Encoder count divider 2^x (e.g. 4 means divide by 16)",                           \
-        "Encoder count denominator (COUNT_REV/ENCODER_DENOMINATOR is encoder resolution)", \
-        "[rad] Index signal rising edge angle at CW rotation",                             \
-        "[rad] Index signal falling edge angle at CW rotation",                            \
-        "[in/out] Index signal gear ratio",                                                \
+#define YP_PARAM_COMMENT                                                                        \
+  {                                                                                             \
+    "Parameter file version",                                                                   \
+        "[Integer Nm/Nm] Fixed-point position of PC-MCU communication",                         \
+        "[Nm] Calculation fineness of torque control",                                          \
+        "[Counts] PWM cycle",                                                                   \
+        "[Counts/rev] Encoder specification",                                                   \
+        "Encoder type (2:2-phase incremental, 3:3-phase incremental)",                          \
+        "[V] Power source voltage",                                                             \
+        "[s] Velocity control cycle",                                                           \
+        "[in/out] Gear ratio",                                                                  \
+        "[ohm] Motor internal resistance",                                                      \
+        "[Nm/A] Motor torque constant",                                                         \
+        "[rpm/V] Motor speed constant",                                                         \
+        "Motor type (0:DC, 3:3phase-AC)",                                                       \
+        "[rad] Offset angle of AC motor phase",                                                 \
+        "[m] Wheel radius",                                                                     \
+        "[m] Right wheel radius",                                                               \
+        "[m] Left wheel radius",                                                                \
+        "[m] Tread",                                                                            \
+        "[s] Trajectory control cycle",                                                         \
+        "[m/s] Maximum velocity",                                                               \
+        "[rad/s] Maximum angular velocity",                                                     \
+        "[m/ss] Maximum acceleration",                                                          \
+        "[rad/ss] Maximum angular acceleration",                                                \
+        "[m/ss] Centrifugal acceleration limit",                                                \
+        "[m/s / rad/s] Deacceleration factor of trajectory control",                            \
+        "[rad/ss / m] Feedback gain for distance error",                                        \
+        "[rad/ss / rad] Feedback gain for angular error",                                       \
+        "[rad/ss / rad/s] Feedback gain for angular velocity",                                  \
+        "[m] Clipping value of line following control",                                         \
+        "[1/s] PI control parameter Kp",                                                        \
+        "[1/ss] PI control parameter Ki",                                                       \
+        "[Nm] Motor maximum torque",                                                            \
+        "[Nm] Constant friction",                                                               \
+        "[Nm/(rad/s)] Viscous friction",                                                        \
+        "[Nm] Constant friction (neg-direction)",                                               \
+        "[Nm/(rad/s)] Viscous friction (neg-direction)",                                        \
+        "[Nm] Motor torque limit",                                                              \
+        "[rev] Maximum integrated error of PI control",                                         \
+        "[Nm] Offset value of motor torque",                                                    \
+        "[kg] Robot weight",                                                                    \
+        "[kgm^2] Robot moment of inertia",                                                      \
+        "[kgm^2] Rotor moment of inertia of motor",                                             \
+        "[kgm^2] Tire moment of inertia",                                                       \
+        "[m] Robot size of front",                                                              \
+        "[m] Robot size of rear",                                                               \
+        "[m] Robot size of left",                                                               \
+        "[m] Robot size of right",                                                              \
+        "PWS parameter A",                                                                      \
+        "PWS parameter B",                                                                      \
+        "PWS parameter C",                                                                      \
+        "PWS parameter D",                                                                      \
+        "PWS parameter E",                                                                      \
+        "PWS parameter F",                                                                      \
+        "[m] Linear feedback area of stop command",                                             \
+        "[rad] Linear feedback area of spin command",                                           \
+        "[rad] Linear feedback area of wheel_ang command",                                      \
+        "[rad] Minimum wheel angle (for wheel_angle command)",                                  \
+        "[rad] Maximum wheel angle (for wheel_angle command)",                                  \
+        "Used for vehicle control (0: false, 1: true)",                                         \
+        "[s] Time-span to resend control mode (0: don't resend)",                               \
+        "Motor load inertia",                                                                   \
+        "Motor load cross inertia",                                                             \
+        "Encoder count divider 2^x (e.g. 4 means divide by 16)",                                \
+        "Encoder count denominator"                                                             \
+        " (COUNT_REV/ENCODER_DENOMINATOR is encoder resolution for one electrical revolution)", \
+        "[rad] Index signal rising edge angle at CW rotation",                                  \
+        "[rad] Index signal falling edge angle at CW rotation",                                 \
+        "[in/out] Index signal gear ratio",                                                     \
   }
 
 enum motor_id
@@ -442,6 +443,7 @@ enum motor_id
 // clang-format on
 
 #define YP_PARAM_REQUIRED_VERSION 4.0
+#define YP_PARAM_SUPPORTED_VERSION 5.0
 
 /* パラメータの有効・無効 */
 /* control_state用　　 */

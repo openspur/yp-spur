@@ -826,15 +826,23 @@ int set_paramptr(FILE *paramfile)
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
     // Count motor number
-    if (!g_param.motor_enable[j])
-      continue;
-    g_param.num_motor_enable++;
+    if (g_param.motor_enable[j])
+      g_param.num_motor_enable++;
+  }
+  if (g_param.num_motor_enable == 0)
+  {
+    // If all parameters are common among motors, treat num_motor_enable as two
+    g_param.motor_enable[0] = g_param.motor_enable[1] = 1;
+    g_param.num_motor_enable = 2;
+  }
 
+  for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
+  {
     // Verify parameter version compatibility
     if (g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] &&
         g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])
     {
-      if (g_P[YP_PARAM_VERSION][0] < 5)
+      if (g_P[YP_PARAM_VERSION][0] < 5.0)
       {
         yprintf(
             OUTPUT_LV_ERROR,

@@ -192,10 +192,10 @@ int main(int argc, char *argv[])
   if (!ret) /* オプション解析に失敗したとき */
     return EXIT_FAILURE;
 
-  yprintf(OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-  yprintf(OUTPUT_LV_PROCESS, "YamabicoProject-Spur\n");
-  yprintf(OUTPUT_LV_PROCESS, " Ver. %s\n", PROJECT_VERSION);
-  yprintf(OUTPUT_LV_PROCESS, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+  yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+  yprintf(OUTPUT_LV_INFO, "YamabicoProject-Spur\n");
+  yprintf(OUTPUT_LV_INFO, " Ver. %s\n", PROJECT_VERSION);
+  yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 
   /* Ctrl-C割り込みハンドラーの登録 */
   escape_road();
@@ -224,8 +224,8 @@ int main(int argc, char *argv[])
     FILE *temp_paramfile = NULL;
     quit = 0;
 
-    yprintf(OUTPUT_LV_PROCESS, "Device Information\n");
-    yprintf(OUTPUT_LV_PROCESS, " Port    : %s \n", param->device_name);
+    yprintf(OUTPUT_LV_INFO, "Device Information\n");
+    yprintf(OUTPUT_LV_INFO, " Port    : %s \n", param->device_name);
 
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
         int device_current, device_age;
         sscanf(YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age);
 
-        yprintf(OUTPUT_LV_PROCESS, " Checking device information...\r");
+        yprintf(OUTPUT_LV_INFO, " Checking device information...\r");
         for (i = 0; i < 3; i++)
         {
           // Check protocol version
@@ -262,12 +262,12 @@ int main(int argc, char *argv[])
           }
           break;
         }
-        yprintf(OUTPUT_LV_PARAM, " Vender  : %s\033[K\n", version.vender);
-        yprintf(OUTPUT_LV_PARAM, " Product : %s\n", version.product);
-        yprintf(OUTPUT_LV_PARAM, " Firmware: %s\n", version.firmware);
-        yprintf(OUTPUT_LV_PARAM, " Protcol : %s\n", version.protocol);
-        yprintf(OUTPUT_LV_PARAM, " Serialno: %s\n", version.serialno);
-        yprintf(OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        yprintf(OUTPUT_LV_DEBUG, " Vender  : %s\033[K\n", version.vender);
+        yprintf(OUTPUT_LV_DEBUG, " Product : %s\n", version.product);
+        yprintf(OUTPUT_LV_DEBUG, " Firmware: %s\n", version.firmware);
+        yprintf(OUTPUT_LV_DEBUG, " Protcol : %s\n", version.protocol);
+        yprintf(OUTPUT_LV_DEBUG, " Serialno: %s\n", version.serialno);
+        yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
         if (i == 3)
         {
           yprintf(OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n(Device: %s, coordinator: %s)\n",
@@ -300,11 +300,11 @@ int main(int argc, char *argv[])
       {
         continue;
       }
-      yprintf(OUTPUT_LV_PARAM, "Driver depending parameters\n");
-      yprintf(OUTPUT_LV_PARAM, " Name          : %s\n", driver_param.robot_name);
-      yprintf(OUTPUT_LV_PARAM, " PWM resolution: %s\n", driver_param.pwm_resolution);
-      yprintf(OUTPUT_LV_PARAM, " Motor number  : %s\n", driver_param.motor_num);
-      yprintf(OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+      yprintf(OUTPUT_LV_DEBUG, "Driver depending parameters\n");
+      yprintf(OUTPUT_LV_DEBUG, " Name          : %s\n", driver_param.robot_name);
+      yprintf(OUTPUT_LV_DEBUG, " PWM resolution: %s\n", driver_param.pwm_resolution);
+      yprintf(OUTPUT_LV_DEBUG, " Motor number  : %s\n", driver_param.motor_num);
+      yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 
       if (strlen(driver_param.pwm_resolution) <= 0 ||
           strlen(driver_param.motor_num) <= 0)
@@ -325,7 +325,7 @@ int main(int argc, char *argv[])
       {
         char param[2048];
 
-        yprintf(OUTPUT_LV_MODULE, "Reading device embedded parameter.\n");
+        yprintf(OUTPUT_LV_INFO, "Reading device embedded parameter.\n");
         temp_paramfile = tmpfile();
         if (!temp_paramfile)
         {
@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
     }
     if (temp_paramfile)
     {
-      yprintf(OUTPUT_LV_PARAM, "Embedded parameter file\n");
+      yprintf(OUTPUT_LV_DEBUG, "Embedded parameter file\n");
       if (!set_paramptr(temp_paramfile))
       {
         yprintf(OUTPUT_LV_ERROR, "Error: Cannot use embedded parameter.\n");
@@ -363,7 +363,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-      yprintf(OUTPUT_LV_PARAM, "Parameter file: %s\n", param->parameter_filename);
+      yprintf(OUTPUT_LV_DEBUG, "Parameter file: %s\n", param->parameter_filename);
       if (!set_param(param->parameter_filename, paramfile))
       {
         yprintf(OUTPUT_LV_ERROR, "Error: Cannot load parameter file.\n");
@@ -377,14 +377,14 @@ int main(int argc, char *argv[])
         *pp(YP_PARAM_PWM_MAX, i) = atoi(driver_param.pwm_resolution);
       }
     }
-    yprintf(OUTPUT_LV_PARAM, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
+    yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
 
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
       // ボーレートの設定
       if (param->speed)
       {
-        yprintf(OUTPUT_LV_MODULE, "Setting baudrate to %d baud.\n", param->speed);
+        yprintf(OUTPUT_LV_INFO, "Setting baudrate to %d baud.\n", param->speed);
       }
       else
       {
@@ -406,7 +406,7 @@ int main(int argc, char *argv[])
       if (ret == 4)
       {
         // ボーレートの設定未対応
-        yprintf(OUTPUT_LV_WARNING, "Info: Baudrate setting is not supported on this device.\n");
+        yprintf(OUTPUT_LV_INFO, "Info: Baudrate setting is not supported on this device.\n");
       }
       else
       {
@@ -416,13 +416,13 @@ int main(int argc, char *argv[])
 
       if (param->admask)
       {
-        yprintf(OUTPUT_LV_MODULE, "Setting admask to %x.\n", param->admask);
+        yprintf(OUTPUT_LV_INFO, "Setting admask to %x.\n", param->admask);
         set_admask(param->admask);
       }
 
       if (option(OPTION_ENABLE_GET_DIGITAL_IO))
       {
-        yprintf(OUTPUT_LV_MODULE, "Enabling digital io input.\n");
+        yprintf(OUTPUT_LV_INFO, "Enabling digital io input.\n");
         set_diomask(1);
       }
 
@@ -445,7 +445,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    yprintf(OUTPUT_LV_MODULE, "YP-Spur coordinator started.\n");
+    yprintf(OUTPUT_LV_INFO, "YP-Spur coordinator started.\n");
 
     /* スレッド初期化 */
     init_command_thread(&command_thread);
@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
         while (1)
           yp_usleep(1000000);
       }
-      yprintf(OUTPUT_LV_MODULE, "Connection to %s was closed.\n", param->device_name);
+      yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }
 
     /* 終了処理 */
@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
           yp_usleep(200000);
         }
       }
-      yprintf(OUTPUT_LV_MODULE, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+      yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
       yp_usleep(500000);
       continue;
     }

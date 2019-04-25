@@ -287,7 +287,7 @@ int ipcmd_recv_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
         return -1;
       }
       ipcmd->clients[i] = sock;
-      yprintf(OUTPUT_LV_PROCESS, "Connection %d accepted from %s.\n", i, inet_ntoa(client.sin_addr));
+      yprintf(OUTPUT_LV_INFO, "Connection %d accepted from %s.\n", i, inet_ntoa(client.sin_addr));
     }
 
     recved = -1;
@@ -312,12 +312,12 @@ int ipcmd_recv_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
     {
       if (ipcmd->tcp_type == IPCMD_TCP_CLIENT)
       {
-        yprintf(OUTPUT_LV_PROCESS, "Connection closed.\n");
+        yprintf(OUTPUT_LV_INFO, "Connection closed.\n");
         ipcmd->connection_error = 1;
         shutdown(ipcmd->socket, SOCK_SHUTDOWN_OPTION);
         return -1;
       }
-      yprintf(OUTPUT_LV_PROCESS, "Connection %d closed.\n", i);
+      yprintf(OUTPUT_LV_INFO, "Connection %d closed.\n", i);
       ipcmd->clients[i] = -1;
       continue;
     }

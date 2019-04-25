@@ -54,7 +54,7 @@ void init_ypspurSSM(int ssm_id)
 #ifdef HAVE_SSM
   g_ssm_id = ssm_id;
 
-  yprintf(OUTPUT_LV_MODULE, "    with SSM\n");
+  yprintf(OUTPUT_LV_INFO, "    with SSM\n");
   if (!initSSM())
   {
     /* SSMが起動していない */
@@ -159,7 +159,7 @@ void coordinate_synchronize(Odometry *odm, SpurUserParamsPtr spur)
         if (g_odm_adj_sid > 0)
         {  // openできた
           g_ssm_adj_enable = 1;
-          yprintf(OUTPUT_LV_MODULE, "SSMInfo: Find adjust information.\n");
+          yprintf(OUTPUT_LV_INFO, "SSMInfo: Find adjust information.\n");
         }
         else
         {

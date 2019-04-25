@@ -594,7 +594,7 @@ int odometry_receive_loop(void)
     ret = serial_recieve(odometry_receive, NULL);
     if (param->parameter_applying)
     {
-      yprintf(OUTPUT_LV_MODULE, "Restarting odometry receive loop.\n");
+      yprintf(OUTPUT_LV_INFO, "Restarting odometry receive loop.\n");
       continue;
     }
     break;

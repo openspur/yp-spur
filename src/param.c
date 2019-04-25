@@ -1040,7 +1040,12 @@ int apply_robot_params()
   {
     int version, age;
     sscanf(YP_PROTOCOL_NAME, "YPP:%d:%d", &version, &age);
-    parameter_set(PARAM_protocol_version, 0, version);
+    for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
+    {
+      if (!g_param.motor_enable[j])
+        continue;
+      parameter_set(PARAM_protocol_version, j, version);
+    }
   }
 
   /* モータのパラメータ */

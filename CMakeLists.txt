@@ -343,8 +343,12 @@ configure_file(ypspur.pc.in
   ${PROJECT_BINARY_DIR}/ypspur.pc @ONLY
 )
 
+set(
+  PKGCONFIG_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/pkgconfig
+  CACHE PATH "Install directory of pkgconfig file"
+)
 install(
   FILES
     ${PROJECT_BINARY_DIR}/ypspur.pc
-  DESTINATION share/pkgconfig
+  DESTINATION ${PKGCONFIG_INSTALL_DIR}
 )

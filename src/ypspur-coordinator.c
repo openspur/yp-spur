@@ -225,10 +225,10 @@ int main(int argc, char *argv[])
     quit = 0;
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
-    yprintf(OUTPUT_LV_INFO, " Port    : %s \n", param->device_name);
 
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
+      yprintf(OUTPUT_LV_INFO, " Port    : %s \n", param->device_name);
       if (!serial_connect(param->device_name))
       {
         // quit=0;でbreakしたら異常終了と判断される
@@ -240,9 +240,10 @@ int main(int argc, char *argv[])
         int device_current, device_age;
         sscanf(YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age);
 
-        yprintf(OUTPUT_LV_INFO, " Checking device information...\r");
+        yprintf(OUTPUT_LV_INFO, " Checking device information");
         for (i = 0; i < 3; i++)
         {
+          yprintf(OUTPUT_LV_INFO, ".");
           // Check protocol version
           if (get_version(&version) == -1)
           {
@@ -262,12 +263,13 @@ int main(int argc, char *argv[])
           }
           break;
         }
-        yprintf(OUTPUT_LV_DEBUG, " Vender  : %s\033[K\n", version.vender);
-        yprintf(OUTPUT_LV_DEBUG, " Product : %s\n", version.product);
-        yprintf(OUTPUT_LV_DEBUG, " Firmware: %s\n", version.firmware);
-        yprintf(OUTPUT_LV_DEBUG, " Protcol : %s\n", version.protocol);
-        yprintf(OUTPUT_LV_DEBUG, " Serialno: %s\n", version.serialno);
-        yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        ansi_clear_line(OUTPUT_LV_INFO);
+        yprintf(OUTPUT_LV_INFO, " Vender  : %s\n", version.vender);
+        yprintf(OUTPUT_LV_INFO, " Product : %s\n", version.product);
+        yprintf(OUTPUT_LV_INFO, " Firmware: %s\n", version.firmware);
+        yprintf(OUTPUT_LV_INFO, " Protcol : %s\n", version.protocol);
+        yprintf(OUTPUT_LV_INFO, " Serialno: %s\n", version.serialno);
+        yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
         if (i == 3)
         {
           yprintf(OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n(Device: %s, coordinator: %s)\n",
@@ -317,6 +319,10 @@ int main(int argc, char *argv[])
         }
         break;
       }
+    }
+    else
+    {
+      yprintf(OUTPUT_LV_INFO, " Port    : n/a (--without-device mode)\n");
     }
     if (!(option(OPTION_PARAM_FILE)))
     {

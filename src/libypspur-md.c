@@ -1412,5 +1412,5 @@ double YP_md_get_joint_torque(YPSpur *spur, int id, double *t)
 
 ParamOutputLv output_lv(void)
 {
-  return OUTPUT_LV_DEFAULT;
+  return OUTPUT_LV_INFO;
 }

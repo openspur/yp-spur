@@ -29,16 +29,53 @@
 
 #include <param.h>
 
-void yprintf(ParamOutputLv level, const char* format, ...)
+void yprintf(ParamOutputLv level, const char *format, ...)
 {
   va_list ap;
 
   if (output_lv() < level)
     return;
 
+#if !defined(__MINGW32__)
+  if (isatty(2))
+  {
+    switch (level)
+    {
+      case OUTPUT_LV_ERROR:
+        fputs("\x1B[0;31m", stderr);
+        break;
+      case OUTPUT_LV_WARNING:
+        fputs("\x1B[0;33m", stderr);
+        break;
+      default:
+        break;
+    }
+  }
+#endif  // !defined(__MINGW32__)
+
   va_start(ap, format);
   vfprintf(stderr, format, ap);
   va_end(ap);
 
+#if !defined(__MINGW32__)
+  if (isatty(2))
+    fputs("\x1B[0m", stderr);
+#endif  // !defined(__MINGW32__)
+
   fflush(stderr);
+}
+
+void ansi_clear_line(ParamOutputLv level)
+{
+  if (output_lv() < level)
+    return;
+
+#if !defined(__MINGW32__)
+  if (isatty(2))
+    fprintf(stderr, "\x1B[2K\r");
+  else
+    fputs("\n", stderr);
+#else
+  fputs("\n", stderr);
+#endif  // !defined(__MINGW32__)
 }

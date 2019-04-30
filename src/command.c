@@ -60,7 +60,7 @@ void command_loop_cleanup(void *data)
   struct ipcmd_t *ipcmd;
 
   ipcmd = data;
-  yprintf(OUTPUT_LV_MODULE, "Command analyzer stopped.\n");
+  yprintf(OUTPUT_LV_INFO, "Command analyzer stopped.\n");
 
   ipcmd_close(ipcmd);
 }
@@ -113,7 +113,7 @@ void command(void)
   // メッセージキューを空にする
   ipcmd.flush(&ipcmd);
 
-  yprintf(OUTPUT_LV_MODULE, "Command analyzer started.\n");
+  yprintf(OUTPUT_LV_INFO, "Command analyzer started.\n");
   pthread_cleanup_push(command_loop_cleanup, &ipcmd);
 
   while (1)
@@ -133,175 +133,175 @@ void command(void)
       /*--------command_set.c--------*/
       case YPSPUR_SET_POS:
         set_pos_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set pos %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set pos %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
         break;
       case YPSPUR_SET_GL_GL:
         set_GL_on_GL_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: GL on GL  %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: GL on GL  %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
         break;
       case YPSPUR_ADJUST:
         set_adjust_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: adjust  %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: adjust  %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
         break;
       case YPSPUR_SET_VEL:
         set_vel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: vel %f\n", g_spur.v);
+        yprintf(OUTPUT_LV_DEBUG, "Command: vel %f\n", g_spur.v);
         break;
       case YPSPUR_SET_ANGVEL:
         set_ang_vel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: w %f\n", g_spur.w);
+        yprintf(OUTPUT_LV_DEBUG, "Command: w %f\n", g_spur.w);
         break;
       case YPSPUR_SET_ACCEL:
         set_accel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: dvel %f\n", g_spur.dv);
+        yprintf(OUTPUT_LV_DEBUG, "Command: dvel %f\n", g_spur.dv);
         break;
       case YPSPUR_SET_ANGACCEL:
         set_ang_accel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: dw %f\n", g_spur.dw);
+        yprintf(OUTPUT_LV_DEBUG, "Command: dw %f\n", g_spur.dw);
         break;
       case YPSPUR_SET_TILT:
         set_tilt_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: tilt %f %f\n", g_spur.dir, g_spur.tilt);
+        yprintf(OUTPUT_LV_DEBUG, "Command: tilt %f %f\n", g_spur.dir, g_spur.tilt);
         break;
 
       /*--------command_run.c----------*/
       case YPSPUR_LINE:
         line_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: line %f %f %f\n", g_spur.x, g_spur.y, g_spur.theta);
+        yprintf(OUTPUT_LV_DEBUG, "Command: line %f %f %f\n", g_spur.x, g_spur.y, g_spur.theta);
         break;
       case YPSPUR_STOP_LINE:
         stop_line_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: stop_line %f %f %f\n", g_spur.x, g_spur.y, g_spur.theta);
+        yprintf(OUTPUT_LV_DEBUG, "Command: stop_line %f %f %f\n", g_spur.x, g_spur.y, g_spur.theta);
         break;
       case YPSPUR_CIRCLE:
         circle_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: circle %f %f %f\n", g_spur.x, g_spur.y, g_spur.radius);
+        yprintf(OUTPUT_LV_DEBUG, "Command: circle %f %f %f\n", g_spur.x, g_spur.y, g_spur.radius);
         break;
       case YPSPUR_SPIN:
         spin_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: spin %f\n", g_spur.theta);
+        yprintf(OUTPUT_LV_DEBUG, "Command: spin %f\n", g_spur.theta);
         break;
       case YPSPUR_ORIENT:
         orient_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: orient %f\n", g_spur.theta);
+        yprintf(OUTPUT_LV_DEBUG, "Command: orient %f\n", g_spur.theta);
         break;
       case YPSPUR_STOP:
         stop_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: stop\n");
+        yprintf(OUTPUT_LV_DEBUG, "Command: stop\n");
         break;
       case YPSPUR_OPENFREE:
         openfree_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: openfree\n");
+        yprintf(OUTPUT_LV_DEBUG, "Command: openfree\n");
         break;
       case YPSPUR_FREE:
         free_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: free\n");
+        yprintf(OUTPUT_LV_DEBUG, "Command: free\n");
         break;
       case YPSPUR_FREEZE:
         g_spur.freeze = 1;
-        yprintf(OUTPUT_LV_COMMAND, "Command: freeze\n");
+        yprintf(OUTPUT_LV_DEBUG, "Command: freeze\n");
         break;
       case YPSPUR_UNFREEZE:
         g_spur.freeze = 0;
-        yprintf(OUTPUT_LV_COMMAND, "Command: unfreeze\n");
+        yprintf(OUTPUT_LV_DEBUG, "Command: unfreeze\n");
         break;
       case YPSPUR_ISFREEZE:
         res_msg.data[0] = g_spur.freeze;
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: isfreeze %d\n", g_spur.freeze);
+        yprintf(OUTPUT_LV_DEBUG, "Command: isfreeze %d\n", g_spur.freeze);
         break;
       case YPSPUR_VEL:
         vel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: vel %f %f\n", g_spur.vref, g_spur.wref);
+        yprintf(OUTPUT_LV_DEBUG, "Command: vel %f %f\n", g_spur.vref, g_spur.wref);
         break;
       case YPSPUR_WHEEL_VEL:
         wheel_vel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: wheel_vel %f %f\n", g_spur.wvelref[0], g_spur.wvelref[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: wheel_vel %f %f\n", g_spur.wvelref[0], g_spur.wvelref[1]);
         break;
       case YPSPUR_WHEEL_TORQUE:
         set_torque_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set_torque %f %f\n", msg.data[0], msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set_torque %f %f\n", msg.data[0], msg.data[1]);
         break;
       case YPSPUR_SET_WHEEL_VEL:
         set_wheel_vel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set_wheel_vel %f %f\n", g_spur.wheel_vel[0], g_spur.wheel_vel[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set_wheel_vel %f %f\n", g_spur.wheel_vel[0], g_spur.wheel_vel[1]);
         break;
       case YPSPUR_SET_WHEEL_ACCEL:
         set_wheel_accel_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set_wheel_accel %f %f\n", g_spur.wheel_accel[0], g_spur.wheel_accel[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set_wheel_accel %f %f\n", g_spur.wheel_accel[0], g_spur.wheel_accel[1]);
         break;
       case YPSPUR_WHEEL_ANGLE:
         wheel_angle_com(msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: wheel_angle %f %f\n", g_spur.wheel_angle[0], g_spur.wheel_angle[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: wheel_angle %f %f\n", g_spur.wheel_angle[0], g_spur.wheel_angle[1]);
         break;
 
       /*----------command_get.c------------------*/
       case YPSPUR_GET_POS:
         get_pos_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get %f %f %f\n", res_msg.data[0], res_msg.data[1], res_msg.data[2]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get %f %f %f\n", res_msg.data[0], res_msg.data[1], res_msg.data[2]);
         break;
       case YPSPUR_GET_VEL:
         get_vel_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: getvel %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: getvel %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_VREF:
         get_vref_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: getvref %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: getvref %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_WHEEL_VREF:
         get_wheel_vref_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: getwheelvref %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: getwheelvref %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_FORCE:
         get_force_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: getforce %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: getforce %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_WHEEL_TORQUE:
         get_wheel_torque_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: getwheeltorque %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: getwheeltorque %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_WHEEL_VEL:
         get_wheel_vel_com(msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get wheelvel %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get wheelvel %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_GET_WHEEL_ANG:
         get_wheel_ang_com(msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get wheelang %f %f\n", res_msg.data[0], res_msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get wheelang %f %f\n", res_msg.data[0], res_msg.data[1]);
         break;
       case YPSPUR_NEAR_POS:
         res_msg.cs = near_pos_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: near pos ( dist = %f )\n", res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: near pos ( dist = %f )\n", res_msg.data[0]);
         break;
       case YPSPUR_NEAR_ANG:
         res_msg.cs = near_ang_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: near ang ( dist = %f )\n", res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: near ang ( dist = %f )\n", res_msg.data[0]);
         break;
       case YPSPUR_OVER_LINE:
         res_msg.cs = over_line_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: over line ( dist = %f )\n", res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: over line ( dist = %f )\n", res_msg.data[0]);
         break;
 
       /*-------------command_param.c---------------*/
       case YPSPUR_PARAM_SET:
         param_set_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: param_set %s %f\n", param_name[msg.cs], msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: param_set %s %f\n", param_name[msg.cs], msg.data[0]);
         break;
 
       case YPSPUR_PARAM_GET:
         res_msg.cs = param_get_com(msg.cs, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: param_get %s %f\n", param_name[msg.cs], msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: param_get %s %f\n", param_name[msg.cs], msg.data[0]);
         break;
 
       case YPSPUR_PARAM_STATE:
@@ -312,78 +312,78 @@ void command(void)
       case YPSPUR_GETAD:
         get_ad_com(msg.data, res_msg.data);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get A/D%d value %d\n", (int)msg.data[0], (int)res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get A/D%d value %d\n", (int)msg.data[0], (int)res_msg.data[0]);
         break;
 
       case YPSPUR_SETIODIR:
         set_io_dir_com(msg.data, res_msg.data);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set IO dir %d\n", (int)msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set IO dir %d\n", (int)msg.data[0]);
         break;
 
       case YPSPUR_SETIODATA:
         set_io_data_com(msg.data, res_msg.data);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set IO data %d\n", (int)msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set IO data %d\n", (int)msg.data[0]);
         break;
 
       case YPSPUR_GET_ERROR_STATE:
         get_error_state_com(msg.data, res_msg.data);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get error state %d (id: %d)\n", (int)msg.data[0], (int)res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get error state %d (id: %d)\n", (int)msg.data[0], (int)res_msg.data[0]);
         break;
 
       /*-------------command_joint.c---------------*/
       case YPSPUR_JOINT_TORQUE:
         joint_torque_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: joint %d torque %f\n", msg.cs, msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: joint %d torque %f\n", msg.cs, msg.data[0]);
         break;
 
       case YPSPUR_JOINT_VEL:
         joint_vel_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: joint %d vel %f\n", msg.cs, msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: joint %d vel %f\n", msg.cs, msg.data[0]);
         break;
 
       case YPSPUR_JOINT_ANG:
         joint_ang_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: joint %d ang %f\n", msg.cs, msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: joint %d ang %f\n", msg.cs, msg.data[0]);
         break;
 
       case YPSPUR_JOINT_ANG_VEL:
         joint_ang_vel_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: joint %d ang %f vel %f\n", msg.cs, msg.data[0], msg.data[1]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: joint %d ang %f vel %f\n", msg.cs, msg.data[0], msg.data[1]);
         break;
 
       case YPSPUR_SET_JOINT_ACCEL:
         set_joint_accel_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set joint %d accel %f\n", msg.cs, msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set joint %d accel %f\n", msg.cs, msg.data[0]);
         break;
 
       case YPSPUR_SET_JOINT_VEL:
         set_joint_vel_com(msg.cs, msg.data, &g_spur);
-        yprintf(OUTPUT_LV_COMMAND, "Command: set joint %d vel %f\n", msg.cs, msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: set joint %d vel %f\n", msg.cs, msg.data[0]);
         break;
 
       case YPSPUR_GET_JOINT_VEL:
         get_joint_vel_com(msg.cs, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get joint %d vel %f\n", msg.cs, res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get joint %d vel %f\n", msg.cs, res_msg.data[0]);
         break;
 
       case YPSPUR_GET_JOINT_VREF:
         get_joint_vref_com(msg.cs, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get joint %d vref %f\n", msg.cs, res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get joint %d vref %f\n", msg.cs, res_msg.data[0]);
         break;
 
       case YPSPUR_GET_JOINT_ANG:
         get_joint_ang_com(msg.cs, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get joint %d ang %f\n", msg.cs, res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get joint %d ang %f\n", msg.cs, res_msg.data[0]);
         break;
 
       case YPSPUR_GET_JOINT_TORQUE:
         get_joint_torque_com(msg.cs, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
-        yprintf(OUTPUT_LV_COMMAND, "Command: get joint %d torque %f\n", msg.cs, res_msg.data[0]);
+        yprintf(OUTPUT_LV_DEBUG, "Command: get joint %d torque %f\n", msg.cs, res_msg.data[0]);
         break;
 
       default:
@@ -406,7 +406,7 @@ void command(void)
             if (p(YP_PARAM_VEHICLE_CONTROL, i) > 0)
               g_spur.wheel_mode[i] = MOTOR_CONTROL_FREE;
           }
-          yprintf(OUTPUT_LV_CONTROL, "Mode: free\n");
+          yprintf(OUTPUT_LV_DEBUG, "Mode: free\n");
         }
         else if (g_spur.run_mode == RUN_OPENFREE)
         {
@@ -418,7 +418,7 @@ void command(void)
             if (p(YP_PARAM_VEHICLE_CONTROL, i) > 0)
               g_spur.wheel_mode[i] = MOTOR_CONTROL_OPENFREE;
           }
-          yprintf(OUTPUT_LV_CONTROL, "Mode: openfree\n");
+          yprintf(OUTPUT_LV_DEBUG, "Mode: openfree\n");
         }
         else
         {
@@ -430,12 +430,12 @@ void command(void)
             if (p(YP_PARAM_VEHICLE_CONTROL, i) > 0)
               g_spur.wheel_mode[i] = MOTOR_CONTROL_VEHICLE;
           }
-          yprintf(OUTPUT_LV_CONTROL, "Mode: servo %d\n", g_spur.run_mode);
+          yprintf(OUTPUT_LV_DEBUG, "Mode: servo %d\n", g_spur.run_mode);
         }
       }
       else
       {
-        yprintf(OUTPUT_LV_CONTROL, "Mode: freeze\n");
+        yprintf(OUTPUT_LV_DEBUG, "Mode: freeze\n");
       }
     }
     g_spur.before_run_mode = g_spur.run_mode;

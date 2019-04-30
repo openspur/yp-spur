@@ -111,12 +111,12 @@ void param_state_com(int cs, double *data, SpurUserParamsPtr spur)
   if (cs == YP_STATE_MOTOR && data[0] == ENABLE)
   {
     set_param_motor();
-    yprintf(OUTPUT_LV_CONTROL, "COMMAND: Motor Control: enabled\n");
+    yprintf(OUTPUT_LV_DEBUG, "COMMAND: Motor Control: enabled\n");
   }
   if (cs == YP_STATE_VELOCITY && data[0] == ENABLE)
   {
     set_param_velocity();
-    yprintf(OUTPUT_LV_CONTROL, "COMMAND: Velocity Control: enabled\n");
+    yprintf(OUTPUT_LV_DEBUG, "COMMAND: Velocity Control: enabled\n");
   }
   if (cs == YP_STATE_BODY && data[0] == ENABLE)
   {
@@ -126,14 +126,14 @@ void param_state_com(int cs, double *data, SpurUserParamsPtr spur)
     odometry->x = 0;
     odometry->y = 0;
     odometry->theta = 0;
-    yprintf(OUTPUT_LV_CONTROL, "COMMAND: Body Control: enabled\n");
+    yprintf(OUTPUT_LV_DEBUG, "COMMAND: Body Control: enabled\n");
   }
   if (cs == YP_STATE_TRACKING && data[0] == ENABLE)
   {
-    yprintf(OUTPUT_LV_CONTROL, "COMMAND: Trajectory Control: enabled\n");
+    yprintf(OUTPUT_LV_DEBUG, "COMMAND: Trajectory Control: enabled\n");
   }
   if (cs == YP_STATE_GRAVITY && data[0] == ENABLE)
   {
-    yprintf(OUTPUT_LV_CONTROL, "COMMAND: Gravity Compensation: enabled\n");
+    yprintf(OUTPUT_LV_DEBUG, "COMMAND: Gravity Compensation: enabled\n");
   }
 }

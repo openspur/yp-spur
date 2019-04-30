@@ -177,7 +177,7 @@ int arg_analyze(int argc, char *argv[])
 
   g_param.option = OPTION_DEFAULT;
   g_param.msq_key = YPSPUR_MSQ_KEY;
-  g_param.output_lv = OUTPUT_LV_DEFAULT;
+  g_param.output_lv = OUTPUT_LV_INFO;
   g_param.speed = 0;
   g_param.ssm_id = 0;
 
@@ -293,11 +293,11 @@ int arg_analyze(int argc, char *argv[])
     }
     else if (!strcmp(argv[i], "--verbose"))
     {
-      g_param.output_lv = OUTPUT_LV_VERBOSE;
+      g_param.output_lv = OUTPUT_LV_DEBUG;
     }
     else if (!strcmp(argv[i], "--quiet"))
     {
-      g_param.output_lv = OUTPUT_LV_QUIET;
+      g_param.output_lv = OUTPUT_LV_WARNING;
     }
     else if (!strcmp(argv[i], "--reconnect"))
     {
@@ -687,7 +687,7 @@ int set_paramptr(FILE *paramfile)
                 g_Pf[param_num][j] = NULL;
               }
             }
-            yprintf(OUTPUT_LV_PARAM, "%d %s %f\n", param_num, param_names[param_num], g_P[param_num][0]);
+            yprintf(OUTPUT_LV_DEBUG, "%d %s %f\n", param_num, param_names[param_num], g_P[param_num][0]);
           }
           else
           {
@@ -700,7 +700,7 @@ int set_paramptr(FILE *paramfile)
               formula_free(g_Pf[param_num][motor_num]);
               g_Pf[param_num][motor_num] = NULL;
             }
-            yprintf(OUTPUT_LV_PARAM, "%d %s[%d] %f\n", param_num, param_names[param_num], motor_num,
+            yprintf(OUTPUT_LV_DEBUG, "%d %s[%d] %f\n", param_num, param_names[param_num], motor_num,
                     g_P[param_num][motor_num]);
           }
           param_num = YP_PARAM_NUM;
@@ -746,10 +746,10 @@ int set_paramptr(FILE *paramfile)
               {
                 g_Pf[param_num][j] = formula_optimize(g_Pf[param_num][j]);
               }
-              yprintf(OUTPUT_LV_PARAM, "%d %s ", param_num, param_names[param_num]);
-              if (output_lv() >= OUTPUT_LV_PARAM)
+              yprintf(OUTPUT_LV_DEBUG, "%d %s ", param_num, param_names[param_num]);
+              if (output_lv() >= OUTPUT_LV_DEBUG)
                 formula_print(stderr, g_Pf[param_num][0]);
-              yprintf(OUTPUT_LV_PARAM, "\n");
+              yprintf(OUTPUT_LV_DEBUG, "\n");
             }
           }
           else
@@ -767,10 +767,10 @@ int set_paramptr(FILE *paramfile)
             else
             {
               g_Pf[param_num][motor_num] = formula_optimize(g_Pf[param_num][motor_num]);
-              yprintf(OUTPUT_LV_PARAM, "%d %s[%d] ", param_num, param_names[param_num], motor_num);
-              if (output_lv() >= OUTPUT_LV_PARAM)
+              yprintf(OUTPUT_LV_DEBUG, "%d %s[%d] ", param_num, param_names[param_num], motor_num);
+              if (output_lv() >= OUTPUT_LV_DEBUG)
                 formula_print(stderr, g_Pf[param_num][motor_num]);
-              yprintf(OUTPUT_LV_PARAM, "\n");
+              yprintf(OUTPUT_LV_DEBUG, "\n");
             }
           }
           param_num = YP_PARAM_NUM;
@@ -882,7 +882,7 @@ int set_paramptr(FILE *paramfile)
   enable_state(YP_STATE_BODY);
   enable_state(YP_STATE_TRACKING);
 
-  yprintf(OUTPUT_LV_PARAM, "Info: %d motors defined\n", g_param.num_motor_enable);
+  yprintf(OUTPUT_LV_DEBUG, "Info: %d motors defined\n", g_param.num_motor_enable);
 
   return 1;
 }
@@ -902,7 +902,7 @@ int set_param(char *filename, char *concrete_path)
     FILE *fd;
 #endif  // HAVE_PKG_CONFIG
 
-    yprintf(OUTPUT_LV_PARAM, "Warn: File [%s] is not exist.\n", filename);
+    yprintf(OUTPUT_LV_DEBUG, "Warn: File [%s] is not exist.\n", filename);
 
 #if HAVE_PKG_CONFIG
     if (!strchr(filename, '/'))
@@ -969,14 +969,14 @@ void init_param_update_thread(pthread_t *thread, char *filename)
 
 void param_update_loop_cleanup(void *data)
 {
-  yprintf(OUTPUT_LV_MODULE, "Parameter updater stopped.\n");
+  yprintf(OUTPUT_LV_INFO, "Parameter updater stopped.\n");
 }
 
 void param_update(void *filename)
 {
   struct stat prev_status;
 
-  yprintf(OUTPUT_LV_MODULE, "Parameter updater started. Watching %s\n", filename);
+  yprintf(OUTPUT_LV_INFO, "Parameter updater started. Watching %s\n", filename);
   pthread_cleanup_push(param_update_loop_cleanup, filename);
 
   stat(filename, &prev_status);
@@ -1014,7 +1014,7 @@ void param_update(void *filename)
 /* パラメータ適用 */
 int apply_robot_params()
 {
-  yprintf(OUTPUT_LV_MODULE, "Applying parameters.\n");
+  yprintf(OUTPUT_LV_INFO, "Applying parameters.\n");
 
   int j;
   // ウォッチドックタイマの設定
@@ -1208,7 +1208,7 @@ int set_param_motor(void)
       ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
                     (g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
                      g_P[YP_PARAM_VOLT][j]));
-      yprintf(OUTPUT_LV_PARAM, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki);
+      yprintf(OUTPUT_LV_DEBUG, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki);
       if (ki == 0)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: TORQUE_CONSTANT[%d] fixed point value underflow\n", j);
@@ -1340,7 +1340,7 @@ int set_param_velocity(void)
     ffr = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][0] / (g_P[YP_PARAM_COUNT_REV][0] * fabs(g_P[YP_PARAM_GEAR][0]));
     if (ischanged_p(YP_PARAM_GAIN_A, 0) || ffr_changed)
     {
-      yprintf(OUTPUT_LV_PARAM, "Info: GAIN_A: %d\n",
+      yprintf(OUTPUT_LV_DEBUG, "Info: GAIN_A: %d\n",
               (int)(g_P[YP_PARAM_GAIN_A][0] * ffr));
       if (abs(g_P[YP_PARAM_GAIN_A][0] * ffr) == 0)
       {
@@ -1364,7 +1364,7 @@ int set_param_velocity(void)
     ffl = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][1] / (g_P[YP_PARAM_COUNT_REV][1] * fabs(g_P[YP_PARAM_GEAR][1]));
     if (ischanged_p(YP_PARAM_GAIN_B, 0) || ffl_changed)
     {
-      yprintf(OUTPUT_LV_PARAM, "Info: GAIN_B: %d\n",
+      yprintf(OUTPUT_LV_DEBUG, "Info: GAIN_B: %d\n",
               (int)(g_P[YP_PARAM_GAIN_A][0] * ffl));
       if (abs(g_P[YP_PARAM_GAIN_B][0] * ffl) == 0)
       {
@@ -1407,7 +1407,7 @@ int set_param_velocity(void)
       }
       if (ischanged_p(YP_PARAM_INERTIA_SELF, j) || ff_changed)
       {
-        yprintf(OUTPUT_LV_PARAM, "Info: INERTIA_SELF[%d]: %d\n", j,
+        yprintf(OUTPUT_LV_DEBUG, "Info: INERTIA_SELF[%d]: %d\n", j,
                 (int)(g_P[YP_PARAM_INERTIA_SELF][j] * ff));
         if (abs(g_P[YP_PARAM_INERTIA_SELF][j] * ff) == 0)
         {

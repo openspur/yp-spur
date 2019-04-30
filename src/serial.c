@@ -236,7 +236,7 @@ int serial_change_baudrate(int baud)
   {
     errnum = errno;
     yprintf(OUTPUT_LV_ERROR, "Error: Failed to set input baud rate to %d\n", baud);
-    yprintf(OUTPUT_LV_VERBOSE, "Error: cfsetispeed: %s(%d)\n", strerror(errnum), errnum);
+    yprintf(OUTPUT_LV_DEBUG, "Error: cfsetispeed: %s(%d)\n", strerror(errnum), errnum);
     return 0;
   }
   errno = 0;
@@ -245,7 +245,7 @@ int serial_change_baudrate(int baud)
   {
     errnum = errno;
     yprintf(OUTPUT_LV_ERROR, "Error: Failed to set output baud rate to %d\n", baud);
-    yprintf(OUTPUT_LV_VERBOSE, "Error: cfsetospeed: %s(%d)\n", strerror(errnum), errnum);
+    yprintf(OUTPUT_LV_DEBUG, "Error: cfsetospeed: %s(%d)\n", strerror(errnum), errnum);
     return 0;
   }
   SER_BAUDRATE = (double)baud;
@@ -259,7 +259,7 @@ int serial_change_baudrate(int baud)
   {
     errnum = errno;
     yprintf(OUTPUT_LV_ERROR, "Error: Failed to set attribute of serial port\n");
-    yprintf(OUTPUT_LV_VERBOSE, "Error: tcsetattr: %s(%d)\n", strerror(errnum), errnum);
+    yprintf(OUTPUT_LV_DEBUG, "Error: tcsetattr: %s(%d)\n", strerror(errnum), errnum);
     return 0;
   }
 
@@ -273,7 +273,7 @@ int serial_change_baudrate(int baud)
     {
       errnum = errno;
       yprintf(OUTPUT_LV_ERROR, "Error: Failed to get  attribute of serial port\n");
-      yprintf(OUTPUT_LV_VERBOSE, "Error: tcgetattr: %s(%d)\n", strerror(errnum), errnum);
+      yprintf(OUTPUT_LV_DEBUG, "Error: tcgetattr: %s(%d)\n", strerror(errnum), errnum);
       return 0;
     }
     isp = cfgetispeed(&term);
@@ -444,12 +444,12 @@ int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
     {
       int errnum;
       errnum = errno;
-      yprintf(OUTPUT_LV_VERBOSE, "Error: Select in serial_recieve failed. (%s)\n", strerror(errnum));
+      yprintf(OUTPUT_LV_DEBUG, "Error: Select in serial_recieve failed. (%s)\n", strerror(errnum));
       return -1;
     }
     else if (retval == 0)
     {
-      yprintf(OUTPUT_LV_VERBOSE, "Error: Select timed out\n");
+      yprintf(OUTPUT_LV_DEBUG, "Error: Select timed out\n");
       return -1;
     }
     receive_time = get_time();
@@ -459,12 +459,12 @@ int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
     {
       int errnum;
       errnum = errno;
-      yprintf(OUTPUT_LV_VERBOSE, "Error: Read in serial_recieve failed. (%s)\n", strerror(errnum));
+      yprintf(OUTPUT_LV_DEBUG, "Error: Read in serial_recieve failed. (%s)\n", strerror(errnum));
       return -1;
     }
     else if (len == 0)
     {
-      yprintf(OUTPUT_LV_VERBOSE, "Error: Read timed out\n");
+      yprintf(OUTPUT_LV_DEBUG, "Error: Read timed out\n");
       return -1;
     }
 #else

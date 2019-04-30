@@ -454,7 +454,7 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
 
 void control_loop_cleanup(void *data)
 {
-  yprintf(OUTPUT_LV_MODULE, "Trajectory control loop stopped.\n");
+  yprintf(OUTPUT_LV_INFO, "Trajectory control loop stopped.\n");
 }
 
 /* 20msごとの割り込みで軌跡追従制御処理を呼び出す */
@@ -466,7 +466,7 @@ void control_loop(void)
   odometry = get_odometry_ptr();
   spur = get_spur_user_param_ptr();
 
-  yprintf(OUTPUT_LV_MODULE, "Trajectory control loop started.\n");
+  yprintf(OUTPUT_LV_INFO, "Trajectory control loop started.\n");
   pthread_cleanup_push(control_loop_cleanup, NULL);
 
 #if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能

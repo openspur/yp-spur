@@ -37,9 +37,15 @@
 #include <utility.h>
 #include <yprintf.h>
 
+#define RECEIVE_BUFFER_SIZE 2048
+
 int ss_receive(char *buf, int len, double receive_time, void *data)
 {
   buf[len] = 0;
+  if (len + strlen((char *)data) > RECEIVE_BUFFER_SIZE)
+  {
+    return -3;
+  }
   strcat((char *)data, buf);
   if (strstr((char *)data, "\n\n"))
   {
@@ -63,7 +69,8 @@ int set_baudrate(int baud)
   serial_write(buf, strlen(buf));
 
   buf[0] = 0;
-  serial_recieve(ss_receive, buf);
+  if (serial_recieve(ss_receive, buf) != -2)
+    return 0;
 
   if (strstr(buf, "\n00P\n") != NULL)
   {
@@ -84,6 +91,10 @@ int set_baudrate(int baud)
 int vv_receive(char *buf, int len, double receive_time, void *data)
 {
   buf[len] = 0;
+  if (len + strlen((char *)data) > RECEIVE_BUFFER_SIZE)
+  {
+    return -3;
+  }
   strcat((char *)data, buf);
   if (strstr((char *)data, "\n\n"))
   {
@@ -117,11 +128,10 @@ int get_version(Ver_t *apVer)
   serial_write(buf, strlen(buf));
 
   buf[0] = 0;
-  serial_recieve(vv_receive, buf);
-  if (strstr(buf, "\n00P\n") == 0)
-  {
+  if (serial_recieve(vv_receive, buf) != -2)
     return 0;
-  }
+  if (strstr(buf, "\n00P\n") == 0)
+    return 0;
 
   while (1)
   {
@@ -193,11 +203,10 @@ int get_parameter(Param_t *apParam)
   serial_write(buf, strlen(buf));
 
   buf[0] = 0;
-  serial_recieve(vv_receive, buf);
-  if (strstr(buf, "\n00P\n") == 0)
-  {
+  if (serial_recieve(vv_receive, buf) != -2)
     return 0;
-  }
+  if (strstr(buf, "\n00P\n") == 0)
+    return 0;
 
   while (1)
   {
@@ -255,11 +264,10 @@ int get_embedded_param(char *param)
   serial_write(buf, strlen(buf));
 
   buf[0] = 0;
-  serial_recieve(vv_receive, buf);
-  if (strstr(buf, "\n00P\n") == 0)
-  {
+  if (serial_recieve(vv_receive, buf) != -2)
     return 0;
-  }
+  if (strstr(buf, "\n00P\n") == 0)
+    return 0;
 
   while (1)
   {

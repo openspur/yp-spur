@@ -57,7 +57,7 @@ int ss_receive(char *buf, int len, double receive_time, void *data)
 int set_baudrate(int baud)
 {
   /* Send & Recive Buffer */
-  char buf[2048];
+  char buf[RECEIVE_BUFFER_SIZE];
   /* Temporary */
 
   strcpy(buf, "\n\n\n\n");
@@ -111,7 +111,7 @@ int vv_receive(char *buf, int len, double receive_time, void *data)
 int get_version(Ver_t *apVer)
 {
   /* Send & Recive Buffer */
-  char buf[2048], *readpos;
+  char buf[RECEIVE_BUFFER_SIZE], *readpos;
   /* Temporary */
   char *tmp, *lf, *val;
   char *tag, *wbuf;
@@ -186,7 +186,7 @@ int get_version(Ver_t *apVer)
 int get_parameter(Param_t *apParam)
 {
   /* Send & Recive Buffer */
-  char buf[2048], *readpos;
+  char buf[RECEIVE_BUFFER_SIZE], *readpos;
   /* Temporary */
   char *tmp, *lf, *val;
   char *tag, *wbuf;
@@ -248,7 +248,7 @@ int get_parameter(Param_t *apParam)
 int get_embedded_param(char *param)
 {
   /* Send & Recive Buffer */
-  char buf[2048], *readpos;
+  char buf[RECEIVE_BUFFER_SIZE], *readpos;
   /* Temporary */
   char *lf;
 

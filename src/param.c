@@ -838,6 +838,9 @@ int set_paramptr(FILE *paramfile)
 
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
+    if (!g_param.motor_enable[j])
+      continue;
+
     // Verify parameter version compatibility
     if (g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] &&
         g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])

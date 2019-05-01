@@ -336,7 +336,7 @@ int main(int argc, char *argv[])
         if (!temp_paramfile)
         {
           yprintf(OUTPUT_LV_ERROR, "Error: Failed to create temporary file.\n");
-          return 0;
+          break;
         }
         if (!get_embedded_param(param))
         {
@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
       if (!set_paramptr(temp_paramfile))
       {
         yprintf(OUTPUT_LV_ERROR, "Error: Cannot use embedded parameter.\n");
-        return 0;
+        break;
       }
     }
     else
@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
       if (!set_param(param->parameter_filename, paramfile))
       {
         yprintf(OUTPUT_LV_ERROR, "Error: Cannot load parameter file.\n");
-        return 0;
+        break;
       }
     }
     {
@@ -403,10 +403,6 @@ int main(int argc, char *argv[])
       {
         // 設定失敗
         yprintf(OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n");
-
-        serial_close();
-
-        quit = 0;
         break;  // quit=0でbreakしたら異常終了と判断
       }
       if (ret == 4)
@@ -433,13 +429,8 @@ int main(int argc, char *argv[])
       }
 
       if (!(option(OPTION_PARAM_CONTROL)))
-      {
         if (apply_robot_params() < 1)
-        {
-          serial_close();
           break;
-        }
-      }
 
       /* サーボをかける */
       SpurUserParamsPtr spur;
@@ -509,11 +500,6 @@ int main(int argc, char *argv[])
     }
 
     /* 終了処理 */
-    if (!(option(OPTION_WITHOUT_DEVICE)))
-    {
-      serial_close();
-    }
-
     if (update_thread_en)
     {
       pthread_cancel(update_thread);
@@ -539,6 +525,7 @@ int main(int argc, char *argv[])
       yp_usleep(500000);
       if (!(option(OPTION_WITHOUT_DEVICE)))
       {
+        serial_close();
         while (!serial_tryconnect(param->device_name))
         {
           yp_usleep(200000);
@@ -550,6 +537,9 @@ int main(int argc, char *argv[])
     }
     break;
   } while (1);
+
+  if (!(option(OPTION_WITHOUT_DEVICE)))
+    serial_close();
 
 #ifdef HAVE_SSM
   /* SSM終了処理 */

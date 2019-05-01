@@ -53,14 +53,14 @@ double SER_BAUDRATE;
 // Unix用コード
 #include <sys/select.h>
 #include <sys/termios.h>
-int g_device_port;
+int g_device_port = 0;
 struct termios g_oldtio;
 
 #else
 
 // Windows用コード
 #include <windows.h>
-HANDLE g_hdevices;
+HANDLE g_hdevices = NULL;
 DCB g_olddcb;
 COMMTIMEOUTS g_oldcto;
 
@@ -362,13 +362,21 @@ int serial_close(void)
 #if !defined(__MINGW32__)
   // Unix用
   // 設定を元に戻す
-  tcsetattr(g_device_port, TCSANOW, &g_oldtio);
-  close(g_device_port);
+  if (g_device_port != 0)
+  {
+    tcsetattr(g_device_port, TCSANOW, &g_oldtio);
+    close(g_device_port);
+    g_device_port = 0;
+  }
 #else
   // Windows用
-  SetCommState(g_hdevices, &g_olddcb);     // シリアルポートの状態を設定
-  SetCommTimeouts(g_hdevices, &g_oldcto);  // タイムアウトの状態を設定
-  CloseHandle(g_hdevices);
+  if (g_hdevices != NULL)
+  {
+    SetCommState(g_hdevices, &g_olddcb);     // シリアルポートの状態を設定
+    SetCommTimeouts(g_hdevices, &g_oldcto);  // タイムアウトの状態を設定
+    CloseHandle(g_hdevices);
+    g_hdevices = NULL;
+  }
 #endif  // !defined(__MINGW32__)
 
   return 1;
@@ -381,7 +389,7 @@ void serial_flush_in(void)
   tcflush(g_device_port, TCIFLUSH);
 #else
   // Windows用
-  char buf[4000];
+  char buf[4096];
 
   DWORD len;
   DWORD ret;
@@ -422,7 +430,7 @@ void serial_flush_out(void)
 // シリアルポートからの受信処理
 int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
 {
-  char buf[4000];
+  char buf[4096];
   double receive_time;
   int retval;
 

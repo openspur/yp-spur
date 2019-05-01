@@ -55,7 +55,7 @@
 
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
-double g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+int g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
@@ -81,12 +81,12 @@ double p(YPSpur_param id, enum motor_id motor)
   return g_P[id][motor];
 }
 
-double isset_p(YPSpur_param id, enum motor_id motor)
+int isset_p(YPSpur_param id, enum motor_id motor)
 {
   return g_P_set[id][motor];
 }
 
-double ischanged_p(YPSpur_param id, enum motor_id motor)
+int ischanged_p(YPSpur_param id, enum motor_id motor)
 {
   return g_P_changed[id][motor];
 }
@@ -793,14 +793,14 @@ int set_paramptr(FILE *paramfile)
   if (g_P[YP_PARAM_VERSION][0] < YP_PARAM_REQUIRED_VERSION)
   {
     yprintf(OUTPUT_LV_ERROR, "Error: Your parameter file format is too old!\n");
-    yprintf(OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION);
+    yprintf(OUTPUT_LV_ERROR, "Error: This program requires %3.1f.\n", YP_PARAM_REQUIRED_VERSION);
     return 0;
   }
-  if (g_P[YP_PARAM_VERSION][0] > YP_PARAM_REQUIRED_VERSION)
+  if (g_P[YP_PARAM_VERSION][0] > YP_PARAM_SUPPORTED_VERSION)
   {
     yprintf(OUTPUT_LV_ERROR, "Error: Your parameter file format is unsupported!\n");
     yprintf(OUTPUT_LV_ERROR, "Error: Please install newer version of YP-Spur.\n");
-    yprintf(OUTPUT_LV_ERROR, "Error: This program require v%3.1f.\n", YP_PARAM_REQUIRED_VERSION);
+    yprintf(OUTPUT_LV_ERROR, "Error: This program supports %3.1f.\n", YP_PARAM_SUPPORTED_VERSION);
     return 0;
   }
 
@@ -826,19 +826,46 @@ int set_paramptr(FILE *paramfile)
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
     // Count motor number
+    if (g_param.motor_enable[j])
+      g_param.num_motor_enable++;
+  }
+  if (g_param.num_motor_enable == 0)
+  {
+    // If all parameters are common among motors, treat num_motor_enable as two
+    g_param.motor_enable[0] = g_param.motor_enable[1] = 1;
+    g_param.num_motor_enable = 2;
+  }
+
+  for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
+  {
     if (!g_param.motor_enable[j])
       continue;
-    g_param.num_motor_enable++;
 
-    // Check undefined parameters
+    // Verify parameter version compatibility
+    if (g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] &&
+        g_P_set[YP_PARAM_ENCODER_DENOMINATOR][j])
+    {
+      if (g_P[YP_PARAM_VERSION][0] < 5.0)
+      {
+        yprintf(
+            OUTPUT_LV_ERROR,
+            "ERROR: Using ENCODER_DENOMINATOR requires parameter version >= 5.0.\n"
+            " Please make sure that all other motor parameters are based on mechanical motor revolution instead of electrical.\n");
+        return 0;
+      }
+      yprintf(
+          OUTPUT_LV_WARNING,
+          "Warn: ENCODER_DENOMINATOR parameter support is experimental.\n"
+          " The behavior of this parameter may be changed in the future update.\n");
+    }
+
+    // Check and fill undefined parameters
     if (!g_P_set[YP_PARAM_TORQUE_LIMIT][j])
     {
       yprintf(OUTPUT_LV_WARNING, "Warn: TORQUE_LIMIT[%d] undefined. TORQUE_MAX[%d] will be used.\n", j, j);
       g_P[YP_PARAM_TORQUE_LIMIT][j] = g_P[YP_PARAM_TORQUE_MAX][j];
       g_P_changed[YP_PARAM_TORQUE_LIMIT][j] = ischanged_p(YP_PARAM_TORQUE_MAX, j);
     }
-    g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
-    g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS, j);
 
     if (!g_P_set[YP_PARAM_VEHICLE_CONTROL][j])
     {
@@ -871,6 +898,10 @@ int set_paramptr(FILE *paramfile)
         g_P_changed[YP_PARAM_ENCODER_DENOMINATOR][j] = 1;
       g_P[YP_PARAM_ENCODER_DENOMINATOR][j] = 1.0;
     }
+
+    // Process internally calculated parameters
+    g_P[YP_PARAM_TORQUE_UNIT][j] = 1.0 / g_P[YP_PARAM_TORQUE_FINENESS][j];
+    g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS, j);
   }
 
   // パラメータの指定によって自動的に求まるパラメータの計算
@@ -1159,17 +1190,6 @@ int set_param_motor(void)
   // モータのパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
-    double tvc;  // 変換用定数
-    int enc_changed = 0;
-    double enc_rev;
-
-    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
-    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
-    {
-      enc_changed = 1;
-    }
-
     if (!g_param.motor_enable[j])
       continue;
     if (ischanged_p(YP_PARAM_VOLT, j))
@@ -1185,10 +1205,12 @@ int set_param_motor(void)
       parameter_set(PARAM_motor_phase, j, g_P[YP_PARAM_MOTOR_PHASE][j]);
     }
     if (ischanged_p(YP_PARAM_PHASE_OFFSET, j) ||
-        enc_changed)
+        ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
     {
+      const double enc_rev_phase = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
       parameter_set(PARAM_phase_offset, j,
-                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev / (2.0 * M_PI));
+                    g_P[YP_PARAM_PHASE_OFFSET][j] * enc_rev_phase / (2.0 * M_PI));
     }
     if (ischanged_p(YP_PARAM_ENCODER_TYPE, j))
     {
@@ -1204,8 +1226,14 @@ int set_param_motor(void)
         ischanged_p(YP_PARAM_MOTOR_TC, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
+      // ki [pwmcnt/toqcnt] = (voltage unit [V/toqcnt]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // voltage unit [V/toqcnt] = (current unit [A/toqcnt]) * (MOTOR_R [ohm])
+      // current unit [A/toqcnt] = (1 [toqcnt]) / ((TORQUE_UNIT [toqcnt/Nm]) * (MOTOR_TC [Nm/A]))
+
+      // ki [pwmcnt/toqcnt] = ((MOTOR_R [ohm]) * (PWM_MAX [pwmcnt])) / ((TORQUE_UNIT [toqcnt/Nm]) * (MOTOR_TC [Nm/A]) * (VOLT [V]))
+
       long long int ki;
-      ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] /
+      ki = (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * g_P[YP_PARAM_MOTOR_R][j] * g_P[YP_PARAM_ENCODER_DENOMINATOR][j] /
                     (g_P[YP_PARAM_TORQUE_UNIT][j] * g_P[YP_PARAM_MOTOR_TC][j] *
                      g_P[YP_PARAM_VOLT][j]));
       yprintf(OUTPUT_LV_DEBUG, "Info: TORQUE_CONSTANT[%d]: %d\n", j, (int)ki);
@@ -1219,13 +1247,19 @@ int set_param_motor(void)
 
     if (ischanged_p(YP_PARAM_PWM_MAX, j) ||
         ischanged_p(YP_PARAM_MOTOR_VC, j) ||
-        enc_changed ||
+        ischanged_p(YP_PARAM_COUNT_REV, j) ||
         ischanged_p(YP_PARAM_CYCLE, j) ||
         ischanged_p(YP_PARAM_VOLT, j))
     {
+      // kv [(pwmcnt)/(cnt/ms)] = (vc native [V/(cnt/ms)]) * (PWM_MAX [pwmcnt]) / (VOLT [V])
+      // vc native [V/(cnt/ms)] = (((60 [sec/min]) / (MOTOR_VC [(rev/min)/V]])) / (COUNT_REV [cnt/rev])) / (CYCLE [sec/ms])
+
+      // kv [(pwmcnt)/(cnt/ms)] = ((60 [sec/min]) * (PWM_MAX [pwmcnt]))
+      //                          / ((MOTOR_VC [(rev/min)/V]]) * (COUNT_REV [cnt/rev]) * (CYCLE [sec/ms]) * (VOLT [V]))
+
       parameter_set(PARAM_p_kv, j,
                     (double)(65536.0 * g_P[YP_PARAM_PWM_MAX][j] * 60.0 /
-                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * enc_rev *
+                             (g_P[YP_PARAM_MOTOR_VC][j] * g_P[YP_PARAM_VOLT][j] * g_P[YP_PARAM_COUNT_REV][j] *
                               g_P[YP_PARAM_CYCLE][j])));
     }
 
@@ -1251,9 +1285,10 @@ int set_param_motor(void)
     }
 
     // cnt/ms -> rad/s = cnt/ms * ms/s * rad/cnt = cnt/ms * 2pi/COUNT_REV / CYCLE
-    if (enc_changed || ischanged_p(YP_PARAM_CYCLE, j))
+    if (ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        ischanged_p(YP_PARAM_CYCLE, j))
     {
-      tvc = (2.0 * M_PI / enc_rev) / g_P[YP_PARAM_CYCLE][j];
+      const double tvc = (2.0 * M_PI / g_P[YP_PARAM_COUNT_REV][j]) / g_P[YP_PARAM_CYCLE][j];
       if (ischanged_p(YP_PARAM_TORQUE_VISCOS, j) || ischanged_p(YP_PARAM_TORQUE_UNIT, j))
       {
         parameter_set(PARAM_p_fr_wplus, j, g_P[YP_PARAM_TORQUE_VISCOS][j] * g_P[YP_PARAM_TORQUE_UNIT][j] * tvc);
@@ -1326,10 +1361,12 @@ int set_param_velocity(void)
     double ffr, ffl;
     int ffr_changed = 0, ffl_changed = 0;
 
-    // FF制御パラメータ
-    // A-F単位 [kgf・m・m] * wheel_acc[rad/ss]
-    //				wheel_acc[rad/ss] = 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
-    //  = [kgf・m・m] * 2pi * motor_acc[cnt/ss @motor] / ( GEAR * cntrev )
+    // Feed-forward dynamics compensation parameter
+    // (torque [Nm]) = (wheel acc [rad/(s*s)]) * (wheel inertia [kgf*m*m])
+    // (torque [toqcnt])
+    //    = (wheel acc [cnt/(s*s)) * (TORQUE_UNIT [toqcnt/Nm] * (wheel inertia [kgf*m*m]) * (2 * pi) / ((COUNT_REV [cnt]) * (GEAR))
+    // (acc-torque factor [toqcnt/(cnt/(s*s))])
+    //    = (TORQUE_UNIT [toqcnt/Nm]) * (wheel inertia [kgf*m*m]) * (2 * pi) / ((COUNT_REV [cnt]) * (GEAR))
 
     if (ischanged_p(YP_PARAM_TORQUE_UNIT, 0) ||
         ischanged_p(YP_PARAM_COUNT_REV, 0) ||
@@ -1382,25 +1419,16 @@ int set_param_velocity(void)
   // PI制御のパラメータ
   for (j = 0; j < YP_PARAM_MAX_MOTOR_NUM; j++)
   {
-    int enc_changed = 0;
-    double enc_rev;
-
-    enc_rev = g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
-    if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
-    {
-      enc_changed = 1;
-    }
-
     if (!g_param.motor_enable[j])
       continue;
 
     if (g_param.device_version > 6)
     {
       int ff_changed = 0;
-      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] / (enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+      double ff = 256.0 * 2.0 * M_PI * g_P[YP_PARAM_TORQUE_UNIT][j] /
+                  (g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
       if (ischanged_p(YP_PARAM_TORQUE_UNIT, j) ||
-          enc_changed ||
+          ischanged_p(YP_PARAM_COUNT_REV, j) ||
           ischanged_p(YP_PARAM_GEAR, j))
       {
         ff_changed = 1;
@@ -1431,13 +1459,13 @@ int set_param_velocity(void)
       parameter_set(PARAM_p_pi_ki, j, g_P[YP_PARAM_GAIN_KI][j]);
     // 各種制限
     if (ischanged_p(YP_PARAM_INTEGRAL_MAX, j) ||
-        enc_changed ||
+        ischanged_p(YP_PARAM_COUNT_REV, j) ||
         ischanged_p(YP_PARAM_GEAR, j))
     {
       parameter_set(PARAM_int_max, j,
-                    g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+                    g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
       parameter_set(PARAM_int_min, j,
-                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * enc_rev * fabs(g_P[YP_PARAM_GEAR][j]));
+                    -g_P[YP_PARAM_INTEGRAL_MAX][j] * g_P[YP_PARAM_COUNT_REV][j] * fabs(g_P[YP_PARAM_GEAR][j]));
     }
   }
 

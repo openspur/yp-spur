@@ -389,7 +389,7 @@ void serial_flush_in(void)
   tcflush(g_device_port, TCIFLUSH);
 #else
   // Windows用
-  char buf[4000];
+  char buf[4096];
 
   DWORD len;
   DWORD ret;
@@ -430,7 +430,7 @@ void serial_flush_out(void)
 // シリアルポートからの受信処理
 int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
 {
-  char buf[4000];
+  char buf[4096];
   double receive_time;
   int retval;
 

@@ -55,6 +55,10 @@ script:
 
 before_deploy:
   - |
+    echo machine api.github.com >> ${HOME}/.netrc \
+    && echo login ${TRAVIS_BOT_GITHUB_USER} >> ${HOME}/.netrc \
+    && echo password ${TRAVIS_BOT_GITHUB_TOKEN} >> ${HOME}/.netrc
+  - |
     if [ x${USE_MINGW} == xtrue ]; then
       YPSPUR_GUI_RELEASE=$(wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest)
       echo ${YPSPUR_GUI_RELEASE}

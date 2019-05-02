@@ -61,7 +61,7 @@ before_deploy:
       export YPSPUR_GUI_URI=$(echo ${YPSPUR_GUI_RELEASE} | json assets[0].browser_download_url)
       (cd ${TRAVIS_BUILD_DIR} && wget ${YPSPUR_GUI_URI})
       (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
-        && unzip ../../$(basename ${YPSPUR_GUI_URI))
+        && unzip ../../$(basename ${YPSPUR_GUI_URI}))
       (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ \
         && unzip ../../$(basename ${YPSPUR_GUI_URI}))
       (cd ${TRAVIS_BUILD_DIR} && mkdir packages)

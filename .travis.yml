@@ -31,7 +31,7 @@ before_install:
         g++-mingw-w64-x86-64 \
         g++-mingw-w64-i686 \
         npm
-      sudo npm config set strict-ssl false  # XXX: workaround for CERT_UNTRUSTED error in npm
+      sudo ln -s /usr/bin/nodejs /usr/bin/node  # XXX: workaround for naming inconsistency in Ubuntu
       sudo npm install -g json
     fi
 

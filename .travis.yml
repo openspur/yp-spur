@@ -31,7 +31,6 @@ before_install:
         g++-mingw-w64-x86-64 \
         g++-mingw-w64-i686 \
         npm
-      sudo ln -s /usr/bin/nodejs /usr/bin/node  # XXX: workaround for naming inconsistency in Ubuntu
       sudo npm install -g json
     fi
 
@@ -57,12 +56,14 @@ script:
 before_deploy:
   - |
     if [ x${USE_MINGW} == xtrue ]; then
-      export YPSPUR_GUI_URI=`wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url`
-      (cd ${TRAVIS_BUILD_DIR} && wget $YPSPUR_GUI_URI)
+      YPSPUR_GUI_RELEASE=$(wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest)
+      echo ${YPSPUR_GUI_RELEASE}
+      export YPSPUR_GUI_URI=$(echo ${YPSPUR_GUI_RELEASE} | json assets[0].browser_download_url)
+      (cd ${TRAVIS_BUILD_DIR} && wget ${YPSPUR_GUI_URI})
       (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
-        && unzip ../../$(basename $YPSPUR_GUI_URI))
+        && unzip ../../$(basename ${YPSPUR_GUI_URI))
       (cd ${TRAVIS_BUILD_DIR}/build-win32/install/ \
-        && unzip ../../$(basename $YPSPUR_GUI_URI))
+        && unzip ../../$(basename ${YPSPUR_GUI_URI}))
       (cd ${TRAVIS_BUILD_DIR} && mkdir packages)
       (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
         && zip -q ../../packages/yp-spur.win64.${TRAVIS_TAG}.zip -r $(ls))

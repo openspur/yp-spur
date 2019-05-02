@@ -60,9 +60,8 @@ before_deploy:
     && echo password ${TRAVIS_BOT_GITHUB_TOKEN} >> ${HOME}/.netrc
   - |
     if [ x${USE_MINGW} == xtrue ]; then
-      YPSPUR_GUI_RELEASE=$(wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest)
-      echo ${YPSPUR_GUI_RELEASE}
-      export YPSPUR_GUI_URI=$(echo ${YPSPUR_GUI_RELEASE} | json assets[0].browser_download_url)
+      wget -q -O - https://api.github.com/rate_limit
+      export YPSPUR_GUI_URI=$(wget -q -O - https://api.github.com/repos/openspur/ypspur-gui/releases/latest | json assets[0].browser_download_url)
       (cd ${TRAVIS_BUILD_DIR} && wget ${YPSPUR_GUI_URI})
       (cd ${TRAVIS_BUILD_DIR}/build-win64/install/ \
         && unzip ../../$(basename ${YPSPUR_GUI_URI}))

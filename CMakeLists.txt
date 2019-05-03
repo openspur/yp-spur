@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 set(_YPSPUR_MAJOR_VERSION 1)
-set(_YPSPUR_MINOR_VERSION 15)
-set(_YPSPUR_PATCH_VERSION 3)
+set(_YPSPUR_MINOR_VERSION 16)
+set(_YPSPUR_PATCH_VERSION 0)
 
 if(${CMAKE_MAJOR_VERSION} LESS 3)
 # DARN_IT: CMake 2 should be supported until April, 2019 (Ubuntu Trusty EOL)

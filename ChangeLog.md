@@ -1,5 +1,25 @@
 # ChangeLog for YP-Spur
 
+## 1.16.0
+- Fix deployment (#108)
+- Fix serial communication error handling (#107)
+- Fix ENCODER_DENOMINATOR handling to make param units corresponding to hardware (#104)
+- Reorganize console output (#105)
+- Generate and install pkg-config file (#101)
+- Fix protocol version send target (#106)
+- Fix initial absolute encoder value handling (#103)
+- Correct invalid links (#99)
+- Expose the communication functions (#97)
+- Fix deceleration factor during over speed (#95)
+- Update motor error ID (#93)
+- Add flag to check availability of get_device_error_state (#92)
+- Fix joint state initialization (#91)
+- Receive error status of connected device (#89)
+- Stricten parameter error check (#88)
+- Add encoder denominator parameter (#86)
+- Enable build on semantic version tag (#83)
+- Modernize coding styles (#10)
+
 ## 1.15.3
 - Fix finding readline in cmake (#75)
 - Enable matrix build on Travis (#77)

@@ -198,6 +198,7 @@ typedef enum
   // エンコーダ拡張
   YP_PARAM_ENCODER_DIV,
   YP_PARAM_ENCODER_DENOMINATOR,
+  YP_PARAM_HALL_DELAY,
 
   // 絶対角
   YP_PARAM_INDEX_RISE_ANGLE,
@@ -274,6 +275,7 @@ typedef enum
         "_INERTIA_CROSS",      \
         "ENCODER_DIV",         \
         "ENCODER_DENOMINATOR", \
+        "HALL_DELAY",          \
         "INDEX_RISE_ANGLE",    \
         "INDEX_FALL_ANGLE",    \
         "INDEX_GEAR",          \
@@ -324,6 +326,7 @@ typedef enum
         1,                 \
         1,                 \
         1,                 \
+        0,                 \
         0,                 \
         0,                 \
         0,                 \
@@ -417,6 +420,7 @@ typedef enum
         "Encoder count divider 2^x (e.g. 4 means divide by 16)",                                \
         "Encoder count denominator"                                                             \
         " (COUNT_REV/ENCODER_DENOMINATOR is encoder resolution for one electrical revolution)", \
+        "[s] Hall signal delay",                                                                \
         "[rad] Index signal rising edge angle at CW rotation",                                  \
         "[rad] Index signal falling edge angle at CW rotation",                                 \
         "[in/out] Index signal gear ratio",                                                     \

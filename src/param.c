@@ -1345,6 +1345,12 @@ int set_param_motor(void)
       }
       parameter_set(PARAM_enc_denominator, j, g_P[YP_PARAM_ENCODER_DENOMINATOR][j]);
     }
+    if ((ischanged_p(YP_PARAM_HALL_DELAY, j) && isset_p(YP_PARAM_HALL_DELAY, j)) ||
+        ischanged_p(YP_PARAM_CYCLE, j))
+    {
+      const float delay_factor = g_P[YP_PARAM_HALL_DELAY][j] / g_P[YP_PARAM_CYCLE][j];
+      parameter_set(PARAM_hall_delay_factor, j, lroundf(32768.0 * delay_factor));
+    }
 
     // Sleep to keep bandwidth margin
     yp_usleep(20000);

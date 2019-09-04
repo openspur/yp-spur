@@ -79,6 +79,7 @@ typedef enum
   PARAM_control_cycle,
   PARAM_enc_div,
   PARAM_enc_denominator,
+  PARAM_hall_delay_factor,
   PARAM_servo = 64,
   PARAM_watch_dog_limit,
   PARAM_heartbeat,

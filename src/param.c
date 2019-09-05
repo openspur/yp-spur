@@ -1356,12 +1356,14 @@ int set_param_motor(void)
     }
     if (ischanged_p(YP_PARAM_LR_CUTOFF_FREQ, j) ||
         ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
-        ischanged_p(YP_PARAM_COUNT_REV, j))
+        ischanged_p(YP_PARAM_COUNT_REV, j) ||
+        ischanged_p(YP_PARAM_CYCLE, j))
     {
       if (isset_p(YP_PARAM_LR_CUTOFF_FREQ, j))
       {
         const float cutoff_vel =
-            g_P[YP_PARAM_LR_CUTOFF_FREQ][j] * g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+            g_P[YP_PARAM_LR_CUTOFF_FREQ][j] * g_P[YP_PARAM_CYCLE][j] *
+            g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
         parameter_set(PARAM_lr_cutoff_vel, j, lroundf(cutoff_vel));
       }
     }

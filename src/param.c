@@ -1351,6 +1351,17 @@ int set_param_motor(void)
       const float delay_factor = g_P[YP_PARAM_HALL_DELAY][j] / g_P[YP_PARAM_CYCLE][j];
       parameter_set(PARAM_hall_delay_factor, j, lroundf(32768.0 * delay_factor));
     }
+    if (ischanged_p(YP_PARAM_LR_CUTOFF_FREQ, j) ||
+        ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) ||
+        ischanged_p(YP_PARAM_COUNT_REV, j))
+    {
+      if (isset_p(YP_PARAM_LR_CUTOFF_FREQ, j))
+      {
+        const float cutoff_vel =
+            g_P[YP_PARAM_LR_CUTOFF_FREQ][j] * g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];
+        parameter_set(PARAM_lr_cutoff_vel, j, lroundf(cutoff_vel));
+      }
+    }
 
     // Sleep to keep bandwidth margin
     yp_usleep(20000);

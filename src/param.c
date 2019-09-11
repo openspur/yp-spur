@@ -1338,7 +1338,7 @@ int set_param_motor(void)
     if (ischanged_p(YP_PARAM_ENCODER_DENOMINATOR, j) &&
         isset_p(YP_PARAM_ENCODER_DENOMINATOR, j))
     {
-      if (g_param.device_version <= 9)
+      if (g_param.device_version < 10)
       {
         yprintf(OUTPUT_LV_ERROR, "ERROR: the device doesn't support ENCODER_DENOMINATOR\n");
         return 0;
@@ -1350,6 +1350,11 @@ int set_param_motor(void)
     {
       if (isset_p(YP_PARAM_HALL_DELAY, j))
       {
+        if (g_param.device_version < 11)
+        {
+          yprintf(OUTPUT_LV_ERROR, "ERROR: the device doesn't support HALL_DELAY\n");
+          return 0;
+        }
         const float delay_factor = g_P[YP_PARAM_HALL_DELAY][j] / g_P[YP_PARAM_CYCLE][j];
         parameter_set(PARAM_hall_delay_factor, j, lroundf(32768.0 * delay_factor));
       }
@@ -1361,6 +1366,11 @@ int set_param_motor(void)
     {
       if (isset_p(YP_PARAM_LR_CUTOFF_FREQ, j))
       {
+        if (g_param.device_version < 11)
+        {
+          yprintf(OUTPUT_LV_ERROR, "ERROR: the device doesn't support LR_CUTOFF_FREQ\n");
+          return 0;
+        }
         const float cutoff_vel =
             g_P[YP_PARAM_LR_CUTOFF_FREQ][j] * g_P[YP_PARAM_CYCLE][j] *
             g_P[YP_PARAM_COUNT_REV][j] / g_P[YP_PARAM_ENCODER_DENOMINATOR][j];

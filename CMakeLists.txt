@@ -27,7 +27,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/mod
 
 set(YP_VENDOR_NAME "OpenSpur.org")
 set(YP_PRODUCT_NAME "Yamabico Project - Spur")
-set(YP_PROTOCOL_NAME "YPP:10:04")
+set(YP_PROTOCOL_NAME "YPP:11:05")
 set(YP_PARAMS_DIR "robot-params")
 
 option(USE_SSM "Compile with SSM if available." ON)

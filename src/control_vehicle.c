@@ -547,8 +547,20 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
       if (!param->motor_enable[i])
         continue;
       spur_freeze.wheel_vel[i] = 0;
+      spur_freeze.torque[i] = 0;
     }
     robot_speed_smooth(&spur_freeze);
+
+    apply_motor_torque(&spur_freeze);
+    motor_control(&spur_freeze);
+    apply_motor_speed(&spur_freeze);
+
+    for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+    {
+      if (!param->motor_enable[i])
+        continue;
+      spur->torque_prev[i] = spur_freeze.torque_prev[i];
+    }
   }
   else
   {

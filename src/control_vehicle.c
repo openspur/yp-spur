@@ -546,7 +546,6 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
     {
       if (!param->motor_enable[i])
         continue;
-      spur_freeze.wheel_vel[i] = 0;
       spur_freeze.torque[i] = 0;
     }
     robot_speed_smooth(&spur_freeze);
@@ -560,6 +559,8 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
       if (!param->motor_enable[i])
         continue;
       spur->torque_prev[i] = spur_freeze.torque_prev[i];
+      spur->vref_smooth = spur_freeze.vref_smooth;
+      spur->wref_smooth = spur_freeze.wref_smooth;
     }
   }
   else

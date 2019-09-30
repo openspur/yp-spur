@@ -1,5 +1,11 @@
 # ChangeLog for YP-Spur
 
+## 1.17.0
+- Fix Spur_freeze command (#117)
+- Bump protocol version to 11:05 (#116)
+- Add LR cutoff frequence parameter (#115)
+- Add hall signal delay parameter (#114)
+
 ## 1.16.0
 - Fix deployment (#108)
 - Fix serial communication error handling (#107)

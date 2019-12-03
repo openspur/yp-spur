@@ -58,20 +58,16 @@
 
 #include <pthread.h>
 
-void escape_road(void);
-void emergency(int);
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;
 #elif HAVE_LONGJMP
 jmp_buf ctrlc_capture;
 #endif  // HAVE_SIGLONGJMP
-int g_emergency;
 
 #if defined(__MINGW32__)
 BOOL WINAPI win32_ctrlc_handler(DWORD type)
 {
   fprintf(stderr, "\n");
-  g_emergency = 1;
 #ifdef HAVE_SSM
   /* SSM終了処理 */
   if (!option(OPTION_WITHOUT_SSM))
@@ -88,7 +84,6 @@ BOOL WINAPI win32_ctrlc_handler(DWORD type)
 void emergency(int sig)
 {
   fprintf(stderr, "\n");
-  g_emergency = 1;
 #if HAVE_SIGLONGJMP
   siglongjmp(ctrlc_capture, 1);
 #elif HAVE_LONGJMP
@@ -109,15 +104,32 @@ void emergency(int sig)
 }
 #endif  // defined(__MINGW32__)
 
-void escape_road(void)
+void escape_road(const int enable)
 {
 #if defined(__MINGW32__)
-  if (!SetConsoleCtrlHandler(win32_ctrlc_handler, TRUE))
+  if (enable)
   {
-    yprintf(OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler registration failed.\n");
+    if (!SetConsoleCtrlHandler(win32_ctrlc_handler, TRUE))
+    {
+      yprintf(OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler registration failed.\n");
+    }
+  }
+  else
+  {
+    if (!SetConsoleCtrlHandler(NULL, FALSE))
+    {
+      yprintf(OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler restoration failed.\n");
+    }
   }
 #else
-  signal(SIGINT, emergency);
+  if (enable)
+  {
+    signal(SIGINT, emergency);
+  }
+  else
+  {
+    signal(SIGINT, SIG_DFL);
+  }
 #endif  // defined(__MINGW32__)
 }
 
@@ -197,10 +209,6 @@ int main(int argc, char *argv[])
   yprintf(OUTPUT_LV_INFO, " Ver. %s\n", PROJECT_VERSION);
   yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 
-  /* Ctrl-C割り込みハンドラーの登録 */
-  escape_road();
-  g_emergency = 0;
-
   /* パラメータを読み込み、セットする */
   param = get_param_ptr();
 
@@ -274,7 +282,7 @@ int main(int argc, char *argv[])
         {
           yprintf(OUTPUT_LV_ERROR, "Error: Device doesn't have available YP protocol version.\n(Device: %s, coordinator: %s)\n",
                   version.protocol, YP_PROTOCOL_NAME);
-          if (option(OPTION_RECONNECT) && g_emergency == 0)
+          if (option(OPTION_RECONNECT))
           {
             yp_usleep(500000);
             continue;
@@ -312,7 +320,7 @@ int main(int argc, char *argv[])
           strlen(driver_param.motor_num) <= 0)
       {
         yprintf(OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n");
-        if (option(OPTION_RECONNECT) && g_emergency == 0)
+        if (option(OPTION_RECONNECT))
         {
           yp_usleep(500000);
           continue;
@@ -341,7 +349,7 @@ int main(int argc, char *argv[])
         if (!get_embedded_param(param))
         {
           yprintf(OUTPUT_LV_ERROR, "Error: Failed to read embedded parameters.\n");
-          if (option(OPTION_RECONNECT) && g_emergency == 0)
+          if (option(OPTION_RECONNECT))
           {
             yp_usleep(500000);
             continue;
@@ -487,6 +495,7 @@ int main(int argc, char *argv[])
     else
 #endif  // HAVE_SIGLONGJMP
     {
+      escape_road(1);
       if (!(option(OPTION_WITHOUT_DEVICE)))
       {
         odometry_receive_loop();
@@ -498,6 +507,7 @@ int main(int argc, char *argv[])
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }
+    escape_road(0);
 
     /* 終了処理 */
     if (update_thread_en)

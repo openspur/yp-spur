@@ -307,6 +307,10 @@ void process_int(
             yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_ENC ");
           if (value & ERROR_WATCHDOG)
             yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
+          if (value & ERROR_EEPROM)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_EEPROM ");
+          if (value & ERROR_INTERNAL)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_INTERNAL ");
 
           yprintf(OUTPUT_LV_ERROR, "\n");
         }

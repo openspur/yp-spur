@@ -289,21 +289,34 @@ void process_int(
     }
     case INT_error_state:
     {
+      if (err->state[id] != value)
+      {
+        if (value == ERROR_NONE)
+        {
+          yprintf(OUTPUT_LV_INFO, "Info: The driver of motor_id %d got back to normal\n", id);
+        }
+        else
+        {
+          yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
+
+          if (value & ERROR_LOW_VOLTAGE)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
+          if (value & ERROR_HALL_SEQ)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_SEQ ");
+          if (value & ERROR_HALL_ENC)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_ENC ");
+          if (value & ERROR_WATCHDOG)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
+          if (value & ERROR_EEPROM)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_EEPROM ");
+          if (value & ERROR_INTERNAL)
+            yprintf(OUTPUT_LV_ERROR, "ERROR_INTERNAL ");
+
+          yprintf(OUTPUT_LV_ERROR, "\n");
+        }
+      }
       err->state[id] = value;
       err->time[id] = receive_time;
-      if (value != ERROR_NONE)
-        yprintf(OUTPUT_LV_ERROR, "Error: The driver of motor_id %d returned ", id);
-      if (value & ERROR_LOW_VOLTAGE)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_LOW_VOLTAGE ");
-      if (value & ERROR_HALL_SEQ)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_SEQ ");
-      if (value & ERROR_HALL_ENC)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_HALL_ENC ");
-      if (value & ERROR_WATCHDOG)
-        yprintf(OUTPUT_LV_ERROR, "ERROR_WATCHDOG ");
-
-      if (value != ERROR_NONE)
-        yprintf(OUTPUT_LV_ERROR, "\n");
       break;
     }
     default:

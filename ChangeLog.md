@@ -1,5 +1,9 @@
 # ChangeLog for YP-Spur
 
+## 1.17.1
+- Show driver error only if the state is changed (#122)
+- Trap SIGINT only in odometry receive loop (#120)
+
 ## 1.17.0
 - Fix Spur_freeze command (#117)
 - Bump protocol version to 11:05 (#116)

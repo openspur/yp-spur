@@ -354,7 +354,9 @@ Changelog for YP-Spur
 -----------------
 - [AWD] パラメータに遠心加速度のリミットを追加
 - [AWD] パラメータのバージョン管理を追加、MAX_CENTRI_ACCの項を追加し、VERSION 1.0とすること
+
   - 遠心加速度は例えば0.25[G]=2.45[m/ss]
+
 - [AWD] 表示の抑制・詳細化に対応
 
 1.5.0 (2010.9.11)
@@ -447,8 +449,11 @@ Changelog for YP-Spur
 0.13.0 (2010.6.9)
 -----------------
 - [AWD] stop_lineコマンドの実装、circleコマンドの追従中以外の安定性確保
+
   - これに伴い、libypspurを更新
+
     - libypspur_la_LDFLAGS = -version-info 1:0:1
+
 - [AWD] 引数の隠しコマンドで、動作中にUSBデバイスが取り外された場合に自動再接続
 - [AWD] エラー表示関連の統一
 - [AWD] 引数の隠しコマンドで、msq keyを指定可能に。Spur_initexでmsq keyを指定した初期化が可能。
@@ -457,10 +462,13 @@ Changelog for YP-Spur
 -----------------
 - [STK] libodmssmのバグフィックス
 - [STK] libtooolのバージョン管理形式の変更
+
   - release @PACKAGE_VERSION@ から -version-info 0:0:0 に変更
+
      - libcarte2d_la_LDFLAGS = -version-info 0:0:0
      - libodomssm_la_LDFLAGS = -lssm -version-info 0:0:0
      - libypspur_la_LDFLAGS = -version-info 0:0:0
+
   - これに対応するためlibypspurを変更する毎にsrc/Makefile.am,auxlib/Makefile.amを修正する必要があるが、libypspurを変更しない限りバージョンが上がってもユーザープログラムをmakeし直す必要が無くなるはず。
 
 0.12.1 (2010.5.28)

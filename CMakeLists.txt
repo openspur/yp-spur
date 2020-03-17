@@ -153,6 +153,7 @@ add_executable(ypspur-coordinator
   src/msq.win32.c
   src/odometry.c
   src/param.c
+  src/ping.c
   src/serial.c
   src/ssm_spur_handler.c
   src/utility.c

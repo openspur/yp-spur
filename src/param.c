@@ -152,6 +152,7 @@ void arg_longhelp(int argc, char *argv[])
   fprintf(stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n");
   fprintf(stderr, "  --socket <port>          Use socket ipc.\n");
   fprintf(stderr, "  --daemon                 Run in daemon mode.\n");
+  fprintf(stderr, "  --ping                   Ping RS485 chained devices.\n");
 }
 
 /* 引数の説明 */
@@ -197,6 +198,10 @@ int arg_analyze(int argc, char *argv[])
     else if (!strcmp(argv[i], "--daemon"))
     {
       g_param.option |= OPTION_DAEMON;
+    }
+    else if (!strcmp(argv[i], "--ping"))
+    {
+      g_param.option |= OPTION_PING;
     }
     else if (!strcmp(argv[i], "--param-help"))
     {

@@ -250,14 +250,14 @@ void process_int(
   Parameters *param;
   param = get_param_ptr();
 
-  if (!param->motor_enable[id])
-    return;
-
   switch (param_id)
   {
     case INT_enc_index_rise:
     case INT_enc_index_fall:
     {
+      if (id >= YP_PARAM_MAX_MOTOR_NUM || !param->motor_enable[id])
+        return;
+
       // enc == value のときに INDEX_RISE/FALL_ANGLE [rad] だった
       const unsigned short enc_div =
           ((unsigned int)xp->enc[id] << ((int)p(YP_PARAM_ENCODER_DIV, id))) & 0xFFFF;
@@ -289,6 +289,9 @@ void process_int(
     }
     case INT_error_state:
     {
+      if (id >= YP_PARAM_MAX_MOTOR_NUM || !param->motor_enable[id])
+        return;
+
       if (err->state[id] != value)
       {
         if (value == ERROR_NONE)
@@ -319,6 +322,12 @@ void process_int(
       err->time[id] = receive_time;
       break;
     }
+    case INT_ping_response:
+      if (id == MOTOR_ID_BROADCAST)
+        yprintf(OUTPUT_LV_ERROR, "Ping response received: broadcast, 0x%08x\n", value);
+      else
+        yprintf(OUTPUT_LV_ERROR, "Ping response received: %d, 0x%08x\n", id, value);
+      break;
     default:
       yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param_id, id, value);
       break;

@@ -27,11 +27,36 @@
 int ping()
 {
   const int data = 0x123456;
-  yprintf(OUTPUT_LV_ERROR, "Ping request: 0x%08x\n", data);
+  yprintf(OUTPUT_LV_INFO, "Ping request: 0x%08x\n", data);
+
+  OdometryPtr odom = get_odometry_ptr();
+  int i;
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM + 1; i++)
+    odom->ping_response[i] = 0;
 
   const char target = MOTOR_ID_BROADCAST;
   parameter_set(PARAM_servo, target, 0);
   parameter_set(PARAM_ping, target, data);
   odometry_receive_loop();
-  return 0;
+
+  int ret = 1;
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+  {
+    if (odom->ping_response[i] == data)
+    {
+      ret = 0;
+      yprintf(OUTPUT_LV_INFO, "Ping response from ID: %d\n", i);
+    }
+  }
+  if (odom->ping_response[i] == data)
+  {
+    ret = 0;
+    yprintf(OUTPUT_LV_INFO, "Ping response from device without ID\n");
+  }
+  if (ret)
+  {
+    yprintf(OUTPUT_LV_ERROR, "No ping response!\n");
+  }
+
+  return 1;
 }

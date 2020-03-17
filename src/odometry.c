@@ -324,9 +324,15 @@ void process_int(
     }
     case INT_ping_response:
       if (id == MOTOR_ID_BROADCAST)
-        yprintf(OUTPUT_LV_ERROR, "Ping response received: broadcast, 0x%08x\n", value);
+      {
+        xp->ping_response[YP_PARAM_MAX_MOTOR_NUM] = value;
+        yprintf(OUTPUT_LV_INFO, "Ping response received: broadcast, 0x%08x\n", value);
+      }
       else
-        yprintf(OUTPUT_LV_ERROR, "Ping response received: %d, 0x%08x\n", id, value);
+      {
+        xp->ping_response[id] = value;
+        yprintf(OUTPUT_LV_INFO, "Ping response received: %d, 0x%08x\n", id, value);
+      }
       break;
     default:
       yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param_id, id, value);

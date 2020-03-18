@@ -219,7 +219,7 @@ void apply_motor_torque(SpurUserParamsPtr spur)
     if (spur->torque[i] != spur->torque_prev[i])
     {
       int t;
-      t = spur->torque[i] * p(YP_PARAM_TORQUE_UNIT, i) / p(YP_PARAM_GEAR, MOTOR_RIGHT);
+      t = spur->torque[i] * p(YP_PARAM_TORQUE_UNIT, i) / p(YP_PARAM_GEAR, i);
       parameter_set(PARAM_p_toq_offset, i, t);
     }
     spur->torque_prev[i] = spur->torque[i];

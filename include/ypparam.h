@@ -206,6 +206,8 @@ typedef enum
   YP_PARAM_INDEX_FALL_ANGLE,
   YP_PARAM_INDEX_GEAR,
 
+  YP_PARAM_DEVICE_TIMEOUT,
+
   YP_PARAM_NUM  ///< パラメータの最大値
 } YPSpur_param;
 
@@ -281,6 +283,7 @@ typedef enum
         "INDEX_RISE_ANGLE",    \
         "INDEX_FALL_ANGLE",    \
         "INDEX_GEAR",          \
+        "DEVICE_TIMEOUT",      \
   }
 
 #define YP_PARAM_NECESSARY \
@@ -328,6 +331,7 @@ typedef enum
         1,                 \
         1,                 \
         1,                 \
+        0,                 \
         0,                 \
         0,                 \
         0,                 \
@@ -428,6 +432,7 @@ typedef enum
         "[rad] Index signal rising edge angle at CW rotation",                                  \
         "[rad] Index signal falling edge angle at CW rotation",                                 \
         "[in/out] Index signal gear ratio",                                                     \
+        "[s] Timeout of the communication with the device",                                     \
   }
 
 enum motor_id

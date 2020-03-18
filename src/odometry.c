@@ -420,8 +420,11 @@ double time_synchronize(double receive_time, int readnum, int wp)
   const int lost = lround(error / g_interval);
   if (lost != 0)
   {
-    if (option(OPTION_SHOW_TIMESTAMP))
-      printf("%d packet(s) might be lost!\n", lost);
+    if (abs(lost) > 1 || option(OPTION_SHOW_TIMESTAMP))
+    {
+      // lost=+1/-1 is a jitter in most case. Show abs(lost)>1 as an error.
+      yprintf(OUTPUT_LV_ERROR, "%d packets might be lost!\n", lost);
+    }
     error -= lost * g_interval;
     g_offset_point -= lost;
   }

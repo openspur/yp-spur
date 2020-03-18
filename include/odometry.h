@@ -43,6 +43,7 @@ typedef struct _odometry
   double wtorque[YP_PARAM_MAX_MOTOR_NUM];
   double torque_trans;
   double torque_angular;
+  int ping_response[YP_PARAM_MAX_MOTOR_NUM + 1];
 } Odometry;
 
 typedef struct _error_state *ErrorStatePtr;

@@ -51,6 +51,7 @@
 #include <ssm_spur_handler.h>
 #include <utility.h>
 #include <yprintf.h>
+#include <ping.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>
@@ -332,6 +333,12 @@ int main(int argc, char *argv[])
     {
       yprintf(OUTPUT_LV_INFO, " Port    : n/a (--without-device mode)\n");
     }
+
+    if (option(OPTION_PING))
+    {
+      return ping();
+    }
+
     if (!(option(OPTION_PARAM_FILE)))
     {
       // パラメータファイルが指定されておらず、ドライバにパラメータが内蔵されている場合

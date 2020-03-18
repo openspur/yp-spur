@@ -21,6 +21,8 @@
 #ifndef PARAM_H
 #define PARAM_H
 
+#include <stdio.h>
+
 #include <ypparam.h>
 #include <utility.h>
 
@@ -49,6 +51,7 @@ typedef enum
   OPTION_PASSIVE = 0x20000,
   OPTION_UPDATE_PARAM = 0x40000,
   OPTION_HIGH_PREC = 0x80000,
+  OPTION_PING = 0x100000,
 } ParamOptions;
 
 #define OPTION_DEFAULT (OPTION_HIGH_PREC)

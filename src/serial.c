@@ -536,6 +536,25 @@ int encode_write(char *data, int len)
   return 0;
 }
 
+int encode_int_write(char *data, int len)
+{
+  unsigned char buf[128];
+  int encode_len, ret;
+
+  buf[0] = COMMUNICATION_INT_BYTE;
+  encode_len = encode((unsigned char *)data, len, buf + 1, 126);
+  buf[encode_len + 1] = COMMUNICATION_END_BYTE;
+
+  ret = serial_write((char *)buf, encode_len + 2);
+  if (ret <= 0)
+  {
+    return -1;
+  }
+  serial_flush_out();
+
+  return 0;
+}
+
 int serial_write(char *buf, int len)
 {
 #if !defined(__MINGW32__)

@@ -89,6 +89,7 @@ typedef enum
   PARAM_ad_mask,
   PARAM_phase_offset,
   PARAM_protocol_version,
+  PARAM_ping,
 } YPSpur_shvel_param;
 
 typedef enum
@@ -96,6 +97,7 @@ typedef enum
   INT_enc_index_rise = 0,
   INT_enc_index_fall,
   INT_error_state,
+  INT_ping_response,
 } YPSpur_shvel_interrupt;
 
 typedef enum
@@ -108,5 +110,7 @@ typedef enum
   ERROR_EEPROM = 0x0010,
   ERROR_INTERNAL = 0x0020,
 } YPSpur_shvel_error_state;
+
+#define MOTOR_ID_BROADCAST 0x7E
 
 #endif  // SHVEL_PARAM_H

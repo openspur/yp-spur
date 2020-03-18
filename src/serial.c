@@ -288,9 +288,12 @@ int serial_change_baudrate(int baud)
     }
   }  // <--- check bit rate
 
-  ret = write(g_device_port, "\n\nVV\n\n", 6);
-  yp_usleep(10000);
-  serial_recieve(recieve_throw, buf);
+  if (!(option(OPTION_DO_NOT_USE_YP)))
+  {
+    ret = write(g_device_port, "\n\nVV\n\n", 6);
+    yp_usleep(10000);
+    serial_recieve(recieve_throw, buf);
+  }
 #else
   // Windows用
   DCB dcb;

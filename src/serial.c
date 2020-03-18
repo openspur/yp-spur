@@ -442,8 +442,15 @@ int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
     struct timeval tv;
     size_t len;
 
-    tv.tv_sec = 0;
-    tv.tv_usec = 200000;
+    // [s] -> [us]
+    long long int timeout_us = p(YP_PARAM_DEVICE_TIMEOUT, 0) * 1000000;
+    if (timeout_us == 0)
+    {
+      // Default timeout before loading parameter file.
+      timeout_us = 200000;
+    }
+    tv.tv_sec = timeout_us / 1000000;
+    tv.tv_usec = timeout_us % 1000000;
     FD_ZERO(&rfds);
     FD_SET(g_device_port, &rfds);
 

@@ -304,30 +304,35 @@ int main(int argc, char *argv[])
           }
           yprintf(OUTPUT_LV_WARNING, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
         }
-      }
-      fflush(stderr);
-
-      if (get_parameter(&driver_param) == -1)
-      {
-        continue;
-      }
-      yprintf(OUTPUT_LV_DEBUG, "Driver depending parameters\n");
-      yprintf(OUTPUT_LV_DEBUG, " Name          : %s\n", driver_param.robot_name);
-      yprintf(OUTPUT_LV_DEBUG, " PWM resolution: %s\n", driver_param.pwm_resolution);
-      yprintf(OUTPUT_LV_DEBUG, " Motor number  : %s\n", driver_param.motor_num);
-      yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-
-      if (strlen(driver_param.pwm_resolution) <= 0 ||
-          strlen(driver_param.motor_num) <= 0)
-      {
-        yprintf(OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n");
-        if (option(OPTION_RECONNECT))
+        if (get_parameter(&driver_param) == -1)
         {
-          yp_usleep(500000);
           continue;
         }
-        break;
+        yprintf(OUTPUT_LV_DEBUG, "Driver depending parameters\n");
+        yprintf(OUTPUT_LV_DEBUG, " Name          : %s\n", driver_param.robot_name);
+        yprintf(OUTPUT_LV_DEBUG, " PWM resolution: %s\n", driver_param.pwm_resolution);
+        yprintf(OUTPUT_LV_DEBUG, " Motor number  : %s\n", driver_param.motor_num);
+        yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+        if (strlen(driver_param.pwm_resolution) <= 0 ||
+            strlen(driver_param.motor_num) <= 0)
+        {
+          yprintf(OUTPUT_LV_ERROR, "Error: Failed to load driver parameters.\n");
+          if (option(OPTION_RECONNECT))
+          {
+            yp_usleep(500000);
+            continue;
+          }
+          break;
+        }
       }
+      else
+      {
+        driver_param.robot_name[0] = 0;
+        driver_param.pwm_resolution[0] = 0;
+        strcpy(driver_param.motor_num, "2");
+      }
+      fflush(stderr);
     }
     else
     {
@@ -392,55 +397,66 @@ int main(int argc, char *argv[])
       }
     }
     {
-      int i;
-      for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+      if (strlen(driver_param.pwm_resolution) > 0)
       {
-        *pp(YP_PARAM_PWM_MAX, i) = atoi(driver_param.pwm_resolution);
+        int i;
+        for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+        {
+          *pp(YP_PARAM_PWM_MAX, i) = atoi(driver_param.pwm_resolution);
+        }
+      }
+      else if (p(YP_PARAM_PWM_MAX, 0) == 0)
+      {
+        yprintf(OUTPUT_LV_ERROR, "Error: _PWM_RESOLUTION parameter must be given on --no-yp-protocol mode.\n");
+        break;
       }
     }
     yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
 
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
-      // ボーレートの設定
-      if (param->speed)
+      if (!(option(OPTION_DO_NOT_USE_YP)))
       {
-        yprintf(OUTPUT_LV_INFO, "Setting baudrate to %d baud.\n", param->speed);
-      }
-      else
-      {
-        // 指定されてない場合デフォルトの値
-        param->speed = DEFAULT_BAUDRATE;
-      }
+        // ボーレートの設定
+        if (param->speed)
+        {
+          yprintf(OUTPUT_LV_INFO, "Setting baudrate to %d baud.\n", param->speed);
+        }
+        else
+        {
+          // 指定されてない場合デフォルトの値
+          param->speed = DEFAULT_BAUDRATE;
+        }
 
-      ret = set_baudrate(param->speed);
-      if (ret == 0)
-      {
-        // 設定失敗
-        yprintf(OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n");
-        break;  // quit=0でbreakしたら異常終了と判断
-      }
-      if (ret == 4)
-      {
-        // ボーレートの設定未対応
-        yprintf(OUTPUT_LV_INFO, "Info: Baudrate setting is not supported on this device.\n");
-      }
-      else
-      {
-        // 設定成功
-        // 正常ならば何もしない
-      }
+        ret = set_baudrate(param->speed);
+        if (ret == 0)
+        {
+          // 設定失敗
+          yprintf(OUTPUT_LV_WARNING, "Error: Failed to change baudrate.\n");
+          break;  // quit=0でbreakしたら異常終了と判断
+        }
+        if (ret == 4)
+        {
+          // ボーレートの設定未対応
+          yprintf(OUTPUT_LV_INFO, "Info: Baudrate setting is not supported on this device.\n");
+        }
+        else
+        {
+          // 設定成功
+          // 正常ならば何もしない
+        }
 
-      if (param->admask)
-      {
-        yprintf(OUTPUT_LV_INFO, "Setting admask to %x.\n", param->admask);
-        set_admask(param->admask);
-      }
+        if (param->admask)
+        {
+          yprintf(OUTPUT_LV_INFO, "Setting admask to %x.\n", param->admask);
+          set_admask(param->admask);
+        }
 
-      if (option(OPTION_ENABLE_GET_DIGITAL_IO))
-      {
-        yprintf(OUTPUT_LV_INFO, "Enabling digital io input.\n");
-        set_diomask(1);
+        if (option(OPTION_ENABLE_GET_DIGITAL_IO))
+        {
+          yprintf(OUTPUT_LV_INFO, "Enabling digital io input.\n");
+          set_diomask(1);
+        }
       }
 
       if (!(option(OPTION_PARAM_CONTROL)))

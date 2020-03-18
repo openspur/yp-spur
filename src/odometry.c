@@ -335,7 +335,7 @@ void process_int(
       }
       break;
     default:
-      yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrput data (%d, %d, %d)\n", param_id, id, value);
+      yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrupt data (%d, %d, %d)\n", param_id, id, value);
       break;
   }
 }

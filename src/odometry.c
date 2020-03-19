@@ -96,6 +96,7 @@ void init_odometry(void)
   g_odometry.v = 0;
   g_odometry.w = 0;
   g_odometry.time = 0;
+  g_odometry.packet_lost = 0;
   g_offset_point = 0;
 }
 
@@ -420,13 +421,19 @@ double time_synchronize(double receive_time, int readnum, int wp)
   const int lost = lround(error / g_interval);
   if (lost != 0)
   {
-    if (abs(lost) > 1 || option(OPTION_SHOW_TIMESTAMP))
-    {
-      // lost=+1/-1 is a jitter in most case. Show abs(lost)>1 as an error.
-      yprintf(OUTPUT_LV_ERROR, "%d packets might be lost!\n", lost);
-    }
+    g_odometry.packet_lost += lost;
+    if (option(OPTION_SHOW_TIMESTAMP))
+      yprintf(OUTPUT_LV_WARNING, "%d packets might be lost!\n", lost);
+
     error -= lost * g_interval;
     g_offset_point -= lost;
+  }
+  else if (g_odometry.packet_lost_last != g_odometry.packet_lost)
+  {
+    // Discard lost=+1/-1 as a jitter.
+    if (abs(g_odometry.packet_lost_last - g_odometry.packet_lost) > 1)
+      yprintf(OUTPUT_LV_ERROR, "Error: total packet lost: %d\n", g_odometry.packet_lost);
+    g_odometry.packet_lost_last = g_odometry.packet_lost;
   }
 
   static double error_integ = 0;

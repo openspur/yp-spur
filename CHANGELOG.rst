@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.18.0 (2020-03-21)
+-------------------
 * Accumulate packet lost count (`#132 <https://github.com/openspur/yp-spur/issues/132>`_)
 * Fix torque offset gear factor (`#131 <https://github.com/openspur/yp-spur/issues/131>`_)
 * Fix typo in error message (`#130 <https://github.com/openspur/yp-spur/issues/130>`_)

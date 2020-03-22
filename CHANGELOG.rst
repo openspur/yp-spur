@@ -2,6 +2,19 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.18.0 (2020-03-21)
+-------------------
+* Accumulate packet lost count (`#132 <https://github.com/openspur/yp-spur/issues/132>`_)
+* Fix torque offset gear factor (`#131 <https://github.com/openspur/yp-spur/issues/131>`_)
+* Fix typo in error message (`#130 <https://github.com/openspur/yp-spur/issues/130>`_)
+* Add DEVICE_TIMEOUT parameter and show packet lost error (`#129 <https://github.com/openspur/yp-spur/issues/129>`_)
+* Fix --no-yp-protocol mode (`#128 <https://github.com/openspur/yp-spur/issues/128>`_)
+* Add option to ping chained devices (`#127 <https://github.com/openspur/yp-spur/issues/127>`_)
+* Update assets to v0.0.7 (`#126 <https://github.com/openspur/yp-spur/issues/126>`_)
+* Update assets to v0.0.6 (`#125 <https://github.com/openspur/yp-spur/issues/125>`_)
+* Migrate changelog format to rst (`#124 <https://github.com/openspur/yp-spur/issues/124>`_)
+* Contributors: Atsushi Watanabe
+
 1.17.1
 ------
 - Show driver error only if the state is changed (`#122 <https://github.com/openspur/yp-spur/issues/122>`_)

@@ -2,6 +2,12 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix without-device mode (`#136 <https://github.com/openspur/yp-spur/issues/136>`_)
+* Add CI job for Ubuntu Focal (`#135 <https://github.com/openspur/yp-spur/issues/135>`_)
+* Contributors: Atsushi Watanabe
+
 1.18.0 (2020-03-21)
 -------------------
 * Accumulate packet lost count (`#132 <https://github.com/openspur/yp-spur/issues/132>`_)

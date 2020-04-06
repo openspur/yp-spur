@@ -13,7 +13,7 @@ RUN mkdir -p /tmp/gtest \
   && cd /tmp/gtest \
   && cmake /usr/src/gtest \
   && make -j \
-  && cp *.a /usr/lib/ \
+  && cp $(find . -name "*.a") /usr/lib/ \
   && rm -rf /tmp/gtest
 
 ENV CTEST_OUTPUT_ON_FAILURE=1

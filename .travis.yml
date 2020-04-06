@@ -37,7 +37,7 @@ before_install:
 script:
   - |
     if [ x${USE_DOCKER} == xtrue ]; then
-      docker build -t yp-spur:${UBUNTU_VERSION} -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION .
+      docker build -t yp-spur:${UBUNTU_VERSION} -f .test.Dockerfile --pull=true --build-arg UBUNTU_VERSION .
     fi
   - |
     if [ x${USE_MINGW} == xtrue ]; then

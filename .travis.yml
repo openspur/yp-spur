@@ -1,6 +1,5 @@
-dist: xenial
+dist: bionic
 service: docker
-sudo: required
 
 language: c
 compiler: gcc
@@ -19,6 +18,7 @@ env:
     - USE_DOCKER=true UBUNTU_VERSION=trusty
     - USE_DOCKER=true UBUNTU_VERSION=xenial
     - USE_DOCKER=true UBUNTU_VERSION=bionic
+    - USE_DOCKER=true UBUNTU_VERSION=focal
     - USE_MINGW=true
 
 before_install:
@@ -37,7 +37,7 @@ before_install:
 script:
   - |
     if [ x${USE_DOCKER} == xtrue ]; then
-      docker build -t yp-spur:${UBUNTU_VERSION} -f Dockerfile.test --pull=true --build-arg UBUNTU_VERSION .
+      docker build -t yp-spur:${UBUNTU_VERSION} -f .test.Dockerfile --pull=true --build-arg UBUNTU_VERSION .
     fi
   - |
     if [ x${USE_MINGW} == xtrue ]; then
@@ -56,8 +56,7 @@ script:
 before_deploy:
   - |
     echo machine api.github.com >> ${HOME}/.netrc \
-    && echo login ${TRAVIS_BOT_GITHUB_USER} >> ${HOME}/.netrc \
-    && echo password ${TRAVIS_BOT_GITHUB_TOKEN} >> ${HOME}/.netrc
+    && echo login ${TRAVIS_BOT_GITHUB_TOKEN} >> ${HOME}/.netrc
   - |
     if [ x${USE_MINGW} == xtrue ]; then
       wget -q -O - https://api.github.com/rate_limit

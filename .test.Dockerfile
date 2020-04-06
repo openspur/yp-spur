@@ -1,6 +1,8 @@
 ARG UBUNTU_VERSION=bionic
 FROM ubuntu:${UBUNTU_VERSION}
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get -qq update \
   && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev
 # don't clean apt-cache to reuse later
@@ -11,7 +13,7 @@ RUN mkdir -p /tmp/gtest \
   && cd /tmp/gtest \
   && cmake /usr/src/gtest \
   && make -j \
-  && cp *.a /usr/lib/ \
+  && cp $(find . -name "*.a") /usr/lib/ \
   && rm -rf /tmp/gtest
 
 ENV CTEST_OUTPUT_ON_FAILURE=1

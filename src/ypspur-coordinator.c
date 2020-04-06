@@ -407,8 +407,15 @@ int main(int argc, char *argv[])
       }
       else if (p(YP_PARAM_PWM_MAX, 0) == 0)
       {
-        yprintf(OUTPUT_LV_ERROR, "Error: _PWM_RESOLUTION parameter must be given on --no-yp-protocol mode.\n");
-        break;
+        if (option(OPTION_DO_NOT_USE_YP))
+        {
+          *pp(YP_PARAM_PWM_MAX, i) = 1000;  // dummy value for simulation
+        }
+        else
+        {
+          yprintf(OUTPUT_LV_ERROR, "Error: _PWM_RESOLUTION parameter must be given on --no-yp-protocol mode.\n");
+          break;
+        }
       }
     }
     yprintf(OUTPUT_LV_DEBUG, "++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");

@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.18.1 (2020-04-07)
+-------------------
 * Update assets to v0.0.8 (`#139 <https://github.com/openspur/yp-spur/issues/139>`_)
 * Fix without-device mode (`#136 <https://github.com/openspur/yp-spur/issues/136>`_)
 * Add CI job for Ubuntu Focal (`#135 <https://github.com/openspur/yp-spur/issues/135>`_)

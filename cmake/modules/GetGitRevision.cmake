@@ -2,13 +2,13 @@
 
 function(get_git_revision)
 
-	find_program(GIT
-		NAMES git
-	)
+  find_program(GIT
+    NAMES git
+  )
 
-	if(NOT GIT)
-		set(GIT_REVISION_SHORT "Snapshot" PARENT_SCOPE)
-		set(GIT_REVISION "Failed to get git revision." PARENT_SCOPE)
+  if(NOT GIT)
+    set(GIT_REVISION_SHORT "Snapshot" PARENT_SCOPE)
+    set(GIT_REVISION "Failed to get git revision." PARENT_SCOPE)
   else()
     exec_program(${GIT} -C "${CMAKE_CURRENT_SOURCE_DIR}"
       ARGS "rev-parse HEAD"
@@ -29,6 +29,6 @@ function(get_git_revision)
       set(GIT_REVISION_SHORT ${REVISION_SHORT} PARENT_SCOPE)
       set(GIT_REVISION ${REVISION} PARENT_SCOPE)
     endif()
-	endif()
+  endif()
 
 endfunction(get_git_revision)

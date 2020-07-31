@@ -32,3 +32,4 @@ WORKDIR /yp-spur/build-readline
 RUN cmake .. && make -j && make test && make install
 # check that ypspur-interpreter is built with readline
 RUN ldd ypspur-interpreter | grep libreadline.so
+RUN ypspur-coordinator --version

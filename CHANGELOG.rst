@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.18.2 (2020-07-31)
+-------------------
 * Fallback message if unable to get git revision (`#142 <https://github.com/openspur/yp-spur/issues/142>`_)
 * Contributors: Atsushi Watanabe
 

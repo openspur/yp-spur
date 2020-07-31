@@ -964,7 +964,7 @@ int set_param(char *filename, char *concrete_path)
       {
         dir_name[strlen(dir_name) - 1] = '\0';
         // printf( "dir = '%s'\n", dir_name );
-        sprintf(file_name, "%s/%s", dir_name, filename);
+        snprintf(file_name, sizeof(file_name), "%s/%s", dir_name, filename);
 
         paramfile = fopen(file_name, "r");
 

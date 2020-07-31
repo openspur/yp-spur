@@ -65,7 +65,7 @@ int set_baudrate(int baud)
   yp_usleep(50000);
   serial_flush_in();
   yp_usleep(50000);
-  sprintf(buf, "SS%06d\n", baud);
+  snprintf(buf, sizeof(buf), "SS%06d\n", baud);
   serial_write(buf, strlen(buf));
 
   buf[0] = 0;

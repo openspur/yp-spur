@@ -29,7 +29,7 @@ RUN apt-get install -y --no-install-recommends libreadline-dev
 
 RUN mkdir -p /yp-spur/build-readline
 WORKDIR /yp-spur/build-readline
-RUN cmake .. && make -j && make test && make install
+RUN cmake .. && make -j && make test && make install && ldconfig
 # check that ypspur-interpreter is built with readline
 RUN ldd ypspur-interpreter | grep libreadline.so
 RUN ypspur-coordinator --version

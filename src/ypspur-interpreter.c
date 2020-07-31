@@ -655,7 +655,7 @@ int main(int argc, char *argv[])
       }
       err = 0;
 
-      sprintf(text, "%s> ", YPSpur_CSName[coordinate]);
+      sprintf(text, sizeof(text), "%s> ", YPSpur_CSName[coordinate]);
 #if HAVE_LIBREADLINE
       line_prev = line;
       line = readline(text);

@@ -19,9 +19,14 @@ env:
     - USE_DOCKER=true UBUNTU_VERSION=xenial
     - USE_DOCKER=true UBUNTU_VERSION=bionic
     - USE_DOCKER=true UBUNTU_VERSION=focal
+    - USE_DOCKER=true UBUNTU_VERSION=focal WITHOUT_GIT=true
     - USE_MINGW=true
 
 before_install:
+  - |
+    if [ x${WITHOUT_GIT} == xtrue ]; then
+      mv .git .git2
+    fi
   - |
     if [ x${USE_MINGW} == xtrue ]; then
       sudo apt-get update -y -qq

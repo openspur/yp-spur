@@ -4,7 +4,11 @@ FROM ubuntu:${UBUNTU_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update \
-  && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev
+  && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    libgtest-dev
 # don't clean apt-cache to reuse later
 
 ENV CTEST_OUTPUT_ON_FAILURE=1

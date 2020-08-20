@@ -162,6 +162,7 @@ int YPSpur_tilt(int cs, double dir, double tilt);
 
 /* 裏コマンド集 */
 int YP_get_error_state(void);
+void YP_request_device_dump(int id, int block);
 
 int YP_set_parameter(int param_id, double value);
 int YP_set_parameter_array(int param_id, double *value);

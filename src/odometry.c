@@ -245,7 +245,7 @@ void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time)
 }
 
 /* 割り込み型データの処理 */
-void process_int(
+void process_int4(
     OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time)
 {
   Parameters *param;
@@ -523,19 +523,19 @@ int odometry_receive(char *buf, int len, double receive_time, void *data)
 
       /* デコード処理 */
       decoded_len = decode((unsigned char *)com_buf, com_wp, (unsigned char *)data, 48);
-      if ((mode == ISOCHRONOUS && decoded_len != decoded_len_req) ||
-          (mode == INTERRUPT && decoded_len != 6))
-      {
-        com_buf[com_wp] = '\0';
-        yprintf(OUTPUT_LV_WARNING, "Warn: Broken packet '%s' (%d bytes) received. (%d bytes expected)\n", com_buf, decoded_len, decoded_len_req);
-        com_wp = 0;
-        continue;
-      }
 
       switch (mode)
       {
         case ISOCHRONOUS:
         {
+          if (decoded_len != decoded_len_req)
+          {
+            com_buf[com_wp] = '\0';
+            yprintf(OUTPUT_LV_WARNING, "Warn: Broken packet '%s' (%d bytes) received. (%d bytes expected)\n", com_buf, decoded_len, decoded_len_req);
+            com_wp = 0;
+            continue;
+          }
+
           short cnt[YP_PARAM_MAX_MOTOR_NUM], pwm[YP_PARAM_MAX_MOTOR_NUM];
           int i, p = 0;
           for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
@@ -579,17 +579,43 @@ int odometry_receive(char *buf, int len, double receive_time, void *data)
         break;
         case INTERRUPT:
         {
-          char param, id;
-          Int_4Char value;
+          const char param = data[0];
+          const char id = data[1];
 
-          param = data[0];
-          id = data[1];
-          value.byte[3] = data[2];
-          value.byte[2] = data[3];
-          value.byte[1] = data[4];
-          value.byte[0] = data[5];
+          switch (param)
+          {
+            case INT_debug_dump:
+            {
+              const unsigned char cnt = data[2];
+              yprintf(OUTPUT_LV_INFO, "Dump: %02x %x ", id, cnt);
+              int i;
+              for (i = 3; i < decoded_len; i++)
+              {
+                yprintf(OUTPUT_LV_INFO, " %02x", data[i]);
+              }
+              yprintf(OUTPUT_LV_INFO, "\n");
+            }
+            break;
+            default:
+            {
+              if (decoded_len != 6)
+              {
+                com_buf[com_wp] = '\0';
+                yprintf(OUTPUT_LV_WARNING, "Warn: Broken packet '%s' (%d bytes) received. (%d bytes expected)\n", com_buf, decoded_len, 6);
+                com_wp = 0;
+                continue;
+              }
 
-          process_int(&g_odometry, &g_error_state, param, id, value.integer, receive_time);
+              Int_4Char value;
+              value.byte[3] = data[2];
+              value.byte[2] = data[3];
+              value.byte[1] = data[4];
+              value.byte[0] = data[5];
+
+              process_int4(&g_odometry, &g_error_state, param, id, value.integer, receive_time);
+            }
+            break;
+          }
         }
         break;
       }

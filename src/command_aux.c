@@ -77,3 +77,13 @@ void get_error_state_com(double *data, double *resdata)
   resdata[0] = err->state[num];
   resdata[1] = err->time[num];
 }
+
+void dump_device_com(double *data, double *resdata)
+{
+  int id, block;
+
+  id = (int)data[0];
+  block = (int)data[1];
+  parameter_set(PARAM_dump, id, block);
+}
+

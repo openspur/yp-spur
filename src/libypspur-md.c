@@ -1410,6 +1410,24 @@ double YP_md_get_joint_torque(YPSpur *spur, int id, double *t)
   return time;
 }
 
+void YP_md_request_device_dump(YPSpur *spur, int id, int block)
+{
+  YPSpur_msg msg;
+  int len;
+
+  msg.msg_type = YPSPUR_MSG_CMD;
+  msg.pid = spur->pid;
+  msg.type = YPSPUR_REQUEST_DEVICE_DUMP;
+  msg.data[0] = id;
+  msg.data[1] = block;
+  msg.cs = 0;
+  if (spur->dev.send(&spur->dev, &msg) < 0)
+  {
+    /* error */
+    spur->connection_error = 1;
+  }
+}
+
 ParamOutputLv output_lv(void)
 {
   return OUTPUT_LV_INFO;

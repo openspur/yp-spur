@@ -370,3 +370,8 @@ double YP_get_joint_torque(int id, double *w)
 {
   return YP_md_get_joint_torque(&spur, id, w);
 }
+
+void YP_request_device_dump(int id, int block)
+{
+  YP_md_request_device_dump(&spur, id, block);
+}

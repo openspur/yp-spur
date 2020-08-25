@@ -331,6 +331,11 @@ void command(void)
         yprintf(OUTPUT_LV_DEBUG, "Command: get error state %d (id: %d)\n", (int)msg.data[0], (int)res_msg.data[0]);
         break;
 
+      case YPSPUR_REQUEST_DEVICE_DUMP:
+        dump_device_com(msg.data, res_msg.data);
+        yprintf(OUTPUT_LV_DEBUG, "Command: dump_device %d %d\n", (int)msg.data[0], (int)msg.data[1]);
+        break;
+
       /*-------------command_joint.c---------------*/
       case YPSPUR_JOINT_TORQUE:
         joint_torque_com(msg.cs, msg.data, &g_spur);

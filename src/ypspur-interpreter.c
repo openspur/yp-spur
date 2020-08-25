@@ -93,6 +93,7 @@ typedef struct SPUR_COMMAND
     SPUR_GET_JOINT_ANG,
     SPUR_GET_JOINT_TORQUE,
     SPUR_SLEEP,
+    SPUR_REQUEST_DEVICE_DUMP,
     EXIT,
     HELP,
     SPUR_COMMAND_MAX
@@ -154,6 +155,7 @@ static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
   { SPUR_GET_JOINT_ANG, { "get_joint_ang" }, 1 },
   { SPUR_GET_JOINT_TORQUE, { "get_joint_torque" }, 1 },
   { SPUR_SLEEP, { "sleep" }, 1 },
+  { SPUR_REQUEST_DEVICE_DUMP, { "request_device_dump" }, 2 },
   { HELP, { "help" }, 0 },
   { EXIT, { "exit" }, 0 }
 };
@@ -414,6 +416,9 @@ int proc_spur_cmd(char *line, int *coordinate)
       break;
     case SPUR_SLEEP:
       yp_usleep((int)(spur.arg[0] * 1000.0 * 1000.0));
+      break;
+    case SPUR_REQUEST_DEVICE_DUMP:
+      YP_request_device_dump((int)spur.arg[0], (int)spur.arg[1]);
       break;
     case HELP:
       printf("Usage:\n");

@@ -90,6 +90,7 @@ typedef enum
   PARAM_phase_offset,
   PARAM_protocol_version,
   PARAM_ping,
+  PARAM_dump,
 } YPSpur_shvel_param;
 
 typedef enum
@@ -98,6 +99,7 @@ typedef enum
   INT_enc_index_fall,
   INT_error_state,
   INT_ping_response,
+  INT_debug_dump,
 } YPSpur_shvel_interrupt;
 
 typedef enum

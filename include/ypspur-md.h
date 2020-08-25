@@ -168,6 +168,7 @@ int YPSpur_md_tilt(YPSpur *dev, int cs, double dir, double tilt);
 
 /* 裏コマンド集 */
 int YP_md_get_error_state(YPSpur *dev);
+void YP_md_request_device_dump(YPSpur *dev, int id, int block);
 
 int YP_md_set_parameter(YPSpur *dev, int param_id, double value);
 int YP_md_set_parameter_array(YPSpur *dev, int param_id, double *value);

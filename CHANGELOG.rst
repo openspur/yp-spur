@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.19.0 (2020-08-28)
+-------------------
 * Support online device dump (`#147 <https://github.com/openspur/yp-spur/issues/147>`_)
 * Update assets to v0.0.9 (`#146 <https://github.com/openspur/yp-spur/issues/146>`_)
 * Use snprintf instead of sprintf (`#145 <https://github.com/openspur/yp-spur/issues/145>`_)

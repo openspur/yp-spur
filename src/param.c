@@ -1207,6 +1207,10 @@ int set_param_motor(void)
     {
       parameter_set(PARAM_vsrc, j, g_P[YP_PARAM_VOLT][j] * 256);
     }
+    if (ischanged_p(YP_PARAM_VOLT_MIN, j) && isset_p(YP_PARAM_VOLT_MIN, j))
+    {
+      parameter_set(PARAM_vmin, j, g_P[YP_PARAM_VOLT_MIN][j] * 256);
+    }
     if (ischanged_p(YP_PARAM_CYCLE, j))
     {
       parameter_set(PARAM_control_cycle, j, g_P[YP_PARAM_CYCLE][j] * 1000);

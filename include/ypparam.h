@@ -120,6 +120,7 @@ typedef enum
   YP_PARAM_COUNT_REV,
   YP_PARAM_ENCODER_TYPE,
   YP_PARAM_VOLT,
+  YP_PARAM_VOLT_MIN,
   YP_PARAM_CYCLE,
   YP_PARAM_GEAR,
   YP_PARAM_MOTOR_R,
@@ -222,6 +223,7 @@ typedef enum
         "COUNT_REV",           \
         "ENCODER_TYPE",        \
         "VOLT",                \
+        "VOLT_MIN",            \
         "CYCLE",               \
         "GEAR",                \
         "MOTOR_R",             \
@@ -296,6 +298,7 @@ typedef enum
         1,                 \
         0,                 \
         1,                 \
+        0,                 \
         1,                 \
         1,                 \
         1,                 \
@@ -370,6 +373,7 @@ typedef enum
         "[Counts/rev] Encoder specification",                                                   \
         "Encoder type (2:2-phase incremental, 3:3-phase incremental)",                          \
         "[V] Power source voltage",                                                             \
+        "[V] Minimal power source voltage",                                                     \
         "[s] Velocity control cycle",                                                           \
         "[in/out] Gear ratio",                                                                  \
         "[ohm] Motor internal resistance",                                                      \

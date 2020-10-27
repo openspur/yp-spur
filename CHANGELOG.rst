@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.20.0 (2020-10-27)
+-------------------
+* Add VOLT_MIN param (`#151 <https://github.com/openspur/yp-spur/issues/151>`_)
+* Contributors: Atsushi Watanabe
+
 1.19.0 (2020-08-28)
 -------------------
 * Support online device dump (`#147 <https://github.com/openspur/yp-spur/issues/147>`_)

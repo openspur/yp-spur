@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.20.0 (2020-10-27)
+-------------------
 * Add VOLT_MIN param (`#151 <https://github.com/openspur/yp-spur/issues/151>`_)
 * Contributors: Atsushi Watanabe
 

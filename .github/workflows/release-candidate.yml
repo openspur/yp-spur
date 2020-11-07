@@ -1,6 +1,3 @@
-# This file is automatically deployed from https://github.com/at-wat/.rospkg-assets.
-# Please don't directly edit; update at-wat/.rospkg-assets instead.
-
 name: release-candidate
 on:
   issues:
@@ -21,6 +18,22 @@ jobs:
           git_user: Atsushi Watanabe
           git_email: atsushi.w@ieee.org
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update library version
+        run: |
+          version=${{ steps.create_release.outputs.version}}
+          major=$(echo ${version} | cut -f1 -d.)
+          minor=$(echo ${version} | cut -f2 -d.)
+          patch=$(echo ${version} | cut -f3 -d.)
+
+          git fetch origin
+          git checkout ${{ steps.create_release.outputs.created_branch }}
+
+          sed "s/^set(\(_YPSPUR_MAJOR_VERSION\) .*)\$/set(\1 ${major})/" -i CMakeLists.txt
+          sed "s/^set(\(_YPSPUR_MINOR_VERSION\) .*)\$/set(\1 ${minor})/" -i CMakeLists.txt
+          sed "s/^set(\(_YPSPUR_PATCH_VERSION\) .*)\$/set(\1 ${patch})/" -i CMakeLists.txt
+          git add CMakeLists.txt
+          git commit -m "Update library version"
+          git push origin ${{ steps.create_release.outputs.created_branch }}
       - name: open pull-request
         uses: repo-sync/pull-request@v2
         with:

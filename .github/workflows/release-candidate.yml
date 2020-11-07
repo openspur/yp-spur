@@ -25,6 +25,7 @@ jobs:
           minor=$(echo ${version} | cut -f2 -d.)
           patch=$(echo ${version} | cut -f3 -d.)
 
+          sudo chown -R "${USER}:" .git
           git fetch origin
           git checkout ${{ steps.create_release.outputs.created_branch }}
 

@@ -99,7 +99,7 @@ typedef enum
   PARAM_BLOCK2_END,
 } YPSpur_shvel_param;
 
-#if __USE_ISOC11
+#ifdef static_assert
 static_assert(PARAM_BLOCK0_END <= PARAM_servo, "Parameter enum overwrapped");
 static_assert(PARAM_BLOCK1_END <= PARAM_io_dir, "Parameter enum overwrapped");
 static_assert(PARAM_BLOCK2_END <= 255, "Parameter enum overflow");

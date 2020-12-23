@@ -40,17 +40,25 @@
 #ifndef __key_t_defined
 typedef int key_t;
 #define __key_t_defined
-#endif  // __key_t_defined
+#endif  // ! __key_t_defined
 
 #ifndef __uid_t_defined
 typedef int uid_t;
 #define __uid_t_defined
-#endif  // __uid_t_defined
+#endif  // ! __uid_t_defined
 
 #ifndef __gid_t_defined
 typedef int gid_t;
 #define __gid_t_defined
-#endif  // __gid_t_defined
+#endif  // ! __gid_t_defined
+
+#ifndef __pid_t_defined
+#ifndef _PID_T_
+typedef int pid_t;
+#define __pid_t_defined
+#define _PID_T_
+#endif  // ! _PID_T_
+#endif  // ! __pid_t_defined
 
 typedef unsigned long int msgqnum_t;
 typedef unsigned long int msglen_t;
@@ -88,9 +96,9 @@ struct msqid_ds
 };
 
 int msgget(key_t key, int msgflg);
-int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg);
-ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
-int msgctl(int msqid, int cmd, struct msqid_ds *buf);
+int msgsnd(int msqid, const void* msgp, size_t msgsz, int msgflg);
+ssize_t msgrcv(int msqid, void* msgp, size_t msgsz, long msgtyp, int msgflg);
+int msgctl(int msqid, int cmd, struct msqid_ds* buf);
 
 #else
 // Linux用

@@ -26,11 +26,16 @@ extern "C" {
 #endif  // __cplusplus
 
 #if defined(_WIN32)
-#if !defined(_WIN64)
-typedef int pid_t;
-#endif  // !defined(_WIN64)
-#else
 #include <unistd.h>
+
+#ifndef __pid_t_defined
+#ifndef _PID_T_
+typedef int pid_t;
+#define __pid_t_defined
+#define _PID_T_
+#endif  // ! _PID_T_
+#endif  // ! __pid_t_defined
+
 #endif  // defined(_WIN32)
 
 /* コマンドナンバー */
@@ -525,9 +530,9 @@ struct ipcmd_t
   int connection_error;
   pid_t pid;
   pid_t pids[YPSPUR_MAX_SOCKET];
-  int (*send)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  int (*recv)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  void (*flush)(struct ipcmd_t *ipcmd);
+  int (*send)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  int (*recv)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  void (*flush)(struct ipcmd_t* ipcmd);
 };
 
 #define YPSPUR_MSQ_KEY 0x7045

@@ -26,11 +26,19 @@ extern "C" {
 #endif  // __cplusplus
 
 #if defined(_WIN32)
-#if !defined(_WIN64)
+
+#ifndef __pid_t_defined
+#ifndef _PID_T_
 typedef int pid_t;
-#endif  // !defined(_WIN64)
+#define __pid_t_defined
+#define _PID_T_
+#endif  // ! _PID_T_
+#endif  // ! __pid_t_defined
+
 #else
+
 #include <unistd.h>
+
 #endif  // defined(_WIN32)
 
 /* コマンドナンバー */

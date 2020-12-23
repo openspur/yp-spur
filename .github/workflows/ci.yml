@@ -1,0 +1,111 @@
+name: ci
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  release:
+    types: [published]
+
+jobs:
+  build-in-docker:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - UBUNTU_VERSION=trusty
+          - UBUNTU_VERSION=xenial
+          - UBUNTU_VERSION=bionic
+          - UBUNTU_VERSION=focal
+          - UBUNTU_VERSION=focal WITHOUT_GIT=true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set environment variables
+        run: echo ${{ matrix.env }} | xargs -n1 echo >> ${GITHUB_ENV}
+
+      - name: Without git
+        if: env.WITHOUT_GIT
+        run: mv .git .git2
+
+      - name: Build
+        run: |
+          docker build -t \
+            yp-spur:${UBUNTU_VERSION} \
+            -f .test.Dockerfile \
+            --build-arg UBUNTU_VERSION .
+
+  build-with-mingw:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86_64
+          - i686
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set environment variables
+        run: |
+          echo ARCH=${{ matrix.arch }} >> ${GITHUB_ENV}
+          case ${{ matrix.arch }} in
+            x86_64) echo WIN=win64 >> ${GITHUB_ENV};;
+            i686)   echo WIN=win32 >> ${GITHUB_ENV};;
+            *)      echo "Unknown arch"; exit 1;;
+          esac
+      - name: Setup MinGW
+        run: |
+          sudo apt-get update -y -qq
+          sudo apt-get install -y --no-install-recommends \
+            gcc-mingw-w64-${ARCH//_/-} \
+            g++-mingw-w64-${ARCH//_/-}
+
+      - name: Build
+        run: |
+          mkdir -p build/install
+          cd build
+          cmake \
+            -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-${ARCH}.cmake \
+            -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
+            -DENABLE_ALL_STATIC=ON ..
+          make -j
+          make install
+
+      - name: Get release tag
+        if: github.event_name == 'release'
+        run: echo "TAG=${{ github.event.release.tag_name }}" >> ${GITHUB_ENV}
+      - name: Create Windown packages
+        run: |
+          url=$(curl -sL https://${{ secrets.GITHUB_TOKEN }}@api.github.com/repos/openspur/ypspur-gui/releases/latest \
+                  | jq -r '.assets[0].browser_download_url')
+          wget ${url}
+          (cd build/install/ && unzip ../../$(basename ${url}))
+          mkdir packages
+          (cd build/install/ && zip -q ../../packages/yp-spur.${WIN}.${TAG:-test}.zip -r $(ls))
+          (cd build/ && zip -q ../packages/yp-spur-samples.${WIN}.${TAG:-test}.zip -r samples/run-test.exe)
+
+      - name: Deploy
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: packages/yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_name: yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_content_type: application/zip
+      - name: Deploy sample
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: packages/yp-spur-samples.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_name: yp-spur-samples.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_content_type: application/zip

@@ -78,7 +78,7 @@ jobs:
 
       - name: Get release tag
         if: github.event_name == 'release'
-        run: echo "TAG=${{ github.event.release.tag_name }}"
+        run: echo "TAG=${{ github.event.release.tag_name }}" >> ${GITHUB_ENV}
       - name: Create Windown packages
         run: |
           url=$(curl -sL https://${{ secrets.GITHUB_TOKEN }}@api.github.com/repos/openspur/ypspur-gui/releases/latest \
@@ -99,7 +99,7 @@ jobs:
           asset_path: packages/yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
           asset_name: yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
           asset_content_type: application/zip
-      - name: Deploy win64 sample
+      - name: Deploy sample
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:

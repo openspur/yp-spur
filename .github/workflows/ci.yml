@@ -82,7 +82,7 @@ jobs:
       - name: Create Windown packages
         run: |
           url=$(curl -sL https://${{ secrets.GITHUB_TOKEN }}@api.github.com/repos/openspur/ypspur-gui/releases/latest \
-                  | jq '.assets[0].browser_download_url')
+                  | jq -r '.assets[0].browser_download_url')
           wget ${url}
           (cd build/install/ && unzip ../../$(basename ${url}))
           mkdir packages

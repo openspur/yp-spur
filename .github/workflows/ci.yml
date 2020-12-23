@@ -41,34 +41,36 @@ jobs:
 
   build-with-mingw:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86_64
+          - i686
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set environment variables
+        run: |
+          echo ARCH=${{ matrix.arch }} >> ${GITHUB_ENV}
+          case ${{ matrix.arch }} in
+            x86_64) echo WIN=win64 >> ${GITHUB_ENV};;
+            i686)   echo WIN=win32 >> ${GITHUB_ENV};;
+            *)      echo "Unknown arch"; exit 1;;
+          esac
       - name: Setup MinGW
         run: |
           sudo apt-get update -y -qq
           sudo apt-get install -y --no-install-recommends \
-            gcc-mingw-w64-x86-64 \
-            gcc-mingw-w64-i686 \
-            g++-mingw-w64-x86-64 \
-            g++-mingw-w64-i686
+            gcc-mingw-w64-${ARCH//_/-} \
+            g++-mingw-w64-${ARCH//_/-}
 
-      - name: Build with MinGW-w64
+      - name: Build
         run: |
-          mkdir -p build-win64/install
-          cd build-win64
+          mkdir -p build/install
+          cd build
           cmake \
-            -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-x86_64.cmake \
-            -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
-            -DENABLE_ALL_STATIC=ON ..
-          make -j
-          make install
-      - name: Build with MinGW
-        run: |
-          mkdir -p build-win32/install
-          cd build-win32
-          cmake \
-            -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-i686.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-mingw-${ARCH}.cmake \
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
             -DENABLE_ALL_STATIC=ON ..
           make -j
@@ -82,33 +84,20 @@ jobs:
           url=$(curl -sL https://${{ secrets.GITHUB_TOKEN }}@api.github.com/repos/openspur/ypspur-gui/releases/latest \
                   | jq '.assets[0].browser_download_url')
           wget ${url}
-          (cd build-win64/install/ && unzip ../../$(basename ${url}))
-          (cd build-win32/install/ && unzip ../../$(basename ${url}))
+          (cd build/install/ && unzip ../../$(basename ${url}))
           mkdir packages
-          (cd build-win64/install/ && zip -q ../../packages/yp-spur.win64.${TAG:-test}.zip -r $(ls))
-          (cd build-win32/install/ && zip -q ../../packages/yp-spur.win32.${TAG:-test}.zip -r $(ls))
-          (cd build-win64/ && zip -q ../packages/yp-spur-samples.win64.${TAG:-test}.zip -r samples/run-test.exe)
-          (cd build-win32/ && zip -q ../packages/yp-spur-samples.win32.${TAG:-test}.zip -r samples/run-test.exe)
+          (cd build/install/ && zip -q ../../packages/yp-spur.${WIN}.${TAG:-test}.zip -r $(ls))
+          (cd build/ && zip -q ../packages/yp-spur-samples.${WIN}.${TAG:-test}.zip -r samples/run-test.exe)
 
-      - name: Deploy win64
+      - name: Deploy
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: packages/yp-spur.win64.${{ env.TAG }}.zip
-          asset_name: yp-spur.win64.${{ env.TAG }}.zip
-          asset_content_type: application/zip
-      - name: Deploy win32
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: packages/yp-spur.win32.${{ env.TAG }}.zip
-          asset_name: yp-spur.win32.${{ env.TAG }}.zip
+          asset_path: packages/yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_name: yp-spur.${{ env.WIN }}.${{ env.TAG }}.zip
           asset_content_type: application/zip
       - name: Deploy win64 sample
         if: github.event_name == 'release'
@@ -117,16 +106,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: packages/yp-spur-samples.win64.${{ env.TAG }}.zip
-          asset_name: yp-spur-samples.win64.${{ env.TAG }}.zip
-          asset_content_type: application/zip
-      - name: Deploy win32 sample
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: packages/yp-spur-samples.win32.${{ env.TAG }}.zip
-          asset_name: yp-spur-samples.win32.${{ env.TAG }}.zip
+          asset_path: packages/yp-spur-samples.${{ env.WIN }}.${{ env.TAG }}.zip
+          asset_name: yp-spur-samples.${{ env.WIN }}.${{ env.TAG }}.zip
           asset_content_type: application/zip

@@ -26,7 +26,6 @@ extern "C" {
 #endif  // __cplusplus
 
 #if defined(_WIN32)
-#include <unistd.h>
 
 #ifndef __pid_t_defined
 #ifndef _PID_T_
@@ -35,6 +34,10 @@ typedef int pid_t;
 #define _PID_T_
 #endif  // ! _PID_T_
 #endif  // ! __pid_t_defined
+
+#else
+
+#include <unistd.h>
 
 #endif  // defined(_WIN32)
 

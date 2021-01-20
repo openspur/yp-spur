@@ -113,6 +113,8 @@ add_subdirectory(samples)
 if(GTEST_FOUND)
   enable_testing()
 
+  set(CTEST_ENVIRONMENT CTEST_OUTPUT_ON_FAILURE=1)
+
   add_executable(param_load_test
     test/param_load.cpp
     src/adinput.c
@@ -130,8 +132,26 @@ if(GTEST_FOUND)
     carte2d${TARGET_STATIC_POSTFIX}
     formula-calc${TARGET_STATIC_POSTFIX}
   )
-
   add_test(YPSpurParamTest param_load_test)
+
+  add_executable(time_synchronize_test
+    test/time_synchronize.cpp
+    src/adinput.c
+    src/communication.c
+    src/odometry.c
+    src/param.c
+    src/serial.c
+    src/ssm_spur_handler.c
+    src/utility.c
+    src/yprintf.c
+  )
+  target_link_libraries(time_synchronize_test
+    ${GTEST_LIBRARIES}
+    ${THREAD_LIBRARIES}
+    carte2d${TARGET_STATIC_POSTFIX}
+    formula-calc${TARGET_STATIC_POSTFIX}
+  )
+add_test(YPSpurTimeSynchronize time_synchronize_test)
 endif(GTEST_FOUND)
 
 

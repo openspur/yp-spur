@@ -70,11 +70,11 @@ TEST(TimeSynchronize, PacketLost)
   EXPECT_EQ(g_odometry.packet_lost, 0);
   EXPECT_NEAR(time_estimate(0), 10.030, 0.001);
 
-  time_synchronize(10.050, 1, 0); // lost 3
+  time_synchronize(10.050, 1, 0);  // lost 3
   EXPECT_EQ(g_odometry.packet_lost, 3);
   EXPECT_NEAR(time_estimate(0), 10.050, 0.001);
 
-  time_synchronize(10.055, 2, 0); // recover 1, lost 2
+  time_synchronize(10.055, 2, 0);  // recover 1, lost 2
   EXPECT_EQ(g_odometry.packet_lost, 2);
   EXPECT_NEAR(time_estimate(0), 10.050, 0.001);
   EXPECT_NEAR(time_estimate(1), 10.055, 0.001);
@@ -119,15 +119,11 @@ TEST(TimeSynchronize, ClockGain)
     0.00502,
     0.00505,
   };
-  
-  for (const double* it = &actual_intervals[0];
-       it < &actual_intervals[sizeof(actual_intervals) / sizeof(double)];
-       ++it)
-  {
-    const double actual_interval = *it;
 
+  for (const double actual_interval : actual_intervals)
+  {
     int cnt = 0;
-    for(double t = 100; t < 160; t += actual_interval)
+    for (double t = 100; t < 160; t += actual_interval)
     {
       int readnum = 1;
       if (++cnt % 10 == 0)
@@ -138,17 +134,19 @@ TEST(TimeSynchronize, ClockGain)
 
       time_synchronize(t, readnum, 0);
       ASSERT_EQ(g_odometry.packet_lost, 0);
-      for (int i = 0; i < readnum; i ++)
+      for (int i = 0; i < readnum; i++)
       {
-        ASSERT_NEAR(time_estimate(i), t - actual_interval * (readnum - 1 - i), 0.001);
+        ASSERT_NEAR(time_estimate(i), t - actual_interval * (readnum - 1 - i), 0.001)
+            << "interval: " << actual_interval << ", t: " << t << ", cnt: " << cnt << ", i: " << i;
       }
     }
 
-    ASSERT_NEAR(actual_interval, g_interval, 0.00001);
+    ASSERT_NEAR(actual_interval, g_interval, 0.00001)
+        << "interval: " << actual_interval;
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

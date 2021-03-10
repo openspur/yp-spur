@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.20.1 (2021-03-10)
+-------------------
 * Fix timestamp estimation (`#169 <https://github.com/openspur/yp-spur/issues/169>`_)
 * Update assets to v0.1.4 (`#164 <https://github.com/openspur/yp-spur/issues/164>`_)
 * Migrate to GitHub Actions (`#166 <https://github.com/openspur/yp-spur/issues/166>`_)

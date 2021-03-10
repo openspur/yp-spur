@@ -2,6 +2,20 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.20.1 (2021-03-10)
+-------------------
+* Fix timestamp estimation (`#169 <https://github.com/openspur/yp-spur/issues/169>`_)
+* Update assets to v0.1.4 (`#164 <https://github.com/openspur/yp-spur/issues/164>`_)
+* Migrate to GitHub Actions (`#166 <https://github.com/openspur/yp-spur/issues/166>`_)
+* Update static_assert availability check (`#163 <https://github.com/openspur/yp-spur/issues/163>`_)
+* Add static_assert to enum value overlap (`#162 <https://github.com/openspur/yp-spur/issues/162>`_)
+* Fix version in CMakeLists (`#161 <https://github.com/openspur/yp-spur/issues/161>`_)
+* Fix git directory on release-candidate (`#159 <https://github.com/openspur/yp-spur/issues/159>`_)
+* Automatically update version in CMakeLists (`#157 <https://github.com/openspur/yp-spur/issues/157>`_)
+* Update assets to v0.1.2 (`#156 <https://github.com/openspur/yp-spur/issues/156>`_)
+* Update assets to v0.0.10 (`#154 <https://github.com/openspur/yp-spur/issues/154>`_)
+* Contributors: Atsushi Watanabe
+
 1.20.0 (2020-10-27)
 -------------------
 * Add VOLT_MIN param (`#151 <https://github.com/openspur/yp-spur/issues/151>`_)

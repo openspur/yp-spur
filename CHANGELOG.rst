@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.20.2 (2021-03-17)
+-------------------
+* Revert "Fix timestamp estimation (`#169 <https://github.com/openspur/yp-spur/issues/169>`_)" (`#172 <https://github.com/openspur/yp-spur/issues/172>`_)
+* Contributors: Atsushi Watanabe
+
 1.20.1 (2021-03-10)
 -------------------
 * Fix timestamp estimation (`#169 <https://github.com/openspur/yp-spur/issues/169>`_)

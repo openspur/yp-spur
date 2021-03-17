@@ -53,6 +53,7 @@
 double g_interval;
 double g_offset;
 int g_offset_point;
+double g_estimated_delay = 0;
 
 CSptr g_GL;
 CSptr g_SP;
@@ -373,7 +374,7 @@ ErrorStatePtr get_error_state_ptr()
  */
 double time_estimate(int readnum)
 {
-  return g_offset + g_interval * (double)(readnum - g_offset_point + 1);
+  return g_offset + g_interval * (double)(readnum - g_offset_point) + g_estimated_delay;
 }
 
 /**
@@ -384,8 +385,9 @@ double time_estimate(int readnum)
  */
 double time_synchronize(double receive_time, int readnum, int wp)
 {
+  static double prev_time = 0.0;
+  static int prev_readnum = 0;
   double measured_time;
-  static double prev_time;
 
   // 受信開始時刻を計算
   if (SER_BAUDRATE != 0)
@@ -400,17 +402,20 @@ double time_synchronize(double receive_time, int readnum, int wp)
   // (Currently all YP-Spur compatible devices uses USB as a communication interface.)
   measured_time -= 0.0005;
 
-  if ( fabs(g_offset - measured_time) > 0.5)
+  if (g_offset_point <= 0 || fabs(g_offset - measured_time) > 0.5)
   {
     // Reset if measured_time has too large error (500ms).
+    g_offset = measured_time;
     g_interval = SER_INTERVAL;
-    g_offset = measured_time - g_interval * readnum;
+    g_offset_point = readnum;
+    prev_time = measured_time;
   }
 
   // predict
+  g_offset += g_interval * (readnum - g_offset_point);
   g_offset_point = readnum;
-  g_offset += g_interval * readnum;
 
+  const double dt = measured_time - prev_time;
   double error = measured_time - g_offset;
 
   const int lost = lround(error / g_interval);
@@ -421,34 +426,42 @@ double time_synchronize(double receive_time, int readnum, int wp)
       yprintf(OUTPUT_LV_WARNING, "%d packets might be lost!\n", lost);
 
     error -= lost * g_interval;
-    g_offset += lost * g_interval;
+    g_offset_point -= lost;
   }
-  else
+  else if (g_odometry.packet_lost_last != g_odometry.packet_lost)
   {
-    if (g_odometry.packet_lost_last != g_odometry.packet_lost)
-    {
-      // Discard lost=+1/-1 as a jitter.
-      if (abs(g_odometry.packet_lost_last - g_odometry.packet_lost) > 1)
-        yprintf(OUTPUT_LV_ERROR, "Error: total packet lost: %d\n", g_odometry.packet_lost);
-      g_odometry.packet_lost_last = g_odometry.packet_lost;
-    }
-
-    const double dt = measured_time - prev_time;
-    if (fabs(dt - g_interval * readnum) < dt * 0.1)
-    {
-      const double interval_estim = dt / (double)readnum;
-      const double t_error = g_offset - measured_time;
-      g_interval = 0.99 * g_interval + 0.01 * interval_estim;
-      g_offset -= 0.1 * t_error;
-    }
+    // Discard lost=+1/-1 as a jitter.
+    if (abs(g_odometry.packet_lost_last - g_odometry.packet_lost) > 1)
+      yprintf(OUTPUT_LV_ERROR, "Error: total packet lost: %d\n", g_odometry.packet_lost);
+    g_odometry.packet_lost_last = g_odometry.packet_lost;
   }
+
+  static double error_integ = 0;
+  error_integ += error * dt;
+
+  if (error < g_estimated_delay && lost == 0)
+  {
+    if (option(OPTION_SHOW_TIMESTAMP))
+      printf("[update min_delay] delay: %0.3f\n",
+             error * 1000.0);
+    g_estimated_delay = g_estimated_delay * 0.5 + error * 0.5;
+  }
+  g_estimated_delay *= (1.0 - dt / 120.0);
+
+  g_offset += error * 0.2 + error_integ * 0.1;
+
+  // aprox. 0.5 sec exp filter
+  g_interval =
+      0.99 * g_interval +
+      0.01 * ((measured_time - prev_time) / (double)(readnum - prev_readnum));
 
   static int cnt_show_timestamp = 0;
   if (option(OPTION_SHOW_TIMESTAMP) && ++cnt_show_timestamp % 100 == 0)
-    printf("epoch: %0.8f, interval: %0.3f, delay: %0.3f\n",
-           g_offset, g_interval * 1000.0, error * 1000.0);
+    printf("epoch: %0.8f, interval: %0.3f, delay: %0.3f, min_delay: %0.3f\n",
+           g_offset, g_interval * 1000.0, error * 1000.0, g_estimated_delay * 1000.0);
 
   prev_time = measured_time;
+  prev_readnum = readnum;
 
   return g_offset;
 }

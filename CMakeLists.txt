@@ -89,7 +89,11 @@ if(SSM_FOUND)
     ${SSM_INCLUDE_DIRS}
   )
 endif(SSM_FOUND)
-
+if(READLINE_FOUND)
+  include_directories(
+    ${READLINE_INCLUDE_DIRS}
+  )
+endif(READLINE_FOUND)
 
 # Static link options
 

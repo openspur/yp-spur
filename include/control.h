@@ -23,6 +23,7 @@
 
 #include <command.h>
 #include <odometry.h>
+#include <pthread.h>
 
 int robot_speed_smooth(SpurUserParamsPtr spur);
 void robot_speed(SpurUserParamsPtr spur);

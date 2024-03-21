@@ -18,19 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <fcntl.h>
 #include <math.h>
+#include <setjmp.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
-#include <unistd.h>
-
-#include <fcntl.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -40,24 +39,23 @@
 #include <shvel-param.h>
 
 /* yp-spur 用 */
-#include <ypspur-coordinator.h>
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <odometry.h>
-#include <ypprotocol.h>
 #include <adinput.h>
+#include <command.h>
+#include <control.h>
+#include <odometry.h>
+#include <param.h>
+#include <ping.h>
+#include <serial.h>
 #include <ssm_spur_handler.h>
 #include <utility.h>
+#include <ypprotocol.h>
 #include <yprintf.h>
-#include <ping.h>
+#include <ypspur-coordinator.h>
 
 /* ライブラリ用 */
-#include <ypspur.h>
 #include <cartesian2d.h>
-
 #include <pthread.h>
+#include <ypspur.h>
 
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;
@@ -135,7 +133,7 @@ void escape_road(const int enable)
 }
 
 /* main */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   pthread_t command_thread;
   pthread_t control_thread;
@@ -230,7 +228,7 @@ int main(int argc, char *argv[])
   command_thread_en = 0;
   do
   {
-    FILE *temp_paramfile = NULL;
+    FILE* temp_paramfile = NULL;
     quit = 0;
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
@@ -486,15 +484,9 @@ int main(int argc, char *argv[])
     init_command_thread(&command_thread);
     command_thread_en = 1;
 
-    if (!(option(OPTION_WITHOUT_DEVICE)))
-    {
-      init_control_thread(&control_thread);
-      control_thread_en = 1;
-    }
-    else
-    {
-      control_thread_en = 0;
-    }
+    init_control_thread(&control_thread);
+    control_thread_en = 1;
+
     if (option(OPTION_UPDATE_PARAM))
     {
       yprintf(OUTPUT_LV_WARNING, "==================== Warning! ====================\n");

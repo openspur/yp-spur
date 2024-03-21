@@ -458,7 +458,8 @@ void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur)
   ParametersPtr param = get_param_ptr();
   odm->time = get_time();
 
-  for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+  int i;
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
   {
     if (!param->motor_enable[i])
       continue;

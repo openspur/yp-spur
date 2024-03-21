@@ -136,6 +136,22 @@ if(GTEST_FOUND)
   )
 
   add_test(YPSpurParamTest param_load_test)
+
+  add_executable(e2e_test
+    test/e2e.cpp
+  )
+  add_dependencies(e2e_test
+    ypspur-coordinator
+    ypspur
+  )
+  target_link_libraries(e2e_test
+    ${GTEST_LIBRARIES}
+    ypspur
+  )
+
+  file(REAL_PATH ./test/ TEST_DIR)
+  message(WARNING "${TEST_DIR}")
+  add_test(E2ETest e2e_test ${TEST_DIR})
 endif(GTEST_FOUND)
 
 

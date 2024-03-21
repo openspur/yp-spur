@@ -27,3 +27,4 @@ $ sudo make install
 ## Contributing
 
 Please post issues and/or pull-requests on our [GitHub repository](https://github.com/openspur/yp-spur/).
+

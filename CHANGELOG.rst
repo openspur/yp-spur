@@ -2,6 +2,20 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.21.0 (2024-03-22)
+-------------------
+* Update release-candidate workflow (`#189 <https://github.com/openspur/yp-spur/issues/189>`_)
+* Simulate motion on --without-device mode (`#185 <https://github.com/openspur/yp-spur/issues/185>`_)
+* Format source files by clang-format (`#187 <https://github.com/openspur/yp-spur/issues/187>`_)
+* Update assets to v0.6.1 (`#184 <https://github.com/openspur/yp-spur/issues/184>`_)
+* Update assets to v0.6.0 (`#183 <https://github.com/openspur/yp-spur/issues/183>`_)
+* Update assets to v0.4.1 (`#182 <https://github.com/openspur/yp-spur/issues/182>`_)
+* Update assets to v0.4.0 (`#181 <https://github.com/openspur/yp-spur/issues/181>`_)
+* Update assets to v0.3.4 (`#178 <https://github.com/openspur/yp-spur/issues/178>`_)
+* Update assets to v0.2.0 (`#176 <https://github.com/openspur/yp-spur/issues/176>`_)
+* Add missing readline_include_dirs (`#175 <https://github.com/openspur/yp-spur/issues/175>`_)
+* Contributors: Atsushi Watanabe, Tobias Fischer
+
 1.20.2 (2021-03-17)
 -------------------
 * Revert "Fix timestamp estimation (`#169 <https://github.com/openspur/yp-spur/issues/169>`_)" (`#172 <https://github.com/openspur/yp-spur/issues/172>`_)

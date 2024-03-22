@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.21.0 (2024-03-22)
+-------------------
 * Update release-candidate workflow (`#189 <https://github.com/openspur/yp-spur/issues/189>`_)
 * Simulate motion on --without-device mode (`#185 <https://github.com/openspur/yp-spur/issues/185>`_)
 * Format source files by clang-format (`#187 <https://github.com/openspur/yp-spur/issues/187>`_)

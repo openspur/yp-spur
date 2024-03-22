@@ -175,7 +175,7 @@ DWORD i2baud(int baud)
 #endif  // !defined(__MINGW32__)
 
 // ポートが接続可能か調べる
-int serial_tryconnect(char *device_name)
+int serial_tryconnect(char* device_name)
 {
 #if !defined(__MINGW32__)
   // Unix用
@@ -198,11 +198,11 @@ int serial_tryconnect(char *device_name)
   return 1;
 }
 
-int recieve_throw(char *buf, int len, double t, void *data)
+int recieve_throw(char* buf, int len, double t, void* data)
 {
   buf[len] = 0;
-  strcat((char *)data, buf);
-  if (strstr((char *)data, "\n\n"))
+  strcat((char*)data, buf);
+  if (strstr((char*)data, "\n\n"))
   {
     return -2;
   }
@@ -317,7 +317,7 @@ int serial_change_baudrate(int baud)
 }
 
 // ポートをオープンして 通信の準備をする
-int serial_connect(char *device_name)
+int serial_connect(char* device_name)
 {
 #if !defined(__MINGW32__)
   g_device_port = open(device_name, O_RDWR);
@@ -431,7 +431,7 @@ void serial_flush_out(void)
 }
 
 // シリアルポートからの受信処理
-int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
+int serial_recieve(int (*serial_event)(char*, int, double, void*), void* data)
 {
   char buf[4096];
   double receive_time;
@@ -527,16 +527,16 @@ int serial_recieve(int (*serial_event)(char *, int, double, void *), void *data)
   }
 }
 
-int encode_write(char *data, int len)
+int encode_write(char* data, int len)
 {
   unsigned char buf[128];
   int encode_len, ret;
 
   buf[0] = COMMUNICATION_START_BYTE;
-  encode_len = encode((unsigned char *)data, len, buf + 1, 126);
+  encode_len = encode((unsigned char*)data, len, buf + 1, 126);
   buf[encode_len + 1] = COMMUNICATION_END_BYTE;
 
-  ret = serial_write((char *)buf, encode_len + 2);
+  ret = serial_write((char*)buf, encode_len + 2);
   if (ret <= 0)
   {
     return -1;
@@ -546,16 +546,16 @@ int encode_write(char *data, int len)
   return 0;
 }
 
-int encode_int_write(char *data, int len)
+int encode_int_write(char* data, int len)
 {
   unsigned char buf[128];
   int encode_len, ret;
 
   buf[0] = COMMUNICATION_INT_BYTE;
-  encode_len = encode((unsigned char *)data, len, buf + 1, 126);
+  encode_len = encode((unsigned char*)data, len, buf + 1, 126);
   buf[encode_len + 1] = COMMUNICATION_END_BYTE;
 
-  ret = serial_write((char *)buf, encode_len + 2);
+  ret = serial_write((char*)buf, encode_len + 2);
   if (ret <= 0)
   {
     return -1;
@@ -565,7 +565,7 @@ int encode_int_write(char *data, int len)
   return 0;
 }
 
-int serial_write(char *buf, int len)
+int serial_write(char* buf, int len)
 {
 #if !defined(__MINGW32__)
   // Unix用
@@ -592,7 +592,8 @@ int serial_write(char *buf, int len)
     }
     len -= ret;
     buf += ret;
-  } while (len > 0);
+  }
+  while (len > 0);
 
 #ifdef __APPLE__
   yp_usleep(100);

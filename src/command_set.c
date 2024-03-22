@@ -46,7 +46,7 @@
 #include <ypspur.h>
 #include <cartesian2d.h>
 
-void set_pos_com(int cs, double *data, SpurUserParamsPtr spur)
+void set_pos_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
   CSptr cs_src;
@@ -77,7 +77,7 @@ void set_pos_com(int cs, double *data, SpurUserParamsPtr spur)
   }
 }
 
-void set_GL_on_GL_com(double *data, SpurUserParamsPtr spur)
+void set_GL_on_GL_com(double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
   x = data[0];
@@ -88,7 +88,7 @@ void set_GL_on_GL_com(double *data, SpurUserParamsPtr spur)
   set_cs(CS_GL, x, y, theta);
 }
 
-void set_adjust_com(int cs, double *data, SpurUserParamsPtr spur)
+void set_adjust_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
   double xgl, ygl, thetagl;
@@ -124,7 +124,7 @@ void set_adjust_com(int cs, double *data, SpurUserParamsPtr spur)
   set_cs(CS_SP, x, y, theta);
 }
 
-void set_vel_com(double *data, SpurUserParamsPtr spur)
+void set_vel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->v = data[0];
   if (spur->v > p(YP_PARAM_MAX_VEL, 0))
@@ -133,14 +133,14 @@ void set_vel_com(double *data, SpurUserParamsPtr spur)
     spur->v = -p(YP_PARAM_MAX_VEL, 0);
 }
 
-void set_torque_com(double *data, SpurUserParamsPtr spur)
+void set_torque_com(double* data, SpurUserParamsPtr spur)
 {
   spur->torque[1] = data[1];
   spur->torque[0] = data[0];
   spur->run_mode = RUN_WHEEL_TORQUE;
 }
 
-void set_ang_vel_com(double *data, SpurUserParamsPtr spur)
+void set_ang_vel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->w = data[0];
   if (spur->w > p(YP_PARAM_MAX_W, 0))
@@ -149,7 +149,7 @@ void set_ang_vel_com(double *data, SpurUserParamsPtr spur)
     spur->w = 0;
 }
 
-void set_accel_com(double *data, SpurUserParamsPtr spur)
+void set_accel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->dv = data[0];
   if (spur->dv > p(YP_PARAM_MAX_ACC_V, 0))
@@ -158,7 +158,7 @@ void set_accel_com(double *data, SpurUserParamsPtr spur)
     spur->dv = 0;
 }
 
-void set_ang_accel_com(double *data, SpurUserParamsPtr spur)
+void set_ang_accel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->dw = data[0];
   if (spur->dw > p(YP_PARAM_MAX_ACC_W, 0))
@@ -167,7 +167,7 @@ void set_ang_accel_com(double *data, SpurUserParamsPtr spur)
     spur->dw = 0;
 }
 
-void set_tilt_com(int cs, double *data, SpurUserParamsPtr spur)
+void set_tilt_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -181,13 +181,13 @@ void set_tilt_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->tilt = data[1];
 }
 
-void set_wheel_accel_com(double *data, SpurUserParamsPtr spur)
+void set_wheel_accel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->wheel_accel[1] = data[1];
   spur->wheel_accel[0] = data[0];
 }
 
-void set_wheel_vel_com(double *data, SpurUserParamsPtr spur)
+void set_wheel_vel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->wheel_vel[1] = data[1];
   spur->wheel_vel[0] = data[0];

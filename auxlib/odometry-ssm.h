@@ -22,15 +22,16 @@
 #define __AUXLIB_ODOMETRY_SSM_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 int OdometrySSM_init(void);
-int SSM_get_pos_GL_time(double time, double *x, double *y, double *theta);
-int SSM_get_pos_BS_time(double time, double *x, double *y, double *theta);
-double SSM_get_pos_GL(double *x, double *y, double *theta);
-double SSM_get_pos_BS(double *x, double *y, double *theta);
-double SSM_get_vel(double *v, double *w);
+int SSM_get_pos_GL_time(double time, double* x, double* y, double* theta);
+int SSM_get_pos_BS_time(double time, double* x, double* y, double* theta);
+double SSM_get_pos_GL(double* x, double* y, double* theta);
+double SSM_get_pos_BS(double* x, double* y, double* theta);
+double SSM_get_vel(double* v, double* w);
 int SSM_near_pos_GL(double x, double y, double r);
 int SSM_near_ang(double th, double d);
 int SSM_over_line(double x, double y, double theta);

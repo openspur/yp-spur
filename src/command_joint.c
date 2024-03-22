@@ -44,7 +44,7 @@
 /* ライブラリ用 */
 #include <ypspur.h>
 
-void joint_torque_com(int id, double *data, SpurUserParamsPtr spur)
+void joint_torque_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -55,7 +55,7 @@ void joint_torque_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_mode[id] = MOTOR_CONTROL_FREE;
 }
 
-void joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
+void joint_vel_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -66,7 +66,7 @@ void joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_mode[id] = MOTOR_CONTROL_VEL;
 }
 
-void joint_ang_com(int id, double *data, SpurUserParamsPtr spur)
+void joint_ang_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -77,7 +77,7 @@ void joint_ang_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_mode[id] = MOTOR_CONTROL_ANGLE;
 }
 
-void joint_ang_vel_com(int id, double *data, SpurUserParamsPtr spur)
+void joint_ang_vel_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -89,7 +89,7 @@ void joint_ang_vel_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_mode[id] = MOTOR_CONTROL_ANGLE_VEL;
 }
 
-void set_joint_accel_com(int id, double *data, SpurUserParamsPtr spur)
+void set_joint_accel_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -99,7 +99,7 @@ void set_joint_accel_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_accel[id] = data[0];
 }
 
-void set_joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
+void set_joint_vel_com(int id, double* data, SpurUserParamsPtr spur)
 {
   if (id > YP_PARAM_MAX_MOTOR_NUM)
   {
@@ -109,7 +109,7 @@ void set_joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
   spur->wheel_vel[id] = data[0];
 }
 
-void get_joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
+void get_joint_vel_com(int id, double* data, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -124,7 +124,7 @@ void get_joint_vel_com(int id, double *data, SpurUserParamsPtr spur)
   data[1] = odometry->time;
 }
 
-void get_joint_vref_com(int id, double *data, SpurUserParamsPtr spur)
+void get_joint_vref_com(int id, double* data, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -139,7 +139,7 @@ void get_joint_vref_com(int id, double *data, SpurUserParamsPtr spur)
   data[1] = odometry->time;
 }
 
-void get_joint_ang_com(int id, double *data, SpurUserParamsPtr spur)
+void get_joint_ang_com(int id, double* data, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -154,7 +154,7 @@ void get_joint_ang_com(int id, double *data, SpurUserParamsPtr spur)
   data[1] = odometry->time;
 }
 
-void get_joint_torque_com(int id, double *data, SpurUserParamsPtr spur)
+void get_joint_torque_com(int id, double* data, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 

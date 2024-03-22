@@ -24,7 +24,8 @@
 #include <ypparam.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 /* YPSpurコマンド集 */
@@ -117,7 +118,7 @@ extern "C" {
 /** init */
 int YPSpur_init(void);
 int YPSpur_initex(int msq_key);
-int YPSpur_init_socket(char *ip, int port);
+int YPSpur_init_socket(char* ip, int port);
 
 /** freeze */
 int YPSpur_isfreeze(void);
@@ -145,9 +146,9 @@ int YPSpur_set_accel(double v);
 int YPSpur_set_angaccel(double w);
 
 /** getter */
-double YPSpur_get_pos(int cs, double *x, double *y, double *theta);
-double YPSpur_get_vel(double *v, double *w);
-double YPSpur_get_force(double *trans, double *angular);
+double YPSpur_get_pos(int cs, double* x, double* y, double* theta);
+double YPSpur_get_vel(double* v, double* w);
+double YPSpur_get_force(double* trans, double* angular);
 
 /** check position */
 int YPSpur_near_pos(int cs, double x, double y, double r);
@@ -165,25 +166,25 @@ int YP_get_error_state(void);
 void YP_request_device_dump(int id, int block);
 
 int YP_set_parameter(int param_id, double value);
-int YP_set_parameter_array(int param_id, double *value);
-int YP_get_parameter(int param_id, double *value);
-int YP_get_parameter_array(int param_id, double *value);
+int YP_set_parameter_array(int param_id, double* value);
+int YP_get_parameter(int param_id, double* value);
+int YP_get_parameter_array(int param_id, double* value);
 int YP_set_control_state(int control_id, int state);
 
 int YP_get_ad_value(int num);
 int YP_set_io_dir(unsigned char dir);
 int YP_set_io_data(unsigned char data);
-double YP_get_device_error_state(int id, int *err);
+double YP_get_device_error_state(int id, int* err);
 int YP_wheel_vel(double r, double l);
 int YP_wheel_torque(double r, double l);
-double YP_get_wheel_vel(double *wr, double *wl);
-double YP_get_wheel_ang(double *theta_r, double *theta_l);
-double YP_get_wheel_torque(double *torque_r, double *torque_l);
+double YP_get_wheel_vel(double* wr, double* wl);
+double YP_get_wheel_ang(double* theta_r, double* theta_l);
+double YP_get_wheel_torque(double* torque_r, double* torque_l);
 int YP_wheel_ang(double r, double l);
 int YP_set_wheel_accel(double r, double l);
 int YP_set_wheel_vel(double r, double l);
-double YP_get_vref(double *vref, double *wref);
-double YP_get_wheel_vref(double *wrref, double *wlref);
+double YP_get_vref(double* vref, double* wref);
+double YP_get_wheel_vref(double* wrref, double* wlref);
 
 int YP_joint_torque(int id, double t);
 int YP_joint_vel(int id, double v);
@@ -191,10 +192,10 @@ int YP_joint_ang(int id, double a);
 int YP_joint_ang_vel(int id, double a, double v);
 int YP_set_joint_accel(int id, double a);
 int YP_set_joint_vel(int id, double v);
-double YP_get_joint_vel(int id, double *v);
-double YP_get_joint_vref(int id, double *v);
-double YP_get_joint_ang(int id, double *a);
-double YP_get_joint_torque(int id, double *t);
+double YP_get_joint_vel(int id, double* v);
+double YP_get_joint_vref(int id, double* v);
+double YP_get_joint_ang(int id, double* a);
+double YP_get_joint_torque(int id, double* t);
 
 #define YPSPUR_JOINT_SUPPORT 1
 #define YPSPUR_JOINT_ANG_VEL_SUPPORT 1

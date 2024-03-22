@@ -472,10 +472,13 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
   static int com_wp = 0;
   static int receive_count = 0;
   static char com_buf[128];
-  static enum {
+
+  typedef enum
+  {
     ISOCHRONOUS = 0,
     INTERRUPT
-  } mode = 0;
+  } OdometryDataMode;
+  static OdometryDataMode mode = 0;
 
   int i;
   int odometry_updated;

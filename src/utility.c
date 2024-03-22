@@ -80,7 +80,7 @@ void hook_pre_global()
 #if !defined(HAVE_STRTOK_R)
 #ifndef strtok_r
 
-/* 
+/*
  * public domain strtok_r() by Charlie Gordon
  *   from comp.lang.c  9/14/2007
  *      http://groups.google.com/group/comp.lang.c/msg/2ab1ecbb86646684
@@ -88,9 +88,9 @@ void hook_pre_global()
  *      http://groups.google.com/group/comp.lang.c/msg/7c7b39328fefab9c
  */
 
-char *strtok_r(char *str, const char *delim, char **nextp)
+char* strtok_r(char* str, const char* delim, char** nextp)
 {
-  char *ret;
+  char* ret;
 
   if (str == NULL)
     str = *nextp;

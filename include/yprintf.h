@@ -25,7 +25,7 @@
 
 #include <param.h>
 
-void yprintf(ParamOutputLv level, const char *format, ...);
+void yprintf(ParamOutputLv level, const char* format, ...);
 void ansi_clear_line(ParamOutputLv level);
 
 #endif  // YPRINTF_H

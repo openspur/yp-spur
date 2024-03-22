@@ -48,15 +48,15 @@
 
 #if defined(__MINGW32__)
 #define SOCK_SHUTDOWN_OPTION SD_BOTH
-#define SOCK_DATATYPE char *
+#define SOCK_DATATYPE char*
 #define SIZE_TYPE int
 #else
 #define SOCK_SHUTDOWN_OPTION SHUT_RDWR
-#define SOCK_DATATYPE void *
+#define SOCK_DATATYPE void*
 #define SIZE_TYPE unsigned int
 #endif  // defined(__MINGW32__)
 
-int ipcmd_open_msq(struct ipcmd_t *ipcmd, int key, int creat)
+int ipcmd_open_msq(struct ipcmd_t* ipcmd, int key, int creat)
 {
   if (creat)
     creat = IPC_CREAT;
@@ -86,7 +86,7 @@ int ipcmd_open_msq(struct ipcmd_t *ipcmd, int key, int creat)
   return 1;
 }
 
-int ipcmd_send_msq(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_send_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   size_t len = YPSPUR_MSG_SIZE;
 
@@ -101,7 +101,7 @@ int ipcmd_send_msq(struct ipcmd_t *ipcmd, YPSpur_msg *data)
   return len;
 }
 
-int ipcmd_recv_msq(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_recv_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   int received;
   size_t len = YPSPUR_MSG_SIZE;
@@ -118,7 +118,7 @@ int ipcmd_recv_msq(struct ipcmd_t *ipcmd, YPSpur_msg *data)
   return received;
 }
 
-void ipcmd_flush_msq(struct ipcmd_t *ipcmd)
+void ipcmd_flush_msq(struct ipcmd_t* ipcmd)
 {
   char dummy[128];
 
@@ -134,7 +134,7 @@ void ipcmd_flush_msq(struct ipcmd_t *ipcmd)
   }
 }
 
-int ipcmd_open_tcp(struct ipcmd_t *ipcmd, char *host, int port)
+int ipcmd_open_tcp(struct ipcmd_t* ipcmd, char* host, int port)
 {
   struct sockaddr_in addr;
   int i;
@@ -164,7 +164,7 @@ int ipcmd_open_tcp(struct ipcmd_t *ipcmd, char *host, int port)
   if (!host)
   {
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    bind(ipcmd->socket, (struct sockaddr *)&addr, sizeof(addr));
+    bind(ipcmd->socket, (struct sockaddr*)&addr, sizeof(addr));
 
     listen(ipcmd->socket, YPSPUR_MAX_SOCKET);
     ipcmd->tcp_type = IPCMD_TCP_SERVER;
@@ -173,7 +173,7 @@ int ipcmd_open_tcp(struct ipcmd_t *ipcmd, char *host, int port)
   {
     addr.sin_addr.s_addr = inet_addr(host);
 
-    if (connect(ipcmd->socket, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    if (connect(ipcmd->socket, (struct sockaddr*)&addr, sizeof(addr)) == -1)
     {
       return -1;
     }
@@ -190,7 +190,7 @@ int ipcmd_open_tcp(struct ipcmd_t *ipcmd, char *host, int port)
   return 1;
 }
 
-int ipcmd_send_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_send_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   int sock;
   size_t len = sizeof(YPSpur_msg);
@@ -219,7 +219,7 @@ int ipcmd_send_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
   return len;
 }
 
-int ipcmd_recv_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_recv_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   fd_set fds;
   struct sockaddr_in client;
@@ -268,7 +268,7 @@ int ipcmd_recv_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
       }
 
       addr_size = sizeof(client);
-      sock = accept(ipcmd->socket, (struct sockaddr *)&client, &addr_size);
+      sock = accept(ipcmd->socket, (struct sockaddr*)&client, &addr_size);
       if (sock <= 0)
       {
         yprintf(OUTPUT_LV_ERROR, "Invalid socket.\n");
@@ -321,15 +321,16 @@ int ipcmd_recv_tcp(struct ipcmd_t *ipcmd, YPSpur_msg *data)
       ipcmd->clients[i] = -1;
       continue;
     }
-  } while (0);
+  }
+  while (0);
   return len;
 }
 
-void ipcmd_flush_tcp(struct ipcmd_t *ipcmd)
+void ipcmd_flush_tcp(struct ipcmd_t* ipcmd)
 {
 }
 
-void ipcmd_close(struct ipcmd_t *ipcmd)
+void ipcmd_close(struct ipcmd_t* ipcmd)
 {
   if (ipcmd == NULL)
     return;
@@ -350,18 +351,18 @@ void ipcmd_close(struct ipcmd_t *ipcmd)
   ipcmd->flush = ipcmd_flush;
 }
 
-int ipcmd_send(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_send(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   ipcmd->connection_error = 1;
   return -1;
 }
 
-int ipcmd_recv(struct ipcmd_t *ipcmd, YPSpur_msg *data)
+int ipcmd_recv(struct ipcmd_t* ipcmd, YPSpur_msg* data)
 {
   ipcmd->connection_error = 1;
   return -1;
 }
 
-void ipcmd_flush(struct ipcmd_t *ipcmd)
+void ipcmd_flush(struct ipcmd_t* ipcmd)
 {
 }

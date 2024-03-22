@@ -94,8 +94,8 @@ void end_ypspurSSM()
 }
 
 void write_ypspurSSM(int odometry_updated, int receive_count,
-                     Odometry *odm_log, int readdata_num, Short_2Char *cnt1_log, Short_2Char *cnt2_log,
-                     Short_2Char *pwm1_log, Short_2Char *pwm2_log, int ad_log[][8])
+                     Odometry* odm_log, int readdata_num, Short_2Char* cnt1_log, Short_2Char* cnt2_log,
+                     Short_2Char* pwm1_log, Short_2Char* pwm2_log, int ad_log[][8])
 {
 #ifdef HAVE_SSM
   if (g_ssm_enable)
@@ -140,7 +140,7 @@ void write_ypspurSSM(int odometry_updated, int receive_count,
 }
 
 /* オドメトリ修正情報との融合 */
-void coordinate_synchronize(Odometry *odm, SpurUserParamsPtr spur)
+void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
 {
 #ifdef HAVE_SSM
   static double before_time;
@@ -173,12 +173,12 @@ void coordinate_synchronize(Odometry *odm, SpurUserParamsPtr spur)
       /* パラメータの変更がおこらないようにブロック */
       pthread_mutex_lock(&spur->mutex);
       // 最新の修正位置
-      if ((tid = readSSM(g_odm_adj_sid, (char *)&adj_odometry, &now_time, -1)) >= 0)
+      if ((tid = readSSM(g_odm_adj_sid, (char*)&adj_odometry, &now_time, -1)) >= 0)
       {
         // 同時刻のGL座標
         if (now_time > get_time() - 1)
         {
-          if ((tid = readSSM_time(g_odm_bs_sid, (char *)&bs_odometry, now_time, &time)) >= 0)
+          if ((tid = readSSM_time(g_odm_bs_sid, (char*)&bs_odometry, now_time, &time)) >= 0)
           {
             // 時間が1秒以内（止まっていない）で、データがあるなら実行
             /* 座標系作成 */
@@ -195,7 +195,7 @@ void coordinate_synchronize(Odometry *odm, SpurUserParamsPtr spur)
             /* 微妙な差を付け加える */
             inv_trans_cs(&adj_cs, &target_pos.x, &target_pos.y, &target_pos.theta);
 
-            double data[3] = { target_pos.x, target_pos.y, target_pos.theta };
+            double data[3] = {target_pos.x, target_pos.y, target_pos.theta};
             set_adjust_com(CS_GL, data, spur);
           }
         }

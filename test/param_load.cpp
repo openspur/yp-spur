@@ -26,7 +26,8 @@
 #include <gtest/gtest.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 #include <param.h>
@@ -41,7 +42,7 @@ extern Parameters g_param;
 class ParamLoadTest : public ::testing::Test
 {
 protected:
-  FILE *fp;
+  FILE* fp;
 
   virtual void SetUp()
   {
@@ -175,7 +176,7 @@ TEST_F(ParamLoadTest, EncoderDenominatorSupported)
   ASSERT_DOUBLE_EQ(p(static_cast<YPSpur_param>(YP_PARAM_ENCODER_DENOMINATOR), MOTOR_LEFT), 5.0);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

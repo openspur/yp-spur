@@ -55,9 +55,9 @@ SpurUserParamsPtr get_spur_user_param_ptr()
   return &g_spur;
 }
 
-void command_loop_cleanup(void *data)
+void command_loop_cleanup(void* data)
 {
-  struct ipcmd_t *ipcmd;
+  struct ipcmd_t* ipcmd;
 
   ipcmd = data;
   yprintf(OUTPUT_LV_INFO, "Command analyzer stopped.\n");
@@ -455,7 +455,7 @@ void command(void)
 }
 
 /* メッセージを返す */
-void message_return(struct ipcmd_t *ipcmd, long retpid, YPSpur_msg *res_msg)
+void message_return(struct ipcmd_t* ipcmd, long retpid, YPSpur_msg* res_msg)
 {
   res_msg->type = 0;
   res_msg->msg_type = retpid;
@@ -464,9 +464,9 @@ void message_return(struct ipcmd_t *ipcmd, long retpid, YPSpur_msg *res_msg)
 }
 
 /* すれっどの初期化 */
-void init_command_thread(pthread_t *thread)
+void init_command_thread(pthread_t* thread)
 {
-  if (pthread_create(thread, NULL, (void *)command, NULL) != 0)
+  if (pthread_create(thread, NULL, (void*)command, NULL) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create command thread\n");
   }

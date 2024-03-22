@@ -39,15 +39,15 @@
 
 #define RECEIVE_BUFFER_SIZE 2048
 
-int ss_receive(char *buf, int len, double receive_time, void *data)
+int ss_receive(char* buf, int len, double receive_time, void* data)
 {
   buf[len] = 0;
-  if (len + strlen((char *)data) > RECEIVE_BUFFER_SIZE)
+  if (len + strlen((char*)data) > RECEIVE_BUFFER_SIZE)
   {
     return -3;
   }
-  strcat((char *)data, buf);
-  if (strstr((char *)data, "\n\n"))
+  strcat((char*)data, buf);
+  if (strstr((char*)data, "\n\n"))
   {
     return -2;
   }
@@ -88,15 +88,15 @@ int set_baudrate(int baud)
   return 0;
 }
 
-int vv_receive(char *buf, int len, double receive_time, void *data)
+int vv_receive(char* buf, int len, double receive_time, void* data)
 {
   buf[len] = 0;
-  if (len + strlen((char *)data) > RECEIVE_BUFFER_SIZE)
+  if (len + strlen((char*)data) > RECEIVE_BUFFER_SIZE)
   {
     return -3;
   }
-  strcat((char *)data, buf);
-  if (strstr((char *)data, "\n\n"))
+  strcat((char*)data, buf);
+  if (strstr((char*)data, "\n\n"))
   {
     return -2;
   }
@@ -108,7 +108,7 @@ int vv_receive(char *buf, int len, double receive_time, void *data)
   @param *apVer Pointer to version structure
   @return failed: 0, succeeded: 1
  */
-int get_version(Ver_t *apVer)
+int get_version(Ver_t* apVer)
 {
   /* Send & Recive Buffer */
   char buf[RECEIVE_BUFFER_SIZE], *readpos;
@@ -183,7 +183,7 @@ int get_version(Ver_t *apVer)
   @param *apVer Pointer to version structure
   @return failed: 0, succeeded: 1
  */
-int get_parameter(Param_t *apParam)
+int get_parameter(Param_t* apParam)
 {
   /* Send & Recive Buffer */
   char buf[RECEIVE_BUFFER_SIZE], *readpos;
@@ -245,12 +245,12 @@ int get_parameter(Param_t *apParam)
   return 1;
 }
 
-int get_embedded_param(char *param)
+int get_embedded_param(char* param)
 {
   /* Send & Recive Buffer */
   char buf[RECEIVE_BUFFER_SIZE], *readpos;
   /* Temporary */
-  char *lf;
+  char* lf;
 
   readpos = buf;
   memset(buf, 0, sizeof(buf));

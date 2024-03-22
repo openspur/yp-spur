@@ -45,7 +45,7 @@
 #include <ypspur.h>
 #include <cartesian2d.h>
 
-void get_pos_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_pos_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   Odometry odometry;
 
@@ -58,7 +58,7 @@ void get_pos_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
   // printf( "get %f %f %f\n", x, y, theta );
 }
 
-void get_wheel_vref_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_wheel_vref_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -69,7 +69,7 @@ void get_wheel_vref_com(int cs, double *data, double *resdata, SpurUserParamsPtr
   resdata[2] = odometry->time;
 }
 
-void get_vref_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_vref_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -80,7 +80,7 @@ void get_vref_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
   resdata[2] = odometry->time;
 }
 
-void get_vel_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_vel_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -93,7 +93,7 @@ void get_vel_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
   // printf("getvel %f %f %f\n",);
 }
 
-void get_force_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_force_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -106,7 +106,7 @@ void get_force_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur
   // printf("getvel %f %f %f\n",);
 }
 
-void get_wheel_torque_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+void get_wheel_torque_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -119,7 +119,7 @@ void get_wheel_torque_com(int cs, double *data, double *resdata, SpurUserParamsP
   // printf("getvel %f %f %f\n",);
 }
 
-void get_wheel_vel_com(double *data, double *resdata, SpurUserParamsPtr spur)
+void get_wheel_vel_com(double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -132,7 +132,7 @@ void get_wheel_vel_com(double *data, double *resdata, SpurUserParamsPtr spur)
   // printf("getvel %f %f %f\n",);
 }
 
-void get_wheel_ang_com(double *data, double *resdata, SpurUserParamsPtr spur)
+void get_wheel_ang_com(double* data, double* resdata, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 
@@ -145,7 +145,7 @@ void get_wheel_ang_com(double *data, double *resdata, SpurUserParamsPtr spur)
   // printf("getvel %f %f %f\n",);
 }
 
-int near_pos_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+int near_pos_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   double x, y, theta, cx, cy;
   double dist;
@@ -170,7 +170,7 @@ int near_pos_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
     return 0;
 }
 
-int near_ang_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+int near_ang_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   double x, y, theta;
   double dist;
@@ -196,7 +196,7 @@ int near_ang_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
     return 0;
 }
 
-int over_line_com(int cs, double *data, double *resdata, SpurUserParamsPtr spur)
+int over_line_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {
   double x, y, theta;
   double dist;

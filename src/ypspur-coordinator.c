@@ -568,7 +568,8 @@ int main(int argc, char* argv[])
       continue;
     }
     break;
-  } while (1);
+  }
+  while (1);
 
   if (!(option(OPTION_WITHOUT_DEVICE)))
     serial_close();

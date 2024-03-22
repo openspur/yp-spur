@@ -24,7 +24,7 @@
 #include <math.h>
 #include <ypspur.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   double refvel;
   double torque, force;

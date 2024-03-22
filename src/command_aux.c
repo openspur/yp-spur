@@ -45,7 +45,7 @@
 #include <ypspur.h>
 #include <cartesian2d.h>
 
-void get_ad_com(double *data, double *resdata)
+void get_ad_com(double* data, double* resdata)
 {
   int num;
 
@@ -53,7 +53,7 @@ void get_ad_com(double *data, double *resdata)
   resdata[0] = get_addata(num);
 }
 
-void set_io_dir_com(double *data, double *resdata)
+void set_io_dir_com(double* data, double* resdata)
 {
   int num;
 
@@ -61,7 +61,7 @@ void set_io_dir_com(double *data, double *resdata)
   parameter_set(PARAM_io_dir, 0, num);
 }
 
-void set_io_data_com(double *data, double *resdata)
+void set_io_data_com(double* data, double* resdata)
 {
   int num;
 
@@ -69,7 +69,7 @@ void set_io_data_com(double *data, double *resdata)
   parameter_set(PARAM_io_data, 0, num);
 }
 
-void get_error_state_com(double *data, double *resdata)
+void get_error_state_com(double* data, double* resdata)
 {
   int num = (int)data[0];
   ErrorStatePtr err = get_error_state_ptr();
@@ -78,7 +78,7 @@ void get_error_state_com(double *data, double *resdata)
   resdata[1] = err->time[num];
 }
 
-void dump_device_com(double *data, double *resdata)
+void dump_device_com(double* data, double* resdata)
 {
   int id, block;
 

@@ -48,7 +48,7 @@
 #include <ypspur.h>
 #include <cartesian2d.h>
 
-void param_set_com(int cs, double *data, SpurUserParamsPtr spur)
+void param_set_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   if (cs >= 0 && cs < YP_PARAM_NUM)
   {
@@ -57,7 +57,7 @@ void param_set_com(int cs, double *data, SpurUserParamsPtr spur)
   }
 }
 
-int param_get_com(int cs, double *resdata, SpurUserParamsPtr spur)
+int param_get_com(int cs, double* resdata, SpurUserParamsPtr spur)
 {
   if (cs >= 0 && cs < YP_PARAM_NUM)
   {
@@ -71,13 +71,13 @@ int param_get_com(int cs, double *resdata, SpurUserParamsPtr spur)
   }
 }
 
-void param_set_motor_com(int cs, double *data, SpurUserParamsPtr spur)
+void param_set_motor_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   if (cs >= 0 && cs < YP_PARAM_NUM)
     *pp(cs, data[0]) = data[1];
 }
 
-int param_get_motor_com(int cs, double *resdata, SpurUserParamsPtr spur)
+int param_get_motor_com(int cs, double* resdata, SpurUserParamsPtr spur)
 {
   if (cs >= 0 && cs < YP_PARAM_NUM)
   {
@@ -90,7 +90,7 @@ int param_get_motor_com(int cs, double *resdata, SpurUserParamsPtr spur)
   }
 }
 
-void param_state_com(int cs, double *data, SpurUserParamsPtr spur)
+void param_state_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   OdometryPtr odometry;
 

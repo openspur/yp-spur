@@ -135,7 +135,7 @@ void escape_road(const int enable)
 }
 
 /* main */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   pthread_t command_thread;
   pthread_t control_thread;
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
   command_thread_en = 0;
   do
   {
-    FILE *temp_paramfile = NULL;
+    FILE* temp_paramfile = NULL;
     quit = 0;
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
@@ -576,7 +576,8 @@ int main(int argc, char *argv[])
       continue;
     }
     break;
-  } while (1);
+  }
+  while (1);
 
   if (!(option(OPTION_WITHOUT_DEVICE)))
     serial_close();

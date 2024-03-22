@@ -312,7 +312,7 @@ void wheel_angle(OdometryPtr odm, SpurUserParamsPtr spur)
   }
 }
 
-void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double *torque)
+void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque)
 {
   int i;
   ParametersPtr param;
@@ -452,7 +452,7 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
   return tilt;
 }
 
-void control_loop_cleanup(void *data)
+void control_loop_cleanup(void* data)
 {
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop stopped.\n");
 }
@@ -668,9 +668,9 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
 }
 
 /* すれっどの初期化 */
-void init_control_thread(pthread_t *thread)
+void init_control_thread(pthread_t* thread)
 {
-  if (pthread_create(thread, NULL, (void *)control_loop, NULL) != 0)
+  if (pthread_create(thread, NULL, (void*)control_loop, NULL) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create control_loop thread\n");
   }

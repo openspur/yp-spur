@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/* 
+/*
  * YP-Spurとの通信ライブラリ Communication Library for YP-Spur
  */
 
@@ -47,7 +47,7 @@ int YP_get_error_state()
   return YP_md_get_error_state(&spur);
 }
 
-double YP_get_device_error_state(int id, int *err)
+double YP_get_device_error_state(int id, int* err)
 {
   return YP_md_get_device_error_state(&spur, id, err);
 }
@@ -58,7 +58,7 @@ int YPSpur_initex(int msq_key)
   return YPSpur_md_initex(&spur, msq_key);
 }
 
-int YPSpur_init_socket(char *ip, int port)
+int YPSpur_init_socket(char* ip, int port)
 {
   return YPSpur_md_init_socket(&spur, ip, port);
 }
@@ -166,49 +166,49 @@ int YPSpur_set_angaccel(double dw)
 }
 
 /* 位置取得 */
-double YPSpur_get_pos(int cs, double *x, double *y, double *theta)
+double YPSpur_get_pos(int cs, double* x, double* y, double* theta)
 {
   return YPSpur_md_get_pos(&spur, cs, x, y, theta);
 }
 
 /* 速度取得 */
-double YPSpur_get_vel(double *v, double *w)
+double YPSpur_get_vel(double* v, double* w)
 {
   return YPSpur_md_get_vel(&spur, v, w);
 }
 
 /* 速度取得 */
-double YP_get_vref(double *v, double *w)
+double YP_get_vref(double* v, double* w)
 {
   return YP_md_get_vref(&spur, v, w);
 }
 
 /* 速度取得 */
-double YP_get_wheel_vref(double *wr, double *wl)
+double YP_get_wheel_vref(double* wr, double* wl)
 {
   return YP_md_get_wheel_vref(&spur, wr, wl);
 }
 
 /* 速度取得 */
-double YP_get_wheel_vel(double *wr, double *wl)
+double YP_get_wheel_vel(double* wr, double* wl)
 {
   return YP_md_get_wheel_vel(&spur, wr, wl);
 }
 
 /* 角度取得 */
-double YP_get_wheel_ang(double *theta_r, double *theta_l)
+double YP_get_wheel_ang(double* theta_r, double* theta_l)
 {
   return YP_md_get_wheel_ang(&spur, theta_r, theta_l);
 }
 
 /* トルク取得 */
-double YP_get_wheel_torque(double *torque_r, double *torque_l)
+double YP_get_wheel_torque(double* torque_r, double* torque_l)
 {
   return YP_md_get_wheel_torque(&spur, torque_r, torque_l);
 }
 
 /* 力取得 */
-double YPSpur_get_force(double *trans, double *angular)
+double YPSpur_get_force(double* trans, double* angular)
 {
   return YPSpur_md_get_force(&spur, trans, angular);
 }
@@ -232,19 +232,19 @@ int YP_set_parameter(int param_id, double value)
 }
 
 /* 内部パラメータの変更 */
-int YP_set_parameter_array(int param_id, double *value)
+int YP_set_parameter_array(int param_id, double* value)
 {
   return YP_md_set_parameter_array(&spur, param_id, value);
 }
 
 /* 内部パラメータの取得 */
-int YP_get_parameter(int param_id, double *value)
+int YP_get_parameter(int param_id, double* value)
 {
   return YP_md_get_parameter(&spur, param_id, value);
 }
 
 /* 内部パラメータの取得 */
-int YP_get_parameter_array(int param_id, double *value)
+int YP_get_parameter_array(int param_id, double* value)
 {
   return YP_md_get_parameter_array(&spur, param_id, value);
 }
@@ -351,22 +351,22 @@ int YP_set_joint_vel(int id, double v)
   return YP_md_set_joint_vel(&spur, id, v);
 }
 
-double YP_get_joint_vel(int id, double *v)
+double YP_get_joint_vel(int id, double* v)
 {
   return YP_md_get_joint_vel(&spur, id, v);
 }
 
-double YP_get_joint_vref(int id, double *v)
+double YP_get_joint_vref(int id, double* v)
 {
   return YP_md_get_joint_vref(&spur, id, v);
 }
 
-double YP_get_joint_ang(int id, double *a)
+double YP_get_joint_ang(int id, double* a)
 {
   return YP_md_get_joint_ang(&spur, id, a);
 }
 
-double YP_get_joint_torque(int id, double *w)
+double YP_get_joint_torque(int id, double* w)
 {
   return YP_md_get_joint_torque(&spur, id, w);
 }

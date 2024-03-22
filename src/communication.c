@@ -39,7 +39,7 @@
 /**
  * @brief エンコード
  */
-int encode(const unsigned char *src, int len, unsigned char *dst, int buf_max)
+int encode(const unsigned char* src, int len, unsigned char* dst, int buf_max)
 {
   int pos, s_pos, w_pos;
   unsigned short b;
@@ -83,7 +83,7 @@ int encode(const unsigned char *src, int len, unsigned char *dst, int buf_max)
  * @param buf_max[in] デコード後のデータバッファのサイズ
  * @return デコード後のバイト数
  */
-int decode(const unsigned char *src, int len, unsigned char *dst, int buf_max)
+int decode(const unsigned char* src, int len, unsigned char* dst, int buf_max)
 {
   unsigned short dat, b;
   int pos, s_pos, w_pos;

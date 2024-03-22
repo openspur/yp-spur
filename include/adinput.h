@@ -26,10 +26,10 @@
 #include <strings.h>
 #include <unistd.h>
 
-int process_addata(unsigned char *buf, int len);
-const int *get_addataptr();
+int process_addata(unsigned char* buf, int len);
+const int* get_addataptr();
 int get_addata(int num);
-int admask_receive(char *buf, int len, double receive_time, void *data);
+int admask_receive(char* buf, int len, double receive_time, void* data);
 int set_admask(unsigned char mask);
 int set_diomask(unsigned char enable);
 int get_ad_num(void);

@@ -57,9 +57,9 @@ TEST_F(E2E, Vel)
 {
   ASSERT_NO_FATAL_FAILURE(initCoordinator("vehicle.param"));
 
-  ASSERT_GE(YPSpur_md_set_vel(&cli_, 2), 0);
+  ASSERT_GE(YPSpur_md_set_vel(&cli_, 2.0), 0);
   ASSERT_GE(YPSpur_md_set_accel(&cli_, 0.5), 0);
-  ASSERT_GE(YPSpur_md_set_angvel(&cli_, 2), 0);
+  ASSERT_GE(YPSpur_md_set_angvel(&cli_, 2.0), 0);
   ASSERT_GE(YPSpur_md_set_angaccel(&cli_, 0.5), 0);
   ASSERT_GE(YPSpur_md_vel(&cli_, 0.7, 0.9), 0);
 
@@ -79,14 +79,12 @@ TEST_F(E2E, LineSpin)
 {
   ASSERT_NO_FATAL_FAILURE(initCoordinator("vehicle.param"));
 
-  ASSERT_GE(YPSpur_md_set_vel(&cli_, 4), 0);
-  ASSERT_GE(YPSpur_md_set_accel(&cli_, 8), 0);
-  ASSERT_GE(YPSpur_md_set_angvel(&cli_, 4), 0);
-  ASSERT_GE(YPSpur_md_set_angaccel(&cli_, 8), 0);
+  ASSERT_GE(YPSpur_md_set_vel(&cli_, 4.0), 0);
+  ASSERT_GE(YPSpur_md_set_accel(&cli_, 8.0), 0);
+  ASSERT_GE(YPSpur_md_set_angvel(&cli_, 4.0), 0);
+  ASSERT_GE(YPSpur_md_set_angaccel(&cli_, 8.0), 0);
 
-  ASSERT_GE(YPSpur_md_set_pos(&cli_, CS_GL, 0, 0, 0), 0);
-
-  ASSERT_GE(YPSpur_md_stop_line(&cli_, CS_GL, 0.5, 0, 0), 0);
+  ASSERT_GE(YPSpur_md_stop_line(&cli_, CS_GL, 0.5, 0.0, 0.0), 0);
   sleep(1);
 
   double x, y, th;
@@ -110,6 +108,86 @@ TEST_F(E2E, LineSpin)
   ASSERT_NEAR(x, 0.5, 0.05);
   ASSERT_NEAR(y, -0.5, 0.05);
   ASSERT_NEAR(th, 1.5708, 0.05);
+}
+
+TEST_F(E2E, SetPos)
+{
+  ASSERT_NO_FATAL_FAILURE(initCoordinator("vehicle.param"));
+
+  ASSERT_GE(YPSpur_md_set_vel(&cli_, 4.0), 0);
+  ASSERT_GE(YPSpur_md_set_accel(&cli_, 8.0), 0);
+  ASSERT_GE(YPSpur_md_set_angvel(&cli_, 4.0), 0);
+  ASSERT_GE(YPSpur_md_set_angaccel(&cli_, 8.0), 0);
+
+  double x, y, th;
+  ASSERT_GE(YPSpur_md_get_pos(&cli_, CS_GL, &x, &y, &th), 0);
+  ASSERT_NEAR(x, 0.0, 0.01);
+  ASSERT_NEAR(y, 0.0, 0.01);
+  ASSERT_NEAR(th, 0.0, 0.01);
+
+  ASSERT_GE(YPSpur_md_set_pos(&cli_, CS_GL, 10.0, 20.0, 1.0), 0);
+
+  ASSERT_GE(YPSpur_md_get_pos(&cli_, CS_GL, &x, &y, &th), 0);
+  ASSERT_NEAR(x, 10.0, 0.01);
+  ASSERT_NEAR(y, 20.0, 0.01);
+  ASSERT_NEAR(th, 1.0, 0.01);
+}
+
+TEST_F(E2E, JointAngle)
+{
+  ASSERT_NO_FATAL_FAILURE(initCoordinator("joint.param"));
+
+  for (int i = 0; i < 2; ++i)
+  {
+    SCOPED_TRACE("joint_id=" + std::to_string(i));
+
+    double a;
+    ASSERT_GE(YP_md_get_joint_ang(&cli_, i, &a), 0);
+    ASSERT_NEAR(a, 0.0, 0.05);
+
+    ASSERT_GE(YP_md_set_joint_vel(&cli_, i, 20), 0);
+    ASSERT_GE(YP_md_set_joint_accel(&cli_, i, 30), 0);
+
+    ASSERT_GE(YP_md_joint_ang(&cli_, i, 7.0), 0);
+    sleep(1);
+
+    ASSERT_GE(YP_md_get_joint_ang(&cli_, i, &a), 0);
+    ASSERT_NEAR(a, 7.0, 0.05);
+  }
+}
+
+TEST_F(E2E, JointAngleVel)
+{
+  ASSERT_NO_FATAL_FAILURE(initCoordinator("joint.param"));
+
+  for (int i = 0; i < 1; ++i)
+  {
+    SCOPED_TRACE("joint_id=" + std::to_string(i));
+
+    ASSERT_GE(YP_md_set_joint_vel(&cli_, i, 20), 0);
+    ASSERT_GE(YP_md_set_joint_accel(&cli_, i, 30), 0);
+
+    ASSERT_GE(YP_md_joint_ang_vel(&cli_, i, 8.0, 3.0), 0);
+
+    double v_diff_min = 3.0;
+    for (int t = 0; t < 100; ++t)
+    {
+      double a,
+          v;
+      usleep(20000);
+      ASSERT_GE(YP_md_get_joint_ang(&cli_, i, &a), 0);
+      ASSERT_GE(YP_md_get_joint_vel(&cli_, i, &v), 0);
+      if (8.0 < a && a < 8.2)
+      {
+        const double v_diff = 3.0 - v;
+        if (std::abs(v_diff_min) > std::abs(v_diff))
+        {
+          v_diff_min = v_diff;
+        }
+      }
+    }
+    ASSERT_NEAR(v_diff_min, 0.0, 0.05);
+  }
 }
 
 int main(int argc, char** argv)

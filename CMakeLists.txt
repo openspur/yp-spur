@@ -17,7 +17,7 @@ if(${CMAKE_MAJOR_VERSION} LESS 3)
 
   message(WARNING "[deprecated] CMake 2 will be obsoleted in yp-spur build at April, 2019")
 else()
-  cmake_policy(VERSION 3.0)
+  cmake_policy(VERSION 3.1)
   project(ypspur VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
 endif()
 

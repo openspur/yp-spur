@@ -148,6 +148,7 @@ if(GTEST_FOUND)
     ${GTEST_LIBRARIES}
     ypspur
   )
+  set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
 
   add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)

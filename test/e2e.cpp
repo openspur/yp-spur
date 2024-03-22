@@ -48,7 +48,7 @@ protected:
   void TearDown()
   {
     kill(coordinator_pid_, 2);
-    wait(NULL);
+    wait(nullptr);
   }
 
   YPSpur cli_;

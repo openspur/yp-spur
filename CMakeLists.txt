@@ -149,9 +149,7 @@ if(GTEST_FOUND)
     ypspur
   )
 
-  file(REAL_PATH ./test/ TEST_DIR)
-  message(WARNING "${TEST_DIR}")
-  add_test(E2ETest e2e_test ${TEST_DIR})
+  add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)
 
 

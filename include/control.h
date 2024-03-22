@@ -21,6 +21,8 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <pthread.h>
+
 #include <command.h>
 #include <odometry.h>
 
@@ -29,6 +31,7 @@ void robot_speed(SpurUserParamsPtr spur);
 int motor_control(SpurUserParamsPtr spur);
 void apply_motor_torque(SpurUserParamsPtr spur);
 void apply_motor_speed(SpurUserParamsPtr spur);
+void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur);
 
 void update_ref_speed(SpurUserParamsPtr spur);
 

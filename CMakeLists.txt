@@ -136,6 +136,26 @@ if(GTEST_FOUND)
   )
 
   add_test(YPSpurParamTest param_load_test)
+
+  add_executable(e2e_test
+    test/e2e.cpp
+  )
+  add_dependencies(e2e_test
+    ypspur-coordinator
+    ypspur
+  )
+  target_link_libraries(e2e_test
+    ${GTEST_LIBRARIES}
+    ${THREAD_LIBRARIES}
+    ypspur
+  )
+  if(CMAKE_VERSION VERSION_LESS "3.1")
+    set_property(TARGET e2e_test PROPERTY COMPILE_OPTIONS "-std=c++11")
+  else()
+    set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
+  endif()
+
+  add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)
 
 

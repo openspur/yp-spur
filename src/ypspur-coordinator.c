@@ -486,15 +486,9 @@ int main(int argc, char* argv[])
     init_command_thread(&command_thread);
     command_thread_en = 1;
 
-    if (!(option(OPTION_WITHOUT_DEVICE)))
-    {
-      init_control_thread(&control_thread);
-      control_thread_en = 1;
-    }
-    else
-    {
-      control_thread_en = 0;
-    }
+    init_control_thread(&control_thread);
+    control_thread_en = 1;
+
     if (option(OPTION_UPDATE_PARAM))
     {
       yprintf(OUTPUT_LV_WARNING, "==================== Warning! ====================\n");

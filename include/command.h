@@ -21,6 +21,8 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include <pthread.h>
+
 #include <ipcommunication.h>
 #include <ypparam.h>
 #include <ypspur.h>

@@ -18,17 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fcntl.h>
 #include <math.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <strings.h>
+#include <unistd.h>
+
+#include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
-#include <unistd.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -38,18 +42,19 @@
 #include <shvel-param.h>
 
 /* yp-spur用 */
-#include <command.h>
-#include <control.h>
-#include <odometry.h>
-#include <param.h>
 #include <serial.h>
-#include <ssm_spur_handler.h>
+#include <param.h>
+#include <control.h>
+#include <command.h>
 #include <utility.h>
 #include <yprintf.h>
+#include <odometry.h>
+#include <ssm_spur_handler.h>
 
 /* ライブラリ用 */
-#include <pthread.h>
 #include <ypspur.h>
+
+#include <pthread.h>
 
 /* ホイール速度指令 */
 int motor_control(SpurUserParamsPtr spur)

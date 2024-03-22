@@ -21,9 +21,10 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <pthread.h>
+
 #include <command.h>
 #include <odometry.h>
-#include <pthread.h>
 
 int robot_speed_smooth(SpurUserParamsPtr spur);
 void robot_speed(SpurUserParamsPtr spur);

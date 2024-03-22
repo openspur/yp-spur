@@ -18,18 +18,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <fcntl.h>
 #include <math.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <unistd.h>
+
+#include <fcntl.h>
+#include <setjmp.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <time.h>
-#include <unistd.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -39,23 +40,24 @@
 #include <shvel-param.h>
 
 /* yp-spur 用 */
-#include <adinput.h>
-#include <command.h>
-#include <control.h>
-#include <odometry.h>
-#include <param.h>
-#include <ping.h>
+#include <ypspur-coordinator.h>
 #include <serial.h>
+#include <param.h>
+#include <control.h>
+#include <command.h>
+#include <odometry.h>
+#include <ypprotocol.h>
+#include <adinput.h>
 #include <ssm_spur_handler.h>
 #include <utility.h>
-#include <ypprotocol.h>
 #include <yprintf.h>
-#include <ypspur-coordinator.h>
+#include <ping.h>
 
 /* ライブラリ用 */
-#include <cartesian2d.h>
-#include <pthread.h>
 #include <ypspur.h>
+#include <cartesian2d.h>
+
+#include <pthread.h>
 
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;

@@ -18,15 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <gtest/gtest.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <ypspur-md.h>
 
 #include <cmath>
 #include <stdexcept>
 #include <string>
+
+#include <gtest/gtest.h>
+
+#include <ypspur-md.h>
 
 char* test_dir;
 

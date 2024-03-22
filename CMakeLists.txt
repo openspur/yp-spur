@@ -146,6 +146,7 @@ if(GTEST_FOUND)
   )
   target_link_libraries(e2e_test
     ${GTEST_LIBRARIES}
+    ${THREAD_LIBRARIES}
     ypspur
   )
   if(CMAKE_VERSION VERSION_LESS "3.1")

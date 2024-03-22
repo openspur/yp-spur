@@ -176,8 +176,7 @@ TEST_F(E2E, JointAngleVel)
     double v_diff_min = 3.0;
     for (int t = 0; t < 100; ++t)
     {
-      double a,
-          v;
+      double a, v;
       usleep(20000);
       ASSERT_GE(YP_md_get_joint_ang(&cli_, i, &a), 0);
       ASSERT_GE(YP_md_get_joint_vel(&cli_, i, &v), 0);

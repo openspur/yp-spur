@@ -17,7 +17,7 @@ if(${CMAKE_MAJOR_VERSION} LESS 3)
 
   message(WARNING "[deprecated] CMake 2 will be obsoleted in yp-spur build at April, 2019")
 else()
-  cmake_policy(VERSION 3.1)
+  cmake_policy(VERSION 3.0)
   project(ypspur VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
 endif()
 
@@ -148,7 +148,11 @@ if(GTEST_FOUND)
     ${GTEST_LIBRARIES}
     ypspur
   )
-  set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
+  if(CMAKE_VERSION VERSION_LESS "3.1")
+    set_property(TARGET e2e_test PROPERTY COMPILE_OPTIONS "-std=c++11")
+  else()
+    set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
+  endif()
 
   add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)

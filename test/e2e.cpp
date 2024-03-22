@@ -164,7 +164,7 @@ TEST_F(E2E, JointAngleVel)
 {
   ASSERT_NO_FATAL_FAILURE(initCoordinator("joint.param"));
 
-  for (int i = 0; i < 1; ++i)
+  for (int i = 0; i < 2; ++i)
   {
     SCOPED_TRACE("joint_id=" + std::to_string(i));
 

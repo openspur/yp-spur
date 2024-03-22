@@ -24,7 +24,9 @@
 #include <unistd.h>
 #include <ypspur-md.h>
 
+#include <cmath>
 #include <stdexcept>
+#include <string>
 
 char* test_dir;
 
@@ -46,7 +48,7 @@ protected:
   void TearDown()
   {
     kill(coordinator_pid_, 2);
-    wait(nullptr);
+    wait(NULL);
   }
 
   YPSpur cli_;

@@ -153,6 +153,7 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --socket <port>          Use socket ipc.\n");
   fprintf(stderr, "  --daemon                 Run in daemon mode.\n");
   fprintf(stderr, "  --ping                   Ping RS485 chained devices.\n");
+  fprintf(stderr, "  --exit-on-time-jump      Immediately stop control and exit on system time jump.\n");
 }
 
 /* 引数の説明 */
@@ -363,6 +364,10 @@ int arg_analyze(int argc, char* argv[])
       {
         break;
       }
+    }
+    else if (!strcmp(argv[i], "--exit-on-time-jump"))
+    {
+      g_param.option |= OPTION_EXIT_ON_TIME_JUMP;
     }
     else
     {

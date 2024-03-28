@@ -514,20 +514,17 @@ void control_loop(void)
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop started.\n");
   pthread_cleanup_push(control_loop_cleanup, NULL);
 
-  double last_time = get_time();
-
 #if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能
   struct timespec request;
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
   {
     yprintf(OUTPUT_LV_ERROR, "error on clock_gettime\n");
-    exit(0);
+    exit(EXIT_FAILURE);
   }
-#else
-  int request;
-  request = (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
 #endif  // defined(HAVE_LIBRT)
+
+  double last_time = get_time();
 
   while (1)
   {
@@ -538,7 +535,7 @@ void control_loop(void)
 
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
 #else
-    yp_usleep(request);
+    yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
 #endif  // defined(HAVE_LIBRT)
 
     if ((option(OPTION_EXIT_ON_TIME_JUMP)))

@@ -111,13 +111,6 @@ endif(ENABLE_ALL_STATIC)
 # Compile flags
 
 if(CMAKE_VERSION VERSION_LESS "3.12")
-  add_compile_definitions(
-    HAVE_LONGJMP
-    HAVE_SIGLONGJMP
-    HAVE_CLOCK_NANOSLEEP
-    HAVE_SSM
-  )
-else()
   if(HAVE_LONGJMP)
     add_definitions(-DHAVE_LONGJMP)
   endif()
@@ -130,6 +123,13 @@ else()
   if(HAVE_SSM)
     add_definitions(-DHAVE_SSM)
   endif()
+else()
+  add_compile_definitions(
+    HAVE_LONGJMP
+    HAVE_SIGLONGJMP
+    HAVE_CLOCK_NANOSLEEP
+    HAVE_SSM
+  )
 endif()
 
 

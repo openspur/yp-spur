@@ -536,7 +536,7 @@ void control_loop(void)
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
 #else
     yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
-#endif  // defined(HAVE_LIBRT)
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
 
     if ((option(OPTION_EXIT_ON_TIME_JUMP)))
     {

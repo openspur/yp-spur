@@ -21,6 +21,8 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <pthread.h>
+
 #include <command.h>
 #include <odometry.h>
 
@@ -29,6 +31,7 @@ void robot_speed(SpurUserParamsPtr spur);
 int motor_control(SpurUserParamsPtr spur);
 void apply_motor_torque(SpurUserParamsPtr spur);
 void apply_motor_speed(SpurUserParamsPtr spur);
+void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur);
 
 void update_ref_speed(SpurUserParamsPtr spur);
 
@@ -45,7 +48,7 @@ double spin(OdometryPtr odm, SpurUserParamsPtr spur);
 double orient(OdometryPtr odm, SpurUserParamsPtr spur);
 void wheel_vel(OdometryPtr odm, SpurUserParamsPtr spur);
 void wheel_angle(OdometryPtr odm, SpurUserParamsPtr spur);
-void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double *torque);
+void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque);
 
 double regurator(double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur);
 
@@ -53,7 +56,7 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur);
 void run_control(Odometry odometry, SpurUserParamsPtr spur);
 void control_loop(void);
 
-void init_control_thread(pthread_t *thread);
+void init_control_thread(pthread_t* thread);
 
 void set_run_mode(SpurRunMode mode);
 SpurRunMode get_run_mode(void);

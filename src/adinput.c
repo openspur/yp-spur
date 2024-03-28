@@ -49,7 +49,7 @@ int ad[16];       // ad値保存用バッファ
 int ad_num = 0;   // adでいくつデータを出力するように指令したか
 int dio_num = 0;  // dioでいくつデータを出力するように指令したか
 
-int process_addata(unsigned char *buf, int len)
+int process_addata(unsigned char* buf, int len)
 {
   int j;
   int ad_num;
@@ -68,7 +68,7 @@ int process_addata(unsigned char *buf, int len)
 }
 
 /* read ad data func for ssm write */
-const int *get_addataptr()
+const int* get_addataptr()
 {
   return ad;
 }
@@ -92,13 +92,13 @@ int get_dio_num(void)
   return dio_num;
 }
 
-int admask_receive(char *buf, int len, double receive_time, void *data)
+int admask_receive(char* buf, int len, double receive_time, void* data)
 {
   buf[len] = 0;
-  strcat((char *)data, buf);
-  if (strstr((char *)data, "00P\n\n"))
+  strcat((char*)data, buf);
+  if (strstr((char*)data, "00P\n\n"))
     return -1;
-  if (strstr((char *)data, "\n\n"))
+  if (strstr((char*)data, "\n\n"))
     return -2;
   return 0;
 }

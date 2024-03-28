@@ -56,7 +56,7 @@
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
-struct rpf_t *g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
+struct rpf_t* g_Pf[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 char g_state[YP_STATE_NUM];
 Parameters g_param;
 int g_param_init = 1;
@@ -91,7 +91,7 @@ int ischanged_p(YPSpur_param id, enum motor_id motor)
   return g_P_changed[id][motor];
 }
 
-double *pp(YPSpur_param id, enum motor_id motor)
+double* pp(YPSpur_param id, enum motor_id motor)
 {
   return &g_P[id][motor];
 }
@@ -117,7 +117,7 @@ int is_character(int c);
 int is_number(int c);
 
 /* 引数の説明 */
-void arg_help(int argc, char *argv[])
+void arg_help(int argc, char* argv[])
 {
   fprintf(stderr, "USAGE: %s [OPTION]...\n\n", argv[0]);
   fprintf(stderr, "  -v, --version            Display version info and exit.\n");
@@ -131,7 +131,7 @@ void arg_help(int argc, char *argv[])
 }
 
 /* 隠しコマンドの説明 */
-void arg_longhelp(int argc, char *argv[])
+void arg_longhelp(int argc, char* argv[])
 {
   arg_help(argc, argv);
   fprintf(stderr, "  -o, --show-odometry      Display estimated robot position.\n");
@@ -172,7 +172,7 @@ void param_help(void)
 }
 
 /* 引数の解析 */
-int arg_analyze(int argc, char *argv[])
+int arg_analyze(int argc, char* argv[])
 {
   int i;
 
@@ -241,7 +241,7 @@ int arg_analyze(int argc, char *argv[])
     {
       if (i + 1 < argc)
       {
-        char *pos;
+        char* pos;
 
         i++;
         g_param.admask = 0;
@@ -451,7 +451,7 @@ void param_calc()
 }
 
 /* パラメータファイルからの読み込み */
-int set_paramptr(FILE *paramfile)
+int set_paramptr(FILE* paramfile)
 {
   char param_names[YP_PARAM_NUM][20] = YP_PARAM_NAME;
   char param_names0[YP_PARAM_NUM][24] = YP_PARAM_NAME;
@@ -460,23 +460,43 @@ int set_paramptr(FILE *paramfile)
 #define VARIABLE_NUM 37
   char variable_names[VARIABLE_NUM][20] =
       {
-        "X", "Y", "THETA", "V", "W",
-        "WHEEL_VEL[0]", "WHEEL_VEL[1]",
-        "WHEEL_VEL[2]", "WHEEL_VEL[3]",
-        "WHEEL_VEL[4]", "WHEEL_VEL[5]",
-        "WHEEL_VEL[6]", "WHEEL_VEL[7]",
-        "WHEEL_VEL[8]", "WHEEL_VEL[9]",
-        "WHEEL_VEL[10]", "WHEEL_VEL[11]",
-        "WHEEL_VEL[12]", "WHEEL_VEL[13]",
-        "WHEEL_VEL[14]", "WHEEL_VEL[15]",
-        "WHEEL_ANGLE[0]", "WHEEL_ANGLE[1]",
-        "WHEEL_ANGLE[2]", "WHEEL_ANGLE[3]",
-        "WHEEL_ANGLE[4]", "WHEEL_ANGLE[5]",
-        "WHEEL_ANGLE[6]", "WHEEL_ANGLE[7]",
-        "WHEEL_ANGLE[8]", "WHEEL_ANGLE[9]",
-        "WHEEL_ANGLE[10]", "WHEEL_ANGLE[11]",
-        "WHEEL_ANGLE[12]", "WHEEL_ANGLE[13]",
-        "WHEEL_ANGLE[14]", "WHEEL_ANGLE[15]",
+          "X",
+          "Y",
+          "THETA",
+          "V",
+          "W",
+          "WHEEL_VEL[0]",
+          "WHEEL_VEL[1]",
+          "WHEEL_VEL[2]",
+          "WHEEL_VEL[3]",
+          "WHEEL_VEL[4]",
+          "WHEEL_VEL[5]",
+          "WHEEL_VEL[6]",
+          "WHEEL_VEL[7]",
+          "WHEEL_VEL[8]",
+          "WHEEL_VEL[9]",
+          "WHEEL_VEL[10]",
+          "WHEEL_VEL[11]",
+          "WHEEL_VEL[12]",
+          "WHEEL_VEL[13]",
+          "WHEEL_VEL[14]",
+          "WHEEL_VEL[15]",
+          "WHEEL_ANGLE[0]",
+          "WHEEL_ANGLE[1]",
+          "WHEEL_ANGLE[2]",
+          "WHEEL_ANGLE[3]",
+          "WHEEL_ANGLE[4]",
+          "WHEEL_ANGLE[5]",
+          "WHEEL_ANGLE[6]",
+          "WHEEL_ANGLE[7]",
+          "WHEEL_ANGLE[8]",
+          "WHEEL_ANGLE[9]",
+          "WHEEL_ANGLE[10]",
+          "WHEEL_ANGLE[11]",
+          "WHEEL_ANGLE[12]",
+          "WHEEL_ANGLE[13]",
+          "WHEEL_ANGLE[14]",
+          "WHEEL_ANGLE[15]",
       };
   struct variables_t variables[YP_PARAM_NUM * 3 + 1 + VARIABLE_NUM];
   struct
@@ -617,8 +637,8 @@ int set_paramptr(FILE *paramfile)
         }
         if (read_state != 3)
         {
-          char *num_start;
-          char *num_end = NULL;
+          char* num_start;
+          char* num_end = NULL;
           int num;
 
           param_num = YP_PARAM_NUM;
@@ -930,9 +950,9 @@ int set_paramptr(FILE *paramfile)
 }
 
 /* パラメータファイルからの読み込み */
-int set_param(char *filename, char *concrete_path)
+int set_param(char* filename, char* concrete_path)
 {
-  FILE *paramfile;
+  FILE* paramfile;
   paramfile = fopen(filename, "r");
 
   if (!paramfile)
@@ -940,8 +960,8 @@ int set_param(char *filename, char *concrete_path)
 #if HAVE_PKG_CONFIG
     char dir_name[256];
     char file_name[256];
-    char *pret;
-    FILE *fd;
+    char* pret;
+    FILE* fd;
 #endif  // HAVE_PKG_CONFIG
 
     yprintf(OUTPUT_LV_DEBUG, "Warn: File [%s] is not exist.\n", filename);
@@ -949,8 +969,8 @@ int set_param(char *filename, char *concrete_path)
 #if HAVE_PKG_CONFIG
     if (!strchr(filename, '/'))
     {
-      /* ファイルが見つからないとき、かつパス指定でないときshareディレクトリを見に行く 
-			*/
+      /* ファイルが見つからないとき、かつパス指定でないときshareディレクトリを見に行く
+       */
       fd = popen("pkg-config --variable=YP_PARAMS_DIR yp-robot-params", "r");
       if ((fd == NULL))
       {
@@ -1000,21 +1020,21 @@ int set_param(char *filename, char *concrete_path)
   return set_paramptr(paramfile);
 }
 
-void init_param_update_thread(pthread_t *thread, char *filename)
+void init_param_update_thread(pthread_t* thread, char* filename)
 {
   g_param.parameter_applying = 0;
-  if (pthread_create(thread, NULL, (void *)param_update, filename) != 0)
+  if (pthread_create(thread, NULL, (void*)param_update, filename) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create command thread\n");
   }
 }
 
-void param_update_loop_cleanup(void *data)
+void param_update_loop_cleanup(void* data)
 {
   yprintf(OUTPUT_LV_INFO, "Parameter updater stopped.\n");
 }
 
-void param_update(void *filename)
+void param_update(void* filename)
 {
   struct stat prev_status;
 

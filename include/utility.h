@@ -28,7 +28,7 @@ void hook_pre_global(void);
 
 #if !defined(HAVE_STRTOK_R)
 #ifndef strtok_r
-char *strtok_r(char *str, const char *delim, char **nextp);
+char* strtok_r(char* str, const char* delim, char** nextp);
 #endif  // strtok_r
 #endif  // !defined(HAVE_STRTOK_R)
 

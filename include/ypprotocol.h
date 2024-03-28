@@ -25,7 +25,8 @@
 #include <string.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 /** Structure of VV command */
@@ -46,10 +47,10 @@ typedef struct PARAMETER_INFO
   char robot_name[128];
 } Param_t;
 
-int get_version(Ver_t *apVer);
-int get_parameter(Param_t *apParam);
+int get_version(Ver_t* apVer);
+int get_parameter(Param_t* apParam);
 int set_baudrate(int baud);
-int get_embedded_param(char *param);
+int get_embedded_param(char* param);
 
 #ifdef __cplusplus
 }

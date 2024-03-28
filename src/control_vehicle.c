@@ -312,7 +312,7 @@ void wheel_angle(OdometryPtr odm, SpurUserParamsPtr spur)
   }
 }
 
-void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double *torque)
+void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque)
 {
   int i;
   ParametersPtr param;
@@ -452,9 +452,43 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
   return tilt;
 }
 
-void control_loop_cleanup(void *data)
+void control_loop_cleanup(void* data)
 {
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop stopped.\n");
+}
+
+void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur)
+{
+  const double dt = p(YP_PARAM_CONTROL_CYCLE, 0);
+  ParametersPtr param = get_param_ptr();
+  odm->time = get_time();
+
+  int i;
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+  {
+    if (!param->motor_enable[i])
+      continue;
+
+    switch (spur->wheel_mode[i])
+    {
+      case MOTOR_CONTROL_OPENFREE:
+      case MOTOR_CONTROL_FREE:
+        odm->wvel[i] = 0;
+        break;
+      default:
+        odm->wvel[i] = spur->wheel_vel_smooth[i];
+        odm->wang[i] += odm->wvel[i] * dt;
+        break;
+    }
+  }
+
+  odm->v = p(YP_PARAM_RADIUS, MOTOR_RIGHT) * odm->wvel[MOTOR_RIGHT] / 2.0 +
+           p(YP_PARAM_RADIUS, MOTOR_LEFT) * odm->wvel[MOTOR_LEFT] / 2.0;
+  odm->w = p(YP_PARAM_RADIUS, MOTOR_RIGHT) * odm->wvel[MOTOR_RIGHT] / p(YP_PARAM_TREAD, 0) -
+           p(YP_PARAM_RADIUS, MOTOR_LEFT) * odm->wvel[MOTOR_LEFT] / p(YP_PARAM_TREAD, 0);
+  odm->x = odm->x + odm->v * cos(odm->theta) * dt;
+  odm->y = odm->y + odm->v * sin(odm->theta) * dt;
+  odm->theta = odm->theta + odm->w * dt;
 }
 
 /* 20msごとの割り込みで軌跡追従制御処理を呼び出す */
@@ -487,6 +521,11 @@ void control_loop(void)
     coordinate_synchronize(odometry, spur);
     run_control(*odometry, spur);
 
+    if ((option(OPTION_WITHOUT_DEVICE)))
+    {
+      simulate_control(*odometry, spur);
+    }
+
     // スレッドの停止要求チェック
     pthread_testcancel();
   }
@@ -499,6 +538,11 @@ void control_loop(void)
     yp_usleep(request);
     coordinate_synchronize(odometry, spur);
     run_control(*odometry, spur);
+
+    if ((option(OPTION_WITHOUT_DEVICE)))
+    {
+      simulate_control(odometry, spur);
+    }
 
     // スレッドの停止要求チェック
     pthread_testcancel();
@@ -668,9 +712,9 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
 }
 
 /* すれっどの初期化 */
-void init_control_thread(pthread_t *thread)
+void init_control_thread(pthread_t* thread)
 {
-  if (pthread_create(thread, NULL, (void *)control_loop, NULL) != 0)
+  if (pthread_create(thread, NULL, (void*)control_loop, NULL) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create control_loop thread\n");
   }

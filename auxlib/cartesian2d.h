@@ -22,7 +22,8 @@
 #define __AUXLIB_CARTESIAN2D_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 #include <unistd.h>
@@ -30,7 +31,7 @@ extern "C" {
 #include <stdlib.h>
 #include <math.h>
 
-typedef struct cs_t *CSptr;
+typedef struct cs_t* CSptr;
 typedef struct cs_t
 {
   double x;
@@ -46,12 +47,12 @@ CSptr CS_add(CSptr parent_cs, double x, double y, double theta);
 int CS_delete(CSptr target_cs);
 int CS_set(CSptr target_cs, double x, double y, double theta);
 int CS_set_on_CS(CSptr target_cs, CSptr on_cs, double x, double y, double theta);
-void CS_turn_base(double *x, double *y, double *theta);
+void CS_turn_base(double* x, double* y, double* theta);
 
-void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double *x, double *y, double *theta);
-void inv_trans_cs(CSptr target_cs, double *x, double *y, double *theta);
-void trans_cs(CSptr target_cs, double *x, double *y, double *theta);
-void trace_trans_cs(CSptr target_cs, double *x, double *y, double *theta);
+void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double* x, double* y, double* theta);
+void inv_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
+void trans_cs(CSptr target_cs, double* x, double* y, double* theta);
+void trace_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
 
 #ifdef __cplusplus
 }

@@ -24,7 +24,8 @@
 #include <ypparam.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 #define Spur_md_init(dev) YPSpur_md_init(dev)
@@ -121,86 +122,86 @@ typedef struct
 } YPSpur;
 
 /** init */
-int YPSpur_md_init(YPSpur *dev);
-int YPSpur_md_initex(YPSpur *dev, int msq_key);
-int YPSpur_md_init_socket(YPSpur *dev, char *ip, int port);
+int YPSpur_md_init(YPSpur* dev);
+int YPSpur_md_initex(YPSpur* dev, int msq_key);
+int YPSpur_md_init_socket(YPSpur* dev, char* ip, int port);
 
 /** freeze */
-int YPSpur_md_isfreeze(YPSpur *dev);
-int YPSpur_md_freeze(YPSpur *dev);
-int YPSpur_md_unfreeze(YPSpur *dev);
+int YPSpur_md_isfreeze(YPSpur* dev);
+int YPSpur_md_freeze(YPSpur* dev);
+int YPSpur_md_unfreeze(YPSpur* dev);
 
 /** motor servo */
-int YPSpur_md_stop(YPSpur *dev);
-int YPSpur_md_free(YPSpur *dev);
-int YP_md_openfree(YPSpur *dev);
+int YPSpur_md_stop(YPSpur* dev);
+int YPSpur_md_free(YPSpur* dev);
+int YP_md_openfree(YPSpur* dev);
 
 /** Spur_md */
-int YPSpur_md_line(YPSpur *dev, int cs, double x, double y, double theta);
-int YPSpur_md_stop_line(YPSpur *dev, int cs, double x, double y, double theta);
-int YPSpur_md_circle(YPSpur *dev, int cs, double x, double y, double r);
-int YPSpur_md_spin(YPSpur *dev, int cs, double theta);
-int YPSpur_md_orient(YPSpur *dev, int cs, double theta);
+int YPSpur_md_line(YPSpur* dev, int cs, double x, double y, double theta);
+int YPSpur_md_stop_line(YPSpur* dev, int cs, double x, double y, double theta);
+int YPSpur_md_circle(YPSpur* dev, int cs, double x, double y, double r);
+int YPSpur_md_spin(YPSpur* dev, int cs, double theta);
+int YPSpur_md_orient(YPSpur* dev, int cs, double theta);
 
 /** setter */
-int YPSpur_md_set_pos(YPSpur *dev, int cs, double x, double y, double theta);
-int YPSpur_md_adjust_pos(YPSpur *dev, int cs, double x, double y, double theta);
-int YPSpur_md_set_vel(YPSpur *dev, double v);
-int YPSpur_md_set_angvel(YPSpur *dev, double w);
-int YPSpur_md_set_accel(YPSpur *dev, double v);
-int YPSpur_md_set_angaccel(YPSpur *dev, double w);
+int YPSpur_md_set_pos(YPSpur* dev, int cs, double x, double y, double theta);
+int YPSpur_md_adjust_pos(YPSpur* dev, int cs, double x, double y, double theta);
+int YPSpur_md_set_vel(YPSpur* dev, double v);
+int YPSpur_md_set_angvel(YPSpur* dev, double w);
+int YPSpur_md_set_accel(YPSpur* dev, double v);
+int YPSpur_md_set_angaccel(YPSpur* dev, double w);
 
 /** getter */
-double YPSpur_md_get_pos(YPSpur *dev, int cs, double *x, double *y, double *theta);
-double YPSpur_md_get_vel(YPSpur *dev, double *v, double *w);
-double YPSpur_md_get_force(YPSpur *dev, double *trans, double *angular);
+double YPSpur_md_get_pos(YPSpur* dev, int cs, double* x, double* y, double* theta);
+double YPSpur_md_get_vel(YPSpur* dev, double* v, double* w);
+double YPSpur_md_get_force(YPSpur* dev, double* trans, double* angular);
 
 /** check position */
-int YPSpur_md_near_pos(YPSpur *dev, int cs, double x, double y, double r);
-int YPSpur_md_near_ang(YPSpur *dev, int cs, double th, double d);
-int YPSpur_md_over_line(YPSpur *dev, int cs, double x, double y, double theta);
+int YPSpur_md_near_pos(YPSpur* dev, int cs, double x, double y, double r);
+int YPSpur_md_near_ang(YPSpur* dev, int cs, double th, double d);
+int YPSpur_md_over_line(YPSpur* dev, int cs, double x, double y, double theta);
 
 /** direct */
-int YPSpur_md_vel(YPSpur *dev, double v, double w);
+int YPSpur_md_vel(YPSpur* dev, double v, double w);
 
 /** tilt */
-int YPSpur_md_tilt(YPSpur *dev, int cs, double dir, double tilt);
+int YPSpur_md_tilt(YPSpur* dev, int cs, double dir, double tilt);
 
 /* 裏コマンド集 */
-int YP_md_get_error_state(YPSpur *dev);
-void YP_md_request_device_dump(YPSpur *dev, int id, int block);
+int YP_md_get_error_state(YPSpur* dev);
+void YP_md_request_device_dump(YPSpur* dev, int id, int block);
 
-int YP_md_set_parameter(YPSpur *dev, int param_id, double value);
-int YP_md_set_parameter_array(YPSpur *dev, int param_id, double *value);
-int YP_md_get_parameter(YPSpur *dev, int param_id, double *value);
-int YP_md_get_parameter_array(YPSpur *dev, int param_id, double *value);
-int YP_md_set_control_state(YPSpur *dev, int control_id, int state);
+int YP_md_set_parameter(YPSpur* dev, int param_id, double value);
+int YP_md_set_parameter_array(YPSpur* dev, int param_id, double* value);
+int YP_md_get_parameter(YPSpur* dev, int param_id, double* value);
+int YP_md_get_parameter_array(YPSpur* dev, int param_id, double* value);
+int YP_md_set_control_state(YPSpur* dev, int control_id, int state);
 
-int YP_md_get_ad_value(YPSpur *dev, int num);
-int YP_md_set_io_dir(YPSpur *dev, unsigned char dir);
-int YP_md_set_io_data(YPSpur *dev, unsigned char data);
-double YP_md_get_device_error_state(YPSpur *dev, int id, int *err);
-int YP_md_wheel_vel(YPSpur *dev, double r, double l);
-int YP_md_wheel_torque(YPSpur *dev, double r, double l);
-double YP_md_get_wheel_vel(YPSpur *dev, double *wr, double *wl);
-double YP_md_get_wheel_ang(YPSpur *dev, double *theta_r, double *theta_l);
-double YP_md_get_wheel_torque(YPSpur *dev, double *torque_r, double *torque_l);
-int YP_md_set_wheel_vel(YPSpur *dev, double r, double l);
-int YP_md_set_wheel_accel(YPSpur *dev, double r, double l);
-int YP_md_wheel_ang(YPSpur *dev, double r, double l);
-double YP_md_get_vref(YPSpur *dev, double *vref, double *wref);
-double YP_md_get_wheel_vref(YPSpur *dev, double *wrref, double *wlref);
+int YP_md_get_ad_value(YPSpur* dev, int num);
+int YP_md_set_io_dir(YPSpur* dev, unsigned char dir);
+int YP_md_set_io_data(YPSpur* dev, unsigned char data);
+double YP_md_get_device_error_state(YPSpur* dev, int id, int* err);
+int YP_md_wheel_vel(YPSpur* dev, double r, double l);
+int YP_md_wheel_torque(YPSpur* dev, double r, double l);
+double YP_md_get_wheel_vel(YPSpur* dev, double* wr, double* wl);
+double YP_md_get_wheel_ang(YPSpur* dev, double* theta_r, double* theta_l);
+double YP_md_get_wheel_torque(YPSpur* dev, double* torque_r, double* torque_l);
+int YP_md_set_wheel_vel(YPSpur* dev, double r, double l);
+int YP_md_set_wheel_accel(YPSpur* dev, double r, double l);
+int YP_md_wheel_ang(YPSpur* dev, double r, double l);
+double YP_md_get_vref(YPSpur* dev, double* vref, double* wref);
+double YP_md_get_wheel_vref(YPSpur* dev, double* wrref, double* wlref);
 
-int YP_md_joint_torque(YPSpur *spur, int id, double t);
-int YP_md_joint_vel(YPSpur *spur, int id, double v);
-int YP_md_joint_ang(YPSpur *spur, int id, double a);
-int YP_md_joint_ang_vel(YPSpur *spur, int id, double a, double v);
-int YP_md_set_joint_accel(YPSpur *spur, int id, double a);
-int YP_md_set_joint_vel(YPSpur *spur, int id, double v);
-double YP_md_get_joint_vel(YPSpur *spur, int id, double *v);
-double YP_md_get_joint_vref(YPSpur *spur, int id, double *v);
-double YP_md_get_joint_ang(YPSpur *spur, int id, double *a);
-double YP_md_get_joint_torque(YPSpur *spur, int id, double *t);
+int YP_md_joint_torque(YPSpur* spur, int id, double t);
+int YP_md_joint_vel(YPSpur* spur, int id, double v);
+int YP_md_joint_ang(YPSpur* spur, int id, double a);
+int YP_md_joint_ang_vel(YPSpur* spur, int id, double a, double v);
+int YP_md_set_joint_accel(YPSpur* spur, int id, double a);
+int YP_md_set_joint_vel(YPSpur* spur, int id, double v);
+double YP_md_get_joint_vel(YPSpur* spur, int id, double* v);
+double YP_md_get_joint_vref(YPSpur* spur, int id, double* v);
+double YP_md_get_joint_ang(YPSpur* spur, int id, double* a);
+double YP_md_get_joint_torque(YPSpur* spur, int id, double* t);
 
 #define YPSPUR_JOINT_SUPPORT 1
 #define YPSPUR_JOINT_ANG_VEL_SUPPORT 1

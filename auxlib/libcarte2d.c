@@ -91,7 +91,7 @@ int CS_delete(CSptr target_cs)
 
   if (target_cs)
   {
-    free((void *)target_cs);
+    free((void*)target_cs);
   }
   return 1;
 }
@@ -120,7 +120,7 @@ int CS_set_on_CS(CSptr target_cs, CSptr on_cs, double x, double y, double theta)
 }
 
 /* 子から見た親の位置を、親から見た自分の位置に変換する */
-void CS_turn_base(double *x, double *y, double *theta)
+void CS_turn_base(double* x, double* y, double* theta)
 {
   double xx, yy;
 
@@ -134,7 +134,7 @@ void CS_turn_base(double *x, double *y, double *theta)
 /*-----------------座標変換まわり-----------------*/
 /* 目的の座標系へひとっとび？ */
 /* 　　　　　　　　　　　　　 */
-void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double *x, double *y, double *theta)
+void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double* x, double* y, double* theta)
 {
   /* 座標系が有効か */
   if (!target_cs || !now_cs)
@@ -170,7 +170,7 @@ void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double *x, double *y, dou
 }
 
 /* 座標系を一段下る（1段前の座標系での座標に変換する） */
-void inv_trans_cs(CSptr target_cs, double *x, double *y, double *theta)
+void inv_trans_cs(CSptr target_cs, double* x, double* y, double* theta)
 {
   double xx, yy;
   if (target_cs)
@@ -184,7 +184,7 @@ void inv_trans_cs(CSptr target_cs, double *x, double *y, double *theta)
 }
 
 /* 座標系を一段あがる（一段後での座標系での座標に変換する） */
-void trans_cs(CSptr target_cs, double *x, double *y, double *theta)
+void trans_cs(CSptr target_cs, double* x, double* y, double* theta)
 {
   double xx, yy;
   if (target_cs)
@@ -198,7 +198,7 @@ void trans_cs(CSptr target_cs, double *x, double *y, double *theta)
 }
 
 /* 上にあがるだけ */
-void trace_trans_cs(CSptr target_cs, double *x, double *y, double *theta)
+void trace_trans_cs(CSptr target_cs, double* x, double* y, double* theta)
 {
   if (target_cs == CSroot_ptr)
     return;

@@ -23,7 +23,7 @@
 
 #define SNAME_PWS_MOTOR "pws_motor"
 
-typedef struct _pws_motor *PWSMotorPtr;
+typedef struct _pws_motor* PWSMotorPtr;
 typedef struct _pws_motor
 {
   int counter1;

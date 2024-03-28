@@ -105,60 +105,59 @@ typedef struct SPUR_COMMAND
 } SpurCommand;
 
 static const SpurCommand SPUR_COMMAND[SPUR_COMMAND_MAX] = {
-  { SPUR_LINE, { "line" }, 3 },
-  { SPUR_STOP_LINE, { "stop_line" }, 3 },
-  { SPUR_CIRCLE, { "circle" }, 3 },
-  { SPUR_SPIN, { "spin" }, 1 },
-  { SPUR_GETPOS, { "get_pos" }, 0 },
-  { SPUR_GETVEL, { "get_vel" }, 0 },
-  { SPUR_GETFORCE, { "get_force" }, 0 },
-  { SPUR_SETPOS, { "set_pos" }, 3 },
-  { SPUR_NEAR_POS, { "near_pos" }, 3 },
-  { SPUR_NEAR_ANG, { "near_ang" }, 2 },
-  { SPUR_OVER_LINE, { "over_line" }, 3 },
-  { SPUR_ADJUSTPOS, { "adjust_pos" }, 3 },
-  { SPUR_SETVEL, { "set_vel" }, 1 },
-  { SPUR_SETANGVEL, { "set_angvel" }, 1 },
-  { SPUR_SETACCEL, { "set_accel" }, 1 },
-  { SPUR_SETANGACCEL, { "set_angaccel" }, 1 },
-  { SPUR_FREE, { "free" }, 0 },
-  { SPUR_OPENFREE, { "openfree" }, 0 },
-  { SPUR_STOP, { "stop" }, 0 },
-  { SPUR_INIT, { "init" }, 0 },
-  { SPUR_FREEZE, { "freeze" }, 0 },
-  { SPUR_UNFREEZE, { "unfreeze" }, 0 },
-  { SPUR_ISFREEZE, { "isfreeze" }, 0 },
-  { SPUR_GETAD, { "get_ad_value" }, 1 },
-  { SPUR_SET_IO_DIR, { "set_io_dir" }, 1 },
-  { SPUR_SET_IO_DATA, { "set_io_data" }, 1 },
-  { SPUR_GET_DEVICE_ERROR_STATE, { "get_device_error_state" }, 1 },
-  { SPUR_VEL, { "vel" }, 2 },
-  { SPUR_WHEEL_VEL, { "wheel_vel" }, 2 },
-  { SPUR_GET_WHEEL_VEL, { "get_wheel_vel" }, 0 },
-  { SPUR_GET_WHEEL_ANG, { "get_wheel_ang" }, 0 },
-  { SPUR_GET_WHEEL_TORQUE, { "get_wheel_torque" }, 0 },
-  { SPUR_WHEEL_TORQUE, { "wheel_torque" }, 2 },
-  { SPUR_ORIENT, { "orient" }, 1 },
-  { SPUR_GET_VREF, { "get_vref" }, 0 },
-  { SPUR_GET_WHEEL_VREF, { "get_wheel_vref" }, 0 },
-  { SPUR_SET_WHEEL_VEL, { "set_wheel_vel" }, 2 },
-  { SPUR_SET_WHEEL_ACCEL, { "set_wheel_accel" }, 2 },
-  { SPUR_WHEEL_ANG, { "wheel_ang" }, 2 },
-  { SPUR_JOINT_TORQUE, { "joint_torque" }, 2 },
-  { SPUR_JOINT_VEL, { "joint_vel" }, 2 },
-  { SPUR_JOINT_ANG, { "joint_ang" }, 2 },
-  { SPUR_JOINT_ANG_VEL, { "joint_ang_vel" }, 3 },
-  { SPUR_SET_JOINT_ACCEL, { "set_joint_accel" }, 2 },
-  { SPUR_SET_JOINT_VEL, { "set_joint_vel" }, 2 },
-  { SPUR_GET_JOINT_VEL, { "get_joint_vel" }, 1 },
-  { SPUR_GET_JOINT_VREF, { "get_joint_vref" }, 1 },
-  { SPUR_GET_JOINT_ANG, { "get_joint_ang" }, 1 },
-  { SPUR_GET_JOINT_TORQUE, { "get_joint_torque" }, 1 },
-  { SPUR_SLEEP, { "sleep" }, 1 },
-  { SPUR_REQUEST_DEVICE_DUMP, { "request_device_dump" }, 2 },
-  { HELP, { "help" }, 0 },
-  { EXIT, { "exit" }, 0 }
-};
+    {SPUR_LINE, {"line"}, 3},
+    {SPUR_STOP_LINE, {"stop_line"}, 3},
+    {SPUR_CIRCLE, {"circle"}, 3},
+    {SPUR_SPIN, {"spin"}, 1},
+    {SPUR_GETPOS, {"get_pos"}, 0},
+    {SPUR_GETVEL, {"get_vel"}, 0},
+    {SPUR_GETFORCE, {"get_force"}, 0},
+    {SPUR_SETPOS, {"set_pos"}, 3},
+    {SPUR_NEAR_POS, {"near_pos"}, 3},
+    {SPUR_NEAR_ANG, {"near_ang"}, 2},
+    {SPUR_OVER_LINE, {"over_line"}, 3},
+    {SPUR_ADJUSTPOS, {"adjust_pos"}, 3},
+    {SPUR_SETVEL, {"set_vel"}, 1},
+    {SPUR_SETANGVEL, {"set_angvel"}, 1},
+    {SPUR_SETACCEL, {"set_accel"}, 1},
+    {SPUR_SETANGACCEL, {"set_angaccel"}, 1},
+    {SPUR_FREE, {"free"}, 0},
+    {SPUR_OPENFREE, {"openfree"}, 0},
+    {SPUR_STOP, {"stop"}, 0},
+    {SPUR_INIT, {"init"}, 0},
+    {SPUR_FREEZE, {"freeze"}, 0},
+    {SPUR_UNFREEZE, {"unfreeze"}, 0},
+    {SPUR_ISFREEZE, {"isfreeze"}, 0},
+    {SPUR_GETAD, {"get_ad_value"}, 1},
+    {SPUR_SET_IO_DIR, {"set_io_dir"}, 1},
+    {SPUR_SET_IO_DATA, {"set_io_data"}, 1},
+    {SPUR_GET_DEVICE_ERROR_STATE, {"get_device_error_state"}, 1},
+    {SPUR_VEL, {"vel"}, 2},
+    {SPUR_WHEEL_VEL, {"wheel_vel"}, 2},
+    {SPUR_GET_WHEEL_VEL, {"get_wheel_vel"}, 0},
+    {SPUR_GET_WHEEL_ANG, {"get_wheel_ang"}, 0},
+    {SPUR_GET_WHEEL_TORQUE, {"get_wheel_torque"}, 0},
+    {SPUR_WHEEL_TORQUE, {"wheel_torque"}, 2},
+    {SPUR_ORIENT, {"orient"}, 1},
+    {SPUR_GET_VREF, {"get_vref"}, 0},
+    {SPUR_GET_WHEEL_VREF, {"get_wheel_vref"}, 0},
+    {SPUR_SET_WHEEL_VEL, {"set_wheel_vel"}, 2},
+    {SPUR_SET_WHEEL_ACCEL, {"set_wheel_accel"}, 2},
+    {SPUR_WHEEL_ANG, {"wheel_ang"}, 2},
+    {SPUR_JOINT_TORQUE, {"joint_torque"}, 2},
+    {SPUR_JOINT_VEL, {"joint_vel"}, 2},
+    {SPUR_JOINT_ANG, {"joint_ang"}, 2},
+    {SPUR_JOINT_ANG_VEL, {"joint_ang_vel"}, 3},
+    {SPUR_SET_JOINT_ACCEL, {"set_joint_accel"}, 2},
+    {SPUR_SET_JOINT_VEL, {"set_joint_vel"}, 2},
+    {SPUR_GET_JOINT_VEL, {"get_joint_vel"}, 1},
+    {SPUR_GET_JOINT_VREF, {"get_joint_vref"}, 1},
+    {SPUR_GET_JOINT_ANG, {"get_joint_ang"}, 1},
+    {SPUR_GET_JOINT_TORQUE, {"get_joint_torque"}, 1},
+    {SPUR_SLEEP, {"sleep"}, 1},
+    {SPUR_REQUEST_DEVICE_DUMP, {"request_device_dump"}, 2},
+    {HELP, {"help"}, 0},
+    {EXIT, {"exit"}, 0}};
 
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;
@@ -172,12 +171,12 @@ void ctrlc(int num)
 #endif  // HAVE_SIGLONGJMP
 }
 
-int proc_spur_cmd(char *line, int *coordinate)
+int proc_spur_cmd(char* line, int* coordinate)
 {
   int i;
   SpurCommand spur;
   int lcoordinate;
-  char *argv;
+  char* argv;
   int ret;
   int ad;
   int error;
@@ -186,7 +185,7 @@ int proc_spur_cmd(char *line, int *coordinate)
     MODE_COMMAND,
     MODE_ARG
   } mode = MODE_COMMAND;
-  char *toksave;
+  char* toksave;
 
   spur.id = -1;
   lcoordinate = *coordinate;
@@ -448,10 +447,10 @@ int proc_spur_cmd(char *line, int *coordinate)
   return 1;
 }
 
-int proc_spur(char *line, int *coordinate)
+int proc_spur(char* line, int* coordinate)
 {
-  char *line_div;
-  char *toksave;
+  char* line_div;
+  char* toksave;
   int ret;
 
   ret = 0;
@@ -468,7 +467,7 @@ int proc_spur(char *line, int *coordinate)
   return ret;
 }
 
-void print_help(char *argv[])
+void print_help(char* argv[])
 {
   fprintf(stderr, "USAGE: %s\n", argv[0]);
   fputs("\t-V | --set-vel      VALUE    : [m/s]   set max vel of SPUR to VALUE\n", stderr);
@@ -481,7 +480,7 @@ void print_help(char *argv[])
   fputs("\t-h | --help                  : print this help\n", stderr);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   int coordinate = CS_FS;
   char ip[64];
@@ -499,16 +498,15 @@ int main(int argc, char *argv[])
   int msqid = 0;
   struct option options[9] =
       {
-        { "set-vel", 1, 0, 'V' },
-        { "set-angvel", 1, 0, 'W' },
-        { "set-accel", 1, 0, 'A' },
-        { "set-angaccel", 1, 0, 'O' },
-        { "command", 1, 0, 'c' },
-        { "msq-id", 1, 0, 'q' },
-        { "socket", 1, 0, 's' },
-        { "help", 0, 0, 'h' },
-        { 0, 0, 0, 0 }
-      };
+          {"set-vel", 1, 0, 'V'},
+          {"set-angvel", 1, 0, 'W'},
+          {"set-accel", 1, 0, 'A'},
+          {"set-angaccel", 1, 0, 'O'},
+          {"command", 1, 0, 'c'},
+          {"msq-id", 1, 0, 'q'},
+          {"socket", 1, 0, 's'},
+          {"help", 0, 0, 'h'},
+          {0, 0, 0, 0}};
   int opt;
 
   hook_pre_global();
@@ -549,7 +547,7 @@ int main(int argc, char *argv[])
       case 's':
         strncpy(ip, optarg, 64);
         {
-          char *p;
+          char* p;
           p = strchr(ip, ':');
           if (p == NULL)
           {
@@ -596,8 +594,8 @@ int main(int argc, char *argv[])
 #endif  // HAVE_LIBREADLINE
   while (active)
   {
-    static char *line = NULL;
-    static char *line_prev = NULL;
+    static char* line = NULL;
+    static char* line_prev = NULL;
     char text[16];
 #if !HAVE_LIBREADLINE
 #if HAVE_GETLINE

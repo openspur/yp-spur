@@ -22,7 +22,8 @@
 #define YPPARAM_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 #if defined(_WIN32)
@@ -497,12 +498,12 @@ typedef enum
 } YPSpur_cs;
 
 static const char YPSpur_CSName[CS_MAX][16] = {
-  { "BS" },
-  { "SP" },
-  { "GL" },
-  { "LC" },
-  { "FS" },
-  { "BL" },
+    {"BS"},
+    {"SP"},
+    {"GL"},
+    {"LC"},
+    {"FS"},
+    {"BL"},
 };
 
 typedef struct
@@ -533,9 +534,9 @@ struct ipcmd_t
   int connection_error;
   pid_t pid;
   pid_t pids[YPSPUR_MAX_SOCKET];
-  int (*send)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  int (*recv)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  void (*flush)(struct ipcmd_t *ipcmd);
+  int (*send)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  int (*recv)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  void (*flush)(struct ipcmd_t* ipcmd);
 };
 
 #define YPSPUR_MSQ_KEY 0x7045

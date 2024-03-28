@@ -29,7 +29,7 @@
 
 #include <param.h>
 
-void yprintf(ParamOutputLv level, const char *format, ...)
+void yprintf(ParamOutputLv level, const char* format, ...)
 {
   va_list ap;
 

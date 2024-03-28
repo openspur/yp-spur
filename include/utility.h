@@ -22,6 +22,7 @@
 #define UTILITY_H
 
 double get_time(void);
+double get_monotonic_time(void);
 void yp_usleep(int usec);
 void set_sigint_handler(void (*handler)(int));
 void hook_pre_global(void);

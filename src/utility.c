@@ -48,7 +48,7 @@ double get_time(void)
 
   gettimeofday(&current, NULL);
 
-  return current.tv_sec + current.tv_usec / 1000000;
+  return current.tv_sec + current.tv_usec / 1000000.0;
 }
 
 void yp_usleep(int usec)

@@ -514,21 +514,20 @@ void control_loop(void)
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop started.\n");
   pthread_cleanup_push(control_loop_cleanup, NULL);
 
-#if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能
+  double last_time = get_time();
+
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
   struct timespec request;
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
   {
     yprintf(OUTPUT_LV_ERROR, "error on clock_gettime\n");
-    exit(EXIT_FAILURE);
+    exit(0);
   }
-#endif  // defined(HAVE_LIBRT)
-
-  double last_time = get_time();
-
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
   {
-#if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
     request.tv_nsec += (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000000);
     request.tv_sec += request.tv_nsec / 1000000000;
     request.tv_nsec = request.tv_nsec % 1000000000;

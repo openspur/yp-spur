@@ -124,12 +124,18 @@ if(CMAKE_VERSION VERSION_LESS "3.12")
     add_definitions(-DHAVE_SSM)
   endif()
 else()
-  add_compile_definitions(
-    HAVE_LONGJMP
-    HAVE_SIGLONGJMP
-    HAVE_CLOCK_NANOSLEEP
-    HAVE_SSM
-  )
+  if(HAVE_LONGJMP)
+    add_compile_definitions(HAVE_LONGJMP)
+  endif()
+  if(HAVE_SIGLONGJMP)
+    add_compile_definitions(HAVE_SIGLONGJMP)
+  endif()
+  if(HAVE_CLOCK_NANOSLEEP)
+    add_compile_definitions(HAVE_CLOCK_NANOSLEEP)
+  endif()
+  if(HAVE_SSM)
+    add_compile_definitions(HAVE_SSM)
+  endif()
 endif()
 
 

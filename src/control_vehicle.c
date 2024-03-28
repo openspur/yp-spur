@@ -550,6 +550,7 @@ void control_loop(void)
       last_time = now;
       if (dt_error < -expected_dt || expected_dt < dt_error)
       {
+        yprintf(OUTPUT_LV_ERROR, "detected system time jump: %0.5f\n", dt_error);
         break;
       }
     }

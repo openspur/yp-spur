@@ -69,12 +69,6 @@ check_function_exists(longjmp HAVE_LONGJMP)
 check_function_exists(siglongjmp HAVE_SIGLONGJMP)
 check_function_exists(clock_nanosleep HAVE_CLOCK_NANOSLEEP)
 
-add_compile_definitions(
-  HAVE_LONGJMP
-  HAVE_SIGLONGJMP
-  HAVE_CLOCK_NANOSLEEP
-)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/config.h
 )
@@ -102,6 +96,7 @@ if(READLINE_FOUND)
   )
 endif(READLINE_FOUND)
 
+
 # Static link options
 
 option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
@@ -111,6 +106,31 @@ if(ENABLE_ALL_STATIC)
   set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc")
   set(TARGET_STATIC_POSTFIX "-static")
 endif(ENABLE_ALL_STATIC)
+
+
+# Compile flags
+
+if(CMAKE_VERSION VERSION_LESS "3.12")
+  add_compile_definitions(
+    HAVE_LONGJMP
+    HAVE_SIGLONGJMP
+    HAVE_CLOCK_NANOSLEEP
+    HAVE_SSM
+  )
+else()
+  if(HAVE_LONGJMP)
+    add_definitions(-DHAVE_LONGJMP)
+  endif()
+  if(HAVE_SIGLONGJMP)
+    add_definitions(-DHAVE_SIGLONGJMP)
+  endif()
+  if(HAVE_CLOCK_NANOSLEEP)
+    add_definitions(-DHAVE_CLOCK_NANOSLEEP)
+  endif()
+  if(HAVE_SSM)
+    add_definitions(-DHAVE_SSM)
+  endif()
+endif()
 
 
 # Add subdirectories

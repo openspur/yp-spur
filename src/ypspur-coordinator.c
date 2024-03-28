@@ -527,9 +527,10 @@ int main(int argc, char* argv[])
       }
       else
       {
+        // Clear control thread enable flag to avoid multiple join on signal exit.
+        control_thread_en = 0;
         // Wait control thread instead of odometry receive loop on simuation mode.
         pthread_join(control_thread, (void**)&control_thread_status);
-        control_thread_en = 0;
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }

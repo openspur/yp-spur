@@ -521,8 +521,9 @@ void control_loop(void)
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
   {
-    yprintf(OUTPUT_LV_ERROR, "error on clock_gettime\n");
-    exit(0);
+    yprintf(OUTPUT_LV_ERROR, "Error on clock_gettime\n");
+    static int status = EXIT_FAILURE;
+    pthread_exit(&status);
   }
 #endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
@@ -546,8 +547,9 @@ void control_loop(void)
       last_time = now;
       if (dt_error < -expected_dt || expected_dt < dt_error)
       {
-        yprintf(OUTPUT_LV_ERROR, "detected system time jump: %0.5fs\n", dt_error);
-        break;
+        yprintf(OUTPUT_LV_ERROR, "Detected system time jump: %0.5fs\n", dt_error);
+        static int status = EXIT_FAILURE;
+        pthread_exit(&status);
       }
     }
 

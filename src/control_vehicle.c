@@ -503,7 +503,7 @@ void control_loop(void)
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop started.\n");
   pthread_cleanup_push(control_loop_cleanup, NULL);
 
-#if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
   struct timespec request;
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
@@ -523,7 +523,7 @@ void control_loop(void)
 
     if ((option(OPTION_WITHOUT_DEVICE)))
     {
-      simulate_control(*odometry, spur);
+      simulate_control(odometry, spur);
     }
 
     // スレッドの停止要求チェック
@@ -547,7 +547,7 @@ void control_loop(void)
     // スレッドの停止要求チェック
     pthread_testcancel();
   }
-#endif  // defined(HAVE_LIBRT)
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
   pthread_cleanup_pop(1);
 }
 

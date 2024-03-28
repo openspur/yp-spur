@@ -67,6 +67,13 @@ endif(READLINE_FOUND)
 include(CheckFunctionExists)
 check_function_exists(longjmp HAVE_LONGJMP)
 check_function_exists(siglongjmp HAVE_SIGLONGJMP)
+check_function_exists(clock_nanosleep HAVE_CLOCK_NANOSLEEP)
+
+add_compile_definitions(
+  HAVE_LONGJMP
+  HAVE_SIGLONGJMP
+  HAVE_CLOCK_NANOSLEEP
+)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/config.h

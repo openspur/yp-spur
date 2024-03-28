@@ -48,16 +48,7 @@ double get_time(void)
 
   gettimeofday(&current, NULL);
 
-  return current.tv_sec + current.tv_usec / 1e6;
-}
-
-double get_monotonic_time(void)
-{
-  struct timespec current;
-
-  clock_gettime(CLOCK_MONOTONIC, &current);
-
-  return current.tv_sec + current.tv_nsec / 1e9;
+  return current.tv_sec + current.tv_usec / 1000000;
 }
 
 void yp_usleep(int usec)

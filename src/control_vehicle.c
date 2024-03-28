@@ -511,31 +511,19 @@ void control_loop(void)
     yprintf(OUTPUT_LV_ERROR, "error on clock_gettime\n");
     exit(0);
   }
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
   {
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
     request.tv_nsec += (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000000);
     request.tv_sec += request.tv_nsec / 1000000000;
     request.tv_nsec = request.tv_nsec % 1000000000;
 
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
-    coordinate_synchronize(odometry, spur);
-    run_control(*odometry, spur);
-
-    if ((option(OPTION_WITHOUT_DEVICE)))
-    {
-      simulate_control(odometry, spur);
-    }
-
-    // スレッドの停止要求チェック
-    pthread_testcancel();
-  }
 #else
-  int request;
-  request = (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
+    yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
 
-  while (1)
-  {
-    yp_usleep(request);
     coordinate_synchronize(odometry, spur);
     run_control(*odometry, spur);
 
@@ -547,7 +535,6 @@ void control_loop(void)
     // スレッドの停止要求チェック
     pthread_testcancel();
   }
-#endif  // defined(HAVE_CLOCK_NANOSLEEP)
   pthread_cleanup_pop(1);
 }
 

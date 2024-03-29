@@ -588,7 +588,7 @@ int main(int argc, char* argv[])
   yp_usleep(200000);
   fflush(stderr);
 
-  if (control_thread_status != NULL)
+  if (control_thread_status != NULL && control_thread_status != PTHREAD_CANCELED)
   {
     return *control_thread_status;
   }

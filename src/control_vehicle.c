@@ -543,7 +543,7 @@ void control_loop(void)
       const double now = get_time();
       const double dt = now - last_time;
       const double expected_dt = p(YP_PARAM_CONTROL_CYCLE, 0);
-      const double dt_error = expected_dt - dt;
+      const double dt_error = dt - expected_dt;
       last_time = now;
       if (dt_error < -expected_dt || expected_dt < dt_error)
       {

@@ -2,6 +2,12 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.22.0 (2024-04-02)
+-------------------
+* Add option to stop control on system time jump (`#191 <https://github.com/openspur/yp-spur/issues/191>`_)
+* Fix clock_nanosleep existence checks (`#193 <https://github.com/openspur/yp-spur/issues/193>`_)
+* Contributors: Atsushi Watanabe
+
 1.21.0 (2024-03-22)
 -------------------
 * Update release-candidate workflow (`#189 <https://github.com/openspur/yp-spur/issues/189>`_)

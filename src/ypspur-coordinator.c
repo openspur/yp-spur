@@ -226,6 +226,7 @@ int main(int argc, char* argv[])
 
   fflush(stderr);
 
+  int* control_thread_status = NULL;
   command_thread_en = 0;
   command_thread_en = 0;
   do
@@ -526,8 +527,10 @@ int main(int argc, char* argv[])
       }
       else
       {
-        while (1)
-          yp_usleep(1000000);
+        // Clear control thread enable flag to avoid multiple join on signal exit.
+        control_thread_en = 0;
+        // Wait control thread instead of odometry receive loop on simuation mode.
+        pthread_join(control_thread, (void**)&control_thread_status);
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }
@@ -543,7 +546,7 @@ int main(int argc, char* argv[])
     if (control_thread_en)
     {
       pthread_cancel(control_thread);
-      pthread_join(control_thread, NULL);
+      pthread_join(control_thread, (void**)&control_thread_status);
       control_thread_en = 0;
     }
     if (command_thread_en)
@@ -553,7 +556,7 @@ int main(int argc, char* argv[])
       command_thread_en = 0;
     }
 
-    if (option(OPTION_RECONNECT) && quit == 0)
+    if (option(OPTION_RECONNECT) && quit == 0 && control_thread_status == NULL)
     {
       init_spur_command();
       yp_usleep(500000);
@@ -584,6 +587,11 @@ int main(int argc, char* argv[])
 
   yp_usleep(200000);
   fflush(stderr);
+
+  if (control_thread_status != NULL && control_thread_status != PTHREAD_CANCELED)
+  {
+    return *control_thread_status;
+  }
 
   return (quit ? EXIT_SUCCESS : EXIT_FAILURE);
 }

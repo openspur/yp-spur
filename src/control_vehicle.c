@@ -525,6 +525,7 @@ void control_loop(void)
     static int status = EXIT_FAILURE;
     pthread_exit(&status);
   }
+  double last_monotonic_time = request.tv_sec + request.tv_nsec / 1000000000.0;
 #endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
   {
@@ -534,15 +535,27 @@ void control_loop(void)
     request.tv_nsec = request.tv_nsec % 1000000000;
 
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
+
+    struct timespec current;
+    if (clock_gettime(CLOCK_MONOTONIC, &current) == -1)
+    {
+      yprintf(OUTPUT_LV_ERROR, "Error on clock_gettime\n");
+      static int status = EXIT_FAILURE;
+      pthread_exit(&status);
+    }
+    const double current_monotonic_time = current.tv_sec + current.tv_nsec / 1000000000.0;
+    const double expected_dt = current_monotonic_time - last_monotonic_time;
+    last_monotonic_time = current_monotonic_time;
 #else
     yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
+
+    const double expected_dt = p(YP_PARAM_CONTROL_CYCLE, 0);
 #endif  // defined(HAVE_CLOCK_NANOSLEEP)
 
     if ((option(OPTION_EXIT_ON_TIME_JUMP)))
     {
       const double now = get_time();
       const double dt = now - last_time;
-      const double expected_dt = p(YP_PARAM_CONTROL_CYCLE, 0);
       const double dt_error = dt - expected_dt;
       last_time = now;
       if (dt_error < -expected_dt || expected_dt < dt_error)

@@ -529,8 +529,10 @@ void control_loop(void)
 #endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
   {
+    const double control_cycle = p(YP_PARAM_CONTROL_CYCLE, 0);
+
 #if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
-    request.tv_nsec += (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000000);
+    request.tv_nsec += control_cycle * 1000000000;
     request.tv_sec += request.tv_nsec / 1000000000;
     request.tv_nsec = request.tv_nsec % 1000000000;
 
@@ -547,9 +549,9 @@ void control_loop(void)
     const double expected_dt = current_monotonic_time - last_monotonic_time;
     last_monotonic_time = current_monotonic_time;
 #else
-    yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
+    yp_usleep(control_cycle * 1000000);
 
-    const double expected_dt = p(YP_PARAM_CONTROL_CYCLE, 0);
+    const double expected_dt = control_cycle;
 #endif  // defined(HAVE_CLOCK_NANOSLEEP)
 
     if ((option(OPTION_EXIT_ON_TIME_JUMP)))
@@ -558,7 +560,7 @@ void control_loop(void)
       const double dt = now - last_time;
       const double dt_error = dt - expected_dt;
       last_time = now;
-      if (dt_error < -expected_dt || expected_dt < dt_error)
+      if (dt_error < -control_cycle || control_cycle < dt_error)
       {
         yprintf(OUTPUT_LV_ERROR, "Detected system time jump: %0.5fs\n", dt_error);
         static int status = EXIT_FAILURE;

@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.22.1 (2024-04-10)
+-------------------
 * Detect time jump by monotonic time (`#197 <https://github.com/openspur/yp-spur/issues/197>`_)
 * Contributors: Atsushi Watanabe
 

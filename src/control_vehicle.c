@@ -516,7 +516,6 @@ void control_loop(void)
 
   double last_time = get_time();
 
-#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
   struct timespec request;
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
@@ -525,18 +524,14 @@ void control_loop(void)
     static int status = EXIT_FAILURE;
     pthread_exit(&status);
   }
-#endif  // defined(HAVE_CLOCK_NANOSLEEP)
+
   while (1)
   {
-#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
     request.tv_nsec += (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000000);
     request.tv_sec += request.tv_nsec / 1000000000;
     request.tv_nsec = request.tv_nsec % 1000000000;
 
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
-#else
-    yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
-#endif  // defined(HAVE_CLOCK_NANOSLEEP)
 
     if ((option(OPTION_EXIT_ON_TIME_JUMP)))
     {

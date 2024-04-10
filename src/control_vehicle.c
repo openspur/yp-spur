@@ -544,9 +544,8 @@ void control_loop(void)
       pthread_exit(&status);
     }
     const double current_monotonic_time = current.tv_sec + current.tv_nsec / 1000000000.0;
-    last_monotonic_time = current_monotonic_time;
-
     const double expected_dt = current_monotonic_time - last_monotonic_time;
+    last_monotonic_time = current_monotonic_time;
 #else
     yp_usleep(p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
 

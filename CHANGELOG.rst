@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.22.2 (2024-04-11)
+-------------------
 * Fix system time jump threshold (`#200 <https://github.com/openspur/yp-spur/issues/200>`_)
 * Contributors: Atsushi Watanabe
 

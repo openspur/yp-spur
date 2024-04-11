@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.22.2 (2024-04-11)
+-------------------
+* Fix system time jump threshold (`#200 <https://github.com/openspur/yp-spur/issues/200>`_)
+* Contributors: Atsushi Watanabe
+
 1.22.1 (2024-04-10)
 -------------------
 * Detect time jump by monotonic time (`#197 <https://github.com/openspur/yp-spur/issues/197>`_)

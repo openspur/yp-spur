@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.22.4 (2024-04-22)
+-------------------
+* Fix default MAX_TIME_JUMP (`#205 <https://github.com/openspur/yp-spur/issues/205>`_)
+* Contributors: Atsushi Watanabe
+
 1.22.3 (2024-04-22)
 -------------------
 * Add parameters to specify maximum allowd time jump (`#202 <https://github.com/openspur/yp-spur/issues/202>`_)

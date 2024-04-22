@@ -950,7 +950,7 @@ int set_paramptr(FILE* paramfile)
   }
   else
   {
-    g_P[YP_PARAM_MAX_TIME_JUMP][0] = g_P[YP_PARAM_CYCLE][0];
+    g_P[YP_PARAM_MAX_TIME_JUMP][0] = g_P[YP_PARAM_CONTROL_CYCLE][0];
   }
   if (g_P_set[YP_PARAM_MAX_TIME_JUMP_NEG][0])
   {
@@ -962,7 +962,7 @@ int set_paramptr(FILE* paramfile)
   }
   else
   {
-    g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] = g_P[YP_PARAM_CYCLE][0];
+    g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] = g_P[YP_PARAM_CONTROL_CYCLE][0];
   }
 
   if (param_error)

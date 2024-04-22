@@ -962,7 +962,7 @@ int set_paramptr(FILE* paramfile)
   }
   else
   {
-    g_P[YP_PARAM_MAX_TIME_JUMP_NEG][j] = g_P[YP_PARAM_CYCLE][j];
+    g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] = g_P[YP_PARAM_CYCLE][0];
   }
 
   if (param_error)

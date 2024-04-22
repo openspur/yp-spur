@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add parameters to specify maximum allowd time jump (`#202 <https://github.com/openspur/yp-spur/issues/202>`_)
+* Contributors: Atsushi Watanabe
+
 1.22.2 (2024-04-11)
 -------------------
 * Fix system time jump threshold (`#200 <https://github.com/openspur/yp-spur/issues/200>`_)

@@ -940,6 +940,36 @@ int set_paramptr(FILE* paramfile)
     g_P_changed[YP_PARAM_TORQUE_UNIT][j] = ischanged_p(YP_PARAM_TORQUE_FINENESS, j);
   }
 
+  if (g_P_set[YP_PARAM_MAX_TIME_JUMP][0])
+  {
+    if (g_P[YP_PARAM_MAX_TIME_JUMP][0] <= 0)
+    {
+      yprintf(OUTPUT_LV_ERROR, "ERROR: MAX_TIME_JUMP must be > 0.0.\n");
+      param_error = 1;
+    }
+  }
+  else
+  {
+    g_P[YP_PARAM_MAX_TIME_JUMP][0] = g_P[YP_PARAM_CYCLE][0];
+  }
+  if (g_P_set[YP_PARAM_MAX_TIME_JUMP_NEG][0])
+  {
+    if (g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] <= 0)
+    {
+      yprintf(OUTPUT_LV_ERROR, "ERROR: -MAX_TIME_JUMP must be > 0.0.\n");
+      param_error = 1;
+    }
+  }
+  else
+  {
+    g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] = g_P[YP_PARAM_CYCLE][0];
+  }
+
+  if (param_error)
+  {
+    return 0;
+  }
+
   // パラメータの指定によって自動的に求まるパラメータの計算
   calc_param_inertia2ff();
 

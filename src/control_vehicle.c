@@ -560,7 +560,7 @@ void control_loop(void)
       const double dt = now - last_time;
       const double dt_error = dt - expected_dt;
       last_time = now;
-      if (dt_error < -control_cycle || control_cycle < dt_error)
+      if (dt_error < -p(YP_PARAM_MAX_TIME_JUMP_NEG, 0) || p(YP_PARAM_MAX_TIME_JUMP, 0) < dt_error)
       {
         yprintf(OUTPUT_LV_ERROR, "Detected system time jump: %0.5fs\n", dt_error);
         static int status = EXIT_FAILURE;

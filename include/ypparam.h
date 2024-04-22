@@ -218,6 +218,8 @@ typedef enum
   YP_PARAM_INDEX_GEAR,
 
   YP_PARAM_DEVICE_TIMEOUT,
+  YP_PARAM_MAX_TIME_JUMP,
+  YP_PARAM_MAX_TIME_JUMP_NEG,
 
   YP_PARAM_NUM  ///< パラメータの最大値
 } YPSpur_param;
@@ -296,6 +298,8 @@ typedef enum
         "INDEX_FALL_ANGLE",    \
         "INDEX_GEAR",          \
         "DEVICE_TIMEOUT",      \
+        "MAX_TIME_JUMP",       \
+        "-MAX_TIME_JUMP",      \
   }
 
 #define YP_PARAM_NECESSARY \
@@ -344,6 +348,8 @@ typedef enum
         1,                 \
         1,                 \
         1,                 \
+        0,                 \
+        0,                 \
         0,                 \
         0,                 \
         0,                 \
@@ -447,6 +453,8 @@ typedef enum
         "[rad] Index signal falling edge angle at CW rotation",                                 \
         "[in/out] Index signal gear ratio",                                                     \
         "[s] Timeout of the communication with the device",                                     \
+        "[s] Maximum allowed positive system time jump, used for --exit-on-time-jump",          \
+        "[s] Maximum allowed negative system time jump, used for --exit-on-time-jump",          \
   }
 
 enum motor_id

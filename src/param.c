@@ -942,7 +942,7 @@ int set_paramptr(FILE* paramfile)
 
   if (g_P_set[YP_PARAM_MAX_TIME_JUMP][0])
   {
-    if (g_P_set[YP_PARAM_MAX_TIME_JUMP][0] <= 0)
+    if (g_P[YP_PARAM_MAX_TIME_JUMP][0] <= 0)
     {
       yprintf(OUTPUT_LV_ERROR, "ERROR: MAX_TIME_JUMP must be > 0.0.\n");
       param_error = 1;
@@ -954,7 +954,7 @@ int set_paramptr(FILE* paramfile)
   }
   if (g_P_set[YP_PARAM_MAX_TIME_JUMP_NEG][0])
   {
-    if (g_P_set[YP_PARAM_MAX_TIME_JUMP_NEG][0] <= 0)
+    if (g_P[YP_PARAM_MAX_TIME_JUMP_NEG][0] <= 0)
     {
       yprintf(OUTPUT_LV_ERROR, "ERROR: -MAX_TIME_JUMP must be > 0.0.\n");
       param_error = 1;

@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.22.3 (2024-04-22)
+-------------------
 * Add parameters to specify maximum allowd time jump (`#202 <https://github.com/openspur/yp-spur/issues/202>`_)
 * Contributors: Atsushi Watanabe
 

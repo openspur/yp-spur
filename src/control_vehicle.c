@@ -562,7 +562,10 @@ void control_loop(void)
       last_time = now;
       if (dt_error < -p(YP_PARAM_MAX_TIME_JUMP_NEG, 0) || p(YP_PARAM_MAX_TIME_JUMP, 0) < dt_error)
       {
-        yprintf(OUTPUT_LV_ERROR, "Detected system time jump: %0.5fs\n", dt_error);
+        yprintf(
+            OUTPUT_LV_ERROR,
+            "Detected system time jump: %0.5fs, monotonic time diff: %0.5fs, system time diff: %0.5fs\n",
+            dt_error, expected_dt, dt);
         static int status = EXIT_FAILURE;
         pthread_exit(&status);
       }

@@ -2,6 +2,13 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.22.5 (2024-05-01)
+-------------------
+* Detect system time jump back (`#208 <https://github.com/openspur/yp-spur/issues/208>`_)
+* Use nanosleep if available (`#209 <https://github.com/openspur/yp-spur/issues/209>`_)
+* Output detailed log on time jump exit (`#207 <https://github.com/openspur/yp-spur/issues/207>`_)
+* Contributors: Atsushi Watanabe
+
 1.22.4 (2024-04-22)
 -------------------
 * Fix default MAX_TIME_JUMP (`#205 <https://github.com/openspur/yp-spur/issues/205>`_)

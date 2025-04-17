@@ -22,7 +22,8 @@
 #define YPPARAM_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif  // __cplusplus
 
 #if defined(_WIN32)
@@ -217,6 +218,8 @@ typedef enum
   YP_PARAM_INDEX_GEAR,
 
   YP_PARAM_DEVICE_TIMEOUT,
+  YP_PARAM_MAX_TIME_JUMP,
+  YP_PARAM_MAX_TIME_JUMP_NEG,
 
   YP_PARAM_NUM  ///< パラメータの最大値
 } YPSpur_param;
@@ -295,6 +298,8 @@ typedef enum
         "INDEX_FALL_ANGLE",    \
         "INDEX_GEAR",          \
         "DEVICE_TIMEOUT",      \
+        "MAX_TIME_JUMP",       \
+        "-MAX_TIME_JUMP",      \
   }
 
 #define YP_PARAM_NECESSARY \
@@ -343,6 +348,8 @@ typedef enum
         1,                 \
         1,                 \
         1,                 \
+        0,                 \
+        0,                 \
         0,                 \
         0,                 \
         0,                 \
@@ -446,6 +453,8 @@ typedef enum
         "[rad] Index signal falling edge angle at CW rotation",                                 \
         "[in/out] Index signal gear ratio",                                                     \
         "[s] Timeout of the communication with the device",                                     \
+        "[s] Maximum allowed positive system time jump, used for --exit-on-time-jump",          \
+        "[s] Maximum allowed negative system time jump, used for --exit-on-time-jump",          \
   }
 
 enum motor_id
@@ -497,12 +506,12 @@ typedef enum
 } YPSpur_cs;
 
 static const char YPSpur_CSName[CS_MAX][16] = {
-  { "BS" },
-  { "SP" },
-  { "GL" },
-  { "LC" },
-  { "FS" },
-  { "BL" },
+    {"BS"},
+    {"SP"},
+    {"GL"},
+    {"LC"},
+    {"FS"},
+    {"BL"},
 };
 
 typedef struct
@@ -533,9 +542,9 @@ struct ipcmd_t
   int connection_error;
   pid_t pid;
   pid_t pids[YPSPUR_MAX_SOCKET];
-  int (*send)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  int (*recv)(struct ipcmd_t *ipcmd, YPSpur_msg *data);
-  void (*flush)(struct ipcmd_t *ipcmd);
+  int (*send)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  int (*recv)(struct ipcmd_t* ipcmd, YPSpur_msg* data);
+  void (*flush)(struct ipcmd_t* ipcmd);
 };
 
 #define YPSPUR_MSQ_KEY 0x7045

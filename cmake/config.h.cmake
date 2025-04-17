@@ -11,10 +11,4 @@
 
 #cmakedefine YP_PARAMS_DIR "@YP_PARAMS_DIR@"
 
-#cmakedefine HAVE_SSM @HAVE_SSM@
-
-#cmakedefine HAVE_LONGJMP @HAVE_LONGJMP@
-
-#cmakedefine HAVE_SIGLONGJMP @HAVE_SIGLONGJMP@
-
 #endif

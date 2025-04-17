@@ -27,7 +27,7 @@
 #include <ypparam.h>
 #include <ypspur.h>
 
-typedef struct _odometry *OdometryPtr;
+typedef struct _odometry* OdometryPtr;
 typedef struct _odometry
 {
   double x;
@@ -48,7 +48,7 @@ typedef struct _odometry
   int packet_lost_last;
 } Odometry;
 
-typedef struct _error_state *ErrorStatePtr;
+typedef struct _error_state* ErrorStatePtr;
 typedef struct _error_state
 {
   YPSpur_shvel_error_state state[YP_PARAM_MAX_MOTOR_NUM];
@@ -57,12 +57,12 @@ typedef struct _error_state
 
 double time_estimate(int readnum);
 void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm);
-void cstrans_xy(YPSpur_cs src, YPSpur_cs dest, double *x, double *y, double *theta);
-void odometry(OdometryPtr xp, short *cnt, short *pwm, double dt, double time);
+void cstrans_xy(YPSpur_cs src, YPSpur_cs dest, double* x, double* y, double* theta);
+void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time);
 void process_int(
     OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time);
 void odm_logging(OdometryPtr, double, double);
-int odm_read(OdometryPtr odm, double *v, double *w);
+int odm_read(OdometryPtr odm, double* v, double* w);
 void cs_odometry(YPSpur_cs cs, OdometryPtr dst_odm);
 void init_odometry(void);
 void init_coordinate_systems(void);

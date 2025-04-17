@@ -44,20 +44,20 @@ int OdometrySSM_init(void)
 }
 
 /* 線形補間で位置取得 */
-int SSM_get_pos_GL_time(double time, double *x, double *y, double *theta)
+int SSM_get_pos_GL_time(double time, double* x, double* y, double* theta)
 {
   Spur_Odometry odm1, odm2;
   int tid, tid2;
   double time1, time2;
   double rate;
 
-  tid = readSSM_time(odm_gl_sid, (char *)&odm1, time, &time1);
-  tid2 = readSSM(odm_gl_sid, (char *)&odm2, &time2, tid + 1);
+  tid = readSSM_time(odm_gl_sid, (char*)&odm1, time, &time1);
+  tid2 = readSSM(odm_gl_sid, (char*)&odm2, &time2, tid + 1);
   if (tid2 < 0)
   { /* 次のがなければ前のでなんとか。 */
     time2 = time1;
     odm2 = odm1;
-    tid = readSSM(odm_gl_sid, (char *)&odm1, &time1, tid - 1);
+    tid = readSSM(odm_gl_sid, (char*)&odm1, &time1, tid - 1);
   }
   if (fabs(time2 - time1) < 0.000001)
     return 0;
@@ -83,20 +83,20 @@ int SSM_get_pos_GL_time(double time, double *x, double *y, double *theta)
 }
 
 /* 線形補間で位置取得 */
-int SSM_get_pos_BS_time(double time, double *x, double *y, double *theta)
+int SSM_get_pos_BS_time(double time, double* x, double* y, double* theta)
 {
   Spur_Odometry odm1, odm2;
   int tid, tid2;
   double time1, time2;
   double rate;
 
-  tid = readSSM_time(odm_bs_sid, (char *)&odm1, time, &time1);
-  tid2 = readSSM(odm_bs_sid, (char *)&odm2, &time2, tid + 1);
+  tid = readSSM_time(odm_bs_sid, (char*)&odm1, time, &time1);
+  tid2 = readSSM(odm_bs_sid, (char*)&odm2, &time2, tid + 1);
   if (tid2 < 0)
   { /* 次のがなければ前のでなんとか。 */
     time2 = time1;
     odm2 = odm1;
-    tid = readSSM(odm_bs_sid, (char *)&odm1, &time1, tid - 1);
+    tid = readSSM(odm_bs_sid, (char*)&odm1, &time1, tid - 1);
   }
   if (fabs(time2 - time1) < 0.000001)
     return 0;
@@ -122,13 +122,13 @@ int SSM_get_pos_BS_time(double time, double *x, double *y, double *theta)
 }
 
 /* */
-double SSM_get_pos_GL(double *x, double *y, double *theta)
+double SSM_get_pos_GL(double* x, double* y, double* theta)
 {
   Spur_Odometry odm1;
   int tid;
   double time1;
 
-  tid = readSSM(odm_gl_sid, (char *)&odm1, &time1, -1);
+  tid = readSSM(odm_gl_sid, (char*)&odm1, &time1, -1);
   if (tid < 0)
     return -1.0;
   *x = odm1.x;
@@ -139,13 +139,13 @@ double SSM_get_pos_GL(double *x, double *y, double *theta)
 }
 
 /* */
-double SSM_get_pos_BS(double *x, double *y, double *theta)
+double SSM_get_pos_BS(double* x, double* y, double* theta)
 {
   Spur_Odometry odm1;
   int tid;
   double time1;
 
-  tid = readSSM(odm_bs_sid, (char *)&odm1, &time1, -1);
+  tid = readSSM(odm_bs_sid, (char*)&odm1, &time1, -1);
   if (tid < 0)
     return -1.0;
 
@@ -157,13 +157,13 @@ double SSM_get_pos_BS(double *x, double *y, double *theta)
 }
 
 /* */
-double SSM_get_vel(double *v, double *w)
+double SSM_get_vel(double* v, double* w)
 {
   Spur_Odometry odm1;
   int tid;
   double time1;
 
-  tid = readSSM(odm_bs_sid, (char *)&odm1, &time1, -1);
+  tid = readSSM(odm_bs_sid, (char*)&odm1, &time1, -1);
   if (tid < 0)
     return -1.0;
 

@@ -135,7 +135,7 @@ void escape_road(const int enable)
 }
 
 /* main */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   pthread_t command_thread;
   pthread_t control_thread;
@@ -226,11 +226,12 @@ int main(int argc, char *argv[])
 
   fflush(stderr);
 
+  int* control_thread_status = NULL;
   command_thread_en = 0;
   command_thread_en = 0;
   do
   {
-    FILE *temp_paramfile = NULL;
+    FILE* temp_paramfile = NULL;
     quit = 0;
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
@@ -486,15 +487,9 @@ int main(int argc, char *argv[])
     init_command_thread(&command_thread);
     command_thread_en = 1;
 
-    if (!(option(OPTION_WITHOUT_DEVICE)))
-    {
-      init_control_thread(&control_thread);
-      control_thread_en = 1;
-    }
-    else
-    {
-      control_thread_en = 0;
-    }
+    init_control_thread(&control_thread);
+    control_thread_en = 1;
+
     if (option(OPTION_UPDATE_PARAM))
     {
       yprintf(OUTPUT_LV_WARNING, "==================== Warning! ====================\n");
@@ -532,8 +527,10 @@ int main(int argc, char *argv[])
       }
       else
       {
-        while (1)
-          yp_usleep(1000000);
+        // Clear control thread enable flag to avoid multiple join on signal exit.
+        control_thread_en = 0;
+        // Wait control thread instead of odometry receive loop on simuation mode.
+        pthread_join(control_thread, (void**)&control_thread_status);
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }
@@ -549,7 +546,7 @@ int main(int argc, char *argv[])
     if (control_thread_en)
     {
       pthread_cancel(control_thread);
-      pthread_join(control_thread, NULL);
+      pthread_join(control_thread, (void**)&control_thread_status);
       control_thread_en = 0;
     }
     if (command_thread_en)
@@ -559,7 +556,7 @@ int main(int argc, char *argv[])
       command_thread_en = 0;
     }
 
-    if (option(OPTION_RECONNECT) && quit == 0)
+    if (option(OPTION_RECONNECT) && quit == 0 && control_thread_status == NULL)
     {
       init_spur_command();
       yp_usleep(500000);
@@ -576,7 +573,8 @@ int main(int argc, char *argv[])
       continue;
     }
     break;
-  } while (1);
+  }
+  while (1);
 
   if (!(option(OPTION_WITHOUT_DEVICE)))
     serial_close();
@@ -589,6 +587,11 @@ int main(int argc, char *argv[])
 
   yp_usleep(200000);
   fflush(stderr);
+
+  if (control_thread_status != NULL && control_thread_status != PTHREAD_CANCELED)
+  {
+    return *control_thread_status;
+  }
 
   return (quit ? EXIT_SUCCESS : EXIT_FAILURE);
 }

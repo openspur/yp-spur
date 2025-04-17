@@ -30,8 +30,8 @@ extern "C"
 {
 #endif
 
-int encode(const unsigned char *src, int len, unsigned char *dst, int buf_max);
-int decode(const unsigned char *src, int len, unsigned char *dst, int buf_max);
+int encode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
+int decode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
 
 #ifdef __cplusplus
 }

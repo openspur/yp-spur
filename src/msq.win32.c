@@ -35,7 +35,7 @@
 #include <tchar.h>
 
 HANDLE g_shm = NULL;
-void *g_shm_data;
+void* g_shm_data;
 HANDLE g_mutex = NULL;
 
 int msgget(key_t key, int msgflg)
@@ -45,13 +45,13 @@ int msgget(key_t key, int msgflg)
   _stprintf(name, "MessageQueueShm%d", (int)key);
   g_shm = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 8192, name);
 
-  g_shm_data = (void *)MapViewOfFile(g_shm, FILE_MAP_ALL_ACCESS, 0, 0, 8192);
+  g_shm_data = (void*)MapViewOfFile(g_shm, FILE_MAP_ALL_ACCESS, 0, 0, 8192);
 
   _stprintf(name, "MessageQueueMutex%d", (int)key);
   if (msgflg & IPC_CREAT)
   {
     g_mutex = CreateMutex(NULL, FALSE, name);
-    *((int32_t *)g_shm_data) = 0;
+    *((int32_t*)g_shm_data) = 0;
   }
   else
   {
@@ -65,9 +65,9 @@ int msgget(key_t key, int msgflg)
   return 1;
 }
 
-int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg)
+int msgsnd(int msqid, const void* msgp, size_t msgsz, int msgflg)
 {
-  char *pos;
+  char* pos;
 
   if (WaitForSingleObject(g_mutex, INFINITE) == WAIT_FAILED)
   {
@@ -78,37 +78,37 @@ int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg)
 
   msgsz += sizeof(long);  // add size of msg_type
 
-  pos = (char *)g_shm_data;
+  pos = (char*)g_shm_data;
   while (1)
   {
     int32_t size;
 
-    size = *(int32_t *)pos;
+    size = *(int32_t*)pos;
     if (size == 0)
       break;
 
     pos += sizeof(int32_t) + size;
   }
 
-  if ((char *)pos + msgsz + sizeof(int32_t) - (char *)g_shm_data > 8192)
+  if ((char*)pos + msgsz + sizeof(int32_t) - (char*)g_shm_data > 8192)
     return 0;
 
-  *((int32_t *)pos) = (int32_t)msgsz;
+  *((int32_t*)pos) = (int32_t)msgsz;
   pos += sizeof(int32_t);
   memcpy(pos, msgp, msgsz);
   pos += msgsz;
-  *((int32_t *)pos) = 0;
+  *((int32_t*)pos) = 0;
 
   ReleaseMutex(g_mutex);
 
   return 1;
 }
 
-ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg)
+ssize_t msgrcv(int msqid, void* msgp, size_t msgsz, long msgtyp, int msgflg)
 {
-  char *pos;
-  char *pos_before;
-  char *pos_target;
+  char* pos;
+  char* pos_before;
+  char* pos_target;
   int32_t readsize;
 
   msgsz += sizeof(long);  // add size of msg_type
@@ -123,19 +123,19 @@ ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg)
       return -1;
     }
 
-    pos = (char *)g_shm_data;
+    pos = (char*)g_shm_data;
     pos_target = NULL;
     while (1)
     {
       int32_t size;
-      int32_t *ptype;
+      int32_t* ptype;
 
-      size = *(int32_t *)pos;
+      size = *(int32_t*)pos;
       if (size == 0)
         break;
 
       pos_before = pos;
-      ptype = (int32_t *)(pos_before + sizeof(int32_t));
+      ptype = (int32_t*)(pos_before + sizeof(int32_t));
       if (((*ptype == msgtyp && msgtyp > 0) || (*ptype <= -msgtyp && msgtyp < 0)) && !pos_target)
       {
         pos_target = pos_before;
@@ -144,18 +144,18 @@ ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg)
     }
     if (pos_target)
     {
-      char *pos_next;
+      char* pos_next;
       int32_t sizeleft;
 
-      if (*((int32_t *)pos_target) < msgsz)
+      if (*((int32_t*)pos_target) < msgsz)
       {
-        readsize = *((int32_t *)pos_target);
+        readsize = *((int32_t*)pos_target);
       }
       else
       {
         readsize = msgsz;
       }
-      pos_next = pos_target + sizeof(int32_t) + *((int32_t *)pos_target);
+      pos_next = pos_target + sizeof(int32_t) + *((int32_t*)pos_target);
       sizeleft = pos - pos_next + 1;
       memcpy(msgp, pos_target + sizeof(int32_t), readsize);
       memcpy(pos_target, pos_next, sizeleft);
@@ -176,7 +176,7 @@ ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg)
   return readsize;
 }
 
-int msgctl(int msqid, int cmd, struct msqid_ds *buf)
+int msgctl(int msqid, int cmd, struct msqid_ds* buf)
 {
   switch (cmd)
   {

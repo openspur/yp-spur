@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/* 
+/*
  * YP-Spurとの通信ライブラリ複数デバイス対応版 Communication Library for YP-Spur
  */
 
@@ -40,12 +40,12 @@
 #include <param.h>
 
 /* エラー確認 */
-int YP_md_get_error_state(YPSpur *spur)
+int YP_md_get_error_state(YPSpur* spur)
 {
   return spur->dev.connection_error;
 }
 
-double YP_md_get_device_error_state(YPSpur *spur, int id, int *error_state)
+double YP_md_get_device_error_state(YPSpur* spur, int id, int* error_state)
 {
   YPSpur_msg msg;
   int len;
@@ -78,7 +78,7 @@ double YP_md_get_device_error_state(YPSpur *spur, int id, int *error_state)
 }
 
 /* coordinatorとのメッセージ通信を開始する */
-int YPSpur_md_initex(YPSpur *spur, int msq_key)
+int YPSpur_md_initex(YPSpur* spur, int msq_key)
 {
   /* メッセージ・キューのオープン */
   if (ipcmd_open_msq(&spur->dev, msq_key, 0) < 0)
@@ -91,7 +91,7 @@ int YPSpur_md_initex(YPSpur *spur, int msq_key)
   return 1;
 }
 
-int YPSpur_md_init_socket(YPSpur *spur, char *ip, int port)
+int YPSpur_md_init_socket(YPSpur* spur, char* ip, int port)
 {
   /* メッセージ・キューのオープン */
   if (ipcmd_open_tcp(&spur->dev, ip, port) < 0)
@@ -105,13 +105,13 @@ int YPSpur_md_init_socket(YPSpur *spur, char *ip, int port)
 }
 
 /* coordinatorとのメッセージ通信を開始する */
-int YPSpur_md_init(YPSpur *spur)
+int YPSpur_md_init(YPSpur* spur)
 {
   return YPSpur_md_initex(spur, YPSPUR_MSQ_KEY);
 }
 
 /* 直線追従 */
-int YPSpur_md_line(YPSpur *spur, int cs, double x, double y, double theta)
+int YPSpur_md_line(YPSpur* spur, int cs, double x, double y, double theta)
 {
   YPSpur_msg msg;
 
@@ -133,7 +133,7 @@ int YPSpur_md_line(YPSpur *spur, int cs, double x, double y, double theta)
 }
 
 /* 直線追従 */
-int YPSpur_md_stop_line(YPSpur *spur, int cs, double x, double y, double theta)
+int YPSpur_md_stop_line(YPSpur* spur, int cs, double x, double y, double theta)
 {
   YPSpur_msg msg;
 
@@ -155,7 +155,7 @@ int YPSpur_md_stop_line(YPSpur *spur, int cs, double x, double y, double theta)
 }
 
 /* 円弧追従 */
-int YPSpur_md_circle(YPSpur *spur, int cs, double x, double y, double r)
+int YPSpur_md_circle(YPSpur* spur, int cs, double x, double y, double r)
 {
   YPSpur_msg msg;
 
@@ -177,7 +177,7 @@ int YPSpur_md_circle(YPSpur *spur, int cs, double x, double y, double r)
 }
 
 /* 旋回 */
-int YPSpur_md_spin(YPSpur *spur, int cs, double theta)
+int YPSpur_md_spin(YPSpur* spur, int cs, double theta)
 {
   YPSpur_msg msg;
 
@@ -197,7 +197,7 @@ int YPSpur_md_spin(YPSpur *spur, int cs, double theta)
 }
 
 /* 方位 */
-int YPSpur_md_orient(YPSpur *spur, int cs, double theta)
+int YPSpur_md_orient(YPSpur* spur, int cs, double theta)
 {
   YPSpur_msg msg;
 
@@ -217,7 +217,7 @@ int YPSpur_md_orient(YPSpur *spur, int cs, double theta)
 }
 
 /* 急ブレーキ */
-int YPSpur_md_stop(YPSpur *spur)
+int YPSpur_md_stop(YPSpur* spur)
 {
   YPSpur_msg msg;
 
@@ -236,7 +236,7 @@ int YPSpur_md_stop(YPSpur *spur)
 }
 
 /* 緊急停止 */
-int YPSpur_md_freeze(YPSpur *spur)
+int YPSpur_md_freeze(YPSpur* spur)
 {
   YPSpur_msg msg;
 
@@ -255,7 +255,7 @@ int YPSpur_md_freeze(YPSpur *spur)
 }
 
 /* 緊急停止解除 */
-int YPSpur_md_unfreeze(YPSpur *spur)
+int YPSpur_md_unfreeze(YPSpur* spur)
 {
   YPSpur_msg msg;
 
@@ -274,7 +274,7 @@ int YPSpur_md_unfreeze(YPSpur *spur)
 }
 
 /* ソフトウェア補助フリーモード */
-int YPSpur_md_free(YPSpur *spur)
+int YPSpur_md_free(YPSpur* spur)
 {
   YPSpur_msg msg;
 
@@ -293,7 +293,7 @@ int YPSpur_md_free(YPSpur *spur)
 }
 
 /* 制御なしフリーモード */
-int YP_md_openfree(YPSpur *spur)
+int YP_md_openfree(YPSpur* spur)
 {
   YPSpur_msg msg;
 
@@ -312,7 +312,7 @@ int YP_md_openfree(YPSpur *spur)
 }
 
 /* 位置指定 */
-int YPSpur_md_set_pos(YPSpur *spur, int cs, double x, double y, double theta)
+int YPSpur_md_set_pos(YPSpur* spur, int cs, double x, double y, double theta)
 {
   YPSpur_msg msg;
 
@@ -334,7 +334,7 @@ int YPSpur_md_set_pos(YPSpur *spur, int cs, double x, double y, double theta)
 }
 
 /* 位置指定 */
-int YPSpur_md_adjust_pos(YPSpur *spur, int cs, double x, double y, double theta)
+int YPSpur_md_adjust_pos(YPSpur* spur, int cs, double x, double y, double theta)
 {
   YPSpur_msg msg;
 
@@ -356,7 +356,7 @@ int YPSpur_md_adjust_pos(YPSpur *spur, int cs, double x, double y, double theta)
 }
 
 /* 速度指定 */
-int YPSpur_md_set_vel(YPSpur *spur, double v)
+int YPSpur_md_set_vel(YPSpur* spur, double v)
 {
   YPSpur_msg msg;
 
@@ -376,7 +376,7 @@ int YPSpur_md_set_vel(YPSpur *spur, double v)
 }
 
 /* 角速度指定 */
-int YPSpur_md_set_angvel(YPSpur *spur, double w)
+int YPSpur_md_set_angvel(YPSpur* spur, double w)
 {
   YPSpur_msg msg;
 
@@ -396,7 +396,7 @@ int YPSpur_md_set_angvel(YPSpur *spur, double w)
 }
 
 /* 速度指定 */
-int YPSpur_md_set_accel(YPSpur *spur, double dv)
+int YPSpur_md_set_accel(YPSpur* spur, double dv)
 {
   YPSpur_msg msg;
 
@@ -416,7 +416,7 @@ int YPSpur_md_set_accel(YPSpur *spur, double dv)
 }
 
 /* 角速度指定 */
-int YPSpur_md_set_angaccel(YPSpur *spur, double dw)
+int YPSpur_md_set_angaccel(YPSpur* spur, double dw)
 {
   YPSpur_msg msg;
 
@@ -436,7 +436,7 @@ int YPSpur_md_set_angaccel(YPSpur *spur, double dw)
 }
 
 /* 位置取得 */
-double YPSpur_md_get_pos(YPSpur *spur, int cs, double *x, double *y, double *theta)
+double YPSpur_md_get_pos(YPSpur* spur, int cs, double* x, double* y, double* theta)
 {
   YPSpur_msg msg;
   int len;
@@ -470,7 +470,7 @@ double YPSpur_md_get_pos(YPSpur *spur, int cs, double *x, double *y, double *the
 }
 
 /* 速度取得 */
-double YPSpur_md_get_vel(YPSpur *spur, double *v, double *w)
+double YPSpur_md_get_vel(YPSpur* spur, double* v, double* w)
 {
   YPSpur_msg msg;
   int len;
@@ -503,7 +503,7 @@ double YPSpur_md_get_vel(YPSpur *spur, double *v, double *w)
 }
 
 /* 速度取得 */
-double YP_md_get_vref(YPSpur *spur, double *v, double *w)
+double YP_md_get_vref(YPSpur* spur, double* v, double* w)
 {
   YPSpur_msg msg;
   int len;
@@ -536,7 +536,7 @@ double YP_md_get_vref(YPSpur *spur, double *v, double *w)
 }
 
 /* 速度取得 */
-double YP_md_get_wheel_vref(YPSpur *spur, double *wr, double *wl)
+double YP_md_get_wheel_vref(YPSpur* spur, double* wr, double* wl)
 {
   YPSpur_msg msg;
   int len;
@@ -569,7 +569,7 @@ double YP_md_get_wheel_vref(YPSpur *spur, double *wr, double *wl)
 }
 
 /* 速度取得 */
-double YP_md_get_wheel_vel(YPSpur *spur, double *wr, double *wl)
+double YP_md_get_wheel_vel(YPSpur* spur, double* wr, double* wl)
 {
   YPSpur_msg msg;
   int len;
@@ -602,7 +602,7 @@ double YP_md_get_wheel_vel(YPSpur *spur, double *wr, double *wl)
 }
 
 /* 角度取得 */
-double YP_md_get_wheel_ang(YPSpur *spur, double *theta_r, double *theta_l)
+double YP_md_get_wheel_ang(YPSpur* spur, double* theta_r, double* theta_l)
 {
   YPSpur_msg msg;
   int len;
@@ -635,7 +635,7 @@ double YP_md_get_wheel_ang(YPSpur *spur, double *theta_r, double *theta_l)
 }
 
 /* トルク取得 */
-double YP_md_get_wheel_torque(YPSpur *spur, double *torque_r, double *torque_l)
+double YP_md_get_wheel_torque(YPSpur* spur, double* torque_r, double* torque_l)
 {
   YPSpur_msg msg;
   int len;
@@ -668,7 +668,7 @@ double YP_md_get_wheel_torque(YPSpur *spur, double *torque_r, double *torque_l)
 }
 
 /* 力取得 */
-double YPSpur_md_get_force(YPSpur *spur, double *trans, double *angular)
+double YPSpur_md_get_force(YPSpur* spur, double* trans, double* angular)
 {
   YPSpur_msg msg;
   int len;
@@ -701,7 +701,7 @@ double YPSpur_md_get_force(YPSpur *spur, double *trans, double *angular)
 }
 
 /* 緊急停止状態取得 */
-int YPSpur_md_isfreeze(YPSpur *spur)
+int YPSpur_md_isfreeze(YPSpur* spur)
 {
   YPSpur_msg msg;
   int len;
@@ -732,7 +732,7 @@ int YPSpur_md_isfreeze(YPSpur *spur)
 }
 
 /* 直接速度入力 */
-int YPSpur_md_vel(YPSpur *spur, double v, double w)
+int YPSpur_md_vel(YPSpur* spur, double v, double w)
 {
   YPSpur_msg msg;
 
@@ -753,7 +753,7 @@ int YPSpur_md_vel(YPSpur *spur, double v, double w)
 }
 
 /* 内部パラメータの変更 */
-int YP_md_set_parameter(YPSpur *spur, int param_id, double value)
+int YP_md_set_parameter(YPSpur* spur, int param_id, double value)
 {
   YPSpur_msg msg;
 
@@ -775,7 +775,7 @@ int YP_md_set_parameter(YPSpur *spur, int param_id, double value)
 }
 
 /* 内部パラメータの変更 */
-int YP_md_set_parameter_array(YPSpur *spur, int param_id, double *value)
+int YP_md_set_parameter_array(YPSpur* spur, int param_id, double* value)
 {
   YPSpur_msg msg;
 
@@ -797,7 +797,7 @@ int YP_md_set_parameter_array(YPSpur *spur, int param_id, double *value)
 }
 
 /* 内部パラメータの取得 */
-int YP_md_get_parameter(YPSpur *spur, int param_id, double *value)
+int YP_md_get_parameter(YPSpur* spur, int param_id, double* value)
 {
   YPSpur_msg msg;
   int len;
@@ -826,7 +826,7 @@ int YP_md_get_parameter(YPSpur *spur, int param_id, double *value)
   return msg.cs;
 }
 
-int YP_md_get_parameter_array(YPSpur *spur, int param_id, double *value)
+int YP_md_get_parameter_array(YPSpur* spur, int param_id, double* value)
 {
   YPSpur_msg msg;
   int len;
@@ -857,7 +857,7 @@ int YP_md_get_parameter_array(YPSpur *spur, int param_id, double *value)
 }
 
 /* 内部状態の変更 */
-int YP_md_set_control_state(YPSpur *spur, int control_id, int state)
+int YP_md_set_control_state(YPSpur* spur, int control_id, int state)
 {
   YPSpur_msg msg;
 
@@ -878,7 +878,7 @@ int YP_md_set_control_state(YPSpur *spur, int control_id, int state)
 }
 
 /* 重力補償用地面の傾き指定 */
-int YPSpur_md_tilt(YPSpur *spur, int cs, double dir, double tilt)
+int YPSpur_md_tilt(YPSpur* spur, int cs, double dir, double tilt)
 {
   YPSpur_msg msg;
 
@@ -900,7 +900,7 @@ int YPSpur_md_tilt(YPSpur *spur, int cs, double dir, double tilt)
 }
 
 /* 位置判定 */
-int YPSpur_md_near_pos(YPSpur *spur, int cs, double x, double y, double r)
+int YPSpur_md_near_pos(YPSpur* spur, int cs, double x, double y, double r)
 {
   YPSpur_msg msg;
   int len;
@@ -932,7 +932,7 @@ int YPSpur_md_near_pos(YPSpur *spur, int cs, double x, double y, double r)
 }
 
 /* 角度判定 */
-int YPSpur_md_near_ang(YPSpur *spur, int cs, double th, double d)
+int YPSpur_md_near_ang(YPSpur* spur, int cs, double th, double d)
 {
   YPSpur_msg msg;
   int len;
@@ -963,7 +963,7 @@ int YPSpur_md_near_ang(YPSpur *spur, int cs, double th, double d)
 }
 
 /* 領域判定 */
-int YPSpur_md_over_line(YPSpur *spur, int cs, double x, double y, double theta)
+int YPSpur_md_over_line(YPSpur* spur, int cs, double x, double y, double theta)
 {
   YPSpur_msg msg;
   int len;
@@ -995,7 +995,7 @@ int YPSpur_md_over_line(YPSpur *spur, int cs, double x, double y, double theta)
 }
 
 /* アナログ値取得 */
-int YP_md_get_ad_value(YPSpur *spur, int num)
+int YP_md_get_ad_value(YPSpur* spur, int num)
 {
   YPSpur_msg msg;
   int len;
@@ -1026,7 +1026,7 @@ int YP_md_get_ad_value(YPSpur *spur, int num)
   return ret;
 }
 
-int YP_md_set_io_dir(YPSpur *spur, unsigned char dir)
+int YP_md_set_io_dir(YPSpur* spur, unsigned char dir)
 {
   YPSpur_msg msg;
 
@@ -1045,7 +1045,7 @@ int YP_md_set_io_dir(YPSpur *spur, unsigned char dir)
   return 1;
 }
 
-int YP_md_set_io_data(YPSpur *spur, unsigned char data)
+int YP_md_set_io_data(YPSpur* spur, unsigned char data)
 {
   YPSpur_msg msg;
 
@@ -1065,7 +1065,7 @@ int YP_md_set_io_data(YPSpur *spur, unsigned char data)
 }
 
 /* 直接タイヤ回転速度入力 */
-int YP_md_wheel_vel(YPSpur *spur, double r, double l)
+int YP_md_wheel_vel(YPSpur* spur, double r, double l)
 {
   YPSpur_msg msg;
 
@@ -1085,7 +1085,7 @@ int YP_md_wheel_vel(YPSpur *spur, double r, double l)
   return 1;
 }
 
-int YP_md_wheel_torque(YPSpur *spur, double r, double l)
+int YP_md_wheel_torque(YPSpur* spur, double r, double l)
 {
   YPSpur_msg msg;
 
@@ -1105,7 +1105,7 @@ int YP_md_wheel_torque(YPSpur *spur, double r, double l)
   return 1;
 }
 
-int YP_md_set_wheel_vel(YPSpur *spur, double r, double l)
+int YP_md_set_wheel_vel(YPSpur* spur, double r, double l)
 {
   YPSpur_msg msg;
 
@@ -1125,7 +1125,7 @@ int YP_md_set_wheel_vel(YPSpur *spur, double r, double l)
   return 1;
 }
 
-int YP_md_set_wheel_accel(YPSpur *spur, double r, double l)
+int YP_md_set_wheel_accel(YPSpur* spur, double r, double l)
 {
   YPSpur_msg msg;
 
@@ -1145,7 +1145,7 @@ int YP_md_set_wheel_accel(YPSpur *spur, double r, double l)
   return 1;
 }
 
-int YP_md_wheel_ang(YPSpur *spur, double r, double l)
+int YP_md_wheel_ang(YPSpur* spur, double r, double l)
 {
   YPSpur_msg msg;
 
@@ -1165,7 +1165,7 @@ int YP_md_wheel_ang(YPSpur *spur, double r, double l)
   return 1;
 }
 
-int YP_md_joint_torque(YPSpur *spur, int id, double t)
+int YP_md_joint_torque(YPSpur* spur, int id, double t)
 {
   YPSpur_msg msg;
 
@@ -1185,7 +1185,7 @@ int YP_md_joint_torque(YPSpur *spur, int id, double t)
   return 1;
 }
 
-int YP_md_joint_vel(YPSpur *spur, int id, double v)
+int YP_md_joint_vel(YPSpur* spur, int id, double v)
 {
   YPSpur_msg msg;
 
@@ -1205,7 +1205,7 @@ int YP_md_joint_vel(YPSpur *spur, int id, double v)
   return 1;
 }
 
-int YP_md_joint_ang(YPSpur *spur, int id, double a)
+int YP_md_joint_ang(YPSpur* spur, int id, double a)
 {
   YPSpur_msg msg;
 
@@ -1225,7 +1225,7 @@ int YP_md_joint_ang(YPSpur *spur, int id, double a)
   return 1;
 }
 
-int YP_md_joint_ang_vel(YPSpur *spur, int id, double a, double v)
+int YP_md_joint_ang_vel(YPSpur* spur, int id, double a, double v)
 {
   YPSpur_msg msg;
 
@@ -1246,7 +1246,7 @@ int YP_md_joint_ang_vel(YPSpur *spur, int id, double a, double v)
   return 1;
 }
 
-int YP_md_set_joint_accel(YPSpur *spur, int id, double a)
+int YP_md_set_joint_accel(YPSpur* spur, int id, double a)
 {
   YPSpur_msg msg;
 
@@ -1266,7 +1266,7 @@ int YP_md_set_joint_accel(YPSpur *spur, int id, double a)
   return 1;
 }
 
-int YP_md_set_joint_vel(YPSpur *spur, int id, double v)
+int YP_md_set_joint_vel(YPSpur* spur, int id, double v)
 {
   YPSpur_msg msg;
 
@@ -1286,7 +1286,7 @@ int YP_md_set_joint_vel(YPSpur *spur, int id, double v)
   return 1;
 }
 
-double YP_md_get_joint_vel(YPSpur *spur, int id, double *v)
+double YP_md_get_joint_vel(YPSpur* spur, int id, double* v)
 {
   YPSpur_msg msg;
   int len;
@@ -1317,7 +1317,7 @@ double YP_md_get_joint_vel(YPSpur *spur, int id, double *v)
   return time;
 }
 
-double YP_md_get_joint_vref(YPSpur *spur, int id, double *v)
+double YP_md_get_joint_vref(YPSpur* spur, int id, double* v)
 {
   YPSpur_msg msg;
   int len;
@@ -1348,7 +1348,7 @@ double YP_md_get_joint_vref(YPSpur *spur, int id, double *v)
   return time;
 }
 
-double YP_md_get_joint_ang(YPSpur *spur, int id, double *a)
+double YP_md_get_joint_ang(YPSpur* spur, int id, double* a)
 {
   YPSpur_msg msg;
   int len;
@@ -1379,7 +1379,7 @@ double YP_md_get_joint_ang(YPSpur *spur, int id, double *a)
   return time;
 }
 
-double YP_md_get_joint_torque(YPSpur *spur, int id, double *t)
+double YP_md_get_joint_torque(YPSpur* spur, int id, double* t)
 {
   YPSpur_msg msg;
   int len;
@@ -1410,7 +1410,7 @@ double YP_md_get_joint_torque(YPSpur *spur, int id, double *t)
   return time;
 }
 
-void YP_md_request_device_dump(YPSpur *spur, int id, int block)
+void YP_md_request_device_dump(YPSpur* spur, int id, int block)
 {
   YPSpur_msg msg;
   int len;

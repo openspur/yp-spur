@@ -30,13 +30,13 @@
 #include <ypspur.h>
 #include <utility.h>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   hook_pre_global();
   if (argc > 1)
   {
     char ip[64];
-    char *p;
+    char* p;
     int port;
 
     strncpy(ip, argv[1], 64);

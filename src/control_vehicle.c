@@ -312,7 +312,7 @@ void wheel_angle(OdometryPtr odm, SpurUserParamsPtr spur)
   }
 }
 
-void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double *torque)
+void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque)
 {
   int i;
   ParametersPtr param;
@@ -452,9 +452,54 @@ double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
   return tilt;
 }
 
-void control_loop_cleanup(void *data)
+void control_loop_cleanup(void* data)
 {
+  int i;
+  ParametersPtr param = get_param_ptr();
+
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+  {
+    if (param->motor_enable[i])
+    {
+      parameter_set(PARAM_servo, i, SERVO_LEVEL_STOP);
+    }
+  }
+
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop stopped.\n");
+}
+
+void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur)
+{
+  const double dt = p(YP_PARAM_CONTROL_CYCLE, 0);
+  ParametersPtr param = get_param_ptr();
+  odm->time = get_time();
+
+  int i;
+  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+  {
+    if (!param->motor_enable[i])
+      continue;
+
+    switch (spur->wheel_mode[i])
+    {
+      case MOTOR_CONTROL_OPENFREE:
+      case MOTOR_CONTROL_FREE:
+        odm->wvel[i] = 0;
+        break;
+      default:
+        odm->wvel[i] = spur->wheel_vel_smooth[i];
+        odm->wang[i] += odm->wvel[i] * dt;
+        break;
+    }
+  }
+
+  odm->v = p(YP_PARAM_RADIUS, MOTOR_RIGHT) * odm->wvel[MOTOR_RIGHT] / 2.0 +
+           p(YP_PARAM_RADIUS, MOTOR_LEFT) * odm->wvel[MOTOR_LEFT] / 2.0;
+  odm->w = p(YP_PARAM_RADIUS, MOTOR_RIGHT) * odm->wvel[MOTOR_RIGHT] / p(YP_PARAM_TREAD, 0) -
+           p(YP_PARAM_RADIUS, MOTOR_LEFT) * odm->wvel[MOTOR_LEFT] / p(YP_PARAM_TREAD, 0);
+  odm->x = odm->x + odm->v * cos(odm->theta) * dt;
+  odm->y = odm->y + odm->v * sin(odm->theta) * dt;
+  odm->theta = odm->theta + odm->w * dt;
 }
 
 /* 20msごとの割り込みで軌跡追従制御処理を呼び出す */
@@ -469,41 +514,83 @@ void control_loop(void)
   yprintf(OUTPUT_LV_INFO, "Trajectory control loop started.\n");
   pthread_cleanup_push(control_loop_cleanup, NULL);
 
-#if defined(HAVE_LIBRT)  // clock_nanosleepが利用可能
+  double last_time = get_time();
+
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
   struct timespec request;
 
   if (clock_gettime(CLOCK_MONOTONIC, &request) == -1)
   {
-    yprintf(OUTPUT_LV_ERROR, "error on clock_gettime\n");
-    exit(0);
+    yprintf(OUTPUT_LV_ERROR, "Error on clock_gettime\n");
+    static int status = EXIT_FAILURE;
+    pthread_exit(&status);
   }
+  double last_monotonic_time = request.tv_sec + request.tv_nsec / 1000000000.0;
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
   while (1)
   {
-    request.tv_nsec += (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000000);
+    const double control_cycle = p(YP_PARAM_CONTROL_CYCLE, 0);
+
+#if defined(HAVE_CLOCK_NANOSLEEP)  // clock_nanosleepが利用可能
+    request.tv_nsec += control_cycle * 1000000000;
     request.tv_sec += request.tv_nsec / 1000000000;
     request.tv_nsec = request.tv_nsec % 1000000000;
 
     clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &request, 0);
-    coordinate_synchronize(odometry, spur);
-    run_control(*odometry, spur);
 
-    // スレッドの停止要求チェック
-    pthread_testcancel();
-  }
+    struct timespec current;
+    if (clock_gettime(CLOCK_MONOTONIC, &current) == -1)
+    {
+      yprintf(OUTPUT_LV_ERROR, "Error on clock_gettime\n");
+      static int status = EXIT_FAILURE;
+      pthread_exit(&status);
+    }
+    const double current_monotonic_time = current.tv_sec + current.tv_nsec / 1000000000.0;
+    const double expected_dt = current_monotonic_time - last_monotonic_time;
+    last_monotonic_time = current_monotonic_time;
 #else
-  int request;
-  request = (p(YP_PARAM_CONTROL_CYCLE, 0) * 1000000);
+    yp_usleep(control_cycle * 1000000);
 
-  while (1)
-  {
-    yp_usleep(request);
+    const double expected_dt = control_cycle;
+#endif  // defined(HAVE_CLOCK_NANOSLEEP)
+
+    if ((option(OPTION_EXIT_ON_TIME_JUMP)))
+    {
+      const double now = get_time();
+      const double dt = now - last_time;
+      const double dt_error = dt - expected_dt;
+      last_time = now;
+      if (dt < 0)
+      {
+        yprintf(
+            OUTPUT_LV_ERROR,
+            "Detected system time jump back, monotonic time diff: %0.5fs, system time diff: %0.5fs\n",
+            expected_dt, dt);
+        static int status = EXIT_FAILURE;
+        pthread_exit(&status);
+      }
+      if (dt_error < -p(YP_PARAM_MAX_TIME_JUMP_NEG, 0) || p(YP_PARAM_MAX_TIME_JUMP, 0) < dt_error)
+      {
+        yprintf(
+            OUTPUT_LV_ERROR,
+            "Detected system time jump: %0.5fs, monotonic time diff: %0.5fs, system time diff: %0.5fs\n",
+            dt_error, expected_dt, dt);
+        static int status = EXIT_FAILURE;
+        pthread_exit(&status);
+      }
+    }
+
     coordinate_synchronize(odometry, spur);
     run_control(*odometry, spur);
+
+    if ((option(OPTION_WITHOUT_DEVICE)))
+    {
+      simulate_control(odometry, spur);
+    }
 
     // スレッドの停止要求チェック
     pthread_testcancel();
   }
-#endif  // defined(HAVE_LIBRT)
   pthread_cleanup_pop(1);
 }
 
@@ -668,9 +755,9 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
 }
 
 /* すれっどの初期化 */
-void init_control_thread(pthread_t *thread)
+void init_control_thread(pthread_t* thread)
 {
-  if (pthread_create(thread, NULL, (void *)control_loop, NULL) != 0)
+  if (pthread_create(thread, NULL, (void*)control_loop, NULL) != 0)
   {
     yprintf(OUTPUT_LV_ERROR, "Can't create control_loop thread\n");
   }

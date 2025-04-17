@@ -25,7 +25,7 @@
 
 CSptr BS, GL, LC, LC2, LC3, LC4;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   double x, y, theta;
 

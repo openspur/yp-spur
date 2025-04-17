@@ -45,7 +45,7 @@
 #include <ypspur.h>
 #include <cartesian2d.h>
 
-void line_com(int cs, double *data, SpurUserParamsPtr spur)
+void line_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -61,7 +61,7 @@ void line_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->run_mode = RUN_LINEFOLLOW;
 }
 
-void stop_line_com(int cs, double *data, SpurUserParamsPtr spur)
+void stop_line_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -77,7 +77,7 @@ void stop_line_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->run_mode = RUN_STOP_LINE;
 }
 
-void circle_com(int cs, double *data, SpurUserParamsPtr spur)
+void circle_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -93,7 +93,7 @@ void circle_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->run_mode = RUN_CIRCLEFOLLOW;
 }
 
-void spin_com(int cs, double *data, SpurUserParamsPtr spur)
+void spin_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -107,7 +107,7 @@ void spin_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->run_mode = RUN_SPIN;
 }
 
-void orient_com(int cs, double *data, SpurUserParamsPtr spur)
+void orient_com(int cs, double* data, SpurUserParamsPtr spur)
 {
   double x, y, theta;
 
@@ -121,36 +121,36 @@ void orient_com(int cs, double *data, SpurUserParamsPtr spur)
   spur->run_mode = RUN_ORIENT;
 }
 
-void stop_com(double *data, SpurUserParamsPtr spur)
+void stop_com(double* data, SpurUserParamsPtr spur)
 {
   spur->run_mode = RUN_STOP;
 }
 
-void free_com(double *data, SpurUserParamsPtr spur)
+void free_com(double* data, SpurUserParamsPtr spur)
 {
   spur->run_mode = RUN_FREE;
 }
 
-void openfree_com(double *data, SpurUserParamsPtr spur)
+void openfree_com(double* data, SpurUserParamsPtr spur)
 {
   spur->run_mode = RUN_OPENFREE;
 }
 
-void vel_com(double *data, SpurUserParamsPtr spur)
+void vel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->vref = data[0];
   spur->wref = data[1];
   spur->run_mode = RUN_VEL;
 }
 
-void wheel_vel_com(double *data, SpurUserParamsPtr spur)
+void wheel_vel_com(double* data, SpurUserParamsPtr spur)
 {
   spur->wvelref[0] = data[0];
   spur->wvelref[1] = data[1];
   spur->run_mode = RUN_WHEEL_VEL;
 }
 
-void wheel_angle_com(double *data, SpurUserParamsPtr spur)
+void wheel_angle_com(double* data, SpurUserParamsPtr spur)
 {
   double r, l;
 

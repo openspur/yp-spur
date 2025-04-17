@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 set(_YPSPUR_MAJOR_VERSION 1)
-set(_YPSPUR_MINOR_VERSION 20)
-set(_YPSPUR_PATCH_VERSION 2)
+set(_YPSPUR_MINOR_VERSION 22)
+set(_YPSPUR_PATCH_VERSION 5)
 
 if(${CMAKE_MAJOR_VERSION} LESS 3)
 # DARN_IT: CMake 2 should be supported until April, 2019 (Ubuntu Trusty EOL)
@@ -67,6 +67,8 @@ endif(READLINE_FOUND)
 include(CheckFunctionExists)
 check_function_exists(longjmp HAVE_LONGJMP)
 check_function_exists(siglongjmp HAVE_SIGLONGJMP)
+check_function_exists(clock_nanosleep HAVE_CLOCK_NANOSLEEP)
+check_function_exists(nanosleep HAVE_NANOSLEEP)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/include/config.h
@@ -95,6 +97,7 @@ list(APPEND _ypspur_include_dirs
   )
 endif(READLINE_FOUND)
 
+
 # Static link options
 
 option(ENABLE_ALL_STATIC "Static link libgcc and libstdc++." OFF)
@@ -104,6 +107,43 @@ if(ENABLE_ALL_STATIC)
   set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc")
   set(TARGET_STATIC_POSTFIX "-static")
 endif(ENABLE_ALL_STATIC)
+
+
+# Compile flags
+
+if(CMAKE_VERSION VERSION_LESS "3.12")
+  if(HAVE_LONGJMP)
+    add_definitions(-DHAVE_LONGJMP)
+  endif()
+  if(HAVE_SIGLONGJMP)
+    add_definitions(-DHAVE_SIGLONGJMP)
+  endif()
+  if(HAVE_CLOCK_NANOSLEEP)
+    add_definitions(-DHAVE_CLOCK_NANOSLEEP)
+  endif()
+  if(HAVE_NANOSLEEP)
+    add_definitions(-DHAVE_NANOSLEEP)
+  endif()
+  if(HAVE_SSM)
+    add_definitions(-DHAVE_SSM)
+  endif()
+else()
+  if(HAVE_LONGJMP)
+    add_compile_definitions(HAVE_LONGJMP)
+  endif()
+  if(HAVE_SIGLONGJMP)
+    add_compile_definitions(HAVE_SIGLONGJMP)
+  endif()
+  if(HAVE_CLOCK_NANOSLEEP)
+    add_compile_definitions(HAVE_CLOCK_NANOSLEEP)
+  endif()
+  if(HAVE_NANOSLEEP)
+    add_compile_definitions(HAVE_NANOSLEEP)
+  endif()
+  if(HAVE_SSM)
+    add_compile_definitions(HAVE_SSM)
+  endif()
+endif()
 
 
 # Add subdirectories
@@ -139,6 +179,26 @@ if(GTEST_FOUND)
   )
 
   add_test(YPSpurParamTest param_load_test)
+
+  add_executable(e2e_test
+    test/e2e.cpp
+  )
+  add_dependencies(e2e_test
+    ypspur-coordinator
+    ypspur
+  )
+  target_link_libraries(e2e_test
+    ${GTEST_LIBRARIES}
+    ${THREAD_LIBRARIES}
+    ypspur
+  )
+  if(CMAKE_VERSION VERSION_LESS "3.1")
+    set_property(TARGET e2e_test PROPERTY COMPILE_OPTIONS "-std=c++11")
+  else()
+    set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
+  endif()
+
+  add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)
 
 

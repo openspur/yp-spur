@@ -78,19 +78,19 @@ find_package(GTest)
 
 # Set include dirs
 
-include_directories(
+set(_ypspur_include_dirs
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_BINARY_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/auxlib
   ${CMAKE_CURRENT_SOURCE_DIR}/auxlib/formula-calc/include
 )
 if(SSM_FOUND)
-  include_directories(
+  list(APPEND _ypspur_include_dirs
     ${SSM_INCLUDE_DIRS}
   )
 endif(SSM_FOUND)
 if(READLINE_FOUND)
-  include_directories(
+list(APPEND _ypspur_include_dirs
     ${READLINE_INCLUDE_DIRS}
   )
 endif(READLINE_FOUND)
@@ -133,6 +133,9 @@ if(GTEST_FOUND)
     ${THREAD_LIBRARIES}
     carte2d${TARGET_STATIC_POSTFIX}
     formula-calc${TARGET_STATIC_POSTFIX}
+  )
+  target_include_directories(param_load_test PRIVATE
+    ${_ypspur_include_dirs}
   )
 
   add_test(YPSpurParamTest param_load_test)
@@ -177,6 +180,10 @@ endif(SSM_FOUND)
 if(WIN32)
   target_link_libraries(ypspur-coordinator wsock32 ws2_32)
 endif(WIN32)
+target_include_directories(ypspur-coordinator PRIVATE
+  ${_ypspur_include_dirs}
+)
+
 
 add_executable(ypspur-free
   src/ypspur-free.c
@@ -184,14 +191,19 @@ add_executable(ypspur-free
 target_link_libraries(ypspur-free
   ypspur${TARGET_STATIC_POSTFIX}
 )
+target_include_directories(ypspur-free PRIVATE
+  ${_ypspur_include_dirs}
+)
 
 add_executable(ypspur-interpreter
   src/ypspur-interpreter.c
 )
-
 target_link_libraries(ypspur-interpreter
   ypspur${TARGET_STATIC_POSTFIX}
   ${READLINE_LIBRARIES}
+)
+target_include_directories(ypspur-interpreter PRIVATE
+  ${_ypspur_include_dirs}
 )
 
 
@@ -215,19 +227,27 @@ add_library(ypspur SHARED
   src/yprintf.c
   src/utility.c
 )
+target_include_directories(ypspur PUBLIC
+  "$<BUILD_INTERFACE:${_ypspur_include_dirs}>"
+  "$<INSTALL_INTERFACE:include>"
+)
+
 
 add_library(ypspur-comm SHARED
   src/communication.c
 )
-
 if(WIN32)
-  target_link_libraries(ypspur wsock32 ws2_32)
+  target_link_libraries(ypspur-comm wsock32 ws2_32)
 endif(WIN32)
-set_target_properties(ypspur PROPERTIES
+set_target_properties(ypspur-comm PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${YPSPUR_LIBRARY_VERSION}
   SOVERSION ${YPSPUR_LIBRARY_SOVERSION}
   PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
+)
+target_include_directories(ypspur-comm PUBLIC
+  "$<BUILD_INTERFACE:${_ypspur_include_dirs}>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 add_library(ypspur-static STATIC
@@ -244,6 +264,10 @@ endif(WIN32)
 set_target_properties(ypspur-static PROPERTIES
   OUTPUT_NAME "ypspur"
   PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
+)
+target_include_directories(ypspur-static PUBLIC
+  "$<BUILD_INTERFACE:${_ypspur_include_dirs}>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 add_library(ypspur-md SHARED
@@ -262,6 +286,10 @@ set_target_properties(ypspur-md PROPERTIES
   SOVERSION ${YPSPUR_LIBRARY_SOVERSION}
   PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
 )
+target_include_directories(ypspur-md PUBLIC
+  "$<BUILD_INTERFACE:${_ypspur_include_dirs}>"
+  "$<INSTALL_INTERFACE:include>"
+)
 
 add_library(ypspur-md-static STATIC
   src/libypspur-md.c
@@ -276,6 +304,10 @@ endif(WIN32)
 set_target_properties(ypspur-md-static PROPERTIES
   OUTPUT_NAME "ypspur-md"
   PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
+)
+target_include_directories(ypspur-md-static PUBLIC
+  "$<BUILD_INTERFACE:${_ypspur_include_dirs}>"
+  "$<INSTALL_INTERFACE:include>"
 )
 
 
@@ -340,7 +372,6 @@ install(
     package.xml
   DESTINATION share/ypspur/
 )
-
 
 # Generate pkgconfig file and install
 

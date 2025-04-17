@@ -22,10 +22,13 @@ else()
     VERSION ${_FORMULA_CALC_MAJOR_VERSION}.${_FORMULA_CALC_MINOR_VERSION}.${_FORMULA_CALC_PATCH_VERSION})
 endif()
 
-include_directories(include)
 
 add_library(formula-calc SHARED src/libformula-calc.c)
 target_link_libraries(formula-calc m)
+target_include_directories(formula-calc PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
 set_target_properties(formula-calc PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${PROJECT_VERSION}
@@ -35,6 +38,10 @@ set_target_properties(formula-calc PROPERTIES
 
 add_library(formula-calc-static STATIC src/libformula-calc.c)
 target_link_libraries(formula-calc-static m)
+target_include_directories(formula-calc-static PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+)
 set_target_properties(formula-calc-static PROPERTIES
   OUTPUT_NAME "formula-calc"
   PUBLIC_HEADER include/formula-calc.h
@@ -42,6 +49,9 @@ set_target_properties(formula-calc-static PROPERTIES
 
 add_executable(formula-test src/formula-test.c)
 target_link_libraries(formula-test formula-calc)
+target_include_directories(formula-calc PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 add_dependencies(formula-test formula-calc)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -67,6 +77,9 @@ if(GTEST_FOUND AND THREADS_FOUND)
   include_directories(${INCLUDE_DIRECTORIES} ${GTEST_INCLUDE_DIRS})
   add_executable(libformula-calc-test test/libformula-calc-test.cpp)
   target_link_libraries(libformula-calc-test formula-calc ${GTEST_LIBRARIES} ${THREAD_LIBRARIES})
+  target_include_directories(libformula-calc-test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
 
   add_test(UnitTests libformula-calc-test)
 

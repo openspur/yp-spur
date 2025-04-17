@@ -4,6 +4,10 @@ set(CARTE2D_LIBRARY_VERSION 0.0.0)
 set(CARTE2D_LIBRARY_SOVERSION 0)
 add_library(carte2d SHARED libcarte2d.c)
 target_link_libraries(carte2d m)
+target_include_directories(carte2d PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+  "$<INSTALL_INTERFACE:include>"
+)
 set_target_properties(carte2d PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${CARTE2D_LIBRARY_VERSION}
@@ -13,6 +17,10 @@ set_target_properties(carte2d PROPERTIES
 
 add_library(carte2d-static STATIC libcarte2d.c)
 target_link_libraries(carte2d-static m)
+target_include_directories(carte2d-static PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+  "$<INSTALL_INTERFACE:include>"
+)
 set_target_properties(carte2d-static PROPERTIES
   OUTPUT_NAME "carte2d"
   PUBLIC_HEADER cartesian2d.h
@@ -33,6 +41,10 @@ if(SSM_FOUND)
   set(ODOMSSM_LIBRARY_SOVERSION 0)
   add_library(odomssm SHARED libodomssm.c)
   target_link_libraries(odomssm ${SSM_LIBRARIES})
+  target_include_directories(odossm PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<INSTALL_INTERFACE:include>"
+  )
   set_target_properties(odomssm PROPERTIES 
     VERSION ${ODOMSSM_LIBRARY_VERSION}
     SOVERSION ${ODOMSSM_LIBRARY_SOVERSION}
@@ -42,6 +54,10 @@ if(SSM_FOUND)
 
   add_library(odomssm-static STATIC libodomssm.c)
   target_link_libraries(odomssm-static ${SSM_LIBRARIES})
+  target_include_directories(odossm-static PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+    "$<INSTALL_INTERFACE:include>"
+  )
   set_target_properties(odomssm-static PROPERTIES
     OUTPUT_NAME "odomssm"
     PUBLIC_HEADER odometry-ssm.h

@@ -46,9 +46,9 @@ if(USE_SSM)
 endif(USE_SSM)
 
 find_package(Readline)
-if(READLINE_FOUND)
+if(Readline_FOUND)
   add_definitions(-DHAVE_LIBREADLINE=1)
-endif(READLINE_FOUND)
+endif(Readline_FOUND)
 
 include(CheckFunctionExists)
 check_function_exists(longjmp HAVE_LONGJMP)
@@ -77,11 +77,11 @@ if(SSM_FOUND)
     ${SSM_INCLUDE_DIRS}
   )
 endif(SSM_FOUND)
-if(READLINE_FOUND)
+if(Readline_FOUND)
   include_directories(
-    ${READLINE_INCLUDE_DIRS}
+    ${Readline_INCLUDE_DIRS}
   )
-endif(READLINE_FOUND)
+endif(Readline_FOUND)
 
 
 # Static link options
@@ -233,7 +233,7 @@ add_executable(ypspur-interpreter
 
 target_link_libraries(ypspur-interpreter
   ypspur${TARGET_STATIC_POSTFIX}
-  ${READLINE_LIBRARIES}
+  ${Readline_LIBRARIES}
 )
 
 

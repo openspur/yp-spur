@@ -36,13 +36,7 @@ jobs:
         env:
           VERSION: ${{ needs.create-release-candidate.outputs.version }}
         run: |
-          major=$(echo ${VERSION} | cut -f1 -d.)
-          minor=$(echo ${VERSION} | cut -f2 -d.)
-          patch=$(echo ${VERSION} | cut -f3 -d.)
-
-          sed "s/^set(\(_YPSPUR_MAJOR_VERSION\) .*)\$/set(\1 ${major})/" -i CMakeLists.txt
-          sed "s/^set(\(_YPSPUR_MINOR_VERSION\) .*)\$/set(\1 ${minor})/" -i CMakeLists.txt
-          sed "s/^set(\(_YPSPUR_PATCH_VERSION\) .*)\$/set(\1 ${patch})/" -i CMakeLists.txt
+          sed "s/^\(project(ypspur VERSION\) \S\+)\$/\1 ${VERSION})/" -i CMakeLists.txt
 
           git add CMakeLists.txt
           git commit -m "Update library version"

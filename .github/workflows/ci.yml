@@ -19,7 +19,9 @@ jobs:
         env:
           - UBUNTU_VERSION=bionic
           - UBUNTU_VERSION=focal
-          - UBUNTU_VERSION=focal WITHOUT_GIT=true
+          - UBUNTU_VERSION=jammy
+          - UBUNTU_VERSION=noble
+          - UBUNTU_VERSION=noble WITHOUT_GIT=true
     steps:
       - name: Checkout
         uses: actions/checkout@v2

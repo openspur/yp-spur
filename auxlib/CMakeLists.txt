@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 
 set(CARTE2D_LIBRARY_VERSION 0.0.0)
 set(CARTE2D_LIBRARY_SOVERSION 0)

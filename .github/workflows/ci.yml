@@ -17,8 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - UBUNTU_VERSION=trusty
-          - UBUNTU_VERSION=xenial
           - UBUNTU_VERSION=bionic
           - UBUNTU_VERSION=focal
           - UBUNTU_VERSION=focal WITHOUT_GIT=true

@@ -1,25 +1,11 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 
 set(_YPSPUR_MAJOR_VERSION 1)
 set(_YPSPUR_MINOR_VERSION 22)
 set(_YPSPUR_PATCH_VERSION 5)
 
-if(${CMAKE_MAJOR_VERSION} LESS 3)
-# DARN_IT: CMake 2 should be supported until April, 2019 (Ubuntu Trusty EOL)
-  cmake_policy(VERSION 2.8.3)
-  project(ypspur)
-
-  set(YPSPUR_MAJOR_VERSION ${_YPSPUR_MAJOR_VERSION})
-  set(YPSPUR_MINOR_VERSION ${_YPSPUR_MINOR_VERSION})
-  set(YPSPUR_PATCH_VERSION ${_YPSPUR_PATCH_VERSION})
-
-  set(PROJECT_VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
-
-  message(WARNING "[deprecated] CMake 2 will be obsoleted in yp-spur build at April, 2019")
-else()
-  cmake_policy(VERSION 3.0)
-  project(ypspur VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
-endif()
+cmake_policy(VERSION 3.0)
+project(ypspur VERSION ${_YPSPUR_MAJOR_VERSION}.${_YPSPUR_MINOR_VERSION}.${_YPSPUR_PATCH_VERSION})
 
 set(CVF_VERSION ${PROJECT_VERSION})
 
@@ -189,11 +175,7 @@ if(GTEST_FOUND)
     ${THREAD_LIBRARIES}
     ypspur
   )
-  if(CMAKE_VERSION VERSION_LESS "3.1")
-    set_property(TARGET e2e_test PROPERTY COMPILE_OPTIONS "-std=c++11")
-  else()
-    set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
-  endif()
+  set_property(TARGET e2e_test PROPERTY CXX_STANDARD 11)
 
   add_test(E2ETest e2e_test ${CMAKE_SOURCE_DIR}/test/)
 endif(GTEST_FOUND)

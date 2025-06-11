@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(_FORMULA_CALC_MAJOR_VERSION 0)
-set(_FORMULA_CALC_MINOR_VERSION 0)
-set(_FORMULA_CALC_PATCH_VERSION 1)
-
-project(formula-calc
-  VERSION ${_FORMULA_CALC_MAJOR_VERSION}.${_FORMULA_CALC_MINOR_VERSION}.${_FORMULA_CALC_PATCH_VERSION})
+project(formula-calc VERSION 0.0.1)
 
 include_directories(include)
 

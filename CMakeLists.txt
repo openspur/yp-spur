@@ -63,10 +63,9 @@ find_package(GTest)
 # Set include dirs
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_BINARY_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/auxlib
-  ${CMAKE_CURRENT_SOURCE_DIR}/auxlib/formula-calc/include
+  include
+  auxlib
+  auxlib/formula-calc/include
 )
 if(SSM_FOUND)
   include_directories(

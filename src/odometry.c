@@ -29,10 +29,6 @@
 #include <sys/types.h>
 #include <time.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif  // HAVE_CONFIG_H
-
 /* ボディパラメータ */
 #include <shvel-param.h>
 

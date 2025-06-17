@@ -29,10 +29,6 @@
 
 #include <sys/types.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif  // HAVE_CONFIG_H
-
 #define YP_SPUR_RUNTIME
 
 #include <ipcommunication.h>

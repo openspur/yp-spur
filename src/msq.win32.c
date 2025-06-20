@@ -23,10 +23,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif  // HAVE_CONFIG_H
-
 #include <ipcommunication.h>
 #include <utility.h>
 

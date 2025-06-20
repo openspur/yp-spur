@@ -36,10 +36,6 @@
 #include <arpa/inet.h>
 #endif  // defined(__MINGW32__)
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif  // HAVE_CONFIG_H
-
 #include <ypparam.h>
 #include <msq.win32.h>
 #include <ipcommunication.h>

@@ -23,10 +23,6 @@
 #include <strings.h>
 #include <unistd.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif  // HAVE_CONFIG_H
-
 #include <param.h>
 
 void yprintf(ParamOutputLv level, const char* format, ...)

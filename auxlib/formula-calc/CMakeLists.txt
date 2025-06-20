@@ -1,26 +1,6 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 
-set(_FORMULA_CALC_MAJOR_VERSION 0)
-set(_FORMULA_CALC_MINOR_VERSION 0)
-set(_FORMULA_CALC_PATCH_VERSION 1)
-
-if(${CMAKE_MAJOR_VERSION} LESS 3)
-  cmake_policy(VERSION 2.8.3)
-  project(formula-calc)
-
-  set(FORMULA_CALC_MAJOR_VERSION ${_FORMULA_CALC_MAJOR_VERSION})
-  set(FORMULA_CALC_MINOR_VERSION ${_FORMULA_CALC_MINOR_VERSION})
-  set(FORMULA_CALC_PATCH_VERSION ${_FORMULA_CALC_PATCH_VERSION})
-
-  set(PROJECT_VERSION
-    ${_FORMULA_CALC_MAJOR_VERSION}.${_FORMULA_CALC_MINOR_VERSION}.${_FORMULA_CALC_PATCH_VERSION})
-
-  message(WARNING "[deprecated] CMake 2 will be obsoleted in formula-calc build at April, 2019")
-else()
-  cmake_policy(VERSION 3.0)
-  project(formula-calc
-    VERSION ${_FORMULA_CALC_MAJOR_VERSION}.${_FORMULA_CALC_MINOR_VERSION}.${_FORMULA_CALC_PATCH_VERSION})
-endif()
+project(formula-calc VERSION 0.0.1)
 
 include_directories(include)
 

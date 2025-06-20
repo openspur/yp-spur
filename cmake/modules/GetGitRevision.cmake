@@ -10,18 +10,19 @@ function(get_git_revision)
     set(GIT_REVISION_SHORT "Snapshot" PARENT_SCOPE)
     set(GIT_REVISION "Failed to get git revision." PARENT_SCOPE)
   else()
-    exec_program(${GIT} -C "${CMAKE_CURRENT_SOURCE_DIR}"
-      ARGS "rev-parse HEAD"
+    execute_process(
+      COMMAND ${GIT} -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-parse HEAD
       OUTPUT_VARIABLE REVISION
-      RETURN_VALUE rev_parse_ret
+      RESULT_VARIABLE rev_parse_ret
+      OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-    exec_program(${GIT} -C "${CMAKE_CURRENT_SOURCE_DIR}"
-      ARGS "rev-parse --short HEAD"
+    execute_process(
+      COMMAND ${GIT} -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-parse --short HEAD
       OUTPUT_VARIABLE REVISION_SHORT
-      RETURN_VALUE rev_parse_short_ret
+      RESULT_VARIABLE rev_parse_short_ret
+      OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    message(WARNING "${rev_parse_ret} ${rev_parse_short_ret}")
     if((NOT ${rev_parse_ret} EQUAL "0") OR (NOT ${rev_parse_short_ret} EQUAL "0"))
       set(GIT_REVISION_SHORT "Snapshot" PARENT_SCOPE)
       set(GIT_REVISION "Failed to get git revision." PARENT_SCOPE)

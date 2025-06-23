@@ -1,0 +1,57 @@
+name: release-candidate
+on:
+  issues:
+    types: [opened, reopened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  GIT_USER: Atsushi Watanabe
+  GIT_EMAIL: 8390204+at-wat@users.noreply.github.com
+
+jobs:
+  create-release-candidate:
+    if: startsWith(github.event.issue.title, 'Release ')
+    uses: alpine-ros/alpine-ros-ci-workflows/.github/workflows/ros1-release-candidate.yaml@main
+    with:
+      release-title: ${{ github.event.issue.title }}
+      branch: master
+      git-user: ${{ env.GIT_USER }}
+      git-email: ${{ env.GIT_EMAIL }}
+      pr-body: "close #${{ github.event.issue.number }}"
+      pr-assignee: ${{ github.actor }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  update-library-version:
+    needs: create-release-candidate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ needs.create-release-candidate.outputs.pr-branch }}
+      - name: Update library version
+        env:
+          VERSION: ${{ needs.create-release-candidate.outputs.version }}
+        run: |
+          sed "s/^\(project(ypspur VERSION\) \S\+)\$/\1 ${VERSION})/" -i CMakeLists.txt
+
+          git add CMakeLists.txt
+          git commit -m "Update library version"
+      - name: Setup gitconfig
+        run: |
+          git config --global user.name "${GIT_USER}"
+          git config --global user.email "${GIT_EMAIL}"
+      - name: Setup netrc
+        env:
+          GITHUB_TOKEN: ${{ secrets.BLOOM_GITHUB_TOKEN }}
+        run: |
+          cat <<EOS >${HOME}/.netrc
+          machine github.com
+          login git
+          password ${GITHUB_TOKEN}
+          EOS
+      - name: Push changes
+        run: git push origin ${{ needs.create-release-candidate.outputs.pr-branch }}

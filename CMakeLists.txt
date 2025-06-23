@@ -53,21 +53,15 @@ check_function_exists(siglongjmp HAVE_SIGLONGJMP)
 check_function_exists(clock_nanosleep HAVE_CLOCK_NANOSLEEP)
 check_function_exists(nanosleep HAVE_NANOSLEEP)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/include/config.h
-)
-add_definitions(-DHAVE_CONFIG_H=1)
-
 find_package(GTest)
 
 
 # Set include dirs
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_BINARY_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/auxlib
-  ${CMAKE_CURRENT_SOURCE_DIR}/auxlib/formula-calc/include
+  include
+  auxlib
+  auxlib/formula-calc/include
 )
 if(SSM_FOUND)
   include_directories(
@@ -95,6 +89,12 @@ endif(ENABLE_ALL_STATIC)
 # Compile flags
 
 if(CMAKE_VERSION VERSION_LESS "3.12")
+  add_definitions(
+    -DPROJECT_VERSION=\"${PROJECT_VERSION_REV}\"
+    -DYP_PROTOCOL_NAME=\"${YP_PROTOCOL_NAME}\"
+    -DYP_PARAMS_DIR=\"${YP_PARAMS_DIR}\"
+  )
+
   if(HAVE_LONGJMP)
     add_definitions(-DHAVE_LONGJMP)
   endif()
@@ -111,6 +111,12 @@ if(CMAKE_VERSION VERSION_LESS "3.12")
     add_definitions(-DHAVE_SSM)
   endif()
 else()
+  add_compile_definitions(
+    PROJECT_VERSION=\"${PROJECT_VERSION_REV}\"
+    YP_PROTOCOL_NAME=\"${YP_PROTOCOL_NAME}\"
+    YP_PARAMS_DIR=\"${YP_PARAMS_DIR}\"
+  )
+
   if(HAVE_LONGJMP)
     add_compile_definitions(HAVE_LONGJMP)
   endif()

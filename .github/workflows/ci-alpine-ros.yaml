@@ -12,3 +12,5 @@ permissions:
 jobs:
   test:
     uses: alpine-ros/alpine-ros-ci-workflows/.github/workflows/ros1.yaml@main
+    with:
+      enable-codecov: true

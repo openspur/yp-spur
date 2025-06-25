@@ -344,6 +344,9 @@ install(TARGETS
 install(FILES include/yp-spur.h
   DESTINATION include
 )
+install(FILES include/ypspur/communication.h
+  DESTINATION include/ypspur
+)
 
 if(SSM_FOUND)
   install(DIRECTORY

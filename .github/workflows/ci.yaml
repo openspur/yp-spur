@@ -22,7 +22,7 @@ jobs:
           - UBUNTU_VERSION=noble WITHOUT_GIT=true
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set environment variables
         run: echo ${{ matrix.env }} | xargs -n1 echo >> ${GITHUB_ENV}
 
@@ -47,7 +47,7 @@ jobs:
           - i686
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set environment variables
         run: |
           echo ARCH=${{ matrix.arch }} >> ${GITHUB_ENV}
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build
         run: docker build -t yp-spur-with-ssm -f .test-with-ssm.Dockerfile .
       - name: Test

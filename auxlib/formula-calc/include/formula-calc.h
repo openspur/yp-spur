@@ -50,21 +50,21 @@ enum rpf_type_t
 struct rpf_t
 {
   enum rpf_type_t type;
-  void *value;
-  struct rpf_t *next;
+  void* value;
+  struct rpf_t* next;
 };
 
 struct variables_t
 {
-  const char *name;
-  double *pointer;
+  const char* name;
+  double* pointer;
 };
 
-int formula(const char *expr, struct rpf_t **rpf, const struct variables_t *variable);
-void formula_free(struct rpf_t *rpf);
-double formula_eval(struct rpf_t *rpf);
-struct rpf_t *formula_optimize(struct rpf_t *rpf);
-void formula_print(FILE *stream, struct rpf_t *rpf);
+int formula(const char* expr, struct rpf_t** rpf, const struct variables_t* variable);
+void formula_free(struct rpf_t* rpf);
+double formula_eval(struct rpf_t* rpf);
+struct rpf_t* formula_optimize(struct rpf_t* rpf);
+void formula_print(FILE* stream, struct rpf_t* rpf);
 
 #ifdef __cplusplus
 }

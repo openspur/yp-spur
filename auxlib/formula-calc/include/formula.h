@@ -33,7 +33,7 @@ struct stack_t
 {
   int rank;
   enum rpf_type_t type;
-  void *value;
+  void* value;
 };
 
 struct operation_t
@@ -41,14 +41,14 @@ struct operation_t
   char op[8];
   int rank;
   enum rpf_type_t type;
-  double (*func)(double **);
+  double (*func)(double**);
   int narg;
 };
 
-struct rpf_t *rpf_push(struct rpf_t *rpf, struct stack_t *obj);
-struct rpf_t *rpf_join(struct rpf_t *rpf, struct rpf_t *rpf2);
-int rpf_count_num(struct rpf_t *rpf);
-struct rpf_t *rpf_last(struct rpf_t *rpf);
-struct rpf_t *formula_output(struct stack_t *num, int *sp_num, struct stack_t *op, int *sp_op, int rank);
+struct rpf_t* rpf_push(struct rpf_t* rpf, struct stack_t* obj);
+struct rpf_t* rpf_join(struct rpf_t* rpf, struct rpf_t* rpf2);
+int rpf_count_num(struct rpf_t* rpf);
+struct rpf_t* rpf_last(struct rpf_t* rpf);
+struct rpf_t* formula_output(struct stack_t* num, int* sp_num, struct stack_t* op, int* sp_op, int rank);
 
 #endif  // FORMULA_H

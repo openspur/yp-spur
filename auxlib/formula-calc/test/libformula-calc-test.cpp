@@ -36,14 +36,13 @@ TEST(FormulaCalcTest, testFormulaCalculation)
 
   for (i = 0; i < 5; i++)
   {
-    struct rpf_t *rpf;
-    struct rpf_t *rpf2;
+    struct rpf_t* rpf;
+    struct rpf_t* rpf2;
     double test = 0;
     struct variables_t variable[2] =
         {
-          { "TEST", &test },
-          { NULL, NULL }
-        };
+            {"TEST", &test},
+            {NULL, NULL}};
     float ret;
 
     ASSERT_EQ(formula("1+1", &rpf, variable), 1);
@@ -107,7 +106,7 @@ TEST(FormulaCalcTest, testFormulaCalculation)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 

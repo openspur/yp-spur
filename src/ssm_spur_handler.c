@@ -30,12 +30,11 @@
 #endif  // HAVE_SSM
 
 /* yp-spur用 */
-#include "odometry.h"
-#include "utility.h"
 #include "ypspur.h"
-#include "param.h"
-#include "shvel-param.h"
-#include "ssm_spur_handler.h"
+#include "ypspur/odometry.h"
+#include "ypspur/param.h"
+#include "ypspur/ssm_spur_handler.h"
+#include "ypspur/utility.h"
 
 #ifdef HAVE_SSM
 SSM_sid g_odm_bs_sid = 0, g_odm_sid = 0, g_motor_sid = 0, g_odm_adj_sid = 0, g_ad_sid = 0;

@@ -31,9 +31,9 @@
 
 #define YP_SPUR_RUNTIME
 
-#include <ipcommunication.h>
 #include <ypspur-md.h>
-#include <param.h>
+#include <ypspur/ipcommunication.h>
+#include <ypspur/param.h>
 
 /* エラー確認 */
 int YP_md_get_error_state(YPSpur* spur)

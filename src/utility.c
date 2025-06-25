@@ -31,7 +31,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-#include <utility.h>
+#include <ypspur/utility.h>
 
 #ifdef __WIN32
 #include <windows.h>

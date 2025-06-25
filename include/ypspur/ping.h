@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2020 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,18 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef YPSPUR_PING_H
+#define YPSPUR_PING_H
 
-double get_time(void);
-void yp_usleep(int usec);
-void set_sigint_handler(void (*handler)(int));
-void hook_pre_global(void);
+int ping();
 
-#if !defined(HAVE_STRTOK_R)
-#ifndef strtok_r
-char* strtok_r(char* str, const char* delim, char** nextp);
-#endif  // strtok_r
-#endif  // !defined(HAVE_STRTOK_R)
-
-#endif  // UTILITY_H
+#endif  // YPSPUR_PING_H

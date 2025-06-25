@@ -29,16 +29,12 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <serial.h>
-#include <communication.h>
-#include <utility.h>
-#include <param.h>
-#include <ypspur-coordinator.h>
-#include <yprintf.h>
+#include <ypspur/communication.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
+#include <ypspur/utility.h>
+#include <ypspur/yprintf.h>
 
 #include <errno.h>
 double SER_BAUDRATE;

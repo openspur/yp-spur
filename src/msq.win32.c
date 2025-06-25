@@ -23,8 +23,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <ipcommunication.h>
-#include <utility.h>
+#include <ypspur/ipcommunication.h>
+#include <ypspur/utility.h>
 
 #if defined(__MINGW32__)
 #include <windows.h>

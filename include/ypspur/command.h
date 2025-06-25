@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef YPSPUR_COMMAND_H
+#define YPSPUR_COMMAND_H
 
 #include <pthread.h>
 
-#include <ipcommunication.h>
-#include <ypparam.h>
+#include <ypspur/ipcommunication.h>
+#include <ypspur/ypparam.h>
 #include <ypspur.h>
 
 typedef enum
@@ -160,4 +160,4 @@ void get_joint_torque_com(int id, double* data, SpurUserParamsPtr spur);
 void get_error_state_com(double* data, double* resdata);
 void dump_device_com(double* data, double* resdata);
 
-#endif  // COMMAND_H
+#endif  // YPSPUR_COMMAND_H

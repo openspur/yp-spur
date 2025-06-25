@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SHVEL_PARAM_H
-#define SHVEL_PARAM_H
+#ifndef YPSPUR_SHVEL_PARAM_H
+#define YPSPUR_SHVEL_PARAM_H
 
 #include <assert.h>
 
@@ -127,4 +127,4 @@ typedef enum
 
 #define MOTOR_ID_BROADCAST 0x7E
 
-#endif  // SHVEL_PARAM_H
+#endif  // YPSPUR_SHVEL_PARAM_H

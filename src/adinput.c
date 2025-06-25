@@ -30,13 +30,10 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <serial.h>
-#include <odometry.h>
-#include <utility.h>
+#include <ypspur/odometry.h>
+#include <ypspur/serial.h>
+#include <ypspur/utility.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>

@@ -29,18 +29,15 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <param.h>
-#include <control.h>
-#include <adinput.h>
-#include <utility.h>
-#include <yprintf.h>
-#include <communication.h>
-#include <serial.h>
-#include <ssm_spur_handler.h>
+#include <ypspur/adinput.h>
+#include <ypspur/communication.h>
+#include <ypspur/control.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
+#include <ypspur/ssm_spur_handler.h>
+#include <ypspur/utility.h>
+#include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>

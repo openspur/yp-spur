@@ -246,11 +246,11 @@ set(YPSPUR_LIBRARY_VERSION 14.2.0)
 set(YPSPUR_LIBRARY_SOVERSION 14)
 set(YPSPUR_PUBLIC_HEADERS
   include/ypspur.h
-  include/ypparam.h
+  include/ypspur/ypparam.h
 )
 set(YPSPUR_MD_PUBLIC_HEADERS
   include/ypspur-md.h
-  include/ypparam.h
+  include/ypspur/ypparam.h
 )
 add_library(ypspur SHARED
   src/libypspur.c
@@ -343,9 +343,6 @@ install(TARGETS
 )
 install(FILES include/yp-spur.h
   DESTINATION include
-)
-install(FILES include/communication.h
-  DESTINATION include/ypspur
 )
 
 if(SSM_FOUND)

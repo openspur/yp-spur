@@ -32,7 +32,7 @@
 #endif  // HAVE_LIBREADLINE
 
 #include <ypspur.h>
-#include <utility.h>
+#include <ypspur/utility.h>
 
 typedef struct SPUR_COMMAND
 {

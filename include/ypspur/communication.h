@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#ifndef YPSPUR_COMMUNICATION_H
+#define YPSPUR_COMMUNICATION_H
 
 #define COMMUNICATION_START_BYTE 0x09
 #define COMMUNICATION_INT_BYTE 0x07
@@ -37,4 +37,4 @@ int decode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
 }
 #endif
 
-#endif  // COMMUNICATION_H
+#endif  // YPSPUR_COMMUNICATION_H

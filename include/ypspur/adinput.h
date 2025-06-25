@@ -18,24 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef IPCOMMUNICATION_H
-#define IPCOMMUNICATION_H
+#ifndef YPSPUR_ADINPUT_H
+#define YPSPUR_ADINPUT_H
 
-#include <msq.win32.h>
-#include <ypparam.h>
+#include <math.h>
+#include <stdio.h>
+#include <strings.h>
+#include <unistd.h>
 
-int ipcmd_send_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush_msq(struct ipcmd_t* ipcmd);
-int ipcmd_send_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush_tcp(struct ipcmd_t* ipcmd);
-int ipcmd_send(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush(struct ipcmd_t* ipcmd);
+int process_addata(unsigned char* buf, int len);
+const int* get_addataptr();
+int get_addata(int num);
+int admask_receive(char* buf, int len, double receive_time, void* data);
+int set_admask(unsigned char mask);
+int set_diomask(unsigned char enable);
+int get_ad_num(void);
+int get_dio_num(void);
 
-int ipcmd_open_msq(struct ipcmd_t* ipcmd, int key, int creat);
-int ipcmd_open_tcp(struct ipcmd_t* ipcmd, char* host, int port);
-void ipcmd_close(struct ipcmd_t* ipcmd);
-
-#endif  // IPCOMMUNICATION_H
+#endif  // YPSPUR_ADINPUT_H

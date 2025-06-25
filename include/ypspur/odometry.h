@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ODOMETRY_H
-#define ODOMETRY_H
+#ifndef YPSPUR_ODOMETRY_H
+#define YPSPUR_ODOMETRY_H
 
-#include <shvel-param.h>
+#include <ypspur/shvel-param.h>
 
 #include <cartesian2d.h>
-#include <ypparam.h>
+#include <ypspur/ypparam.h>
 #include <ypspur.h>
 
 typedef struct _odometry* OdometryPtr;
@@ -72,4 +72,4 @@ ErrorStatePtr get_error_state_ptr();
 CSptr get_cs_pointer(YPSpur_cs cs);
 void set_cs(YPSpur_cs cs, double x, double y, double theta);
 
-#endif  // ODOMETRY_H
+#endif  // YPSPUR_ODOMETRY_H

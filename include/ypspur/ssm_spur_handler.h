@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SSM_SPUR_HANDLER_H
-#define SSM_SPUR_HANDLER_H
+#ifndef YPSPUR_SSM_SPUR_HANDLER_H
+#define YPSPUR_SSM_SPUR_HANDLER_H
 
-#include <command.h>
+#include <ypspur/command.h>
 
 void init_ypspurSSM(int ssm_id);
 void end_ypspurSSM(void);
@@ -31,4 +31,4 @@ void write_ypspurSSM(
     Short_2Char* pwm1_log, Short_2Char* pwm2_log, int ad_log[][8]);
 void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur);
 
-#endif  // SSM_SPUR_HANDLER_H
+#endif  // YPSPUR_SSM_SPUR_HANDLER_H

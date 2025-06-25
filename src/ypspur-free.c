@@ -24,7 +24,7 @@
 #include <unistd.h>
 
 #include <ypspur.h>
-#include <utility.h>
+#include <ypspur/utility.h>
 
 int main(int argc, char** argv)
 {

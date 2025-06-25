@@ -41,7 +41,7 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
+#include <carte2d/cartesian2d.h>
 
 double g_interval;
 double g_offset;

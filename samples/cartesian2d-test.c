@@ -21,7 +21,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include <cartesian2d.h>
+#include <carte2d/cartesian2d.h>
 
 CSptr BS, GL, LC, LC2, LC3, LC4;
 

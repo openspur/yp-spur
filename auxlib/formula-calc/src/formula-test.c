@@ -27,18 +27,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <formula-calc.h>
+#include <formula-calc/formula-calc.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  struct rpf_t *rpf;
-  struct rpf_t *rpf2;
+  struct rpf_t* rpf;
+  struct rpf_t* rpf2;
   double test = 0;
   struct variables_t variable[8] =
       {
-        { "TEST", &test },
-        { NULL, NULL }
-      };
+          {"TEST", &test},
+          {NULL, NULL}};
 
   if (argc < 2)
   {

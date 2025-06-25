@@ -36,7 +36,7 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
+#include <carte2d/cartesian2d.h>
 
 void get_pos_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur)
 {

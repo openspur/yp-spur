@@ -10,14 +10,14 @@ set_target_properties(formula-calc PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${PROJECT_VERSION}
   SOVERSION 0
-  PUBLIC_HEADER include/formula-calc.h
+  PUBLIC_HEADER include/formula-calc/formula-calc.h
 )
 
 add_library(formula-calc-static STATIC src/libformula-calc.c)
 target_link_libraries(formula-calc-static m)
 set_target_properties(formula-calc-static PROPERTIES
   OUTPUT_NAME "formula-calc"
-  PUBLIC_HEADER include/formula-calc.h
+  PUBLIC_HEADER include/formula-calc/formula-calc.h
 )
 
 add_executable(formula-test src/formula-test.c)

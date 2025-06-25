@@ -23,7 +23,7 @@
 
 #include <ypspur/shvel-param.h>
 
-#include <cartesian2d.h>
+#include <carte2d/cartesian2d.h>
 #include <ypspur/ypparam.h>
 #include <ypspur.h>
 

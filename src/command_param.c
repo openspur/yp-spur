@@ -39,7 +39,6 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 void param_set_com(int cs, double* data, SpurUserParamsPtr spur)
 {

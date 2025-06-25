@@ -47,7 +47,6 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 #include <pthread.h>
 

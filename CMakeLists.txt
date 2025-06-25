@@ -60,7 +60,7 @@ find_package(GTest)
 
 include_directories(
   include
-  auxlib
+  auxlib/include
   auxlib/formula-calc/include
 )
 if(SSM_FOUND)

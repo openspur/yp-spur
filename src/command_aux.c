@@ -36,7 +36,6 @@
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 void get_ad_com(double* data, double* resdata)
 {

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __AUXLIB_CARTESIAN2D_H
-#define __AUXLIB_CARTESIAN2D_H
+#ifndef CARTE2D_CARTESIAN2D_H
+#define CARTE2D_CARTESIAN2D_H
 
 #ifdef __cplusplus
 extern "C"
@@ -57,4 +57,4 @@ void trace_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-#endif  // __AUXLIB_CARTESIAN2D_H
+#endif  // CARTE2D_CARTESIAN2D_H

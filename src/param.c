@@ -44,7 +44,7 @@
 #include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
-#include <formula-calc.h>
+#include <formula-calc/formula-calc.h>
 #include <ypspur.h>
 
 #include <pthread.h>

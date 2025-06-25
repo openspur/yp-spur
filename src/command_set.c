@@ -36,8 +36,8 @@
 #include <ypspur/serial.h>
 
 /* ライブラリ用 */
+#include <carte2d/cartesian2d.h>
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 void set_pos_com(int cs, double* data, SpurUserParamsPtr spur)
 {

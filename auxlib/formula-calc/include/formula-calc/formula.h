@@ -24,49 +24,31 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FORMULA_CALC_H
-#define FORMULA_CALC_H
+#ifndef FORMULA_CALC_FORMULA_H
+#define FORMULA_CALC_FORMULA_H
 
-#ifdef __cplusplus
-// clang-format off
-extern "C"
+#include <formula-calc/formula-calc.h>
+
+struct stack_t
 {
-// clang-format on
-#endif  // __cplusplus
-
-#include <stdio.h>
-
-enum rpf_type_t
-{
-  TYPE_VALUE,
-  TYPE_MATH,
-  TYPE_VARIABLE,
-  TYPE_OP,
-  TYPE_MAX,
-  TYPE_RPF,
-  TYPE_START
-};
-
-struct rpf_t
-{
+  int rank;
   enum rpf_type_t type;
-  void *value;
-  struct rpf_t *next;
+  void* value;
 };
 
-struct variables_t
+struct operation_t
 {
-  const char *name;
-  double *pointer;
+  char op[8];
+  int rank;
+  enum rpf_type_t type;
+  double (*func)(double**);
+  int narg;
 };
 
-int formula(const char *expr, struct rpf_t **rpf, const struct variables_t *variable);
-void formula_free(struct rpf_t *rpf);
-double formula_eval(struct rpf_t *rpf);
-struct rpf_t *formula_optimize(struct rpf_t *rpf);
-void formula_print(FILE *stream, struct rpf_t *rpf);
+struct rpf_t* rpf_push(struct rpf_t* rpf, struct stack_t* obj);
+struct rpf_t* rpf_join(struct rpf_t* rpf, struct rpf_t* rpf2);
+int rpf_count_num(struct rpf_t* rpf);
+struct rpf_t* rpf_last(struct rpf_t* rpf);
+struct rpf_t* formula_output(struct stack_t* num, int* sp_num, struct stack_t* op, int* sp_op, int rank);
 
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
-#endif  // FORMULA_CALC_H
+#endif  // FORMULA_CALC_FORMULA_H

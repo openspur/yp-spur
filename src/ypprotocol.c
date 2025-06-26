@@ -27,11 +27,11 @@
 
 #include <errno.h>
 
-#include <communication.h>
-#include <ypprotocol.h>
-#include <serial.h>
-#include <utility.h>
-#include <yprintf.h>
+#include <ypspur/communication.h>
+#include <ypspur/serial.h>
+#include <ypspur/utility.h>
+#include <ypspur/ypprotocol.h>
+#include <ypspur/yprintf.h>
 
 #define RECEIVE_BUFFER_SIZE 2048
 

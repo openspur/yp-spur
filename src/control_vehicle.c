@@ -35,17 +35,17 @@
 #include <time.h>
 
 /* ボディパラメータ */
-#include <shvel-param.h>
+#include <ypspur/shvel-param.h>
 
 /* yp-spur用 */
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <utility.h>
-#include <yprintf.h>
-#include <odometry.h>
-#include <ssm_spur_handler.h>
+#include <ypspur/command.h>
+#include <ypspur/control.h>
+#include <ypspur/odometry.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
+#include <ypspur/ssm_spur_handler.h>
+#include <ypspur/utility.h>
+#include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>

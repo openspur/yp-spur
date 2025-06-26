@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPPARAM_H
-#define YPPARAM_H
+#ifndef YPSPUR_YPPARAM_H
+#define YPSPUR_YPPARAM_H
 
 #ifdef __cplusplus
 extern "C"
@@ -558,4 +558,4 @@ struct ipcmd_t
 }
 #endif  // __cplusplus
 
-#endif  // YPPARAM_H
+#endif  // YPSPUR_YPPARAM_H

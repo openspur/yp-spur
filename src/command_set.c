@@ -28,19 +28,16 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <odometry.h>
+#include <ypspur/command.h>
+#include <ypspur/control.h>
+#include <ypspur/odometry.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
 
 /* ライブラリ用 */
+#include <carte2d/cartesian2d.h>
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 void set_pos_com(int cs, double* data, SpurUserParamsPtr spur)
 {

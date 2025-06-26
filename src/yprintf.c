@@ -23,7 +23,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include <param.h>
+#include <ypspur/param.h>
 
 void yprintf(ParamOutputLv level, const char* format, ...)
 {

@@ -31,9 +31,9 @@
 
 #define YP_SPUR_RUNTIME
 
-#include <ipcommunication.h>
-#include <ypspur.h>
 #include <ypspur-md.h>
+#include <ypspur.h>
+#include <ypspur/ipcommunication.h>
 
 static YPSpur spur;
 

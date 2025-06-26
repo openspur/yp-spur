@@ -18,24 +18,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef IPCOMMUNICATION_H
-#define IPCOMMUNICATION_H
+#ifndef CARTE2D_CARTESIAN2D_H
+#define CARTE2D_CARTESIAN2D_H
 
-#include <msq.win32.h>
-#include <ypparam.h>
+#ifdef __cplusplus
+extern "C"
+{
+#endif  // __cplusplus
 
-int ipcmd_send_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv_msq(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush_msq(struct ipcmd_t* ipcmd);
-int ipcmd_send_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv_tcp(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush_tcp(struct ipcmd_t* ipcmd);
-int ipcmd_send(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-int ipcmd_recv(struct ipcmd_t* ipcmd, YPSpur_msg* data);
-void ipcmd_flush(struct ipcmd_t* ipcmd);
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-int ipcmd_open_msq(struct ipcmd_t* ipcmd, int key, int creat);
-int ipcmd_open_tcp(struct ipcmd_t* ipcmd, char* host, int port);
-void ipcmd_close(struct ipcmd_t* ipcmd);
+typedef struct cs_t* CSptr;
+typedef struct cs_t
+{
+  double x;
+  double y;
+  double theta;
+  CSptr parent;
+  CSptr child;
+  CSptr brother;
+  int level;
+} CoordinateSystem;
 
-#endif  // IPCOMMUNICATION_H
+CSptr CS_add(CSptr parent_cs, double x, double y, double theta);
+int CS_delete(CSptr target_cs);
+int CS_set(CSptr target_cs, double x, double y, double theta);
+int CS_set_on_CS(CSptr target_cs, CSptr on_cs, double x, double y, double theta);
+void CS_turn_base(double* x, double* y, double* theta);
+
+void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double* x, double* y, double* theta);
+void inv_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
+void trans_cs(CSptr target_cs, double* x, double* y, double* theta);
+void trace_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
+#endif  // CARTE2D_CARTESIAN2D_H

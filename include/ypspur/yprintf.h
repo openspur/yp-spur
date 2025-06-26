@@ -18,7 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPSPUR_COORDINATOR_H
-#define YPSPUR_COORDINATOR_H
+#ifndef YPSPUR_YPRINTF_H
+#define YPSPUR_YPRINTF_H
 
-#endif  // YPSPUR_COORDINATOR_H
+#include <stdarg.h>
+
+#include <ypspur/param.h>
+
+void yprintf(ParamOutputLv level, const char* format, ...);
+void ansi_clear_line(ParamOutputLv level);
+
+#endif  // YPSPUR_YPRINTF_H

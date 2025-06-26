@@ -34,14 +34,11 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
+#include <ypspur/command.h>
+#include <ypspur/control.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>

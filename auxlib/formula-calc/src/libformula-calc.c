@@ -31,8 +31,8 @@
 #include <ctype.h>
 #include <sys/time.h>
 
-#include <formula-calc.h>
-#include <formula.h>
+#include <formula-calc/formula-calc.h>
+#include <formula-calc/formula.h>
 
 double math_b_and(double** val)
 {

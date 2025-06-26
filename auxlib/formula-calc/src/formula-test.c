@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <formula-calc.h>
+#include <formula-calc/formula-calc.h>
 
 int main(int argc, char* argv[])
 {

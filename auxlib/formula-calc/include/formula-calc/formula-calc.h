@@ -24,8 +24,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FORMULA_CALC_H
-#define FORMULA_CALC_H
+#ifndef FORMULA_CALC_FORMULA_CALC_H
+#define FORMULA_CALC_FORMULA_CALC_H
 
 #ifdef __cplusplus
 // clang-format off
@@ -69,4 +69,4 @@ void formula_print(FILE* stream, struct rpf_t* rpf);
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
-#endif  // FORMULA_CALC_H
+#endif  // FORMULA_CALC_FORMULA_CALC_H

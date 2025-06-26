@@ -24,10 +24,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef FORMULA_H
-#define FORMULA_H
+#ifndef FORMULA_CALC_FORMULA_H
+#define FORMULA_CALC_FORMULA_H
 
-#include <formula-calc.h>
+#include <formula-calc/formula-calc.h>
 
 struct stack_t
 {
@@ -51,4 +51,4 @@ int rpf_count_num(struct rpf_t* rpf);
 struct rpf_t* rpf_last(struct rpf_t* rpf);
 struct rpf_t* formula_output(struct stack_t* num, int* sp_num, struct stack_t* op, int* sp_op, int rank);
 
-#endif  // FORMULA_H
+#endif  // FORMULA_CALC_FORMULA_H

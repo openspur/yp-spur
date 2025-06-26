@@ -21,7 +21,7 @@
 #ifndef YPSPUR_H
 #define YPSPUR_H
 
-#include <ypparam.h>
+#include <ypspur/ypparam.h>
 
 #ifdef __cplusplus
 extern "C"

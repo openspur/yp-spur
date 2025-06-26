@@ -32,19 +32,19 @@
 #include <time.h>
 
 /* ボディパラメータ */
-#include <shvel-param.h>
+#include <ypspur/shvel-param.h>
 
 /* yp-spur用 */
-#include <communication.h>
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <utility.h>
-#include <yprintf.h>
-#include <formula-calc.h>
+#include <ypspur/command.h>
+#include <ypspur/communication.h>
+#include <ypspur/control.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
+#include <ypspur/utility.h>
+#include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
+#include <formula-calc/formula-calc.h>
 #include <ypspur.h>
 
 #include <pthread.h>

@@ -18,23 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#ifndef YPSPUR_ADINPUT_H
+#define YPSPUR_ADINPUT_H
 
-#define COMMUNICATION_START_BYTE 0x09
-#define COMMUNICATION_INT_BYTE 0x07
-#define COMMUNICATION_END_BYTE 0x0a
+#include <math.h>
+#include <stdio.h>
+#include <strings.h>
+#include <unistd.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+int process_addata(unsigned char* buf, int len);
+const int* get_addataptr();
+int get_addata(int num);
+int admask_receive(char* buf, int len, double receive_time, void* data);
+int set_admask(unsigned char mask);
+int set_diomask(unsigned char enable);
+int get_ad_num(void);
+int get_dio_num(void);
 
-int encode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
-int decode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif  // COMMUNICATION_H
+#endif  // YPSPUR_ADINPUT_H

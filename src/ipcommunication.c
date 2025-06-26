@@ -36,11 +36,11 @@
 #include <arpa/inet.h>
 #endif  // defined(__MINGW32__)
 
-#include <ypparam.h>
-#include <msq.win32.h>
-#include <ipcommunication.h>
-#include <utility.h>
-#include <yprintf.h>
+#include <ypspur/ipcommunication.h>
+#include <ypspur/msq.win32.h>
+#include <ypspur/utility.h>
+#include <ypspur/ypparam.h>
+#include <ypspur/yprintf.h>
 
 #if defined(__MINGW32__)
 #define SOCK_SHUTDOWN_OPTION SD_BOTH

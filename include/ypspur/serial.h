@@ -18,21 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ADINPUT_H
-#define ADINPUT_H
+#ifndef YPSPUR_SERIAL_H
+#define YPSPUR_SERIAL_H
 
-#include <math.h>
-#include <stdio.h>
-#include <strings.h>
-#include <unistd.h>
+#define ENABLE 1
+#define DISABLE 0
 
-int process_addata(unsigned char* buf, int len);
-const int* get_addataptr();
-int get_addata(int num);
-int admask_receive(char* buf, int len, double receive_time, void* data);
-int set_admask(unsigned char mask);
-int set_diomask(unsigned char enable);
-int get_ad_num(void);
-int get_dio_num(void);
+#define DEFAULT_BAUDRATE 38400
 
-#endif  // ADINPUT_H
+/* for measurement time estimation */
+extern double SER_BAUDRATE;  /// (Byte/sec) シリアルの通信速度
+#define SER_INTERVAL 0.0050
+// #define SER_BYTES 13.0
+// #define SER_TIME_BYTE (11.0/SER_BAUDRATE)
+
+int serial_tryconnect(char* device_name);
+int serial_connect(char* device_name);
+int serial_change_baudrate(int baud);
+
+/*----------------PBS_close------------------*/
+int serial_close(void);
+int serial_write(char* buf, int len);
+int serial_recieve(int (*serial_event)(char*, int, double, void*), void* data);
+void serial_flush_in(void);
+void serial_flush_out(void);
+int encode_write(char* data, int len);
+
+#endif  // YPSPUR_SERIAL_H

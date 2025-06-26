@@ -27,20 +27,16 @@
 #include <sys/time.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur用 */
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <ipcommunication.h>
-#include <yprintf.h>
+#include <ypspur/command.h>
+#include <ypspur/control.h>
+#include <ypspur/ipcommunication.h>
+#include <ypspur/param.h>
+#include <ypspur/serial.h>
+#include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 #include <pthread.h>
 

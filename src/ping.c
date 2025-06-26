@@ -18,11 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <param.h>
-#include <utility.h>
-#include <odometry.h>
-#include <shvel-param.h>
-#include <yprintf.h>
+#include <ypspur/odometry.h>
+#include <ypspur/param.h>
+#include <ypspur/shvel-param.h>
+#include <ypspur/utility.h>
+#include <ypspur/yprintf.h>
 
 int ping()
 {

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,9 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef PING_H
-#define PING_H
+#ifndef YPSPUR_COMMUNICATION_H
+#define YPSPUR_COMMUNICATION_H
 
-int ping();
+#define COMMUNICATION_START_BYTE 0x09
+#define COMMUNICATION_INT_BYTE 0x07
+#define COMMUNICATION_END_BYTE 0x0a
 
-#endif  // PING_H
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+int encode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
+int decode(const unsigned char* src, int len, unsigned char* dst, int buf_max);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // YPSPUR_COMMUNICATION_H

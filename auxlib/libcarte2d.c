@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <cartesian2d.h>
+#include <carte2d/cartesian2d.h>
 
 CSptr CSroot_ptr;
 

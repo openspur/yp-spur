@@ -30,7 +30,7 @@
 #include <time.h>
 
 /* yp-spur用 */
-#include <communication.h>
+#include <ypspur/communication.h>
 
 /**
  * @brief エンコード

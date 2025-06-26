@@ -18,43 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __AUXLIB_CARTESIAN2D_H
-#define __AUXLIB_CARTESIAN2D_H
+#ifndef YPSPUR_UTILITY_H
+#define YPSPUR_UTILITY_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif  // __cplusplus
+double get_time(void);
+void yp_usleep(int usec);
+void set_sigint_handler(void (*handler)(int));
+void hook_pre_global(void);
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#if !defined(HAVE_STRTOK_R)
+#ifndef strtok_r
+char* strtok_r(char* str, const char* delim, char** nextp);
+#endif  // strtok_r
+#endif  // !defined(HAVE_STRTOK_R)
 
-typedef struct cs_t* CSptr;
-typedef struct cs_t
-{
-  double x;
-  double y;
-  double theta;
-  CSptr parent;
-  CSptr child;
-  CSptr brother;
-  int level;
-} CoordinateSystem;
-
-CSptr CS_add(CSptr parent_cs, double x, double y, double theta);
-int CS_delete(CSptr target_cs);
-int CS_set(CSptr target_cs, double x, double y, double theta);
-int CS_set_on_CS(CSptr target_cs, CSptr on_cs, double x, double y, double theta);
-void CS_turn_base(double* x, double* y, double* theta);
-
-void CS_recursive_trans(CSptr target_cs, CSptr now_cs, double* x, double* y, double* theta);
-void inv_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
-void trans_cs(CSptr target_cs, double* x, double* y, double* theta);
-void trace_trans_cs(CSptr target_cs, double* x, double* y, double* theta);
-
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
-#endif  // __AUXLIB_CARTESIAN2D_H
+#endif  // YPSPUR_UTILITY_H

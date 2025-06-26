@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef PARAM_H
-#define PARAM_H
+#ifndef YPSPUR_PARAM_H
+#define YPSPUR_PARAM_H
 
 #include <stdio.h>
 
-#include <ypparam.h>
-#include <utility.h>
+#include <ypspur/ypparam.h>
+#include <ypspur/utility.h>
 
 #include <pthread.h>
 
@@ -118,4 +118,4 @@ void param_update(void* filename);
 void init_param_update_thread(pthread_t* thread, char* filename);
 void param_update_loop_cleanup(void* data);
 
-#endif  // PARAM_H
+#endif  // YPSPUR_PARAM_H

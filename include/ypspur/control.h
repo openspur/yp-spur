@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef YPSPUR_CONTROL_H
+#define YPSPUR_CONTROL_H
 
 #include <pthread.h>
 
-#include <command.h>
-#include <odometry.h>
+#include <ypspur/command.h>
+#include <ypspur/odometry.h>
 
 int robot_speed_smooth(SpurUserParamsPtr spur);
 void robot_speed(SpurUserParamsPtr spur);
@@ -61,4 +61,4 @@ void init_control_thread(pthread_t* thread);
 void set_run_mode(SpurRunMode mode);
 SpurRunMode get_run_mode(void);
 
-#endif  // CONTROL_H
+#endif  // YPSPUR_CONTROL_H

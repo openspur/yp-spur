@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 
-#include <formula-calc.h>
+#include <formula-calc/formula-calc.h>
 
 TEST(FormulaCalcTest, testFormulaCalculation)
 {

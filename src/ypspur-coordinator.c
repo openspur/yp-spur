@@ -32,26 +32,21 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
-#include <shvel-param.h>
-
 /* yp-spur 用 */
-#include <ypspur-coordinator.h>
-#include <serial.h>
-#include <param.h>
-#include <control.h>
-#include <command.h>
-#include <odometry.h>
-#include <ypprotocol.h>
-#include <adinput.h>
-#include <ssm_spur_handler.h>
-#include <utility.h>
-#include <yprintf.h>
-#include <ping.h>
+#include <ypspur/adinput.h>
+#include <ypspur/command.h>
+#include <ypspur/control.h>
+#include <ypspur/odometry.h>
+#include <ypspur/param.h>
+#include <ypspur/ping.h>
+#include <ypspur/serial.h>
+#include <ypspur/ssm_spur_handler.h>
+#include <ypspur/utility.h>
+#include <ypspur/ypprotocol.h>
+#include <ypspur/yprintf.h>
 
 /* ライブラリ用 */
 #include <ypspur.h>
-#include <cartesian2d.h>
 
 #include <pthread.h>
 

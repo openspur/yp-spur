@@ -30,8 +30,8 @@ extern "C"
 {
 #endif  // __cplusplus
 
-#include <param.h>
-#include <ypparam.h>
+#include <ypspur/param.h>
+#include <ypspur/ypparam.h>
 
 #ifdef __cplusplus
 }

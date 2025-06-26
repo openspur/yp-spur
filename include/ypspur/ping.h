@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2020 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,41 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPPROTOCOL_H
-#define YPPROTOCOL_H
+#ifndef YPSPUR_PING_H
+#define YPSPUR_PING_H
 
-#include <stdio.h>
-#include <string.h>
+int ping();
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif  // __cplusplus
-
-/** Structure of VV command */
-typedef struct VERSION_INFO
-{
-  char vender[128];
-  char product[128];
-  char firmware[128];
-  char protocol[128];
-  char serialno[128];
-} Ver_t;
-
-/** Structure of PP command */
-typedef struct PARAMETER_INFO
-{
-  char pwm_resolution[128];
-  char motor_num[128];
-  char robot_name[128];
-} Param_t;
-
-int get_version(Ver_t* apVer);
-int get_parameter(Param_t* apParam);
-int set_baudrate(int baud);
-int get_embedded_param(char* param);
-
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
-#endif  // YPPROTOCOL_H
+#endif  // YPSPUR_PING_H

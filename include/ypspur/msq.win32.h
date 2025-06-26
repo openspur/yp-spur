@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef MSQ_WIN32_H
-#define MSQ_WIN32_H
+#ifndef YPSPUR_MSQ_WIN32_H
+#define YPSPUR_MSQ_WIN32_H
 
 #include <sys/types.h>
 
@@ -108,4 +108,4 @@ int msgctl(int msqid, int cmd, struct msqid_ds* buf);
 
 #endif  // __MINGW32__
 
-#endif  // MSQ_WIN32_H
+#endif  // YPSPUR_MSQ_WIN32_H

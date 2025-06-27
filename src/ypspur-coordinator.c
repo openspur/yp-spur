@@ -25,8 +25,6 @@
 #include <unistd.h>
 
 #include <fcntl.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -40,6 +38,7 @@
 #include <ypspur/param.h>
 #include <ypspur/ping.h>
 #include <ypspur/serial.h>
+#include <ypspur/signal.h>
 #include <ypspur/ssm_spur_handler.h>
 #include <ypspur/utility.h>
 #include <ypspur/ypprotocol.h>
@@ -49,81 +48,6 @@
 #include <ypspur.h>
 
 #include <pthread.h>
-
-#if HAVE_SIGLONGJMP
-sigjmp_buf ctrlc_capture;
-#elif HAVE_LONGJMP
-jmp_buf ctrlc_capture;
-#endif  // HAVE_SIGLONGJMP
-
-#if defined(__MINGW32__)
-BOOL WINAPI win32_ctrlc_handler(DWORD type)
-{
-  fprintf(stderr, "\n");
-#ifdef HAVE_SSM
-  // SSM終了処理
-  if (!option(OPTION_WITHOUT_SSM))
-    end_ypspurSSM();
-#endif  // HAVE_SSM
-  if (!(option(OPTION_WITHOUT_DEVICE)))
-  {
-    serial_close();
-  }
-
-  return TRUE;
-}
-#else
-void emergency(int sig)
-{
-  fprintf(stderr, "\n");
-#if HAVE_SIGLONGJMP
-  siglongjmp(ctrlc_capture, 1);
-#elif HAVE_LONGJMP
-  longjmp(ctrlc_capture, 1);
-#else
-#ifdef HAVE_SSM
-  // SSM終了処理
-  if (!option(OPTION_WITHOUT_SSM))
-    end_ypspurSSM();
-#endif  // HAVE_SSM
-  if (!(option(OPTION_WITHOUT_DEVICE)))
-  {
-    serial_close();
-  }
-
-  exit(0);
-#endif  // HAVE_SIGLONGJMP
-}
-#endif  // defined(__MINGW32__)
-
-void escape_road(const int enable)
-{
-#if defined(__MINGW32__)
-  if (enable)
-  {
-    if (!SetConsoleCtrlHandler(win32_ctrlc_handler, TRUE))
-    {
-      yprintf(OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler registration failed.\n");
-    }
-  }
-  else
-  {
-    if (!SetConsoleCtrlHandler(NULL, FALSE))
-    {
-      yprintf(OUTPUT_LV_ERROR, "Error: Win32 Ctrl+C handler restoration failed.\n");
-    }
-  }
-#else
-  if (enable)
-  {
-    signal(SIGINT, emergency);
-  }
-  else
-  {
-    signal(SIGINT, SIG_DFL);
-  }
-#endif  // defined(__MINGW32__)
-}
 
 int main(int argc, char* argv[])
 {
@@ -497,22 +421,14 @@ int main(int argc, char* argv[])
       update_thread_en = 0;
     }
 
-// オドメトリ受信ループ
-#if HAVE_SIGLONGJMP
-    if (sigsetjmp(ctrlc_capture, 1) != 0)
+    // オドメトリ受信ループ
+    if (ctrlc_setjmp() != 0)
     {
       quit = 1;
     }
     else
-#elif HAVE_LONGJMP
-    if (setjmp(ctrlc_capture) != 0)
     {
-      quit = 1;
-    }
-    else
-#endif  // HAVE_SIGLONGJMP
-    {
-      escape_road(1);
+      enable_ctrlc_handling(1);
       if (!(option(OPTION_WITHOUT_DEVICE)))
       {
         odometry_receive_loop();
@@ -526,7 +442,7 @@ int main(int argc, char* argv[])
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", param->device_name);
     }
-    escape_road(0);
+    enable_ctrlc_handling(0);
 
     // 終了処理
     if (update_thread_en)

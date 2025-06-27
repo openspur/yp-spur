@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2010-2025 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,18 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPSPUR_SSM_SPUR_HANDLER_H
-#define YPSPUR_SSM_SPUR_HANDLER_H
+#ifndef YPSPUR_SIGNAL_H
+#define YPSPUR_SIGNAL_H
 
-#include <ypspur/command.h>
-#include <ypspur/odometry.h>
+int ctrlc_setjmp();
+void enable_ctrlc_handling(const int enable);
 
-void init_ypspurSSM(int ssm_id);
-void end_ypspurSSM(void);
-void write_ypspurSSM(
-    int odometry_updated, int receive_count,
-    Odometry* odm_log, int readdata_num, Short_2Char* cnt1_log, Short_2Char* cnt2_log,
-    Short_2Char* pwm1_log, Short_2Char* pwm2_log, int ad_log[][8]);
-void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur);
-
-#endif  // YPSPUR_SSM_SPUR_HANDLER_H
+#endif  // YPSPUR_SIGNAL_H

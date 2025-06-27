@@ -204,6 +204,7 @@ add_executable(ypspur-coordinator
   src/param.c
   src/ping.c
   src/serial.c
+  src/signal.c
   src/ssm_spur_handler.c
   src/utility.c
   src/ypprotocol.c

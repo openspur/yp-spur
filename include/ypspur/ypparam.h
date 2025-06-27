@@ -42,7 +42,7 @@ typedef int pid_t;
 
 #endif  // defined(_WIN32)
 
-/// コマンドナンバー
+// コマンドナンバー
 enum
 {
   YPSPUR_FREE = 0x10,
@@ -113,8 +113,8 @@ enum
   YPSPUR_GET_JOINT_TORQUE,
 };
 
-/// パラメータナンバー
-/// set_parameter用でマイコンに送る値とは異なる
+// パラメータナンバー
+// set_parameter用でマイコンに送る値とは異なる
 typedef enum
 {
   // システム
@@ -220,7 +220,7 @@ typedef enum
   YP_PARAM_MAX_TIME_JUMP,
   YP_PARAM_MAX_TIME_JUMP_NEG,
 
-  YP_PARAM_NUM  ///< パラメータの最大値
+  YP_PARAM_NUM  /// パラメータの最大値
 } YPSpur_param;
 
 // 自分で指定しない（できない）パラメータは最初の文字が'_'で始まっている

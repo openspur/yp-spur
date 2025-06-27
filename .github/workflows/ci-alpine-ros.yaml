@@ -12,3 +12,5 @@ permissions:
 jobs:
   test:
     uses: alpine-ros/alpine-ros-ci-workflows/.github/workflows/ros1.yaml@main
+    with:
+      abuild-env: CTEST_OUTPUT_ON_FAILURE=1

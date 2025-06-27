@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2010-2025 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,9 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <ypspur/ypspur-coordinator.h>
+#ifndef YPSPUR_YPSPUR_COORDINATOR_H
+#define YPSPUR_YPSPUR_COORDINATOR_H
 
-int main(int argc, char* argv[])
+#include <ypspur/ypparam.h>
+
+#ifdef __cplusplus
+extern "C"
 {
-  return ypsc_main(argc, argv);
+#endif  // __cplusplus
+
+int ypsc_main(int argc, char* argv[]);
+int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg);
+
+#ifdef __cplusplus
 }
+#endif  // __cplusplus
+
+#endif  // YPSPUR_YPSPUR_COORDINATOR_H

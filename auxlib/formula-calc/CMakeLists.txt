@@ -62,6 +62,7 @@ endif(GTEST_FOUND AND THREADS_FOUND)
 install(TARGETS
     formula-calc
     formula-calc-static
+  EXPORT YPSpurExport
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

@@ -31,10 +31,10 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
+// ボディパラメータ
 #include <ypspur/shvel-param.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/communication.h>
 #include <ypspur/control.h>
@@ -43,7 +43,7 @@
 #include <ypspur/utility.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <formula-calc/formula-calc.h>
 #include <ypspur.h>
 
@@ -112,7 +112,7 @@ ParametersPtr get_param_ptr()
 int is_character(int c);
 int is_number(int c);
 
-/* 引数の説明 */
+// 引数の説明
 void arg_help(int argc, char* argv[])
 {
   fprintf(stderr, "USAGE: %s [OPTION]...\n\n", argv[0]);
@@ -126,7 +126,7 @@ void arg_help(int argc, char* argv[])
   fprintf(stderr, "  --param-help             Comments of parameters\n\n");
 }
 
-/* 隠しコマンドの説明 */
+// 隠しコマンドの説明
 void arg_longhelp(int argc, char* argv[])
 {
   arg_help(argc, argv);
@@ -152,7 +152,7 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --exit-on-time-jump      Immediately stop control and exit on system time jump.\n");
 }
 
-/* 引数の説明 */
+// 引数の説明
 void param_help(void)
 {
   int i;
@@ -168,7 +168,7 @@ void param_help(void)
   }
 }
 
-/* 引数の解析 */
+// 引数の解析
 int arg_analyze(int argc, char* argv[])
 {
   int i;
@@ -381,7 +381,7 @@ int arg_analyze(int argc, char* argv[])
   return 1;
 }
 
-/* parameter set command */
+// parameter set command
 int parameter_set(char param, char id, long long int value64)
 {
   char buf[7];
@@ -451,7 +451,7 @@ void param_calc()
   }
 }
 
-/* パラメータファイルからの読み込み */
+// パラメータファイルからの読み込み
 int set_paramptr(FILE* paramfile)
 {
   char param_names[YP_PARAM_NUM][20] = YP_PARAM_NAME;
@@ -590,7 +590,7 @@ int set_paramptr(FILE* paramfile)
     switch (read_state)
     {
       case 0:
-        /* - */
+        // -
         if (c == '#')
         {
           read_state = 1;
@@ -602,13 +602,13 @@ int set_paramptr(FILE* paramfile)
           str_wp = 1;
         }
         break;
-      case 1: /* comment */
+      case 1:  // comment
         if (c == '\n')
         {
           read_state = 0;
         }
         break;
-      case 2: /* name */
+      case 2:  // name
         name[str_wp] = c;
         if (!(is_character(c) || is_number(c) || c == '[' || c == ']' || c == '-'))
         {
@@ -621,7 +621,7 @@ int set_paramptr(FILE* paramfile)
           str_wp++;
         }
         break;
-      case 3: /* value */
+      case 3:  // value
         if (is_number(c))
         {
           str_wp = 0;
@@ -689,7 +689,7 @@ int set_paramptr(FILE* paramfile)
           }
         }
         break;
-      case 4: /* value */
+      case 4:  // value
         if (!is_number(c))
         {
           value_str[str_wp] = 0;
@@ -740,7 +740,7 @@ int set_paramptr(FILE* paramfile)
           str_wp++;
         }
         break;
-      case 5: /* value */
+      case 5:  // value
         if (c == '#' || c == '\n')
         {
           value_str[str_wp] = 0;
@@ -969,7 +969,7 @@ int set_paramptr(FILE* paramfile)
   // パラメータの指定によって自動的に求まるパラメータの計算
   calc_param_inertia2ff();
 
-  /* パラメータを有効にする */
+  // パラメータを有効にする
   enable_state(YP_STATE_MOTOR);
   enable_state(YP_STATE_VELOCITY);
   enable_state(YP_STATE_BODY);
@@ -980,7 +980,7 @@ int set_paramptr(FILE* paramfile)
   return 1;
 }
 
-/* パラメータファイルからの読み込み */
+// パラメータファイルからの読み込み
 int set_param(char* filename, char* concrete_path)
 {
   FILE* paramfile;
@@ -1000,8 +1000,7 @@ int set_param(char* filename, char* concrete_path)
 #if HAVE_PKG_CONFIG
     if (!strchr(filename, '/'))
     {
-      /* ファイルが見つからないとき、かつパス指定でないときshareディレクトリを見に行く
-       */
+      // ファイルが見つからないとき、かつパス指定でないときshareディレクトリを見に行く
       fd = popen("pkg-config --variable=YP_PARAMS_DIR yp-robot-params", "r");
       if ((fd == NULL))
       {
@@ -1104,7 +1103,7 @@ void param_update(void* filename)
   pthread_cleanup_pop(1);
 }
 
-/* パラメータ適用 */
+// パラメータ適用
 int apply_robot_params()
 {
   yprintf(OUTPUT_LV_INFO, "Applying parameters.\n");
@@ -1138,12 +1137,12 @@ int apply_robot_params()
     }
   }
 
-  /* モータのパラメータ */
+  // モータのパラメータ
   if (set_param_motor() < 1)
     return 0;
   yp_usleep(30000);
 
-  /* 速度制御パラメータ */
+  // 速度制御パラメータ
   if (set_param_velocity() < 1)
     return 0;
   yp_usleep(100000);

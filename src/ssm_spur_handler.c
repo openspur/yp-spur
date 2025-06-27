@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* SSM 用 */
+// SSM 用
 #ifdef HAVE_SSM
 #include <ssm.h>
 #include "ssmtype/spur-odometry.h"
@@ -29,7 +29,7 @@
 #include "ssmtype/ypspur-ad.h"
 #endif  // HAVE_SSM
 
-/* yp-spur用 */
+// yp-spur用
 #include "ypspur.h"
 #include "ypspur/odometry.h"
 #include "ypspur/param.h"
@@ -44,7 +44,7 @@ int g_ssm_adj_enable = 0;
 int g_ssm_id = 0;
 #endif  // HAVE_SSM
 
-/* SSM の初期化 */
+// SSM の初期化
 void init_ypspurSSM(int ssm_id)
 {
 #ifdef HAVE_SSM
@@ -53,7 +53,7 @@ void init_ypspurSSM(int ssm_id)
   yprintf(OUTPUT_LV_INFO, "    with SSM\n");
   if (!initSSM())
   {
-    /* SSMが起動していない */
+    // SSMが起動していない
     yprintf(OUTPUT_LV_ERROR, "\n SSM is not available.\n");
     g_ssm_enable = 0;
   }
@@ -102,23 +102,23 @@ void write_ypspurSSM(int odometry_updated, int receive_count,
     YP_ad ad;
     ssmTimeT time;
     int time_offset;
-    /* SSMへの出力 */
+    // SSMへの出力
     time_offset = receive_count - odometry_updated + 1;
     for (i = 0; i < odometry_updated; i++)
     {
       time = time_estimate(time_offset + i);
-      /* BSの出力 */
+      // BSの出力
       odm.x = odm_log[i].x;
       odm.y = odm_log[i].y;
       odm.theta = odm_log[i].theta;
       odm.v = odm_log[i].v;
       odm.w = odm_log[i].w;
       writeSSM(g_odm_bs_sid, &odm, time);
-      /* GLの出力 */
+      // GLの出力
       CS_recursive_trans(get_cs_pointer(CS_GL), get_cs_pointer(CS_BS), &odm.x, &odm.y, &odm.theta);
       writeSSM(g_odm_sid, &odm, time);
     }
-    /* PWM,カウンタ値,AD値の出力 */
+    // PWM,カウンタ値,AD値の出力
     time_offset = receive_count - readdata_num + 1;
     for (i = 0; i < readdata_num; i++)
     {
@@ -135,7 +135,7 @@ void write_ypspurSSM(int odometry_updated, int receive_count,
 #endif  // HAVE_SSM
 }
 
-/* オドメトリ修正情報との融合 */
+// オドメトリ修正情報との融合
 void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
 {
 #ifdef HAVE_SSM
@@ -145,9 +145,9 @@ void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
   CoordinateSystem bs_cs, adj_cs;
   int tid;
   if (g_ssm_enable)
-  { /* 20ms毎？ */
+  {  // 20ms毎？
     if (!g_ssm_adj_enable)
-    { /* SSMcheck */
+    {  // SSMcheck
       now_time = get_time();
       if (now_time > before_time + 1)
       {
@@ -166,7 +166,7 @@ void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
     }
     else
     {
-      /* パラメータの変更がおこらないようにブロック */
+      // パラメータの変更がおこらないようにブロック
       pthread_mutex_lock(&spur->mutex);
       // 最新の修正位置
       if ((tid = readSSM(g_odm_adj_sid, (char*)&adj_odometry, &now_time, -1)) >= 0)
@@ -177,18 +177,18 @@ void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
           if ((tid = readSSM_time(g_odm_bs_sid, (char*)&bs_odometry, now_time, &time)) >= 0)
           {
             // 時間が1秒以内（止まっていない）で、データがあるなら実行
-            /* 座標系作成 */
+            // 座標系作成
             bs_cs.x = bs_odometry.x;
             bs_cs.y = bs_odometry.y;
             bs_cs.theta = bs_odometry.theta;
             adj_cs.x = adj_odometry.x;
             adj_cs.y = adj_odometry.y;
             adj_cs.theta = adj_odometry.theta;
-            /* 修正後の位置を計算 */
-            target_pos = *odm; /* 最新の位置 */
-            /* 現在位置との微妙な差を計算 */
+            // 修正後の位置を計算
+            target_pos = *odm;  // 最新の位置
+            // 現在位置との微妙な差を計算
             trans_cs(&bs_cs, &target_pos.x, &target_pos.y, &target_pos.theta);
-            /* 微妙な差を付け加える */
+            // 微妙な差を付け加える
             inv_trans_cs(&adj_cs, &target_pos.x, &target_pos.y, &target_pos.theta);
 
             double data[3] = {target_pos.x, target_pos.y, target_pos.theta};
@@ -196,7 +196,7 @@ void coordinate_synchronize(Odometry* odm, SpurUserParamsPtr spur)
           }
         }
       }
-      /* 保護終わり */
+      // 保護終わり
       pthread_mutex_unlock(&spur->mutex);
     }
   }

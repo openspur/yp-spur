@@ -34,16 +34,16 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
-/*-PI < theta < PIに調整する*/
+// -PI < theta < PIに調整する
 double trans_q(double theta)
 {
   while (theta > M_PI)
@@ -53,7 +53,7 @@ double trans_q(double theta)
   return theta;
 }
 
-/* 円弧追従 */
+// 円弧追従
 double circle_follow(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double d, q, r, ang, rad;
@@ -79,7 +79,7 @@ double circle_follow(OdometryPtr odm, SpurUserParamsPtr spur)
   return regurator(d, q, rad, spur->v, spur->w, spur);
 }
 
-/* 直線追従 */
+// 直線追従
 double line_follow(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double d, q;
@@ -92,7 +92,7 @@ double line_follow(OdometryPtr odm, SpurUserParamsPtr spur)
   // 1000は無限大のつもり(1km)
 }
 
-/* 軌跡追従レギュレータ */
+// 軌跡追従レギュレータ
 double regurator(double d, double q, double r, double v_max, double w_max, SpurUserParamsPtr spur)
 {
   double v, w;
@@ -123,7 +123,7 @@ double regurator(double d, double q, double r, double v_max, double w_max, SpurU
   return d;
 }
 
-/* 回転 */
+// 回転
 double spin(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double w, theta;
@@ -142,7 +142,7 @@ double spin(OdometryPtr odm, SpurUserParamsPtr spur)
   return fabs(odm->theta - spur->theta);
 }
 
-/* 方角 */
+// 方角
 double orient(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double w, theta;
@@ -161,7 +161,7 @@ double orient(OdometryPtr odm, SpurUserParamsPtr spur)
   return fabs(odm->theta - spur->theta);
 }
 
-/* 点までの距離 */
+// 点までの距離
 double dist_pos(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double r;
@@ -170,7 +170,7 @@ double dist_pos(OdometryPtr odm, SpurUserParamsPtr spur)
   return r;
 }
 
-/* 直線まで移動し止まる */
+// 直線まで移動し止まる
 int stop_line(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double a;

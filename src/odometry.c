@@ -29,7 +29,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/adinput.h>
 #include <ypspur/communication.h>
 #include <ypspur/control.h>
@@ -39,7 +39,7 @@
 #include <ypspur/utility.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 #include <carte2d/cartesian2d.h>
 
@@ -58,16 +58,15 @@ CSptr g_BL;
 Odometry g_odometry;
 ErrorState g_error_state;
 
-/* CS の初期化 */
+// CS の初期化
 void init_coordinate_systems(void)
 {
-  /* */
-  g_BS = CS_add(0, 0, 0, 0);    /* オドメトリ座標系 */
-  g_GL = CS_add(g_BS, 0, 0, 0); /* グローバル座標系 */
-  g_LC = CS_add(g_GL, 0, 0, 0); /* ローカル座標系 */
-  g_FS = CS_add(g_BS, 0, 0, 0); /* 自己位置 */
-  g_BL = CS_add(g_BS, 0, 0, 0); /* オドメトリローカル座標系 */
-  g_SP = CS_add(g_BS, 0, 0, 0); /* Spur座標系（走行制御用） */
+  g_BS = CS_add(0, 0, 0, 0);     // オドメトリ座標系
+  g_GL = CS_add(g_BS, 0, 0, 0);  // グローバル座標系
+  g_LC = CS_add(g_GL, 0, 0, 0);  // ローカル座標系
+  g_FS = CS_add(g_BS, 0, 0, 0);  // 自己位置
+  g_BL = CS_add(g_BS, 0, 0, 0);  // オドメトリローカル座標系
+  g_SP = CS_add(g_BS, 0, 0, 0);  // Spur座標系（走行制御用）
 }
 
 void init_odometry(void)
@@ -134,7 +133,7 @@ void set_cs(YPSpur_cs cs, double x, double y, double theta)
   CS_set(get_cs_pointer(cs), x, y, theta);
 }
 
-/* オドメトリ計算 */
+// オドメトリ計算
 void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
 {
   double v, w;
@@ -171,19 +170,19 @@ void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
       xp->enc[i] += cnt_diff;
     }
 
-    /* 角速度計算 */
+    // 角速度計算
     mvel[i] = 2.0 * M_PI *
               ((double)cnt_diff) * pow(2, p(YP_PARAM_ENCODER_DIV, i)) /
               (p(YP_PARAM_COUNT_REV, i) * dt);
     wvel[i] = mvel[i] / p(YP_PARAM_GEAR, i);
 
-    /* トルク推定 */
+    // トルク推定
     volt[i] = (double)pwm[i] * p(YP_PARAM_VOLT, i) / (p(YP_PARAM_PWM_MAX, i) * (dt / p(YP_PARAM_CYCLE, i)));
     vc[i] = (p(YP_PARAM_MOTOR_VC, i) / 60) * 2 * M_PI;  // [rpm/V] => [(rad/s)/V]
     // TC [Nm/A]
     mtorque[i] = (p(YP_PARAM_MOTOR_TC, i) * (volt[i] - mvel[i] / vc[i])) /
                  (p(YP_PARAM_MOTOR_R, i) * p(YP_PARAM_ENCODER_DENOMINATOR, i));
-    /* 摩擦補償の補償 */
+    // 摩擦補償の補償
     if (wvel[i] > 0)
     {
       mtorque[i] -= p(YP_PARAM_TORQUE_NEWTON, i) + p(YP_PARAM_TORQUE_VISCOS, i) * fabs(mvel[i]);
@@ -195,14 +194,14 @@ void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
     wtorque[i] = mtorque[i] * p(YP_PARAM_GEAR, i);
   }
 
-  /* キネマティクス計算 */
+  // キネマティクス計算
   v = p(YP_PARAM_RADIUS, MOTOR_RIGHT) * wvel[MOTOR_RIGHT] / 2.0 + p(YP_PARAM_RADIUS, MOTOR_LEFT) * wvel[MOTOR_LEFT] / 2.0;
   w = +p(YP_PARAM_RADIUS, MOTOR_RIGHT) * wvel[MOTOR_RIGHT] / p(YP_PARAM_TREAD, 0) - p(YP_PARAM_RADIUS, MOTOR_LEFT) * wvel[MOTOR_LEFT] / p(YP_PARAM_TREAD, 0);
 
   torque_trans = wtorque[MOTOR_RIGHT] / p(YP_PARAM_RADIUS, MOTOR_RIGHT) + wtorque[MOTOR_LEFT] / p(YP_PARAM_RADIUS, MOTOR_LEFT);
   torque_angular = (+wtorque[MOTOR_RIGHT] / p(YP_PARAM_RADIUS, MOTOR_RIGHT) - wtorque[MOTOR_LEFT] / p(YP_PARAM_RADIUS, MOTOR_LEFT)) * p(YP_PARAM_TREAD, 0) / 2;
 
-  /* オドメトリ計算 */
+  // オドメトリ計算
   xp->x = xp->x + v * cos(xp->theta) * dt;
   xp->y = xp->y + v * sin(xp->theta) * dt;
   xp->theta = xp->theta + w * dt;
@@ -226,18 +225,18 @@ void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
   xp->torque_trans = torque_trans;
   xp->torque_angular = torque_angular;
 
-  /*-PI< <PIに調整*/
+  // -PI< <PIに調整
   // if(xp->theta <-M_PI)xp->theta += 2*M_PI;
   // if(xp->theta > M_PI)xp->theta -= 2*M_PI;
 
-  /* FS座標系セット */
+  // FS座標系セット
   CS_set(g_FS, xp->x, xp->y, xp->theta);
 
   // 数式指定のパラメータを評価
   param_calc();
 }
 
-/* 割り込み型データの処理 */
+// 割り込み型データの処理
 void process_int4(
     OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time)
 {
@@ -334,7 +333,7 @@ void process_int4(
   }
 }
 
-/* Odometry型データの座標系を変換 */
+// Odometry型データの座標系を変換
 void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm)
 {
   double x, y, theta;
@@ -350,7 +349,7 @@ void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm)
   dst_odm->time = g_odometry.time;
 }
 
-/* オドメトリへのポインタを取得 */
+// オドメトリへのポインタを取得
 OdometryPtr get_odometry_ptr()
 {
   return &g_odometry;
@@ -459,7 +458,7 @@ double time_synchronize(double receive_time, int readnum, int wp)
   return g_offset;
 }
 
-/* シリアル受信処理 */
+// シリアル受信処理
 int odometry_receive(char* buf, int len, double receive_time, void* data)
 {
   static int com_wp = 0;
@@ -492,11 +491,11 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
   param = get_param_ptr();
 
   decoded_len_req =
-      (+get_ad_num()                 /* ad */
-       + get_dio_num()               /* dio */
-       + param->num_motor_enable * 2 /* cnt + pwm */
+      (get_ad_num()                   // ad
+       + get_dio_num()                // dio
+       + param->num_motor_enable * 2  // cnt + pwm
        ) *
-      2 /* data cnt -> byte */;
+      2;  // data cnt -> byte
   readdata_num = 0;
   odometry_updated = 0;
   // 読み込まれたデータを解析
@@ -516,7 +515,7 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
     {
       unsigned char data[48];
 
-      /* デコード処理 */
+      // デコード処理
       decoded_len = decode((unsigned char*)com_buf, com_wp, (unsigned char*)data, 48);
 
       switch (mode)

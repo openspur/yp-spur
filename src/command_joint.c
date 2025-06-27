@@ -28,13 +28,13 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/param.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 void joint_torque_com(int id, double* data, SpurUserParamsPtr spur)

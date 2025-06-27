@@ -29,7 +29,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/communication.h>
 
 /**

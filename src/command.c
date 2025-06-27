@@ -27,7 +27,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/ipcommunication.h>
@@ -35,7 +35,7 @@
 #include <ypspur/serial.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 #include <pthread.h>
@@ -75,7 +75,7 @@ void init_spur_command(void)
   pthread_mutex_init(&g_spur.mutex, NULL);
 }
 
-/* コマンド受信 */
+// コマンド受信
 void command(void)
 {
   YPSpur_msg msg, res_msg;
@@ -86,7 +86,7 @@ void command(void)
 
   param = get_param_ptr();
 
-  /* initialize message queue */
+  // initialize message queue
   if (option(OPTION_SOCKET))
   {
     len = ipcmd_open_tcp(&ipcmd, NULL, get_param_ptr()->port);
@@ -97,7 +97,7 @@ void command(void)
   }
   if (len < 0)
   {
-    /* queue_error */
+    // queue_error
     yprintf(OUTPUT_LV_ERROR, "Error: Can't initialize message queue.\n");
     return;
   }
@@ -110,7 +110,7 @@ void command(void)
 
   while (1)
   {
-    /* 1コマンド取得 */
+    // 1コマンド取得
     len = ipcmd.recv(&ipcmd, &msg);
     if (len < YPSPUR_MSG_SIZE)
     {
@@ -119,10 +119,10 @@ void command(void)
     }
 
     pthread_mutex_lock(&g_spur.mutex);
-    /* コマンド解析・返信 */
+    // コマンド解析・返信
     switch (msg.type)
     {
-      /*--------command_set.c--------*/
+      // --------command_set.c--------
       case YPSPUR_SET_POS:
         set_pos_com(msg.cs, msg.data, &g_spur);
         yprintf(OUTPUT_LV_DEBUG, "Command: set pos %f %f %f\n", msg.data[0], msg.data[1], msg.data[2]);
@@ -156,7 +156,7 @@ void command(void)
         yprintf(OUTPUT_LV_DEBUG, "Command: tilt %f %f\n", g_spur.dir, g_spur.tilt);
         break;
 
-      /*--------command_run.c----------*/
+      // --------command_run.c----------
       case YPSPUR_LINE:
         line_com(msg.cs, msg.data, &g_spur);
         yprintf(OUTPUT_LV_DEBUG, "Command: line %f %f %f\n", g_spur.x, g_spur.y, g_spur.theta);
@@ -227,7 +227,7 @@ void command(void)
         yprintf(OUTPUT_LV_DEBUG, "Command: wheel_angle %f %f\n", g_spur.wheel_angle[0], g_spur.wheel_angle[1]);
         break;
 
-      /*----------command_get.c------------------*/
+      // ----------command_get.c------------------
       case YPSPUR_GET_POS:
         get_pos_com(msg.cs, msg.data, res_msg.data, &g_spur);
         message_return(&ipcmd, msg.pid, &res_msg);
@@ -284,7 +284,7 @@ void command(void)
         yprintf(OUTPUT_LV_DEBUG, "Command: over line ( dist = %f )\n", res_msg.data[0]);
         break;
 
-      /*-------------command_param.c---------------*/
+      // -------------command_param.c---------------
       case YPSPUR_PARAM_SET:
         param_set_com(msg.cs, msg.data, &g_spur);
         yprintf(OUTPUT_LV_DEBUG, "Command: param_set %s %f\n", param_name[msg.cs], msg.data[0]);
@@ -300,7 +300,7 @@ void command(void)
         param_state_com(msg.cs, msg.data, &g_spur);
         break;
 
-      /*-------------command_aux.c---------------*/
+      // -------------command_aux.c---------------
       case YPSPUR_GETAD:
         get_ad_com(msg.data, res_msg.data);
         message_return(&ipcmd, msg.pid, &res_msg);
@@ -328,7 +328,7 @@ void command(void)
         yprintf(OUTPUT_LV_DEBUG, "Command: dump_device %d %d\n", (int)msg.data[0], (int)msg.data[1]);
         break;
 
-      /*-------------command_joint.c---------------*/
+      // -------------command_joint.c---------------
       case YPSPUR_JOINT_TORQUE:
         joint_torque_com(msg.cs, msg.data, &g_spur);
         yprintf(OUTPUT_LV_DEBUG, "Command: joint %d torque %f\n", msg.cs, msg.data[0]);
@@ -388,13 +388,14 @@ void command(void)
         break;
     }
 
-    /* 走行モードに変化があったか */
+    // 走行モードに変化があったか
     if (g_spur.run_mode != g_spur.before_run_mode || g_spur.before_freeze != g_spur.freeze)
     {
       if (!g_spur.freeze)
       {
         if (g_spur.run_mode == RUN_FREE || g_spur.run_mode == RUN_WHEEL_TORQUE)
-        { /* フリーになった */
+        {
+          // フリーになった
           int i;
           for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
           {
@@ -446,7 +447,7 @@ void command(void)
   pthread_cleanup_pop(1);
 }
 
-/* メッセージを返す */
+// メッセージを返す
 void message_return(struct ipcmd_t* ipcmd, long retpid, YPSpur_msg* res_msg)
 {
   res_msg->type = 0;
@@ -455,7 +456,7 @@ void message_return(struct ipcmd_t* ipcmd, long retpid, YPSpur_msg* res_msg)
   ipcmd->send(ipcmd, res_msg);
 }
 
-/* すれっどの初期化 */
+// すれっどの初期化
 void init_command_thread(pthread_t* thread)
 {
   if (pthread_create(thread, NULL, (void*)command, NULL) != 0)

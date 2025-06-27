@@ -37,7 +37,7 @@
 #include <windows.h>
 #endif  // __WIN32
 
-/* get time stamp */
+// get time stamp
 double get_time(void)
 {
   struct timeval current;

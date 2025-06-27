@@ -28,13 +28,13 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 #include <carte2d/cartesian2d.h>
 

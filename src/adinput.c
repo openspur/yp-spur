@@ -30,12 +30,12 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/odometry.h>
 #include <ypspur/serial.h>
 #include <ypspur/utility.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 int ad[16];       // ad値保存用バッファ
@@ -60,7 +60,7 @@ int process_addata(unsigned char* buf, int len)
   return ad_num;
 }
 
-/* read ad data func for ssm write */
+// read ad data func for ssm write
 const int* get_addataptr()
 {
   return ad;
@@ -98,7 +98,7 @@ int admask_receive(char* buf, int len, double receive_time, void* data)
 
 int set_admask(unsigned char mask)
 {
-  /* Send & Recive Buffer */
+  // Send & Recive Buffer
   char buf[2048];
   int i;
 
@@ -132,7 +132,7 @@ int set_admask(unsigned char mask)
 
 int set_diomask(unsigned char enable)
 {
-  /* Send & Recive Buffer */
+  // Send & Recive Buffer
   char buf[2048];
   dio_num = 0;
 

@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/odometry.h>
@@ -37,7 +37,7 @@
 #include <ypspur/utility.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 void param_set_com(int cs, double* data, SpurUserParamsPtr spur)

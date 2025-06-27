@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/communication.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
@@ -39,7 +39,7 @@
 #include <errno.h>
 double SER_BAUDRATE;
 
-/* serial */
+// serial
 #if !defined(__MINGW32__)
 
 // Unix用コード
@@ -244,8 +244,8 @@ int serial_change_baudrate(int baud)
   newtio.c_iflag = IGNPAR;  // パリティエラーのデータは無視する
   newtio.c_oflag = 0;       // Disable implementation dependent processing
 
-  newtio.c_cc[VTIME] = 0; /* キャラクタ間タイマを使わない */
-  newtio.c_cc[VMIN] = 1;  /* 1文字来るまで，読み込みをブロックする */
+  newtio.c_cc[VTIME] = 0;  // キャラクタ間タイマを使わない
+  newtio.c_cc[VMIN] = 1;   // 1文字来るまで，読み込みをブロックする
 
   if (tcsetattr(g_device_port, TCSAFLUSH, &newtio))
   {

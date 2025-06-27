@@ -28,13 +28,13 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/adinput.h>
 #include <ypspur/odometry.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 void get_ad_com(double* data, double* resdata)

@@ -32,7 +32,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur 用 */
+// yp-spur 用
 #include <ypspur/adinput.h>
 #include <ypspur/command.h>
 #include <ypspur/control.h>
@@ -45,7 +45,7 @@
 #include <ypspur/ypprotocol.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 #include <pthread.h>
@@ -61,7 +61,7 @@ BOOL WINAPI win32_ctrlc_handler(DWORD type)
 {
   fprintf(stderr, "\n");
 #ifdef HAVE_SSM
-  /* SSM終了処理 */
+  // SSM終了処理
   if (!option(OPTION_WITHOUT_SSM))
     end_ypspurSSM();
 #endif  // HAVE_SSM
@@ -82,7 +82,7 @@ void emergency(int sig)
   longjmp(ctrlc_capture, 1);
 #else
 #ifdef HAVE_SSM
-  /* SSM終了処理 */
+  // SSM終了処理
   if (!option(OPTION_WITHOUT_SSM))
     end_ypspurSSM();
 #endif  // HAVE_SSM
@@ -125,7 +125,6 @@ void escape_road(const int enable)
 #endif  // defined(__MINGW32__)
 }
 
-/* main */
 int main(int argc, char* argv[])
 {
   pthread_t command_thread;
@@ -193,7 +192,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, " Ver. %s\n", PROJECT_VERSION);
     return EXIT_SUCCESS;
   }
-  if (!ret) /* オプション解析に失敗したとき */
+  if (!ret)  // オプション解析に失敗したとき
     return EXIT_FAILURE;
 
   yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -201,16 +200,16 @@ int main(int argc, char* argv[])
   yprintf(OUTPUT_LV_INFO, " Ver. %s\n", PROJECT_VERSION);
   yprintf(OUTPUT_LV_INFO, "++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 
-  /* パラメータを読み込み、セットする */
+  // パラメータを読み込み、セットする
   param = get_param_ptr();
 
 #ifdef HAVE_SSM
-  /* SSM初期化 */
+  // SSM初期化
   if (!option(OPTION_WITHOUT_SSM))
     init_ypspurSSM(param->ssm_id);
 #endif  // HAVE_SSM
 
-  /* 座標系の初期化、コマンド処理系の初期化 */
+  // 座標系の初期化、コマンド処理系の初期化
   init_coordinate_systems();
   init_odometry();
   init_spur_command();
@@ -464,7 +463,7 @@ int main(int argc, char* argv[])
         if (apply_robot_params() < 1)
           break;
 
-      /* サーボをかける */
+      // サーボをかける
       SpurUserParamsPtr spur;
       spur = get_spur_user_param_ptr();
       for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
@@ -476,7 +475,7 @@ int main(int argc, char* argv[])
 
     yprintf(OUTPUT_LV_INFO, "YP-Spur coordinator started.\n");
 
-    /* スレッド初期化 */
+    // スレッド初期化
     init_command_thread(&command_thread);
     command_thread_en = 1;
 
@@ -529,7 +528,7 @@ int main(int argc, char* argv[])
     }
     escape_road(0);
 
-    /* 終了処理 */
+    // 終了処理
     if (update_thread_en)
     {
       pthread_cancel(update_thread);
@@ -573,7 +572,7 @@ int main(int argc, char* argv[])
     serial_close();
 
 #ifdef HAVE_SSM
-  /* SSM終了処理 */
+  // SSM終了処理
   if (!option(OPTION_WITHOUT_SSM))
     end_ypspurSSM();
 #endif  // HAVE_SSM

@@ -34,10 +34,10 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* ボディパラメータ */
+// ボディパラメータ
 #include <ypspur/shvel-param.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/odometry.h>
@@ -47,12 +47,12 @@
 #include <ypspur/utility.h>
 #include <ypspur/yprintf.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <ypspur.h>
 
 #include <pthread.h>
 
-/* ホイール速度指令 */
+// ホイール速度指令
 int motor_control(SpurUserParamsPtr spur)
 {
   int i;
@@ -129,7 +129,7 @@ int motor_control(SpurUserParamsPtr spur)
   return 0;
 }
 
-/* [rad/s] */
+// [rad/s]
 void apply_motor_speed(SpurUserParamsPtr spur)
 {
   int i;
@@ -200,7 +200,7 @@ void apply_motor_speed(SpurUserParamsPtr spur)
   }
 }
 
-/* [rad/s] */
+// [rad/s]
 void apply_motor_torque(SpurUserParamsPtr spur)
 {
   int i;
@@ -236,7 +236,7 @@ void update_ref_speed(SpurUserParamsPtr spur)
   spur->wref_smooth = podm->w;
 }
 
-/* m/s rad/s */
+// m/s rad/s
 void robot_speed(SpurUserParamsPtr spur)
 {
   int i;
@@ -327,7 +327,6 @@ void wheel_torque(OdometryPtr odm, SpurUserParamsPtr spur, double* torque)
   }
 }
 
-/* - */
 int robot_speed_smooth(SpurUserParamsPtr spur)
 {
   int limit;
@@ -431,17 +430,17 @@ int robot_speed_smooth(SpurUserParamsPtr spur)
   return limit;
 }
 
-/* 重力補償 */
+// 重力補償
 double gravity_compensation(OdometryPtr odm, SpurUserParamsPtr spur)
 {
   double tilt, f;
 
-  /* 傾きを計算 */
+  // 傾きを計算
   tilt = atan(cos(odm->theta - spur->dir) * tan(spur->tilt));
-  /* 力を計算 */
+  // 力を計算
   f = p(YP_PARAM_MASS, 0) * GRAVITY * sin(tilt);
-  /* [N]=[kg]*[m/ss]*tilt */
-  /* [Nm] [N]* [m] /[in/out] */
+  // [N]=[kg]*[m/ss]*tilt
+  // [Nm] [N]* [m] /[in/out]
   spur->grav_torque[0] = f * p(YP_PARAM_RADIUS, MOTOR_RIGHT) / 2.0;
   spur->grav_torque[1] = f * p(YP_PARAM_RADIUS, MOTOR_LEFT) / 2.0;
   yprintf(OUTPUT_LV_DEBUG, "Force:%f Torque:%f/%f\n", f, spur->grav_torque[0], spur->grav_torque[1]);
@@ -498,7 +497,7 @@ void simulate_control(OdometryPtr odm, SpurUserParamsPtr spur)
   odm->theta = odm->theta + odm->w * dt;
 }
 
-/* 20msごとの割り込みで軌跡追従制御処理を呼び出す */
+// 20msごとの割り込みで軌跡追従制御処理を呼び出す
 void control_loop(void)
 {
   OdometryPtr odometry;
@@ -590,7 +589,7 @@ void control_loop(void)
   pthread_cleanup_pop(1);
 }
 
-/* 追従軌跡に応じた処理 */
+// 追従軌跡に応じた処理
 void run_control(Odometry odometry, SpurUserParamsPtr spur)
 {
   static double before_time = 0;
@@ -607,7 +606,7 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
   if (before_time == 0)
     return;
 
-  /* パラメータの変更がおこらないようにブロック */
+  // パラメータの変更がおこらないようにブロック
   pthread_mutex_lock(&spur->mutex);
 
   cstrans_odometry(CS_SP, &odometry);
@@ -659,7 +658,7 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
     {
       torque_ref[i] = 0;
     }
-    /* 重力補償 */
+    // 重力補償
     if (state(YP_STATE_GRAVITY))
     {
       gravity_compensation(&odometry, spur);
@@ -679,7 +678,7 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
       }
     }
 
-    /* 走行状態に応じた処理 */
+    // 走行状態に応じた処理
     switch (spur->run_mode)
     {
       case RUN_OPENFREE:
@@ -746,11 +745,11 @@ void run_control(Odometry odometry, SpurUserParamsPtr spur)
     motor_control(spur);
     apply_motor_speed(spur);
   }
-  /* 保護終わり */
+  // 保護終わり
   pthread_mutex_unlock(&spur->mutex);
 }
 
-/* すれっどの初期化 */
+// すれっどの初期化
 void init_control_thread(pthread_t* thread)
 {
   if (pthread_create(thread, NULL, (void*)control_loop, NULL) != 0)

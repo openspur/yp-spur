@@ -56,7 +56,7 @@ int ipcmd_open_msq(struct ipcmd_t* ipcmd, int key, int creat)
 {
   if (creat)
     creat = IPC_CREAT;
-  /* メッセージ・キューのオープン */
+  // メッセージ・キューのオープン
   ipcmd->socket = msgget(key, 0666 | creat);
 
   ipcmd->send = ipcmd_send;
@@ -68,7 +68,7 @@ int ipcmd_open_msq(struct ipcmd_t* ipcmd, int key, int creat)
     return -1;
   }
 
-  /* 内部データの初期化 */
+  // 内部データの初期化
   ipcmd->pid = 0x07fff & getpid();
   if (creat)
     ipcmd->pid = YPSPUR_MSG_CMD;

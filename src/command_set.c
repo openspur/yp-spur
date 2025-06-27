@@ -28,14 +28,14 @@
 #include <sys/types.h>
 #include <time.h>
 
-/* yp-spur用 */
+// yp-spur用
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/odometry.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 
-/* ライブラリ用 */
+// ライブラリ用
 #include <carte2d/cartesian2d.h>
 #include <ypspur.h>
 
@@ -91,10 +91,10 @@ void set_adjust_com(int cs, double* data, SpurUserParamsPtr spur)
   theta = data[2];
 
   cstrans_xy(cs, CS_GL, &x, &y, &theta);
-  /* ロボット(FS)がGL上のx,y,thetaに見えるとするとき */
-  /* FSからGLがどこに見えるか(GL->FS => FS->GL) */
+  // ロボット(FS)がGL上のx,y,thetaに見えるとするとき
+  // FSからGLがどこに見えるか(GL->FS => FS->GL)
   CS_turn_base(&x, &y, &theta);
-  /* それはBS上のどこか */
+  // それはBS上のどこか
   cstrans_xy(CS_FS, CS_BS, &x, &y, &theta);
   xgl = x;
   ygl = y;
@@ -105,14 +105,14 @@ void set_adjust_com(int cs, double* data, SpurUserParamsPtr spur)
   y = data[1];
   theta = data[2];
   cstrans_xy(cs, CS_SP, &x, &y, &theta);
-  /* ロボット(FS)がGL上のx,y,thetaに見えるとするとき */
-  /* FSからGLがどこに見えるか(GL->FS => FS->GL) */
+  // ロボット(FS)がGL上のx,y,thetaに見えるとするとき
+  // FSからGLがどこに見えるか(GL->FS => FS->GL)
   CS_turn_base(&x, &y, &theta);
-  /* それはBS上のどこか */
+  // それはBS上のどこか
   cstrans_xy(CS_FS, CS_BS, &x, &y, &theta);
 
-  /* SPをセット */
-  /* GLをセット */
+  // SPをセット
+  // GLをセット
   set_cs(CS_GL, xgl, ygl, thetagl);
   set_cs(CS_SP, x, y, theta);
 }

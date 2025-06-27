@@ -29,7 +29,7 @@ extern "C"
 {
 #endif  // __cplusplus
 
-/** Structure of VV command */
+/// Structure of VV command
 typedef struct VERSION_INFO
 {
   char vender[128];
@@ -39,7 +39,7 @@ typedef struct VERSION_INFO
   char serialno[128];
 } Ver_t;
 
-/** Structure of PP command */
+/// Structure of PP command
 typedef struct PARAMETER_INFO
 {
   char pwm_resolution[128];

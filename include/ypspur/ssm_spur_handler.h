@@ -22,6 +22,7 @@
 #define YPSPUR_SSM_SPUR_HANDLER_H
 
 #include <ypspur/command.h>
+#include <ypspur/odometry.h>
 
 void init_ypspurSSM(int ssm_id);
 void end_ypspurSSM(void);

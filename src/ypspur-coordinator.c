@@ -314,7 +314,6 @@ int main(int argc, char* argv[])
     {
       if (strlen(driver_param.pwm_resolution) > 0)
       {
-        yprintf(OUTPUT_LV_INFO, "driver_param.pwm_resolution is set");
         for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
         {
           *pp(YP_PARAM_PWM_MAX, i) = atoi(driver_param.pwm_resolution);

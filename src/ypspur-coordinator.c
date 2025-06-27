@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
   int update_thread_en;
   Ver_t version;
   Param_t driver_param;
-  int i, ret;
+  int ret;
   ParametersPtr param;
   char paramfile[512];
   int quit;
@@ -227,6 +227,11 @@ int main(int argc, char* argv[])
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
 
+    // Clear driver params
+    driver_param.robot_name[0] = 0;
+    driver_param.pwm_resolution[0] = 0;
+    strcpy(driver_param.motor_num, "2");
+
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
       yprintf(OUTPUT_LV_INFO, " Port    : %s \n", param->device_name);
@@ -237,6 +242,7 @@ int main(int argc, char* argv[])
       }
       if (!(option(OPTION_DO_NOT_USE_YP)))
       {
+        int i;
         int current, age;
         int device_current, device_age;
         sscanf(YP_PROTOCOL_NAME, "YPP:%d:%d", &current, &age);
@@ -318,12 +324,6 @@ int main(int argc, char* argv[])
           break;
         }
       }
-      else
-      {
-        driver_param.robot_name[0] = 0;
-        driver_param.pwm_resolution[0] = 0;
-        strcpy(driver_param.motor_num, "2");
-      }
       fflush(stderr);
     }
     else
@@ -391,8 +391,7 @@ int main(int argc, char* argv[])
     {
       if (strlen(driver_param.pwm_resolution) > 0)
       {
-        int i;
-        for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+        for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
         {
           *pp(YP_PARAM_PWM_MAX, i) = atoi(driver_param.pwm_resolution);
         }
@@ -401,7 +400,10 @@ int main(int argc, char* argv[])
       {
         if (option(OPTION_DO_NOT_USE_YP))
         {
-          *pp(YP_PARAM_PWM_MAX, i) = 1000;  // dummy value for simulation
+          for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+          {
+            *pp(YP_PARAM_PWM_MAX, i) = 1000;  // dummy value for simulation
+          }
         }
         else
         {
@@ -465,7 +467,7 @@ int main(int argc, char* argv[])
       /* サーボをかける */
       SpurUserParamsPtr spur;
       spur = get_spur_user_param_ptr();
-      for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
+      for (int i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
       {
         spur->wheel_mode[i] = MOTOR_CONTROL_VEL;
         spur->wheel_mode_prev[i] = -1;

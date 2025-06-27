@@ -20,11 +20,14 @@
 
 #include <setjmp.h>
 #include <signal.h>
+#include <stdio.h>
 
 #ifdef __MINGW32__
 #include <windows.h>
 #endif  // __MINGW32__
 
+#include <ypspur/param.h>
+#include <ypspur/ssm_spur_handler.h>
 #include <ypspur/yprintf.h>
 
 #if HAVE_SIGLONGJMP

@@ -27,6 +27,7 @@
 #endif  // __MINGW32__
 
 #include <ypspur/param.h>
+#include <ypspur/serial.h>
 #include <ypspur/ssm_spur_handler.h>
 #include <ypspur/yprintf.h>
 

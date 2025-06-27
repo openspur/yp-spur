@@ -210,6 +210,7 @@ add_executable(ypspur-coordinator
   src/ypprotocol.c
   src/yprintf.c
   src/ypspur-coordinator.c
+  src/libypspur-coordinator.c
 )
 target_link_libraries(ypspur-coordinator
   carte2d${TARGET_STATIC_POSTFIX} formula-calc${TARGET_STATIC_POSTFIX} m ${THREAD_LIBRARIES}

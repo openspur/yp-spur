@@ -223,6 +223,7 @@ set(YPSPUR_COORDINATOR_SOURCES
 )
 set(YPSPUR_COORDINATOR_PUBLIC_HEADERS
   include/ypspur/ypspur-coordinator.h
+  include/ypspur/ypparam.h
 )
 
 set(YPSPUR_COORDINATOR_SSM_LIBRARIES "")

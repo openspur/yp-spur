@@ -49,6 +49,9 @@
 
 #include <pthread.h>
 
+const char param_names[YP_PARAM_NUM][32] = YP_PARAM_NAME;
+const char param_comments[YP_PARAM_NUM][128] = YP_PARAM_COMMENT;
+
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_set[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
@@ -90,6 +93,11 @@ int ischanged_p(YPSpur_param id, enum motor_id motor)
 double* pp(YPSpur_param id, enum motor_id motor)
 {
   return &g_P[id][motor];
+}
+
+const char* get_param_name(const YPSpur_param id)
+{
+  return param_names[id];
 }
 
 int option(ParamOptions option)
@@ -156,8 +164,6 @@ void arg_longhelp(int argc, char* argv[])
 void param_help(void)
 {
   int i;
-  char param_names[YP_PARAM_NUM][32] = YP_PARAM_NAME;
-  char param_comments[YP_PARAM_NUM][128] = YP_PARAM_COMMENT;
 
   fprintf(stderr, "INFO: Comments of parameters (parameter version %.1f)\n\n", YP_PARAM_REQUIRED_VERSION);
   for (i = 0; i < YP_PARAM_NUM; i++)

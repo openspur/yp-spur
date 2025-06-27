@@ -92,6 +92,7 @@ typedef struct _spur_user_params
 
 void init_spur_command(void);
 void command(void);
+int process_one_command(const YPSpur_msg* msg, YPSpur_msg* res_msg);
 void message_return(struct ipcmd_t* ipcmd, long retpid, YPSpur_msg* res_msg);
 
 void init_command_thread(pthread_t* thread);

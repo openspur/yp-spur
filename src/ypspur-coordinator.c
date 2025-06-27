@@ -22,5 +22,5 @@
 
 int main(int argc, char* argv[])
 {
-  return coordinator(argc, argv);
+  return ypsc_main(argc, argv);
 }

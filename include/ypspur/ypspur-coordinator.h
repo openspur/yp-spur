@@ -21,12 +21,15 @@
 #ifndef YPSPUR_YPSPUR_COORDINATOR_H
 #define YPSPUR_YPSPUR_COORDINATOR_H
 
+#include <ypspur/ypparam.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif  // __cplusplus
 
-int coordinator(int argc, char* argv[]);
+int ypsc_main(int argc, char* argv[]);
+int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg);
 
 #ifdef __cplusplus
 }

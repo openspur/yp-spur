@@ -35,11 +35,12 @@
 #include <ypspur/signal.h>
 #include <ypspur/ssm_spur_handler.h>
 #include <ypspur/utility.h>
+#include <ypspur/ypparam.h>
 #include <ypspur/ypprotocol.h>
 #include <ypspur/yprintf.h>
 #include <ypspur/ypspur-coordinator.h>
 
-int coordinator(int argc, char* argv[])
+int ypsc_main(int argc, char* argv[])
 {
   pthread_t command_thread;
   pthread_t control_thread;
@@ -490,4 +491,9 @@ int coordinator(int argc, char* argv[])
   }
 
   return (quit ? EXIT_SUCCESS : EXIT_FAILURE);
+}
+
+int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg)
+{
+  return process_one_command(msg, res_msg);
 }

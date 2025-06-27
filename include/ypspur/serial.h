@@ -26,7 +26,7 @@
 
 #define DEFAULT_BAUDRATE 38400
 
-/* for measurement time estimation */
+// for measurement time estimation
 extern double SER_BAUDRATE;  /// (Byte/sec) シリアルの通信速度
 #define SER_INTERVAL 0.0050
 // #define SER_BYTES 13.0
@@ -36,7 +36,6 @@ int serial_tryconnect(char* device_name);
 int serial_connect(char* device_name);
 int serial_change_baudrate(int baud);
 
-/*----------------PBS_close------------------*/
 int serial_close(void);
 int serial_write(char* buf, int len);
 int serial_recieve(int (*serial_event)(char*, int, double, void*), void* data);

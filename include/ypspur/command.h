@@ -97,7 +97,7 @@ void message_return(struct ipcmd_t* ipcmd, long retpid, YPSpur_msg* res_msg);
 void init_command_thread(pthread_t* thread);
 SpurUserParamsPtr get_spur_user_param_ptr();
 
-/* command_run.c */
+// command_run.c
 void line_com(int cs, double* data, SpurUserParamsPtr spur);
 void stop_line_com(int cs, double* data, SpurUserParamsPtr spur);
 void circle_com(int cs, double* data, SpurUserParamsPtr spur);
@@ -110,7 +110,7 @@ void vel_com(double* data, SpurUserParamsPtr spur);
 void wheel_vel_com(double* data, SpurUserParamsPtr spur);
 void wheel_angle_com(double* data, SpurUserParamsPtr spur);
 
-/* command_set.c */
+// command_set.c
 void set_pos_com(int cs, double* data, SpurUserParamsPtr spur);
 void set_GL_on_GL_com(double* data, SpurUserParamsPtr spur);
 void set_adjust_com(int cs, double* data, SpurUserParamsPtr spur);
@@ -123,7 +123,7 @@ void set_torque_com(double* data, SpurUserParamsPtr spur);
 void set_wheel_vel_com(double* data, SpurUserParamsPtr spur);
 void set_wheel_accel_com(double* data, SpurUserParamsPtr spur);
 
-/* command_get.c */
+// command_get.c
 void get_pos_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur);
 void get_vel_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur);
 void get_vref_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur);
@@ -136,12 +136,12 @@ void get_wheel_ang_com(double* data, double* resdata, SpurUserParamsPtr spur);
 void get_force_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur);
 void get_wheel_torque_com(int cs, double* data, double* resdata, SpurUserParamsPtr spur);
 
-/* command_param.c */
+// command_param.c
 void param_set_com(int cs, double* data, SpurUserParamsPtr spur);
 int param_get_com(int cs, double* resdata, SpurUserParamsPtr spur);
 void param_state_com(int cs, double* data, SpurUserParamsPtr spur);
 
-/* command_ad.c */
+// command_ad.c
 void get_ad_com(double* data, double* resdata);
 void set_io_dir_com(double* data, double* resdata);
 void set_io_data_com(double* data, double* resdata);

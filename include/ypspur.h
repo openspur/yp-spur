@@ -28,7 +28,7 @@ extern "C"
 {
 #endif  // __cplusplus
 
-/* YPSpurコマンド集 */
+// YPSpurコマンド集
 #define Spur_init() YPSpur_init()
 #define Spur_initex(msq) YPSpur_initex(msq)
 #define Spur_init_socket(ip, port) YPSpur_init_socket(ip, port)
@@ -115,29 +115,29 @@ extern "C"
 #define Spur_tilt_BS(d, t) YPSpur_tilt(CS_BS, d, t)
 #define Spur_tilt_BL(d, t) YPSpur_tilt(CS_BL, d, t)
 
-/** init */
+// init
 int YPSpur_init(void);
 int YPSpur_initex(int msq_key);
 int YPSpur_init_socket(char* ip, int port);
 
-/** freeze */
+// freeze
 int YPSpur_isfreeze(void);
 int YPSpur_freeze(void);
 int YPSpur_unfreeze(void);
 
-/** motor servo */
+// motor servo
 int YPSpur_stop(void);
 int YPSpur_free(void);
 int YP_openfree(void);
 
-/** spur */
+// spur
 int YPSpur_line(int cs, double x, double y, double theta);
 int YPSpur_stop_line(int cs, double x, double y, double theta);
 int YPSpur_circle(int cs, double x, double y, double r);
 int YPSpur_spin(int cs, double theta);
 int YPSpur_orient(int cs, double theta);
 
-/** setter */
+// setter
 int YPSpur_set_pos(int cs, double x, double y, double theta);
 int YPSpur_adjust_pos(int cs, double x, double y, double theta);
 int YPSpur_set_vel(double v);
@@ -145,23 +145,23 @@ int YPSpur_set_angvel(double w);
 int YPSpur_set_accel(double v);
 int YPSpur_set_angaccel(double w);
 
-/** getter */
+// getter
 double YPSpur_get_pos(int cs, double* x, double* y, double* theta);
 double YPSpur_get_vel(double* v, double* w);
 double YPSpur_get_force(double* trans, double* angular);
 
-/** check position */
+// check position
 int YPSpur_near_pos(int cs, double x, double y, double r);
 int YPSpur_near_ang(int cs, double th, double d);
 int YPSpur_over_line(int cs, double x, double y, double theta);
 
-/** direct */
+// direct
 int YPSpur_vel(double v, double w);
 
-/** tilt */
+// tilt
 int YPSpur_tilt(int cs, double dir, double tilt);
 
-/* 裏コマンド集 */
+// 裏コマンド集
 int YP_get_error_state(void);
 void YP_request_device_dump(int id, int block);
 

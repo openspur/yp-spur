@@ -121,29 +121,29 @@ typedef struct
   int connection_error;
 } YPSpur;
 
-/** init */
+// init
 int YPSpur_md_init(YPSpur* dev);
 int YPSpur_md_initex(YPSpur* dev, int msq_key);
 int YPSpur_md_init_socket(YPSpur* dev, char* ip, int port);
 
-/** freeze */
+// freeze
 int YPSpur_md_isfreeze(YPSpur* dev);
 int YPSpur_md_freeze(YPSpur* dev);
 int YPSpur_md_unfreeze(YPSpur* dev);
 
-/** motor servo */
+// motor servo
 int YPSpur_md_stop(YPSpur* dev);
 int YPSpur_md_free(YPSpur* dev);
 int YP_md_openfree(YPSpur* dev);
 
-/** Spur_md */
+// Spur_md
 int YPSpur_md_line(YPSpur* dev, int cs, double x, double y, double theta);
 int YPSpur_md_stop_line(YPSpur* dev, int cs, double x, double y, double theta);
 int YPSpur_md_circle(YPSpur* dev, int cs, double x, double y, double r);
 int YPSpur_md_spin(YPSpur* dev, int cs, double theta);
 int YPSpur_md_orient(YPSpur* dev, int cs, double theta);
 
-/** setter */
+// setter
 int YPSpur_md_set_pos(YPSpur* dev, int cs, double x, double y, double theta);
 int YPSpur_md_adjust_pos(YPSpur* dev, int cs, double x, double y, double theta);
 int YPSpur_md_set_vel(YPSpur* dev, double v);
@@ -151,23 +151,23 @@ int YPSpur_md_set_angvel(YPSpur* dev, double w);
 int YPSpur_md_set_accel(YPSpur* dev, double v);
 int YPSpur_md_set_angaccel(YPSpur* dev, double w);
 
-/** getter */
+// getter
 double YPSpur_md_get_pos(YPSpur* dev, int cs, double* x, double* y, double* theta);
 double YPSpur_md_get_vel(YPSpur* dev, double* v, double* w);
 double YPSpur_md_get_force(YPSpur* dev, double* trans, double* angular);
 
-/** check position */
+// check position
 int YPSpur_md_near_pos(YPSpur* dev, int cs, double x, double y, double r);
 int YPSpur_md_near_ang(YPSpur* dev, int cs, double th, double d);
 int YPSpur_md_over_line(YPSpur* dev, int cs, double x, double y, double theta);
 
-/** direct */
+// direct
 int YPSpur_md_vel(YPSpur* dev, double v, double w);
 
-/** tilt */
+// tilt
 int YPSpur_md_tilt(YPSpur* dev, int cs, double dir, double tilt);
 
-/* 裏コマンド集 */
+// 裏コマンド集
 int YP_md_get_error_state(YPSpur* dev);
 void YP_md_request_device_dump(YPSpur* dev, int id, int block);
 

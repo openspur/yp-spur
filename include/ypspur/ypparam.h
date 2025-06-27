@@ -42,7 +42,7 @@ typedef int pid_t;
 
 #endif  // defined(_WIN32)
 
-/* コマンドナンバー */
+/// コマンドナンバー
 enum
 {
   YPSPUR_FREE = 0x10,
@@ -113,9 +113,8 @@ enum
   YPSPUR_GET_JOINT_TORQUE,
 };
 
-/* パラメータナンバー */
-/* set_parameter用 */
-/* マイコンに送る情報は反映されない */
+/// パラメータナンバー
+/// set_parameter用でマイコンに送る値とは異なる
 typedef enum
 {
   // システム
@@ -480,8 +479,6 @@ enum motor_id
 #define YP_PARAM_REQUIRED_VERSION 4.0
 #define YP_PARAM_SUPPORTED_VERSION 5.0
 
-/* パラメータの有効・無効 */
-/* control_state用　　 */
 typedef enum
 {
   YP_STATE_MOTOR = 0,
@@ -493,7 +490,6 @@ typedef enum
   YP_STATE_NUM
 } YPSpur_state;
 
-/** メッセージ関連 */
 typedef enum
 {
   CS_BS = 0,

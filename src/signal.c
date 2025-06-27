@@ -44,7 +44,9 @@ BOOL WINAPI win32_ctrlc_handler(DWORD type)
 #ifdef HAVE_SSM
   // SSM終了処理
   if (!option(OPTION_WITHOUT_SSM))
+  {
     end_ypspurSSM();
+  }
 #endif  // HAVE_SSM
   if (!(option(OPTION_WITHOUT_DEVICE)))
   {
@@ -65,7 +67,9 @@ void emergency(int sig)
 #ifdef HAVE_SSM
   // SSM終了処理
   if (!option(OPTION_WITHOUT_SSM))
+  {
     end_ypspurSSM();
+  }
 #endif  // HAVE_SSM
   if (!(option(OPTION_WITHOUT_DEVICE)))
   {
@@ -112,6 +116,7 @@ int ctrlc_setjmp()
   return sigsetjmp(ctrlc_capture, 1);
 #elif HAVE_LONGJMP
   return setjmp(ctrlc_capture);
-#endif  // HAVE_SIGLONGJMP
+#else
   return 0;
+#endif  // HAVE_SIGLONGJMP
 }

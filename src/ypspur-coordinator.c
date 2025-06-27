@@ -227,6 +227,11 @@ int main(int argc, char* argv[])
 
     yprintf(OUTPUT_LV_INFO, "Device Information\n");
 
+    // Clear driver params
+    driver_param.robot_name[0] = 0;
+    driver_param.pwm_resolution[0] = 0;
+    strcpy(driver_param.motor_num, "2");
+
     if (!(option(OPTION_WITHOUT_DEVICE)))
     {
       yprintf(OUTPUT_LV_INFO, " Port    : %s \n", param->device_name);
@@ -317,12 +322,6 @@ int main(int argc, char* argv[])
           }
           break;
         }
-      }
-      else
-      {
-        driver_param.robot_name[0] = 0;
-        driver_param.pwm_resolution[0] = 0;
-        strcpy(driver_param.motor_num, "2");
       }
       fflush(stderr);
     }

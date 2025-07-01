@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2025 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2010-2016 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,23 +18,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPSPUR_YPSPUR_COORDINATOR_H
-#define YPSPUR_YPSPUR_COORDINATOR_H
+#ifndef YPSPUR_ODOMETRY_TYPE_H
+#define YPSPUR_ODOMETRY_TYPE_H
 
+#include <ypspur/error_type.h>
 #include <ypspur/ypparam.h>
-#include <ypspur/odometry_type.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif  // __cplusplus
 
-int ypsc_main(int argc, char* argv[]);
-int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg);
-void ypsc_set_odometry_hook(OdometryHook fn);
+typedef struct _odometry* OdometryPtr;
+typedef struct _odometry
+{
+  // Updated by isochronous communication
+  double time;
+  double x;
+  double y;
+  double theta;
+  double v;
+  double w;
+  double wvel[YP_PARAM_MAX_MOTOR_NUM];
+  short enc[YP_PARAM_MAX_MOTOR_NUM];
+  int enc_init[YP_PARAM_MAX_MOTOR_NUM];
+  double wtorque[YP_PARAM_MAX_MOTOR_NUM];
+  double torque_trans;
+  double torque_angular;
+  int packet_lost;
+  int packet_lost_last;
+
+  // Updated by interrupt communication
+  double wang[YP_PARAM_MAX_MOTOR_NUM];
+  double wang_time[YP_PARAM_MAX_MOTOR_NUM];
+  int ping_response[YP_PARAM_MAX_MOTOR_NUM + 1];
+  double ping_response_time[YP_PARAM_MAX_MOTOR_NUM + 1];
+} Odometry;
+
+typedef struct _error_state* ErrorStatePtr;
+typedef struct _error_state
+{
+  YPSpur_shvel_error_state state[YP_PARAM_MAX_MOTOR_NUM];
+  double time[YP_PARAM_MAX_MOTOR_NUM];
+} ErrorState;
+
+typedef void (*OdometryHook)(const OdometryPtr const, const ErrorStatePtr const);
 
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
 
-#endif  // YPSPUR_YPSPUR_COORDINATOR_H
+#endif  // YPSPUR_ODOMETRY_TYPE_H

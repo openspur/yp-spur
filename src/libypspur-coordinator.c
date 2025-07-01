@@ -497,3 +497,8 @@ int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg)
 {
   return process_one_command(msg, res_msg);
 }
+
+void ypsc_set_odometry_hook(OdometryHook fn)
+{
+  set_odometry_hook(fn);
+}

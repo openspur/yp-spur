@@ -222,8 +222,10 @@ set(YPSPUR_COORDINATOR_SOURCES
   src/libypspur-coordinator.c
 )
 set(YPSPUR_COORDINATOR_PUBLIC_HEADERS
-  include/ypspur/ypspur-coordinator.h
+  include/ypspur/error_type.h
+  include/ypspur/odometry_type.h
   include/ypspur/ypparam.h
+  include/ypspur/ypspur-coordinator.h
 )
 
 set(YPSPUR_COORDINATOR_SSM_LIBRARIES "")

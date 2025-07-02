@@ -440,7 +440,7 @@ int ypsc_main(int argc, char* argv[])
       }
       else
       {
-        int exit_flag;
+        int exit_flag = 0;
         while (!exit_flag)
         {
           pthread_mutex_lock(&g_simulation_exit_flag_mutex);
@@ -512,12 +512,12 @@ int ypsc_main(int argc, char* argv[])
 
   if (option(OPTION_WITHOUT_DEVICE))
   {
-    g_simulation_exit = 0;
     if (pthread_mutex_destroy(&g_simulation_exit_flag_mutex) != 0)
     {
       yprintf(OUTPUT_LV_ERROR, "Failed to destroy pthread_mutex.\n");
       return EXIT_FAILURE;
     }
+    g_simulation_exit = 0;
   }
 
   return (quit ? EXIT_SUCCESS : EXIT_FAILURE);

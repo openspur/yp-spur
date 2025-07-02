@@ -69,7 +69,7 @@ void emergency(int sig)
     end_ypspurSSM();
   }
 #endif  // HAVE_SSM
-  ypsc_kill();
+  serial_close();  // simulation can be safely killed by exiting
 
   exit(0);
 #endif  // HAVE_SIGLONGJMP

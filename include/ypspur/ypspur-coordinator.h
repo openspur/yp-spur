@@ -30,6 +30,7 @@ extern "C"
 #endif  // __cplusplus
 
 int ypsc_main(int argc, char* argv[]);
+int ypsc_kill();
 int ypsc_command(const YPSpur_msg* msg, YPSpur_msg* res_msg);
 void ypsc_set_odometry_hook(OdometryHook fn);
 

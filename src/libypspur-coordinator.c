@@ -505,3 +505,15 @@ void ypsc_set_odometry_hook(OdometryHook fn)
 {
   set_odometry_hook(fn);
 }
+
+int ypsc_kill()
+{
+  if (option(OPTION_WITHOUT_DEVICE))
+  {
+    // TODO(at-wat): implement this
+  }
+  else
+  {
+    serial_close();
+  }
+}

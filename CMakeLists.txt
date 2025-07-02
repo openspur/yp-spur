@@ -245,12 +245,15 @@ target_link_libraries(ypspur-interpreter
 
 set(YPSPUR_LIBRARY_VERSION 14.2.0)
 set(YPSPUR_LIBRARY_SOVERSION 14)
-set(YPSPUR_PUBLIC_HEADERS
+set(YPSPUR_GLOBAL_HEADERS
+  include/yp-spur.h
+  include/ypspur-md.h
   include/ypspur.h
+)
+set(YPSPUR_PUBLIC_HEADERS
   include/ypspur/ypparam.h
 )
 set(YPSPUR_MD_PUBLIC_HEADERS
-  include/ypspur-md.h
   include/ypspur/ypparam.h
 )
 add_library(ypspur SHARED
@@ -260,10 +263,6 @@ add_library(ypspur SHARED
   src/msq.win32.c
   src/yprintf.c
   src/utility.c
-)
-
-add_library(ypspur-comm SHARED
-  src/communication.c
 )
 
 if(WIN32)
@@ -324,6 +323,13 @@ set_target_properties(ypspur-md-static PROPERTIES
   PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
 )
 
+add_library(ypspur-comm SHARED
+  src/communication.c
+)
+set_target_properties(ypspur-comm PROPERTIES
+  PUBLIC_HEADER include/ypspur/communication.h
+)
+
 
 # Install
 
@@ -340,13 +346,10 @@ install(TARGETS
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
-  PUBLIC_HEADER DESTINATION include
+  PUBLIC_HEADER DESTINATION include/ypspur
 )
-install(FILES include/yp-spur.h
+install(FILES ${YPSPUR_GLOBAL_HEADERS}
   DESTINATION include
-)
-install(FILES include/ypspur/communication.h
-  DESTINATION include/ypspur
 )
 
 if(SSM_FOUND)

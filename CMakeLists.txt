@@ -257,7 +257,7 @@ set_target_properties(libypspur-coordinator PROPERTIES
 
 add_library(libypspur-coordinator-static STATIC ${YPSPUR_COORDINATOR_SOURCES})
 target_link_libraries(libypspur-coordinator-static ${YPSPUR_COORDINATOR_LIBRARIES})
-set_target_properties(libypspur-coordinator PROPERTIES
+set_target_properties(libypspur-coordinator-static PROPERTIES
   OUTPUT_NAME "ypspur-coordinator"
   PUBLIC_HEADER "${YPSPUR_COORDINATOR_PUBLIC_HEADERS}"
 )

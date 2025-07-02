@@ -40,6 +40,9 @@
 #include <ypspur/yprintf.h>
 #include <ypspur/ypspur-coordinator.h>
 
+pthread_mutex_t g_simulation_exit_flag_mutex;
+int g_simulation_exit = 0;
+
 int ypsc_main(int argc, char* argv[])
 {
   pthread_t command_thread;
@@ -54,6 +57,16 @@ int ypsc_main(int argc, char* argv[])
   int quit;
 
   hook_pre_global();
+
+  if (option(OPTION_WITHOUT_DEVICE))
+  {
+    g_simulation_exit = 0;
+    if (pthread_mutex_init(&g_simulation_exit_flag_mutex, NULL) != 0)
+    {
+      yprintf(OUTPUT_LV_ERROR, "Failed to initialize pthread_mutex.\n");
+      return EXIT_FAILURE;
+    }
+  }
 
   const int ret = arg_analyze(argc, argv);
   if (option(OPTION_DAEMON))
@@ -427,10 +440,14 @@ int ypsc_main(int argc, char* argv[])
       }
       else
       {
-        // Clear control thread enable flag to avoid multiple join on signal exit.
-        control_thread_en = 0;
-        // Wait control thread instead of odometry receive loop on simuation mode.
-        pthread_join(control_thread, (void**)&control_thread_status);
+        int exit_flag;
+        while (!exit_flag)
+        {
+          pthread_mutex_lock(&g_simulation_exit_flag_mutex);
+          exit_flag = g_simulation_exit;
+          pthread_mutex_unlock(&g_simulation_exit_flag_mutex);
+          yp_usleep(1000000);
+        }
       }
       yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", get_param_ptr()->device_name);
     }
@@ -493,6 +510,16 @@ int ypsc_main(int argc, char* argv[])
     return *control_thread_status;
   }
 
+  if (option(OPTION_WITHOUT_DEVICE))
+  {
+    g_simulation_exit = 0;
+    if (pthread_mutex_destroy(&g_simulation_exit_flag_mutex) != 0)
+    {
+      yprintf(OUTPUT_LV_ERROR, "Failed to destroy pthread_mutex.\n");
+      return EXIT_FAILURE;
+    }
+  }
+
   return (quit ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
@@ -510,7 +537,9 @@ int ypsc_kill()
 {
   if (option(OPTION_WITHOUT_DEVICE))
   {
-    // TODO(at-wat): implement this
+    pthread_mutex_lock(&g_simulation_exit_flag_mutex);
+    g_simulation_exit = 1;
+    pthread_mutex_unlock(&g_simulation_exit_flag_mutex);
   }
   else
   {

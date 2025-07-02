@@ -30,6 +30,7 @@
 #include <ypspur/serial.h>
 #include <ypspur/ssm_spur_handler.h>
 #include <ypspur/yprintf.h>
+#include <ypspur/ypspur-coordinator.h>
 
 #if HAVE_SIGLONGJMP
 sigjmp_buf ctrlc_capture;
@@ -48,10 +49,7 @@ BOOL WINAPI win32_ctrlc_handler(DWORD type)
     end_ypspurSSM();
   }
 #endif  // HAVE_SSM
-  if (!(option(OPTION_WITHOUT_DEVICE)))
-  {
-    serial_close();
-  }
+  ypsc_kill();
 
   return TRUE;
 }
@@ -71,10 +69,7 @@ void emergency(int sig)
     end_ypspurSSM();
   }
 #endif  // HAVE_SSM
-  if (!(option(OPTION_WITHOUT_DEVICE)))
-  {
-    serial_close();
-  }
+  ypsc_kill();
 
   exit(0);
 #endif  // HAVE_SIGLONGJMP

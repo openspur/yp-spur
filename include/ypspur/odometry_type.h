@@ -62,7 +62,7 @@ typedef struct _error_state
   double time[YP_PARAM_MAX_MOTOR_NUM];
 } ErrorState;
 
-typedef void (*OdometryHook)(const OdometryPtr const, const ErrorStatePtr const);
+typedef void (*OdometryHook)(const OdometryPtr, const ErrorStatePtr);
 
 #ifdef __cplusplus
 }

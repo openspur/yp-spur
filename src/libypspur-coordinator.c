@@ -389,8 +389,11 @@ int ypsc_main(int argc, char* argv[])
     yprintf(OUTPUT_LV_INFO, "YP-Spur coordinator started.\n");
 
     // スレッド初期化
-    init_command_thread(&command_thread);
-    command_thread_en = 1;
+    if (!option(OPTION_NO_IPC))
+    {
+      init_command_thread(&command_thread);
+      command_thread_en = 1;
+    }
 
     init_control_thread(&control_thread);
     control_thread_en = 1;

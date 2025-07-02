@@ -146,6 +146,8 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --reconnect              Try reconnect device when device was closed.\n");
   fprintf(stderr, "  --without-ssm            Run without ssm output.\n");
   fprintf(stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY (default = 28741).\n");
+  fprintf(stderr, "  --socket <port>          Use socket IPC.\n");
+  fprintf(stderr, "  --no-ipc                 Do not use IPC. Mainly for library mode.\n");
   fprintf(stderr, "  -s, --speed <BAUDRATE>   Set baudrate.\n");
   fprintf(stderr, "  --admask <ADMASK>        Get AD data of ADMASK from B-Loco device.\n");
   fprintf(stderr, "  --enable-get-digital-io  Enable digital IO port.\n");
@@ -156,7 +158,6 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --update-param           Automatically reload parameter file.\n");
   fprintf(stderr, "  --high-resolution[=ARG]  Use high resolution velocity control mode (default = yes).\n");
   fprintf(stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n");
-  fprintf(stderr, "  --socket <port>          Use socket ipc.\n");
   fprintf(stderr, "  --daemon                 Run in daemon mode.\n");
   fprintf(stderr, "  --ping                   Ping RS485 chained devices.\n");
   fprintf(stderr, "  --exit-on-time-jump      Immediately stop control and exit on system time jump.\n");
@@ -241,6 +242,10 @@ int arg_analyze(int argc, char* argv[])
       }
       else
         break;
+    }
+    else if (!strcmp(argv[i], "--no-ipc"))
+    {
+      g_param.option |= OPTION_NO_IPC;
     }
     else if (!strcmp(argv[i], "--admask"))
     {

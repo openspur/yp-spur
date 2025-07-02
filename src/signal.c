@@ -115,3 +115,15 @@ int ctrlc_setjmp()
   return 0;
 #endif  // HAVE_SIGLONGJMP
 }
+
+#if HAVE_SIGLONGJMP
+sigjmp_buf* get_ctrlc_jmp_buf_ptr()
+{
+  return &ctrlc_capture;
+}
+#elif HAVE_LONGJMP
+jmp_buf* get_ctrlc_jmp_buf_ptr()
+{
+  return &ctrlc_capture;
+}
+#endif  // HAVE_SIGLONGJMP

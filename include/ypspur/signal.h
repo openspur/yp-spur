@@ -21,7 +21,14 @@
 #ifndef YPSPUR_SIGNAL_H
 #define YPSPUR_SIGNAL_H
 
-int ctrlc_setjmp();
+#include <setjmp.h>
+
 void enable_ctrlc_handling(const int enable);
+
+#if HAVE_SIGLONGJMP
+sigjmp_buf* get_ctrlc_jmp_buf_ptr();
+#elif HAVE_LONGJMP
+jmp_buf* get_ctrlc_jmp_buf_ptr();
+#endif  // HAVE_SIGLONGJMP
 
 #endif  // YPSPUR_SIGNAL_H

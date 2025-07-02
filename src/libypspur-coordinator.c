@@ -427,11 +427,19 @@ int ypsc_main(int argc, char* argv[])
     }
 
     // オドメトリ受信ループ
-    if (ctrlc_setjmp() != 0)
+#if HAVE_SIGLONGJMP
+    if (sigsetjmp(*get_ctrlc_jmp_buf_ptr(), 1) != 0)
     {
       quit = 1;
     }
     else
+#elif HAVE_LONGJMP
+    if (setjmp(*get_ctrlc_jmp_buf_ptr()) != 0)
+    {
+      quit = 1;
+    }
+    else
+#endif
     {
       enable_ctrlc_handling(1);
       if (!(option(OPTION_WITHOUT_DEVICE)))

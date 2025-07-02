@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
@@ -40,8 +41,7 @@
 #include <ypspur/yprintf.h>
 #include <ypspur/ypspur-coordinator.h>
 
-pthread_mutex_t g_simulation_exit_flag_mutex;
-int g_simulation_exit = 0;
+atomic_int g_simulation_exit = 0;
 
 int ypsc_main(int argc, char* argv[])
 {
@@ -58,15 +58,7 @@ int ypsc_main(int argc, char* argv[])
 
   hook_pre_global();
 
-  if (option(OPTION_WITHOUT_DEVICE))
-  {
-    g_simulation_exit = 0;
-    if (pthread_mutex_init(&g_simulation_exit_flag_mutex, NULL) != 0)
-    {
-      yprintf(OUTPUT_LV_ERROR, "Failed to initialize pthread_mutex.\n");
-      return EXIT_FAILURE;
-    }
-  }
+  g_simulation_exit = 0;
 
   const int ret = arg_analyze(argc, argv);
   if (option(OPTION_DAEMON))
@@ -448,12 +440,8 @@ int ypsc_main(int argc, char* argv[])
       }
       else
       {
-        int exit_flag = 0;
-        while (!exit_flag)
+        while (!g_simulation_exit)
         {
-          pthread_mutex_lock(&g_simulation_exit_flag_mutex);
-          exit_flag = g_simulation_exit;
-          pthread_mutex_unlock(&g_simulation_exit_flag_mutex);
           yp_usleep(1000000);
         }
       }
@@ -520,11 +508,6 @@ int ypsc_main(int argc, char* argv[])
 
   if (option(OPTION_WITHOUT_DEVICE))
   {
-    if (pthread_mutex_destroy(&g_simulation_exit_flag_mutex) != 0)
-    {
-      yprintf(OUTPUT_LV_ERROR, "Failed to destroy pthread_mutex.\n");
-      return EXIT_FAILURE;
-    }
     g_simulation_exit = 0;
   }
 
@@ -545,9 +528,7 @@ int ypsc_kill()
 {
   if (option(OPTION_WITHOUT_DEVICE))
   {
-    pthread_mutex_lock(&g_simulation_exit_flag_mutex);
     g_simulation_exit = 1;
-    pthread_mutex_unlock(&g_simulation_exit_flag_mutex);
   }
   else
   {

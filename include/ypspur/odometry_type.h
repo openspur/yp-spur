@@ -18,34 +18,55 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef YPSPUR_ODOMETRY_H
-#define YPSPUR_ODOMETRY_H
+#ifndef YPSPUR_ODOMETRY_TYPE_H
+#define YPSPUR_ODOMETRY_TYPE_H
 
-#include <ypspur/shvel-param.h>
-
-#include <carte2d/cartesian2d.h>
-#include <ypspur.h>
-#include <ypspur/odometry_type.h>
+#include <ypspur/error_type.h>
 #include <ypspur/ypparam.h>
 
-double time_estimate(int readnum);
-void cstrans_odometry(YPSpur_cs cs, OdometryPtr dst_odm);
-void cstrans_xy(YPSpur_cs src, YPSpur_cs dest, double* x, double* y, double* theta);
-void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time);
-int process_int4(
-    OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time);
-void odm_logging(OdometryPtr, double, double);
-int odm_read(OdometryPtr odm, double* v, double* w);
-void cs_odometry(YPSpur_cs cs, OdometryPtr dst_odm);
-void init_odometry(void);
-void init_coordinate_systems(void);
-int odometry_receive_loop(void);
+#ifdef __cplusplus
+extern "C"
+{
+#endif  // __cplusplus
 
-OdometryPtr get_odometry_ptr();
-ErrorStatePtr get_error_state_ptr();
-CSptr get_cs_pointer(YPSpur_cs cs);
-void set_cs(YPSpur_cs cs, double x, double y, double theta);
-void set_odometry_hook(OdometryHook fn);
-OdometryHook get_odometry_hook();
+typedef struct _odometry* OdometryPtr;
+typedef struct _odometry
+{
+  // Updated by isochronous communication
+  double time;
+  double x;
+  double y;
+  double theta;
+  double v;
+  double w;
+  double wang[YP_PARAM_MAX_MOTOR_NUM];
+  double wvel[YP_PARAM_MAX_MOTOR_NUM];
+  double wtorque[YP_PARAM_MAX_MOTOR_NUM];
+  short enc[YP_PARAM_MAX_MOTOR_NUM];
+  int enc_init[YP_PARAM_MAX_MOTOR_NUM];
+  double torque_trans;
+  double torque_angular;
+  int packet_lost;
+  int packet_lost_last;
+  int ad[16];
 
-#endif  // YPSPUR_ODOMETRY_H
+  // Updated by interrupt communication
+  double wang_time[YP_PARAM_MAX_MOTOR_NUM];
+  int ping_response[YP_PARAM_MAX_MOTOR_NUM + 1];
+  double ping_response_time[YP_PARAM_MAX_MOTOR_NUM + 1];
+} Odometry;
+
+typedef struct _error_state* ErrorStatePtr;
+typedef struct _error_state
+{
+  YPSpur_shvel_error_state state[YP_PARAM_MAX_MOTOR_NUM];
+  double time[YP_PARAM_MAX_MOTOR_NUM];
+} ErrorState;
+
+typedef void (*OdometryHook)(const OdometryPtr, const ErrorStatePtr);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
+
+#endif  // YPSPUR_ODOMETRY_TYPE_H

@@ -114,17 +114,6 @@ typedef enum
   INT_debug_dump,
 } YPSpur_shvel_interrupt;
 
-typedef enum
-{
-  ERROR_NONE = 0,
-  ERROR_LOW_VOLTAGE = 0x0001,
-  ERROR_HALL_SEQ = 0x0002,
-  ERROR_HALL_ENC = 0x0004,
-  ERROR_WATCHDOG = 0x0008,
-  ERROR_EEPROM = 0x0010,
-  ERROR_INTERNAL = 0x0020,
-} YPSpur_shvel_error_state;
-
 #define MOTOR_ID_BROADCAST 0x7E
 
 #endif  // YPSPUR_SHVEL_PARAM_H

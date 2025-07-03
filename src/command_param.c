@@ -32,6 +32,7 @@
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/odometry.h>
+#include <ypspur/odometry_type.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 #include <ypspur/utility.h>

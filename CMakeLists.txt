@@ -135,6 +135,14 @@ else()
 endif()
 
 
+# Link libraries
+
+set(WIN32_LIBRARIES "")
+if(WIN32)
+  set(WIN32_LIBRARIES wsock32 ws2_32)
+endif(WIN32)
+
+
 # Add subdirectories
 
 add_subdirectory(auxlib)
@@ -184,9 +192,11 @@ if(GTEST_FOUND)
 endif(GTEST_FOUND)
 
 
-# Build coordinator and utilities
+# Build coordinator library
 
-add_executable(ypspur-coordinator
+set(YPSPUR_COORDINATOR_LIBRARY_VERSION 1.0.0)
+set(YPSPUR_COORDINATOR_LIBRARY_SOVERSION 1)
+set(YPSPUR_COORDINATOR_SOURCES
   src/adinput.c
   src/command_aux.c
   src/command.c
@@ -209,20 +219,58 @@ add_executable(ypspur-coordinator
   src/utility.c
   src/ypprotocol.c
   src/yprintf.c
-  src/ypspur-coordinator.c
+  src/libypspur-coordinator.c
 )
-target_link_libraries(ypspur-coordinator
-  carte2d${TARGET_STATIC_POSTFIX} formula-calc${TARGET_STATIC_POSTFIX} m ${THREAD_LIBRARIES}
+set(YPSPUR_COORDINATOR_PUBLIC_HEADERS
+  include/ypspur/error_type.h
+  include/ypspur/odometry_type.h
+  include/ypspur/ypparam.h
+  include/ypspur/ypspur-coordinator.h
 )
+
+set(YPSPUR_COORDINATOR_SSM_LIBRARIES "")
 if(SSM_FOUND)
-  target_link_libraries(ypspur-coordinator
+  set(YPSPUR_COORDINATOR_SSM_LIBRARIES 
     odomssm${TARGET_STATIC_POSTFIX}
     ${SSM_LIBRARIES}
   )
 endif(SSM_FOUND)
-if(WIN32)
-  target_link_libraries(ypspur-coordinator wsock32 ws2_32)
-endif(WIN32)
+
+set(YPSPUR_COORDINATOR_LIBRARIES
+  carte2d${TARGET_STATIC_POSTFIX}
+  formula-calc${TARGET_STATIC_POSTFIX}
+  m
+  ${THREAD_LIBRARIES}
+  ${WIN32_LIBRARIES}
+  ${YPSPUR_COORDINATOR_SSM_LIBRARIES}
+)
+
+add_library(libypspur-coordinator SHARED ${YPSPUR_COORDINATOR_SOURCES})
+target_link_libraries(libypspur-coordinator ${YPSPUR_COORDINATOR_LIBRARIES})
+set_target_properties(libypspur-coordinator PROPERTIES
+  OUTPUT_NAME "ypspur-coordinator"
+  IMPORT_SUFFIX "_import.lib"
+  VERSION ${YPSPUR_COORDINATOR_LIBRARY_VERSION}
+  SOVERSION ${YPSPUR_COORDINATOR_LIBRARY_SOVERSION}
+  PUBLIC_HEADER "${YPSPUR_COORDINATOR_PUBLIC_HEADERS}"
+)
+
+add_library(libypspur-coordinator-static STATIC ${YPSPUR_COORDINATOR_SOURCES})
+target_link_libraries(libypspur-coordinator-static ${YPSPUR_COORDINATOR_LIBRARIES})
+set_target_properties(libypspur-coordinator-static PROPERTIES
+  OUTPUT_NAME "ypspur-coordinator"
+  PUBLIC_HEADER "${YPSPUR_COORDINATOR_PUBLIC_HEADERS}"
+)
+
+
+# Build coordinator and utilities
+
+add_executable(ypspur-coordinator
+  src/ypspur-coordinator.c
+)
+target_link_libraries(ypspur-coordinator
+  libypspur-coordinator${TARGET_STATIC_POSTFIX}
+)
 
 add_executable(ypspur-free
   src/ypspur-free.c
@@ -245,18 +293,14 @@ target_link_libraries(ypspur-interpreter
 
 set(YPSPUR_LIBRARY_VERSION 14.2.0)
 set(YPSPUR_LIBRARY_SOVERSION 14)
+
 set(YPSPUR_GLOBAL_HEADERS
   include/yp-spur.h
   include/ypspur-md.h
   include/ypspur.h
 )
-set(YPSPUR_PUBLIC_HEADERS
-  include/ypspur/ypparam.h
-)
-set(YPSPUR_MD_PUBLIC_HEADERS
-  include/ypspur/ypparam.h
-)
-add_library(ypspur SHARED
+
+set(YPSPUR_SOURCES
   src/libypspur.c
   src/libypspur-md.c
   src/ipcommunication.c
@@ -264,10 +308,23 @@ add_library(ypspur SHARED
   src/yprintf.c
   src/utility.c
 )
+set(YPSPUR_PUBLIC_HEADERS
+  include/ypspur/ypparam.h
+)
 
-if(WIN32)
-  target_link_libraries(ypspur wsock32 ws2_32)
-endif(WIN32)
+set(YPSPUR_MD_SOURCES
+  src/libypspur-md.c
+  src/ipcommunication.c
+  src/msq.win32.c
+  src/yprintf.c
+  src/utility.c
+)
+set(YPSPUR_MD_PUBLIC_HEADERS
+  include/ypspur/ypparam.h
+)
+
+add_library(ypspur SHARED ${YPSPUR_SOURCES})
+target_link_libraries(ypspur ${WIN32_LIBRARIES})
 set_target_properties(ypspur PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${YPSPUR_LIBRARY_VERSION}
@@ -275,32 +332,15 @@ set_target_properties(ypspur PROPERTIES
   PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
 )
 
-add_library(ypspur-static STATIC
-  src/libypspur.c
-  src/libypspur-md.c
-  src/ipcommunication.c
-  src/msq.win32.c
-  src/yprintf.c
-  src/utility.c
-)
-if(WIN32)
-  target_link_libraries(ypspur-static wsock32 ws2_32)
-endif(WIN32)
+add_library(ypspur-static STATIC ${YPSPUR_SOURCES})
+target_link_libraries(ypspur-static ${WIN32_LIBRARIES})
 set_target_properties(ypspur-static PROPERTIES
   OUTPUT_NAME "ypspur"
   PUBLIC_HEADER "${YPSPUR_PUBLIC_HEADERS}"
 )
 
-add_library(ypspur-md SHARED
-  src/libypspur-md.c
-  src/ipcommunication.c
-  src/msq.win32.c
-  src/yprintf.c
-  src/utility.c
-)
-if(WIN32)
-  target_link_libraries(ypspur-md wsock32 ws2_32)
-endif(WIN32)
+add_library(ypspur-md SHARED ${YPSPUR_MD_SOURCES})
+target_link_libraries(ypspur-md ${WIN32_LIBRARIES})
 set_target_properties(ypspur-md PROPERTIES
   IMPORT_SUFFIX "_import.lib"
   VERSION ${YPSPUR_LIBRARY_VERSION}
@@ -308,16 +348,8 @@ set_target_properties(ypspur-md PROPERTIES
   PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
 )
 
-add_library(ypspur-md-static STATIC
-  src/libypspur-md.c
-  src/ipcommunication.c
-  src/msq.win32.c
-  src/yprintf.c
-  src/utility.c
-)
-if(WIN32)
-  target_link_libraries(ypspur-md-static wsock32 ws2_32)
-endif(WIN32)
+add_library(ypspur-md-static STATIC ${YPSPUR_MD_SOURCES})
+target_link_libraries(ypspur-md-static ${WIN32_LIBRARIES})
 set_target_properties(ypspur-md-static PROPERTIES
   OUTPUT_NAME "ypspur-md"
   PUBLIC_HEADER "${YPSPUR_MD_PUBLIC_HEADERS}"
@@ -334,6 +366,8 @@ set_target_properties(ypspur-comm PROPERTIES
 # Install
 
 install(TARGETS
+    libypspur-coordinator
+    libypspur-coordinator-static
     ypspur-coordinator
     ypspur
     ypspur-comm

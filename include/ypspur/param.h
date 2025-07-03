@@ -53,6 +53,8 @@ typedef enum
   OPTION_HIGH_PREC = 0x80000,
   OPTION_PING = 0x100000,
   OPTION_EXIT_ON_TIME_JUMP = 0x200000,
+
+  OPTION_NO_IPC = 0x400000,
 } ParamOptions;
 
 #define OPTION_DEFAULT (OPTION_HIGH_PREC)
@@ -88,6 +90,8 @@ typedef struct _parameters
   int device_version;
   int device_version_age;
   int parameter_applying;
+  int ad_num;   // adでいくつデータを出力するように指令したか
+  int dio_num;  // dioでいくつデータを出力するように指令したか
 } Parameters;
 
 int arg_analyze(int argc, char* argv[]);
@@ -109,6 +113,7 @@ void disable_state(YPSpur_state id);
 double p(YPSpur_param id, enum motor_id motor);
 int isset_p(YPSpur_param id, enum motor_id motor);
 double* pp(YPSpur_param id, enum motor_id motor);
+const char* get_param_name(const YPSpur_param id);
 ParametersPtr get_param_ptr();
 int option(ParamOptions option);
 ParamOutputLv output_lv(void);

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The YP-Spur Authors, except where otherwise indicated.
+// Copyright (c) 2010-2025 The YP-Spur Authors, except where otherwise indicated.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -18,46 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <ypspur/odometry.h>
-#include <ypspur/odometry_type.h>
-#include <ypspur/param.h>
-#include <ypspur/shvel-param.h>
-#include <ypspur/utility.h>
-#include <ypspur/yprintf.h>
+#ifndef YPSPUR_ERROR_TYPE_H
+#define YPSPUR_ERROR_TYPE_H
 
-int ping()
+#ifdef __cplusplus
+extern "C"
 {
-  const int data = 0x123456;
-  yprintf(OUTPUT_LV_INFO, "Ping request: 0x%08x\n", data);
+#endif  // __cplusplus
 
-  OdometryPtr odom = get_odometry_ptr();
-  int i;
-  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM + 1; i++)
-    odom->ping_response[i] = 0;
+typedef enum
+{
+  ERROR_NONE = 0,
+  ERROR_LOW_VOLTAGE = 0x0001,
+  ERROR_HALL_SEQ = 0x0002,
+  ERROR_HALL_ENC = 0x0004,
+  ERROR_WATCHDOG = 0x0008,
+  ERROR_EEPROM = 0x0010,
+  ERROR_INTERNAL = 0x0020,
+} YPSpur_shvel_error_state;
 
-  const char target = MOTOR_ID_BROADCAST;
-  parameter_set(PARAM_servo, target, 0);
-  parameter_set(PARAM_ping, target, data);
-  odometry_receive_loop();
-
-  int ret = 1;
-  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
-  {
-    if (odom->ping_response[i] == data)
-    {
-      ret = 0;
-      yprintf(OUTPUT_LV_INFO, "Ping response from ID: %d\n", i);
-    }
-  }
-  if (odom->ping_response[i] == data)
-  {
-    ret = 0;
-    yprintf(OUTPUT_LV_INFO, "Ping response from device without ID\n");
-  }
-  if (ret)
-  {
-    yprintf(OUTPUT_LV_ERROR, "No ping response!\n");
-  }
-
-  return 1;
+#ifdef __cplusplus
 }
+#endif  // __cplusplus
+
+#endif  // YPSPUR_ERROR_TYPE_H
+

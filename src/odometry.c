@@ -59,7 +59,7 @@ CSptr g_BL;
 
 Odometry g_odometry;
 ErrorState g_error_state;
-OdometryHook g_odometry_hook;
+OdometryHook g_odometry_hook = NULL;
 
 // CS の初期化
 void init_coordinate_systems(void)
@@ -93,7 +93,6 @@ void init_odometry(void)
   g_odometry.time = 0;
   g_odometry.packet_lost = 0;
   g_offset_point = 0;
-  g_odometry_hook = NULL;
 }
 
 CSptr get_cs_pointer(YPSpur_cs cs)

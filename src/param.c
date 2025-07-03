@@ -187,6 +187,8 @@ int arg_analyze(int argc, char* argv[])
   g_param.output_lv = OUTPUT_LV_INFO;
   g_param.speed = 0;
   g_param.ssm_id = 0;
+  g_param.ad_num = 0;
+  g_param.dio_num = 0;
 
   strcpy(g_param.parameter_filename, DEFAULT_PARAMETER_FILE);
   strcpy(g_param.device_name, DEFAULT_DEVICE_NAME);
@@ -255,11 +257,15 @@ int arg_analyze(int argc, char* argv[])
 
         i++;
         g_param.admask = 0;
+        g_param.ad_num = 0;
         for (pos = argv[i]; *pos != 0; pos++)
         {
           g_param.admask = g_param.admask << 1;
           if (*pos == '1')
+          {
             g_param.admask |= 1;
+            g_param.ad_num++;
+          }
         }
       }
       else
@@ -325,6 +331,7 @@ int arg_analyze(int argc, char* argv[])
     else if (!strcmp(argv[i], "--enable-get-digital-io"))
     {
       g_param.option |= OPTION_ENABLE_GET_DIGITAL_IO;
+      g_param.dio_num = 1;
     }
     else if (!strcmp(argv[i], "--no-yp-protocol"))
     {

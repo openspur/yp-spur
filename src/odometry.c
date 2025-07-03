@@ -504,8 +504,8 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
   param = get_param_ptr();
 
   decoded_len_req =
-      (get_ad_num()                   // ad
-       + get_dio_num()                // dio
+      (param->ad_num                  // ad
+       + param->dio_num               // dio
        + param->num_motor_enable * 2  // cnt + pwm
        ) *
       2;  // data cnt -> byte
@@ -564,13 +564,13 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
             pwm[i] = val.integer;
           }
 
-          process_addata(&data[p], decoded_len - p);
+          process_addata(g_odometry.ad, &data[p], decoded_len - p);
 
           cnt1_log[readdata_num].integer = cnt[0];
           cnt2_log[readdata_num].integer = cnt[1];
           pwm1_log[readdata_num].integer = pwm[0];
           pwm2_log[readdata_num].integer = pwm[1];
-          memcpy(ad_log[readdata_num], get_addataptr(), sizeof(int) * 8);
+          memcpy(ad_log[readdata_num], g_odometry.ad, sizeof(int) * 8);
           readdata_num++;
 
           if (state(YP_STATE_MOTOR) && state(YP_STATE_VELOCITY) && state(YP_STATE_BODY))

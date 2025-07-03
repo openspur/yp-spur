@@ -39,10 +39,10 @@
 
 void get_ad_com(double* data, double* resdata)
 {
-  int num;
+  const int num = (int)data[0];
+  OdometryPtr odometry = get_odometry_ptr();
 
-  num = (int)data[0];
-  resdata[0] = get_addata(num);
+  resdata[0] = odometry->ad[num];
 }
 
 void set_io_dir_com(double* data, double* resdata)

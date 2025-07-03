@@ -90,6 +90,8 @@ typedef struct _parameters
   int device_version;
   int device_version_age;
   int parameter_applying;
+  int ad_num;   // adでいくつデータを出力するように指令したか
+  int dio_num;  // dioでいくつデータを出力するように指令したか
 } Parameters;
 
 int arg_analyze(int argc, char* argv[]);

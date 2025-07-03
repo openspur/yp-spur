@@ -48,6 +48,7 @@ typedef struct _odometry
   double torque_angular;
   int packet_lost;
   int packet_lost_last;
+  int ad[16];
 
   // Updated by interrupt communication
   double wang_time[YP_PARAM_MAX_MOTOR_NUM];

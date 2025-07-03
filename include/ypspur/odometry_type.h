@@ -39,17 +39,17 @@ typedef struct _odometry
   double theta;
   double v;
   double w;
+  double wang[YP_PARAM_MAX_MOTOR_NUM];
   double wvel[YP_PARAM_MAX_MOTOR_NUM];
+  double wtorque[YP_PARAM_MAX_MOTOR_NUM];
   short enc[YP_PARAM_MAX_MOTOR_NUM];
   int enc_init[YP_PARAM_MAX_MOTOR_NUM];
-  double wtorque[YP_PARAM_MAX_MOTOR_NUM];
   double torque_trans;
   double torque_angular;
   int packet_lost;
   int packet_lost_last;
 
   // Updated by interrupt communication
-  double wang[YP_PARAM_MAX_MOTOR_NUM];
   double wang_time[YP_PARAM_MAX_MOTOR_NUM];
   int ping_response[YP_PARAM_MAX_MOTOR_NUM + 1];
   double ping_response_time[YP_PARAM_MAX_MOTOR_NUM + 1];

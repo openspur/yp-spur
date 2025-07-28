@@ -46,6 +46,8 @@ typedef struct _odometry
   int enc_init[YP_PARAM_MAX_MOTOR_NUM];
   double torque_trans;
   double torque_angular;
+
+  // Auxiliary data updated by isochronous communication
   int packet_lost;
   int packet_lost_last;
   int ad[16];

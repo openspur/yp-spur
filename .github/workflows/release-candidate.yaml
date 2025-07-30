@@ -20,9 +20,6 @@ jobs:
     steps:
       - name: Set outputs
         id: config
-        env:
-          GIT_USER: ${{ env.GIT_USER }}
-          GIT_EMAIL: ${{ env.GIT_EMAIL }}
         run: |
           echo "git-user=${GIT_USER}" | tee -a ${GITHUB_OUTPUT}
           echo "git-email=${GIT_EMAIL}" | tee -a ${GITHUB_OUTPUT}

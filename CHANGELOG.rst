@@ -2,6 +2,28 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix release candidate workflow (`#230 <https://github.com/openspur/yp-spur/issues/230>`_)
+* Fix release-candidate workflow to properly pass git user info (`#229 <https://github.com/openspur/yp-spur/issues/229>`_)
+* Add ypspur-coordinator library (`#221 <https://github.com/openspur/yp-spur/issues/221>`_)
+* Fix setjmp usage (`#227 <https://github.com/openspur/yp-spur/issues/227>`_)
+* Fix header install directory (`#226 <https://github.com/openspur/yp-spur/issues/226>`_)
+* Split signal handler code (`#225 <https://github.com/openspur/yp-spur/issues/225>`_)
+* Fix single line comment style (`#224 <https://github.com/openspur/yp-spur/issues/224>`_)
+* Fix initialization on simulation mode and old devices (`#223 <https://github.com/openspur/yp-spur/issues/223>`_)
+* Show CTEST details on Alpine ROS CI (`#222 <https://github.com/openspur/yp-spur/issues/222>`_)
+* Refactor header directory structure (`#217 <https://github.com/openspur/yp-spur/issues/217>`_)
+* Bump actions/checkout from 2 to 4 (`#220 <https://github.com/openspur/yp-spur/issues/220>`_)
+* Update GitHub Actions by Dependabot (`#219 <https://github.com/openspur/yp-spur/issues/219>`_)
+* Test build with SSM (`#218 <https://github.com/openspur/yp-spur/issues/218>`_)
+* Apply clang-format (`#216 <https://github.com/openspur/yp-spur/issues/216>`_)
+* Unuse config.h (`#214 <https://github.com/openspur/yp-spur/issues/214>`_)
+* Release to Alpine ROS 1 (`#213 <https://github.com/openspur/yp-spur/issues/213>`_)
+* Drop CMake2 support (`#212 <https://github.com/openspur/yp-spur/issues/212>`_)
+* Run CI for all PRs (`#215 <https://github.com/openspur/yp-spur/issues/215>`_)
+* Contributors: Atsushi Watanabe, dependabot[bot]
+
 1.22.5 (2024-05-01)
 -------------------
 * Detect system time jump back (`#208 <https://github.com/openspur/yp-spur/issues/208>`_)

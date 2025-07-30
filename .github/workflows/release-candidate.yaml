@@ -45,14 +45,6 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ needs.create-release-candidate.outputs.pr-branch }}
-      - name: Update library version
-        env:
-          VERSION: ${{ needs.create-release-candidate.outputs.version }}
-        run: |
-          sed "s/^\(project(ypspur VERSION\) \S\+)\$/\1 ${VERSION})/" -i CMakeLists.txt
-
-          git add CMakeLists.txt
-          git commit -m "Update library version"
       - name: Setup gitconfig
         run: |
           git config --global user.name "${GIT_USER}"
@@ -66,5 +58,13 @@ jobs:
           login git
           password ${GITHUB_TOKEN}
           EOS
+      - name: Update library version
+        env:
+          VERSION: ${{ needs.create-release-candidate.outputs.version }}
+        run: |
+          sed "s/^\(project(ypspur VERSION\) \S\+)\$/\1 ${VERSION})/" -i CMakeLists.txt
+
+          git add CMakeLists.txt
+          git commit -m "Update library version"
       - name: Push changes
         run: git push origin ${{ needs.create-release-candidate.outputs.pr-branch }}

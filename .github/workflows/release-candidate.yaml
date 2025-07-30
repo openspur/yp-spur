@@ -35,7 +35,7 @@ jobs:
       pr-body: "close #${{ github.event.issue.number }}"
       pr-assignee: ${{ github.actor }}
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.BLOOM_GITHUB_TOKEN }}
   update-library-version:
     needs: create-release-candidate
     runs-on: ubuntu-latest

@@ -12,14 +12,25 @@ env:
   GIT_EMAIL: 8390204+at-wat@users.noreply.github.com
 
 jobs:
-  create-release-candidate:
+  config:
     if: startsWith(github.event.issue.title, 'Release ')
+    outputs:
+      git-user: ${{ steps.config.outputs.git-user }}
+      git-email: ${{ steps.config.outputs.git-email }}
+    steps:
+      - name: Set outputs
+        id: config
+        run: |
+          echo "git-user=${GIT_USER}" | tee -a ${GITHUB_OUTPUT}
+          echo "git-email=${GIT_EMAIL}" | tee -a ${GITHUB_OUTPUT}
+  create-release-candidate:
+    needs: config
     uses: alpine-ros/alpine-ros-ci-workflows/.github/workflows/ros1-release-candidate.yaml@main
     with:
       release-title: ${{ github.event.issue.title }}
       branch: master
-      git-user: ${{ env.GIT_USER }}
-      git-email: ${{ env.GIT_EMAIL }}
+      git-user: ${{ needs.config.outputs.git-user }}
+      git-email: ${{ needs.config.outputs.git-email }}
       pr-body: "close #${{ github.event.issue.number }}"
       pr-assignee: ${{ github.actor }}
     secrets:

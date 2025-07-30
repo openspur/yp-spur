@@ -38,6 +38,8 @@
 #include <ypspur/command.h>
 #include <ypspur/communication.h>
 #include <ypspur/control.h>
+#include <ypspur/odometry.h>
+#include <ypspur/odometry_type.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 #include <ypspur/utility.h>
@@ -48,6 +50,9 @@
 #include <ypspur.h>
 
 #include <pthread.h>
+
+const char param_names[YP_PARAM_NUM][32] = YP_PARAM_NAME;
+const char param_comments[YP_PARAM_NUM][128] = YP_PARAM_COMMENT;
 
 double g_P[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
 int g_P_changed[YP_PARAM_NUM][YP_PARAM_MAX_MOTOR_NUM];
@@ -90,6 +95,11 @@ int ischanged_p(YPSpur_param id, enum motor_id motor)
 double* pp(YPSpur_param id, enum motor_id motor)
 {
   return &g_P[id][motor];
+}
+
+const char* get_param_name(const YPSpur_param id)
+{
+  return param_names[id];
 }
 
 int option(ParamOptions option)
@@ -136,6 +146,8 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --reconnect              Try reconnect device when device was closed.\n");
   fprintf(stderr, "  --without-ssm            Run without ssm output.\n");
   fprintf(stderr, "  -q, --msq-key <MSQKEY>   Run with message que key MSQKEY (default = 28741).\n");
+  fprintf(stderr, "  --socket <port>          Use socket IPC.\n");
+  fprintf(stderr, "  --no-ipc                 Do not use IPC. Mainly for library mode.\n");
   fprintf(stderr, "  -s, --speed <BAUDRATE>   Set baudrate.\n");
   fprintf(stderr, "  --admask <ADMASK>        Get AD data of ADMASK from B-Loco device.\n");
   fprintf(stderr, "  --enable-get-digital-io  Enable digital IO port.\n");
@@ -146,7 +158,6 @@ void arg_longhelp(int argc, char* argv[])
   fprintf(stderr, "  --update-param           Automatically reload parameter file.\n");
   fprintf(stderr, "  --high-resolution[=ARG]  Use high resolution velocity control mode (default = yes).\n");
   fprintf(stderr, "  --ssm-id <SSMID>         Change ssm id (default = 0).\n");
-  fprintf(stderr, "  --socket <port>          Use socket ipc.\n");
   fprintf(stderr, "  --daemon                 Run in daemon mode.\n");
   fprintf(stderr, "  --ping                   Ping RS485 chained devices.\n");
   fprintf(stderr, "  --exit-on-time-jump      Immediately stop control and exit on system time jump.\n");
@@ -156,8 +167,6 @@ void arg_longhelp(int argc, char* argv[])
 void param_help(void)
 {
   int i;
-  char param_names[YP_PARAM_NUM][32] = YP_PARAM_NAME;
-  char param_comments[YP_PARAM_NUM][128] = YP_PARAM_COMMENT;
 
   fprintf(stderr, "INFO: Comments of parameters (parameter version %.1f)\n\n", YP_PARAM_REQUIRED_VERSION);
   for (i = 0; i < YP_PARAM_NUM; i++)
@@ -178,6 +187,8 @@ int arg_analyze(int argc, char* argv[])
   g_param.output_lv = OUTPUT_LV_INFO;
   g_param.speed = 0;
   g_param.ssm_id = 0;
+  g_param.ad_num = 0;
+  g_param.dio_num = 0;
 
   strcpy(g_param.parameter_filename, DEFAULT_PARAMETER_FILE);
   strcpy(g_param.device_name, DEFAULT_DEVICE_NAME);
@@ -234,6 +245,10 @@ int arg_analyze(int argc, char* argv[])
       else
         break;
     }
+    else if (!strcmp(argv[i], "--no-ipc"))
+    {
+      g_param.option |= OPTION_NO_IPC;
+    }
     else if (!strcmp(argv[i], "--admask"))
     {
       if (i + 1 < argc)
@@ -242,11 +257,15 @@ int arg_analyze(int argc, char* argv[])
 
         i++;
         g_param.admask = 0;
+        g_param.ad_num = 0;
         for (pos = argv[i]; *pos != 0; pos++)
         {
           g_param.admask = g_param.admask << 1;
           if (*pos == '1')
+          {
             g_param.admask |= 1;
+            g_param.ad_num++;
+          }
         }
       }
       else
@@ -312,6 +331,7 @@ int arg_analyze(int argc, char* argv[])
     else if (!strcmp(argv[i], "--enable-get-digital-io"))
     {
       g_param.option |= OPTION_ENABLE_GET_DIGITAL_IO;
+      g_param.dio_num = 1;
     }
     else if (!strcmp(argv[i], "--no-yp-protocol"))
     {

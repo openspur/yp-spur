@@ -41,6 +41,7 @@
 #include <ypspur/command.h>
 #include <ypspur/control.h>
 #include <ypspur/odometry.h>
+#include <ypspur/odometry_type.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 #include <ypspur/ssm_spur_handler.h>
@@ -581,6 +582,11 @@ void control_loop(void)
     if ((option(OPTION_WITHOUT_DEVICE)))
     {
       simulate_control(odometry, spur);
+      OdometryHook hook = get_odometry_hook();
+      if (hook)
+      {
+        hook(odometry, get_error_state_ptr());
+      }
     }
 
     // スレッドの停止要求チェック

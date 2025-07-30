@@ -33,6 +33,8 @@
 #include <ypspur/adinput.h>
 #include <ypspur/communication.h>
 #include <ypspur/control.h>
+#include <ypspur/odometry.h>
+#include <ypspur/odometry_type.h>
 #include <ypspur/param.h>
 #include <ypspur/serial.h>
 #include <ypspur/ssm_spur_handler.h>
@@ -57,6 +59,7 @@ CSptr g_BL;
 
 Odometry g_odometry;
 ErrorState g_error_state;
+OdometryHook g_odometry_hook = NULL;
 
 // CS の初期化
 void init_coordinate_systems(void)
@@ -237,11 +240,12 @@ void odometry(OdometryPtr xp, short* cnt, short* pwm, double dt, double time)
 }
 
 // 割り込み型データの処理
-void process_int4(
+int process_int4(
     OdometryPtr xp, ErrorStatePtr err, int param_id, int id, int value, double receive_time)
 {
   Parameters* param;
   param = get_param_ptr();
+  int has_update = 0;
 
   switch (param_id)
   {
@@ -249,7 +253,7 @@ void process_int4(
     case INT_enc_index_fall:
     {
       if (id >= YP_PARAM_MAX_MOTOR_NUM || !param->motor_enable[id])
-        return;
+        return 0;
 
       // enc == value のときに INDEX_RISE/FALL_ANGLE [rad] だった
       const unsigned short enc_div =
@@ -278,12 +282,14 @@ void process_int4(
       xp->wang[id] = round((xp->wang[id] - ref_ang - ang_diff) / (2.0 * M_PI * index_ratio)) *
                          2.0 * M_PI * index_ratio +
                      ref_ang + ang_diff;
+      xp->wang_time[id] = receive_time;
+      has_update = 1;
       break;
     }
     case INT_error_state:
     {
       if (id >= YP_PARAM_MAX_MOTOR_NUM || !param->motor_enable[id])
-        return;
+        return 0;
 
       if (err->state[id] != value)
       {
@@ -313,17 +319,22 @@ void process_int4(
       }
       err->state[id] = value;
       err->time[id] = receive_time;
+      has_update = 1;
       break;
     }
     case INT_ping_response:
       if (id == MOTOR_ID_BROADCAST)
       {
         xp->ping_response[YP_PARAM_MAX_MOTOR_NUM] = value;
+        xp->ping_response_time[YP_PARAM_MAX_MOTOR_NUM] = receive_time;
+        has_update = 1;
         yprintf(OUTPUT_LV_INFO, "Ping response received: broadcast, 0x%08x\n", value);
       }
       else
       {
         xp->ping_response[id] = value;
+        xp->ping_response_time[id] = receive_time;
+        has_update = 1;
         yprintf(OUTPUT_LV_INFO, "Ping response received: %d, 0x%08x\n", id, value);
       }
       break;
@@ -331,6 +342,7 @@ void process_int4(
       yprintf(OUTPUT_LV_ERROR, "Error: Unknown interrupt data (%d, %d, %d)\n", param_id, id, value);
       break;
   }
+  return has_update;
 }
 
 // Odometry型データの座標系を変換
@@ -491,8 +503,8 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
   param = get_param_ptr();
 
   decoded_len_req =
-      (get_ad_num()                   // ad
-       + get_dio_num()                // dio
+      (param->ad_num                  // ad
+       + param->dio_num               // dio
        + param->num_motor_enable * 2  // cnt + pwm
        ) *
       2;  // data cnt -> byte
@@ -551,13 +563,13 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
             pwm[i] = val.integer;
           }
 
-          process_addata(&data[p], decoded_len - p);
+          process_addata(g_odometry.ad, &data[p], decoded_len - p);
 
           cnt1_log[readdata_num].integer = cnt[0];
           cnt2_log[readdata_num].integer = cnt[1];
           pwm1_log[readdata_num].integer = pwm[0];
           pwm2_log[readdata_num].integer = pwm[1];
-          memcpy(ad_log[readdata_num], get_addataptr(), sizeof(int) * 8);
+          memcpy(ad_log[readdata_num], g_odometry.ad, sizeof(int) * 8);
           readdata_num++;
 
           if (state(YP_STATE_MOTOR) && state(YP_STATE_VELOCITY) && state(YP_STATE_BODY))
@@ -565,6 +577,10 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
             odometry(&g_odometry, cnt, pwm, g_interval, time_estimate(receive_count + readdata_num));
             odm_log[odometry_updated] = g_odometry;
             odometry_updated++;
+            if (g_odometry_hook)
+            {
+              g_odometry_hook(&g_odometry, &g_error_state);
+            }
           }
 
           if (option(OPTION_SHOW_ODOMETRY))
@@ -606,7 +622,10 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
               value.byte[1] = data[4];
               value.byte[0] = data[5];
 
-              process_int4(&g_odometry, &g_error_state, param, id, value.integer, receive_time);
+              if (process_int4(&g_odometry, &g_error_state, param, id, value.integer, receive_time))
+              {
+                g_odometry_hook(&g_odometry, &g_error_state);
+              }
             }
             break;
           }
@@ -659,4 +678,14 @@ int odometry_receive_loop(void)
   }
 
   return ret;
+}
+
+void set_odometry_hook(OdometryHook fn)
+{
+  g_odometry_hook = fn;
+}
+
+OdometryHook get_odometry_hook()
+{
+  return g_odometry_hook;
 }

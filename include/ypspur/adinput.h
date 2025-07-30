@@ -26,13 +26,9 @@
 #include <strings.h>
 #include <unistd.h>
 
-int process_addata(unsigned char* buf, int len);
-const int* get_addataptr();
-int get_addata(int num);
+void process_addata(int* ad, const unsigned char* buf, const int len);
 int admask_receive(char* buf, int len, double receive_time, void* data);
 int set_admask(unsigned char mask);
 int set_diomask(unsigned char enable);
-int get_ad_num(void);
-int get_dio_num(void);
 
 #endif  // YPSPUR_ADINPUT_H

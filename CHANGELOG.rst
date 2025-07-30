@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.23.0 (2025-07-30)
+-------------------
 * Fix release candidate workflow (`#230 <https://github.com/openspur/yp-spur/issues/230>`_)
 * Fix release-candidate workflow to properly pass git user info (`#229 <https://github.com/openspur/yp-spur/issues/229>`_)
 * Add ypspur-coordinator library (`#221 <https://github.com/openspur/yp-spur/issues/221>`_)

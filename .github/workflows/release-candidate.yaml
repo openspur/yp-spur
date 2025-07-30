@@ -13,6 +13,7 @@ env:
 
 jobs:
   config:
+    runs-on: ubuntu-latest
     if: startsWith(github.event.issue.title, 'Release ')
     outputs:
       git-user: ${{ steps.config.outputs.git-user }}
@@ -37,6 +38,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
   update-library-version:
     needs: create-release-candidate
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4

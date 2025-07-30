@@ -2,6 +2,9 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.23.0 (2025-07-30)
 -------------------
 * Fix library version update script on release candidate (`#234 <https://github.com/openspur/yp-spur/issues/234>`_)

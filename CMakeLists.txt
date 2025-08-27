@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 # Project version is automatically updated by the release candidate workflow
-project(ypspur VERSION 1.23.1)
+project(ypspur VERSION 1.23.2)
 
 set(CVF_VERSION ${PROJECT_VERSION})
 

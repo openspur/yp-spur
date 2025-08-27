@@ -624,7 +624,10 @@ int odometry_receive(char* buf, int len, double receive_time, void* data)
 
               if (process_int4(&g_odometry, &g_error_state, param, id, value.integer, receive_time))
               {
-                g_odometry_hook(&g_odometry, &g_error_state);
+                if (g_odometry_hook)
+                {
+                  g_odometry_hook(&g_odometry, &g_error_state);
+                }
               }
             }
             break;

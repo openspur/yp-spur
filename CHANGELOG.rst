@@ -2,6 +2,12 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.23.2 (2025-08-27)
+-------------------
+* Do not call null hook on interrupt data (`#239 <https://github.com/openspur/yp-spur/issues/239>`_)
+* Bump actions/checkout from 4 to 5 (`#238 <https://github.com/openspur/yp-spur/issues/238>`_)
+* Contributors: Atsushi Watanabe, dependabot[bot]
+
 1.23.1 (2025-07-30)
 -------------------
 

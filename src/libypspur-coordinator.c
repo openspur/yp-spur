@@ -42,6 +42,7 @@
 #include <ypspur/ypspur-coordinator.h>
 
 atomic_int g_simulation_exit = 0;
+atomic_int g_exit_by_api = 0;
 
 int ypsc_main(int argc, char* argv[])
 {
@@ -59,6 +60,7 @@ int ypsc_main(int argc, char* argv[])
   hook_pre_global();
 
   g_simulation_exit = 0;
+  g_exit_by_api = 0;
 
   const int ret = arg_analyze(argc, argv);
   if (option(OPTION_DAEMON))
@@ -445,7 +447,14 @@ int ypsc_main(int argc, char* argv[])
           yp_usleep(1000000);
         }
       }
-      yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", get_param_ptr()->device_name);
+      if (!g_exit_by_api)
+      {
+        yprintf(OUTPUT_LV_INFO, "Connection to %s was closed.\n", get_param_ptr()->device_name);
+      }
+      else
+      {
+        yprintf(OUTPUT_LV_INFO, "Connection to %s was closed by user.\n", get_param_ptr()->device_name);
+      }
     }
     enable_ctrlc_handling(0);
 
@@ -526,6 +535,7 @@ void ypsc_set_odometry_hook(OdometryHook fn)
 
 int ypsc_kill()
 {
+  g_exit_by_api = 1;
   if (option(OPTION_WITHOUT_DEVICE))
   {
     g_simulation_exit = 1;

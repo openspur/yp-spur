@@ -2,6 +2,11 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+1.23.3 (2025-09-09)
+-------------------
+* Change connection close log when killed by API (`#242 <https://github.com/openspur/yp-spur/issues/242>`_)
+* Contributors: Atsushi Watanabe
+
 1.23.2 (2025-08-27)
 -------------------
 * Do not call null hook on interrupt data (`#239 <https://github.com/openspur/yp-spur/issues/239>`_)

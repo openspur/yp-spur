@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.23.3 (2025-09-09)
+-------------------
 * Change connection close log when killed by API (`#242 <https://github.com/openspur/yp-spur/issues/242>`_)
 * Contributors: Atsushi Watanabe
 

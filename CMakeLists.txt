@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.8...3.28)
 
 # Project version is automatically updated by the release candidate workflow
 project(ypspur VERSION 1.23.3)

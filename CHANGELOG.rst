@@ -2,8 +2,8 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.23.4 (2026-05-19)
+-------------------
 * Remove wrong tcflush call (`#248 <https://github.com/openspur/yp-spur/issues/248>`_)
 * Update required cmake version (`#247 <https://github.com/openspur/yp-spur/issues/247>`_)
 * Bump actions/checkout from 5 to 6 (`#246 <https://github.com/openspur/yp-spur/issues/246>`_)

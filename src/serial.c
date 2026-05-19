@@ -377,6 +377,9 @@ int serial_close(void)
   return 1;
 }
 
+/**
+ * @brief 可能なら入力バッファを破棄する
+ */
 void serial_flush_in(void)
 {
 #if !defined(__MINGW32__)
@@ -409,16 +412,6 @@ void serial_flush_in(void)
       break;
     yp_usleep(5000);
   }
-#endif  // !defined(__MINGW32__)
-}
-
-void serial_flush_out(void)
-{
-#if !defined(__MINGW32__)
-  // Unix用
-  tcflush(g_device_port, TCOFLUSH);
-#else
-// Windows用
 #endif  // !defined(__MINGW32__)
 }
 
@@ -533,7 +526,6 @@ int encode_write(char* data, int len)
   {
     return -1;
   }
-  serial_flush_out();
 
   return 0;
 }
@@ -552,7 +544,6 @@ int encode_int_write(char* data, int len)
   {
     return -1;
   }
-  serial_flush_out();
 
   return 0;
 }

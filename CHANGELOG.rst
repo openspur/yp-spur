@@ -2,6 +2,13 @@
 Changelog for YP-Spur
 ^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove wrong tcflush call (`#248 <https://github.com/openspur/yp-spur/issues/248>`_)
+* Update required cmake version (`#247 <https://github.com/openspur/yp-spur/issues/247>`_)
+* Bump actions/checkout from 5 to 6 (`#246 <https://github.com/openspur/yp-spur/issues/246>`_)
+* Contributors: Atsushi Watanabe, dependabot[bot]
+
 1.23.3 (2025-09-09)
 -------------------
 * Change connection close log when killed by API (`#242 <https://github.com/openspur/yp-spur/issues/242>`_)

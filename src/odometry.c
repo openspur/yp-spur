@@ -48,7 +48,7 @@
 double g_interval;
 double g_offset;
 int g_offset_point;
-double g_estimated_delay = 0;
+double g_estimated_delay;
 
 CSptr g_GL;
 CSptr g_SP;
@@ -74,25 +74,12 @@ void init_coordinate_systems(void)
 
 void init_odometry(void)
 {
-  int i;
-  g_odometry.x = 0;
-  g_odometry.y = 0;
-  g_odometry.theta = 0;
-  for (i = 0; i < YP_PARAM_MAX_MOTOR_NUM; i++)
-  {
-    g_odometry.enc[i] = 0;
-    g_odometry.enc_init[i] = 0;
-    g_odometry.wang[i] = 0;
-    g_odometry.wtorque[i] = 0;
-    g_odometry.wvel[i] = 0;
-    g_error_state.state[i] = 0;
-    g_error_state.time[i] = 0;
-  }
-  g_odometry.v = 0;
-  g_odometry.w = 0;
-  g_odometry.time = 0;
-  g_odometry.packet_lost = 0;
+  memset(&g_odometry, 0, sizeof(g_odometry));
+  memset(&g_error_state, 0, sizeof(g_error_state));
+  g_interval = 0;
+  g_offset = 0;
   g_offset_point = 0;
+  g_estimated_delay = 0;
 }
 
 CSptr get_cs_pointer(YPSpur_cs cs)
